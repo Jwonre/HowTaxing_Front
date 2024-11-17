@@ -28,10 +28,9 @@ import { LogBox } from 'react-native';
 
 
 const SheetContainer = styled.View`
-  flex: 1;
   background-color: #fff;
   width: ${props => props.width - 40}px;
-  height: auto;
+  height: 100%;
 `;
 
 const ModalTitle = styled.Text`

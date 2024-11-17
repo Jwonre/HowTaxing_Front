@@ -295,10 +295,10 @@ const Home = () => {
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${accessToken}`
     };
-  
+
     try {
       const response = await axios.get(`${Config.APP_API_URL}user/logout`, { headers });
-  
+      console.log('accessToken', accessToken);
       console.log('response.data', response.data);
   
       if (response.data.errYn === 'Y') {

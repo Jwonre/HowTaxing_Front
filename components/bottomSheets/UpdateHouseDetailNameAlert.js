@@ -15,10 +15,9 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view
 import NetInfo from "@react-native-community/netinfo";
 
 const SheetContainer = styled.View`
-  flex: 1;
   background-color: #fff;
   width: ${props => props.width - 40}px;
-  height: auto;
+  height: 100%;
 `;
 
 const ModalTitle = styled.Text`
@@ -214,7 +213,7 @@ const UpdateHouseDetailNameAlert = props => {
       }}>
 
 
-      <KeyboardAwareScrollView showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="always" >
+      
         <SheetContainer>
           <ModalTitle
             
@@ -265,7 +264,6 @@ const UpdateHouseDetailNameAlert = props => {
             </DropShadow>
           </ButtonSection>
         </SheetContainer>
-      </KeyboardAwareScrollView >
     </ActionSheet >
   );
 };

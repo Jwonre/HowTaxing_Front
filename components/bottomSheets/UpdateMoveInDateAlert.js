@@ -18,10 +18,9 @@ import Calendar from '../Calendar';
 import NetInfo from "@react-native-community/netinfo";
 
 const SheetContainer = styled.View`
-  flex: 1;
   background-color: #fff;
   width: ${props => props.width - 40}px;
-  height: auto;
+  height: 100%;
 `;
 
 const ModalTitle = styled.Text`
@@ -192,6 +191,7 @@ const UpdateMoveInDateAlert = props => {
         width: width - 40,
       }}>
       <ScrollView
+        keyboardShouldPersistTaps='always'
         ref={_scrollViewRef}
         pagingEnabled
         style={{

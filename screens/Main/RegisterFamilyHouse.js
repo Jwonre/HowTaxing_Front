@@ -8,13 +8,13 @@ import {
   Pressable,
   ScrollView,
 } from 'react-native';
-import React, {useState, useLayoutEffect, useRef, useEffect} from 'react';
-import {useNavigation} from '@react-navigation/native';
+import React, { useState, useLayoutEffect, useRef, useEffect } from 'react';
+import { useNavigation } from '@react-navigation/native';
 import BackIcon from '../../assets/icons/back_button.svg';
 import styled from 'styled-components';
 import FamilyIcon from '../../assets/images/family_users.svg';
 import DropShadow from 'react-native-drop-shadow';
-import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import ChevronIcon from '../../assets/icons/select_box_arrow_ico.svg';
 
 const Container = styled.View`
@@ -137,7 +137,7 @@ const SelectListItem = styled.View`
 const RegisterFamilyHouse = props => {
   const navigation = useNavigation();
   const scrollViewRef = useRef(null);
-  const {width, height} = useWindowDimensions();
+  const { width, height } = useWindowDimensions();
   const nameInputRef = useRef(null);
   const [selectBoxOpen, setSelectBoxOpen] = useState(false);
   const [selectedRelation, setSelectedRelation] = useState('배우자');
@@ -158,7 +158,7 @@ const RegisterFamilyHouse = props => {
       headerLeft: () => (
         <TouchableOpacity
           activeOpacity={0.6}
-          hitSlop={{top: 20, bottom: 20, left: 20, right: 20}}
+          hitSlop={{ top: 20, bottom: 20, left: 20, right: 20 }}
           onPress={() => {
             navigation.goBack();
           }}>
@@ -183,6 +183,7 @@ const RegisterFamilyHouse = props => {
   return (
     <Container>
       <KeyboardAwareScrollView
+        enableAutomaticScroll={false}
         ref={scrollViewRef}
         scrollEnabled={!selectBoxOpen}
         nestedScrollEnabled={true}
@@ -227,7 +228,7 @@ const RegisterFamilyHouse = props => {
                   maxLength={20}
                   autoCorrect={false}
                   returnKeyType="next"
-                  onSubmitEditing={() => {}}
+                  onSubmitEditing={() => { }}
                 />
               </InputContainer>
             </Paper>
@@ -269,7 +270,7 @@ const RegisterFamilyHouse = props => {
                 onPress={() => {
                   setSelectBoxOpen(!selectBoxOpen);
                   if (!selectBoxOpen) {
-                    scrollViewRef.current.scrollToEnd({animated: true});
+                    scrollViewRef.current.scrollToEnd({ animated: true });
                   }
                 }}>
                 <InputContainer>
@@ -285,7 +286,7 @@ const RegisterFamilyHouse = props => {
                   </Text>
                   <ChevronIcon
                     style={{
-                      transform: [{rotate: selectBoxOpen ? '180deg' : '0deg'}],
+                      transform: [{ rotate: selectBoxOpen ? '180deg' : '0deg' }],
                     }}
                   />
                 </InputContainer>

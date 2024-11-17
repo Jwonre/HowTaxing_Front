@@ -20,10 +20,9 @@ import Config from 'react-native-config'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 const SheetContainer = styled.View`
-  flex: 1;
   background-color: #fff;
   width: ${props => props.width - 40}px;
-  height: auto;
+  height: 100%;
 `;
 
 const ModalTitle = styled.Text`
@@ -324,7 +323,7 @@ const UpdateConsultingContentAlert = props => {
       }}>
 
 
-      <KeyboardAwareScrollView showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="always" >
+      <KeyboardAwareScrollView enableAutomaticScroll={false} showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="always" >
         <SheetContainer>
           <ModalTitle>
             상담 내용을 알려주세요.

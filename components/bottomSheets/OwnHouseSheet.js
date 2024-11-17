@@ -19,7 +19,9 @@ import DeleteIcon from '../../assets/icons/deleteBox.svg';
 import { useDispatch, useSelector } from 'react-redux';
 import { HOUSE_TYPE } from '../../constants/colors';
 import { setChatDataList } from '../../redux/chatDataListSlice';
+import CheckOnIcon from '../../assets/icons/check_on.svg';
 import { setHouseInfo } from '../../redux/houseInfoSlice';
+import { setCert } from '../../redux/certSlice';
 import NetInfo from "@react-native-community/netinfo";
 import { acquisitionTax } from '../../data/chatData';
 import axios from 'axios';
@@ -32,10 +34,9 @@ const SheetContainer = styled.ScrollView.attrs({
     flexGrow: 1,
   },
 })`
-  flex: 1;
   background-color: #fff;
   width: ${props => props.width}px;
-  height: auto;
+  height: 100%;
 `;
 
 const TitleSection = styled.View`
@@ -239,6 +240,36 @@ const EmptyTitle = styled.Text`
   margin: 3px;
 `;
 
+const ListItem = styled.View`
+  flex-direction: row; 
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 20px;
+`;
+
+const ListItemTitle = styled.Text`
+  font-size: 13px;
+  font-family: Pretendard-Bold;
+  color: #1b1c1f;
+  line-height: 18px;
+`;
+
+
+const CheckCircle = styled.TouchableOpacity.attrs(props => ({
+  activeOpacity: 0.8,
+}))`
+    width: 20px;
+    height: 20px;
+    border-radius: 5px;  
+    background-color: #fff;
+    border: 2px solid #BAC7D5;  
+    align-items: center;
+    justify-content: center;
+    margin-right: 10px;
+`;
+
+
+
 const OwnHouseSheet = props => {
   const actionSheetRef = useRef(null);
   const dispatch = useDispatch();
@@ -253,6 +284,9 @@ const OwnHouseSheet = props => {
   const [hasNavigatedBack, setHasNavigatedBack] = useState(false);
   const hasNavigatedBackRef = useRef(hasNavigatedBack);
   const CARD_WIDTH = 180 + 22;
+  const { agreePrivacy } = useSelector(
+    state => state.cert.value,
+  );
 
   useEffect(() => {
     if (ownHouseList.length > 0 && props.payload.isGainsTax === false) {
@@ -387,6 +421,11 @@ const OwnHouseSheet = props => {
             onPress={() => {
               const newChatDataList = chatDataList.slice(0, props.payload?.index + 1);
               dispatch(setChatDataList(newChatDataList));
+              dispatch(
+                setCert({
+                  agreePrivacy: false,
+                }),
+              );
               actionSheetRef.current?.hide();
             }}>
             <CloseIcon width={16} height={16} />
@@ -502,7 +541,7 @@ const OwnHouseSheet = props => {
                       </TagText>
                     </Tag>*/}
                     <CardTitle >{item.houseName}</CardTitle>
-                    <CardSubTitle >{item.houseDetailName}</CardSubTitle>
+                    <CardSubTitle >{item.detailAdr}</CardSubTitle>
                     <CardButton
                       onPress={async () => {
                         const state = await NetInfo.fetch();
@@ -704,6 +743,39 @@ const OwnHouseSheet = props => {
             </SubTitle>
           </HouseSection>
         }
+
+        <ListItem style={{ marginTop: 10, marginBottom: 10 }}>
+          <View style={{ flexDirection: 'row' }}>
+            <TouchableOpacity
+              onPress={async () => {
+                await actionSheetRef.current?.hide();
+                navigation.navigate('OwnHousePrivacy', {
+                  navigation: navigation,
+                  prevChat: 'AcquisitionChat',
+                  prevSheet: 'own',
+                  index: props.payload?.index,
+                  data: props.payload?.data,
+                  chungYackYn: props.payload?.chungYackYn,
+                });
+              }}>
+              <ListItemTitle style={{ color: '#2F87FF', textDecorationLine: 'underline' }}>개인정보 수집 및 이용</ListItemTitle>
+            </TouchableOpacity>
+            <ListItemTitle>에 대하여 동의하시나요?</ListItemTitle>
+          </View>
+          <CheckCircle
+            onPress={() => {
+              dispatch(
+                setCert({
+                  agreePrivacy: !agreePrivacy,
+                }),
+              );
+            }}>
+            {agreePrivacy && <CheckOnIcon />}
+          </CheckCircle>
+        </ListItem>
+
+
+
         <DropShadow
           style={{
             shadowColor: 'rgba(0,0,0,0.1)',
@@ -715,9 +787,9 @@ const OwnHouseSheet = props => {
             shadowRadius: 10,
           }}>
           <Button
-            disabled={selectedList.length === 0}
+            disabled={selectedList.length === 0 || !agreePrivacy}
             width={width}
-            active={selectedList.length > 0}
+            active={selectedList.length > 0 && agreePrivacy}
             onPress={async () => {
               const state = await NetInfo.fetch();
               const canProceed = await handleNetInfoChange(state);
@@ -828,11 +900,16 @@ const OwnHouseSheet = props => {
               } else {
                 const newChatDataList = chatDataList.slice(0, props.payload?.index + 1);
                 dispatch(setChatDataList(newChatDataList));
+                dispatch(
+                  setCert({
+                    agreePrivacy: false,
+                  }),
+                );
                 actionSheetRef.current?.hide();
               }
               //console.log('houseInfo', houseInfo);
             }}>
-            <ButtonText active={selectedList.length > 0}>확인하기</ButtonText>
+            <ButtonText active={selectedList.length > 0 && agreePrivacy}>확인하기</ButtonText>
           </Button>
         </DropShadow>
       </SheetContainer>

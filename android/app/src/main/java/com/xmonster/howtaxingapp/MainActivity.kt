@@ -1,4 +1,4 @@
-package com.howtaxingrelease
+package com.xmonster.howtaxingapp
 
 import com.facebook.react.ReactActivity
 import com.facebook.react.ReactActivityDelegate

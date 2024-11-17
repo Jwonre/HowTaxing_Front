@@ -21,10 +21,9 @@ import { setCert } from '../../redux/certSlice';
 import Config from 'react-native-config'
 
 const SheetContainer = styled.View`
-  flex: 1;
   background-color: #fff;
   width: ${props => props.width - 40}px;
-  height: auto;
+  height: 100%;
 `;
 
 const ModalTitle = styled.Text`
@@ -376,7 +375,6 @@ const AreaMeterDef = props => {
         height: currentPageIndex === 0 ? 500 : 560,
         width: width - 40,
       }}>
-      <KeyboardAwareScrollView showsVerticalScrollIndicator={false}>
         {currentPageIndex === 0 && (
           <SheetContainer width={width}>
             <ModalInputSection>
@@ -787,7 +785,6 @@ const AreaMeterDef = props => {
             </ButtonSection>
           </SheetContainer>
         )}
-      </KeyboardAwareScrollView>
     </ActionSheet>
   );
 };

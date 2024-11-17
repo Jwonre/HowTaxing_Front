@@ -974,6 +974,7 @@ const AddHouse = props => {
 
   return (
     <ScrollView
+      keyboardShouldPersistTaps='always'
       overScrollMode="never"
       ref={_scrollViewRef}
       pagingEnabled
@@ -995,6 +996,7 @@ const AddHouse = props => {
           <SubTitle2>보유한 주택의 주소를 정확히 입력하여 조회해주세요.</SubTitle2>
         </IntroSection2>
           <ScrollView
+            keyboardShouldPersistTaps='always'
             overScrollMode="never"
             ref={_scrollViewRef2}
             pagingEnabled

@@ -1,4 +1,4 @@
-package com.howtaxingrelease
+package com.xmonster.howtaxingapp
 
 import android.app.Application
 import com.facebook.react.PackageList

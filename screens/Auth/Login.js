@@ -41,7 +41,7 @@ const SocialButton = styled.TouchableOpacity.attrs(props => ({
   flex-direction: row;
   align-items: center;
   justify-content: center;
-  height: 50px;
+  height: 55px;
   border-radius: 30px;
   padding: 10px;
   margin: 5px;
@@ -136,7 +136,7 @@ const Login = () => {
     const tokens = temp(event);
     //console.log('Login:', event.nativeEvent.data);
     if (event.nativeEvent.data.role === 'GUEST') {
-      await navigation.push('CheckTerms', { tokens: tokens });
+      await navigation.push('CheckTerms', { tokens: tokens, LoginAcessType: 'SOCIAL' });
       //약관확인 화면으로 이동 후 약관 동의 완료시 handleSignUp 진행
     } else {
       //console.log('Login token:', tokens[0]);

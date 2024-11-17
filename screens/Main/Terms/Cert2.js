@@ -6,10 +6,11 @@ import {
   TouchableOpacity,
   useWindowDimensions,
   ScrollView,
+  BackHandler,
 } from 'react-native';
-import React, { useLayoutEffect, useRef, useState } from 'react';
+import React, { useLayoutEffect, useRef, useState, useCallback } from 'react';
 import { WebView } from 'react-native-webview';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import styled from 'styled-components';
 import CloseIcon from '../../../assets/icons/close_button.svg';
 import getFontSize from '../../../utils/getFontSize';
@@ -67,6 +68,20 @@ const Cert2 = props => {
     state => state.cert.value,
   );
 
+  const handleBackPress = () => {
+    navigation.goBack({ tokens: props?.route?.params?.tokens ? props?.route?.params?.tokens : null, id: props?.route?.params?.id ? props?.route?.params?.id : null, password: props?.route?.params?.password ? props?.route?.params?.password : null});
+    return true;
+  }
+  useFocusEffect(
+    useCallback(() => {
+      BackHandler.addEventListener('hardwareBackPress', handleBackPress)
+      return () => {
+        BackHandler.removeEventListener('hardwareBackPress', handleBackPress);
+      }
+    }, [handleBackPress])
+  );
+
+
   useLayoutEffect(() => {
     navigation.setOptions({
       headerLeft: () => (
@@ -74,7 +89,7 @@ const Cert2 = props => {
           activeOpacity={0.6}
           hitSlop={{ top: 20, bottom: 20, left: 20, right: 20 }}
           onPress={() => {
-            navigation.goBack({ tokens: props?.route?.params?.tokens });
+            navigation.goBack({ tokens: props?.route?.params?.tokens ? props?.route?.params?.tokens : null, id: props?.route?.params?.id ? props?.route?.params?.id : null, password: props?.route?.params?.password ? props?.route?.params?.password : null});
           }}>
           <CloseIcon />
         </TouchableOpacity>
@@ -101,7 +116,7 @@ const Cert2 = props => {
       <View style={{ flex: 1 }}>
         <WebView
           ref={webviewRef}
-          source={{ uri: 'https://app.how-taxing.com/terms-of-service' }}
+          source={{ uri: 'https://deep-hortensia-87c.notion.site/01-21b491ee8865420483acec873c30ddd9?pvs=4' }}
           javaScriptEnabled={true}
           domStorageEnabled={true}
           startInLoadingState={false}
@@ -136,7 +151,7 @@ const Cert2 = props => {
                 }),
               );
               // 채팅방으로 이동
-              navigation.goBack({ tokens: props?.route?.params?.tokens });
+              navigation.goBack({ tokens: props?.route?.params?.tokens ? props?.route?.params?.tokens : null, id: props?.route?.params?.id ? props?.route?.params?.id : null, password: props?.route?.params?.password ? props?.route?.params?.password : null });
 
             }
               // 동의하기 버튼 클릭 시 redux에 저장

@@ -20,10 +20,9 @@ import axios from 'axios';
 import Config from 'react-native-config'
 
 const SheetContainer = styled.View`
-  flex: 1;
   background-color: #fff;
   width: ${props => props.width - 40}px;
-  height: auto;
+  height: 100%;
 `;
 
 const ModalTitle = styled.Text`
@@ -187,6 +186,7 @@ const InfoCertification = props => {
                       password,
                       residentNumber,
                       failreturn: true,
+                      CheckPrivacy: false
                     },
                   });
                 }
@@ -292,6 +292,7 @@ const InfoCertification = props => {
                   password,
                   residentNumber,
                   failreturn: true,
+                  CheckPrivacy: false
                 },
               });
             }

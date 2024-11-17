@@ -26,10 +26,9 @@ import CancelCircle from '../../assets/icons/cancel_circle.svg';
 
 
 const SheetContainer = styled.View`
-  flex: 1;
   background-color: #fff;
   width: ${props => props.width - 40}px;
-  height: auto;
+  height: 100%;
 `;
 
 const ModalTitle = styled.Text`
@@ -266,6 +265,7 @@ const ExpenseSheet = props => {
       }}>
       <ScrollView
         ref={_scrollViewRef}
+        keyboardShouldPersistTaps='always'
         pagingEnabled
         style={{
           width: width - 40,

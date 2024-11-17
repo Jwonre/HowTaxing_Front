@@ -8,7 +8,7 @@ import {
   ScrollView,
   BackHandler
 } from 'react-native';
-import React, { useLayoutEffect, useState, useEffect, useRef } from 'react';
+import React, { useLayoutEffect, useState, useEffect, useRef, useCallback } from 'react';
 import styled from 'styled-components';
 import CloseIcon from '../../../assets/icons/close_button.svg';
 import { WebView } from 'react-native-webview';

@@ -381,6 +381,7 @@ const AddHouseList = props => {
 
   return (
     <ScrollView
+      keyboardShouldPersistTaps='always'
       overScrollMode="never"
       ref={_scrollViewRef}
       pagingEnabled

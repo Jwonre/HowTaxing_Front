@@ -1,7 +1,8 @@
 
-import { View, useWindowDimensions, Pressable, Keyboard } from 'react-native';
+import { View, TouchableOpacity, useWindowDimensions, Pressable, Keyboard, StyleSheet } from 'react-native';
 import React, { useEffect, useRef, useState } from 'react';
 import ActionSheet, { SheetManager } from 'react-native-actions-sheet';
+import Modal from 'react-native-modal';
 import styled from 'styled-components';
 import getFontSize from '../../utils/getFontSize';
 import CloseIcon from '../../assets/icons/close_button.svg';
@@ -11,6 +12,7 @@ import { useNavigation } from '@react-navigation/native';
 import MaskInput from 'react-native-mask-input';
 import axios from 'axios';
 import { useDispatch, useSelector } from 'react-redux';
+import InfoCircleIcon from '../../assets/icons/info_circle.svg';
 import { setOwnHouseList } from '../../redux/ownHouseListSlice';
 import { acquisitionTax, gainTax } from '../../data/chatData';
 import { setChatDataList } from '../../redux/chatDataListSlice';
@@ -24,7 +26,6 @@ import { setFixHouseList } from '../../redux/fixHouseListSlice';
 import { setAddHouseList } from '../../redux/addHouseListSlice';
 
 const SheetContainer = styled.View`
-  flex: 1;
   background-color: #fff;
   width: ${props => props.width - 40}px;
 
@@ -56,47 +57,13 @@ const ModalDescription = styled.Text`
   text-align: center;
 `;
 
-const ListItem = styled.View`
-  flex-direction: row;
-  align-items: center;
-  justify-content: flex-start;
-  padding: 0 20px;
-`;
 
-const CheckCircle = styled.TouchableOpacity.attrs(props => ({
-  activeOpacity: 0.8,
-}))`
-  width: 30px;
-  height: 30px;
-  border-radius: 15px;
+const ModalContentSection = styled.View`
   background-color: #fff;
-  border: 1px solid #cfd1d5;
-  align-items: center;
   justify-content: center;
-  margin-right: 10px;
+  border-radius: 10px;
 `;
 
-const ListItemTitle = styled.Text`
-  flex: 1;
-  font-size: 12px;
-  font-family: Pretendard-Regular;
-  color: #1b1c1f;
-  line-height: 20px;
-`;
-
-const ListItemButton = styled.TouchableOpacity.attrs(props => ({
-  activeOpacity: 0.8,
-  hitSlop: { top: 20, bottom: 20, left: 20, right: 20 },
-}))``;
-
-const ListItemButtonText = styled.Text`
-  font-size: 12px;
-  font-family: Pretendard-Regular;
-  color: #717274;
-  line-height: 20px;
-  text-decoration-line: underline;
-  text-decoration-color: #717274;
-`;
 
 const CertLogoImage = styled.Image.attrs(props => ({
   resizeMode: 'contain',
@@ -215,25 +182,58 @@ const Button = styled.TouchableOpacity.attrs(props => ({
   width: 100%;
   height: 50px;
   border-radius: 25px;
-  background-color: #2f87ff;
+  background-color: ${props => (props.active ? '#2F87FF' : '#E8EAED')};
   align-items: center;
   justify-content: center;
+  border-color: ${props => (props.active ? '#2F87FF' : '#E8EAED')};
+  align-self: center;
   border-width: 1px;
-  border-color: #2f87ff;
+
 `;
+
 
 const ButtonText = styled.Text`
   font-size: 16px;
   font-family: Pretendard-Bold;
-  color: #fff;
+  color: ${props => (props.active ? '#fff' : '#717274')};
   line-height: 20px;
 `;
 
+
+const FirstItem = styled.View`
+  flex-direction: row; 
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 20px;
+`;
+
+const FirstItemTitle = styled.Text`
+  font-size: 13px;
+  font-family: Pretendard-Bold;
+  color: #1b1c1f;
+  line-height: 18px;
+`;
+
+
+const FirstCheckCircle = styled.TouchableOpacity.attrs(props => ({
+  activeOpacity: 0.8,
+}))`
+    width: 20px;
+    height: 20px;
+    border-radius: 5px;  
+    background-color: #fff;
+    border: 2px solid #BAC7D5;  
+    align-items: center;
+    justify-content: center;
+    margin-right: 10px;
+`;
+
+
 const CertSheet = props => {
   LogBox.ignoreLogs(['to contain units']);
-  const scrollViewRef = useRef(null);
+  console.log('props', props);
   const actionSheetRef = useRef(null);
-  const cert = props.payload.data;
+  const cert = props.payload?.data;
   const navigation = props.payload?.navigation;
   ////console.log('navigation', navigation);
   const { width, height } = useWindowDimensions();
@@ -250,7 +250,7 @@ const CertSheet = props => {
   const [hasNavigatedBack, setHasNavigatedBack] = useState(false);
   const hasNavigatedBackRef = useRef(hasNavigatedBack);
   const [isConnected, setIsConnected] = useState(true);
-
+  const [CheckPrivacy, setCheckPrivacy] = useState(props?.payload?.checkPrivacy ? props?.payload?.checkPrivacy : true);
   const handleNetInfoChange = (state) => {
     return new Promise((resolve, reject) => {
       if (!state.isConnected && isConnected) {
@@ -304,16 +304,13 @@ const CertSheet = props => {
       (e) => {
         setKeyboardHeight(e.endCoordinates.height);
         //console.log('scrollViewRef.current', scrollViewRef.current);
-        if (scrollViewRef.current) {
-          scrollViewRef.current.scrollToPosition(0, 100, true);
-        }
       }
     );
 
     // 키보드가 사라질 때 높이를 초기화
     const keyboardDidHideListener = Keyboard.addListener(
       'keyboardDidHide',
-      () => setKeyboardHeight(0)
+      () => { setKeyboardHeight(0); }
     );
 
     return () => {
@@ -323,6 +320,7 @@ const CertSheet = props => {
   }, []);
 
   useEffect(() => {
+
     dispatch(setFixHouseList([]));
     dispatch(setAddHouseList([]));
     dispatch(setOwnHouseList([]));
@@ -338,7 +336,7 @@ const CertSheet = props => {
   const input1 = useRef(null);
   const input2 = useRef(null);
   const input3 = useRef(null);
-
+  console.log('keyboardHeight', keyboardHeight);
 
   const registerDirectHouse = async (list) => {
     try {
@@ -389,7 +387,6 @@ const CertSheet = props => {
   };
 
 
-
   //https://www.npmjs.com/package/react-native-mask-input
   const rlno_mask = [
     /\d/,
@@ -435,7 +432,7 @@ const CertSheet = props => {
                 if (networkState.isConnected) {
                   SheetManager.show('cert', {
                     payload: {
-                      cert: cert,
+                      cert: props.payload.data,
                       index: props.payload?.index,
                       currentPageIndex,
                       name,
@@ -444,6 +441,7 @@ const CertSheet = props => {
                       password,
                       residentNumber,
                       failreturn: true,
+                      CheckPrivacy: false
                     },
                   });
                 }
@@ -537,7 +535,7 @@ const CertSheet = props => {
             if (networkState.isConnected) {
               SheetManager.show('cert', {
                 payload: {
-                  cert: cert,
+                  cert: props.payload.data,
                   index: props.payload?.index,
                   currentPageIndex,
                   name,
@@ -546,6 +544,7 @@ const CertSheet = props => {
                   password,
                   residentNumber,
                   failreturn: true,
+                  CheckPrivacy: false
                 },
               });
             }
@@ -658,7 +657,7 @@ const CertSheet = props => {
     //////console.log('@@@@@@@@@headers:', headers);
 
     const data = {
-      certOrg: certType === 'KB' ? 'kb' : certType === 'naver' ? 'naver' : 'toss',
+      certOrg: props.payload?.data === 'KB' ? 'kb' : props.payload?.data === 'naver' ? 'naver' : 'toss',
       userNm: name,
       mobileNo: phone,
       rlno: residentNumber,
@@ -775,7 +774,7 @@ const CertSheet = props => {
         SheetManager.show('infoCertification', {
           payload: {
             message: '인증 알림을 보냈어요.\n인증이 완료되면 다음화면으로 넘어가요.',
-            certType: certType,
+            certType: props.payload?.data,
             index: props.payload?.index,
             isGainsTax: props.payload,
             name: name,
@@ -800,6 +799,10 @@ const CertSheet = props => {
         dispatch(setChatDataList([...chatDataList, chatItem]));
 
       }
+      dispatch(setCert({ agreePrivacy: false }));
+    } else {
+      actionSheetRef.current?.hide();
+      dispatch(setCert({ agreePrivacy: false }));
     }
   };
 
@@ -853,6 +856,23 @@ const CertSheet = props => {
     }
   };
 
+  const toggleModal = () => {
+    console.log('certType : ', props.payload?.data);
+    if (CheckPrivacy) {
+      setCheckPrivacy(false);
+      if (props.payload?.data === 'KB') {
+        setCurrentPageIndex(1);
+      } else if (props.payload?.data === 'naver') {
+        setCurrentPageIndex(2);
+      } else {
+        setCurrentPageIndex(3);
+      }
+    } else {
+      setCheckPrivacy(true);
+      setCurrentPageIndex(0);
+    }
+  };
+
 
   return (
 
@@ -867,7 +887,7 @@ const CertSheet = props => {
             onPress={() => {
               const newChatDataList = chatDataList.slice(0, props.payload?.index + 1);
               dispatch(setChatDataList(newChatDataList));
-
+              dispatch(setCert({ agreePrivacy: false }));
               actionSheetRef.current?.hide();
             }}>
             <CloseIcon width={16} height={16} />
@@ -883,443 +903,296 @@ const CertSheet = props => {
         backgroundColor: '#fff',
         borderTopLeftRadius: 20,
         borderTopRightRadius: 20,
-        height: currentPageIndex === 0 ? 490 : 600,
+        height: currentPageIndex === 0 ? 0 : 600,
         width: width - 40,
-        overflow: 'hidden'
       }}>
 
       {currentPageIndex === 0 && (
-        <SheetContainer width={width}>
-          <ModalInputSection>
-            <ModalTitle >본인인증을 진행해주세요</ModalTitle>
-            <ModalDescription >
-              전자증명서 이용을 위해{'\n'}서비스 약관에 동의해주세요
-            </ModalDescription>
-            <ListItem style={{ marginTop: 25 }}>
-              <CheckCircle
-                onPress={() => {
-                  if (agreeCert && agreePrivacy) {
-                    dispatch(
-                      setCert({
-                        certType,
-                        agreeCert: false,
-                        agreePrivacy: false,
-                        //  agreeThird: false,
-                      }),
-                    );
-                  } else {
-                    dispatch(
-                      setCert({
-                        certType,
-                        agreeCert: true,
-                        agreePrivacy: true,
-                        // agreeThird: true,
-                      }),
-                    );
-                  }
-                }}>
-                {agreeCert && agreePrivacy && <CheckOnIcon />}
-              </CheckCircle>
-              <ListItemTitle
-
+        <Modal isVisible={CheckPrivacy} backdropColor="#000" // 원하는 색으로 설정
+          backdropOpacity={0}>
+          <SheetContainer style={{ borderRadius: 8, height: '35%' }}>
+            <ModalContentSection>
+              <InfoCircleIcon
                 style={{
-                  fontSize: 15,
-                  fontFamily: 'Pretendard-Medium',
-                }}>
-                전체 동의하기
-              </ListItemTitle>
-            </ListItem>
-            <View
-              style={{
-                width: '100%',
-                height: 1,
-                backgroundColor: '#E8EAED',
-                marginTop: 20,
-              }}
-            />
-            <ListItem style={{ marginTop: 20 }}>
-              <CheckCircle
-                onPress={() => {
-                  dispatch(
-                    setCert({
-                      certType,
-                      agreePrivacy,
-                      //    agreeThird,
-                      agreeCert: !agreeCert,
-                    }),
-                  );
-                }}>
-                {agreeCert && <CheckOnIcon />}
-              </CheckCircle>
-              <ListItemTitle >
-                [필수] 전자증명서 서비스 이용 약관
-              </ListItemTitle>
-              <ListItemButton
-                onPress={() => {
-                  actionSheetRef.current?.hide();
-                  navigation.navigate('Cert', {
-                    cert: certType,
-                    isGainsTax: props.payload.isGainsTax,
-                    index: props.payload.index,
-                    navigation: navigation
-                  });
-
-                }}>
-                <ListItemButtonText >보기</ListItemButtonText>
-              </ListItemButton>
-            </ListItem>
-            <ListItem style={{ marginTop: 20 }}>
-              <CheckCircle
-                onPress={() => {
-                  dispatch(
-                    setCert({
-                      certType,
-                      agreeCert,
-                      //     agreeThird,
-                      agreePrivacy: !agreePrivacy,
-                    }),
-                  );
-                }}>
-                {agreePrivacy && <CheckOnIcon />}
-              </CheckCircle>
-              <ListItemTitle >[필수] 청약홈 개인정보 수집 및 이용 동의</ListItemTitle>
-              <ListItemButton
-                onPress={() => {
-                  actionSheetRef.current?.hide();
-                  navigation.navigate('Privacy', {
-                    cert: certType,
-                    isGainsTax: props.payload.isGainsTax,
-                    index: props.payload.index,
-                    navigation: navigation
-
-                  });
-
-                }}>
-                <ListItemButtonText >보기</ListItemButtonText>
-              </ListItemButton>
-            </ListItem>
-            {/*<ListItem style={{ marginTop: 20 }}>
-              <CheckCircle
-                onPress={() => {
-                  dispatch(
-                    setCert({
-                      certType,
-                      agreeCert,
-                      agreePrivacy,
-                      agreeThird: !agreeThird,
-                    }),
-                  );
-                }}>
-                {agreeThird && <CheckOnIcon />}
-              </CheckCircle>
-              <ListItemTitle>
-                [필수]{' '}
-                {certType === 'KB'
-                  ? 'KB'
-                  : certType === 'naver'
-                    ? '네이버'
-                    : '토스'}{' '}
-                개인정보 제3자 제공 동의
-              </ListItemTitle>
-              <ListItemButton
-                onPress={() => {
-                  actionSheetRef.current?.hide();
-                  navigation.navigate('Third', {
-                    cert: certType,
-                    isGainsTax: props.payload.isGainsTax,
-                    index: props.payload.index
-                  });
-                }}>
-                <ListItemButtonText>보기</ListItemButtonText>
-              </ListItemButton>
-              </ListItem>*/}
-          </ModalInputSection>
-          <ButtonSection
-            style={{
-              justifyContent: 'center',
-            }}>
-            <DropShadow
-              style={{
-                shadowColor: 'rgba(0,0,0,0.25)',
-                shadowOffset: {
-                  width: 0,
-                  height: 4,
-                },
-                shadowOpacity: 0.25,
-                shadowRadius: 4,
-                alignSelf: 'center',
-              }}>
-              <ModalButton
-                disabled={!(agreeCert && agreePrivacy)}
-                onPress={() => {
-                  if (certType === 'KB') {
-                    setCurrentPageIndex(1);
-                  } else if (certType === 'naver') {
-                    setCurrentPageIndex(2);
-                  } else {
-                    setCurrentPageIndex(3);
-                  }
+                  color: '#FF7401',
+                  marginTop: 20,
+                  marginBottom: 10,
+                  alignSelf: 'center'
                 }}
-                style={{
-                  width: width - 80,
-                  alignSelf: 'center',
-                  marginTop: 10,
-                  marginBottom: 50,
-                  backgroundColor:
-                    agreeCert && agreePrivacy
+              />
+              <ModalTitle >본인인증을 진행해주세요.</ModalTitle>
+
+              <FirstItem style={{ marginTop: 20, marginBottom: 10 }}>
+                <View style={{ flexDirection: 'row' }}>
+                  <TouchableOpacity
+                    onPress={async () => {
+                      await actionSheetRef.current?.hide();
+                      navigation.navigate('CertificationPrivacy', {
+                        prevChat: 'GainsTaxChat',
+                        prevSheet: 'cert',
+                        cert: props.payload?.data,
+                        isGainsTax: props.payload.isGainsTax,
+                        index: props.payload.index,
+                        navigation: navigation
+                      });
+                    }}>
+                    <FirstItemTitle style={{ color: '#2F87FF', textDecorationLine: 'underline' }}>개인정보 수집 및 이용</FirstItemTitle>
+                  </TouchableOpacity>
+                  <FirstItemTitle>에 대하여 동의하시나요?</FirstItemTitle>
+                </View>
+                <FirstCheckCircle
+                  onPress={() => {
+                    dispatch(
+                      setCert({
+                        agreePrivacy: !agreePrivacy,
+                      }),
+                    );
+                  }}>
+                  {agreePrivacy && <CheckOnIcon />}
+                </FirstCheckCircle>
+
+              </FirstItem>
+              <ButtonSection style={{
+                borderBottomLeftRadius: 10,
+                borderBottomRightRadius: 10,
+                paddingTop: 10,
+                paddingBottom: 10,
+                paddingRight: 20,
+                paddingLeft: 20
+              }}>
+                <Button
+                  disabled={!agreePrivacy}
+                  width={width}
+                  active={agreePrivacy}
+                  onPress={() => {
+                    toggleModal();
+                  }}>
+                  <ButtonText active={agreePrivacy}>동의 후 인증하기</ButtonText>
+                </Button>
+              </ButtonSection>
+            </ModalContentSection>
+
+          </SheetContainer>
+        </Modal >
+      )
+      }
+      <KeyboardAwareScrollView>
+        {
+          currentPageIndex === 1 && (
+            <SheetContainer width={width}>
+              <ModalInputSection>
+                <CertLogoImage
+                  source={require('../../assets/images/certLogo/kb_logo.png')}
+                />
+                <ModalTitle >KB 간편 인증 정보 입력</ModalTitle>
+                <ModalDescription
+
+                  style={{
+                    lineHeight: 20,
+                  }}>
+                  인증사별 고객 정보가 필요해요{'\n'}아래 표시된 정보들을
+                  입력해주세요
+                </ModalDescription>
+                <ModalInputContainer>
+                  <ModalLabel >이름</ModalLabel>
+                  <ModalInput
+                    ref={input1}
+                    onSubmitEditing={() => input2.current.focus()}
+                    placeholder="이름"
+                    value={name}
+                    onChangeText={setName}
+                    maxLength={20}
+                    autoFocus
+                    autoCompleteType="name"
+                    autoCapitalize="none"
+                  />
+                </ModalInputContainer>
+                <ModalInputContainer>
+                  <ModalLabel >휴대폰 번호</ModalLabel>
+                  <ModalInput
+                    ref={input2}
+                    onSubmitEditing={() => input3.current.focus()}
+                    placeholder="휴대폰 번호를 입력해주세요"
+                    value={phone}
+                    onChangeText={setPhone}
+                    maxLength={11}
+                    keyboardType="number-pad"
+                    autoCompleteType="tel"
+                  />
+                </ModalInputContainer>
+                <ModalInputContainer>
+                  <ModalLabel >주민등록번호</ModalLabel>
+                  <RegisterNumberInput
+                    ref={input3}
+                    value={residentNumber}
+                    keyboardType="number-pad"
+                    onChangeText={(masked, unmasked, obfuscated) => {
+                      setResidentNumber(unmasked);
+                      // ////console.log("mask:", masked);
+                      // ////console.log("unmask:", unmasked);
+                      // ////console.log("obfuscated:", obfuscated);
+                    }}
+                    obfuscationCharacter="*"
+                    showObfuscatedValue
+                    mask={rlno_mask}
+                  />
+                </ModalInputContainer>
+              </ModalInputSection>
+
+              <ButtonSection>
+                <ButtonShadow
+                  style={{
+                    shadowColor: '#fff',
+                  }}>
+                  <Button
+                    onPress={() => {
+                      Keyboard.dismiss();
+                      toggleModal();
+                    }}
+                    style={{
+                      backgroundColor: '#fff',
+                      borderColor: '#E8EAED',
+                    }}>
+                    <ButtonText
+
+                      style={{
+                        color: '#717274',
+                      }}>
+                      이전으로
+                    </ButtonText>
+                  </Button>
+                </ButtonShadow>
+                <ButtonShadow>
+                  <Button onPress={nextHandler} style={{
+                    backgroundColor: name && phone.length === 11 && residentNumber.length === 13
                       ? '#2F87FF'
                       : '#E8EAED',
-                }}>
-                <ModalButtonText
-
-                  style={{
-                    color:
-                      agreeCert && agreePrivacy
+                    borderColor: name && phone.length === 11 && residentNumber.length === 13
+                      ? '#2F87FF'
+                      : '#E8EAED',
+                  }} disabled={!(name && phone.length === 11 && residentNumber.length === 13)}>
+                    <ButtonText style={{
+                      color: name && phone.length === 11 && residentNumber.length === 13
                         ? '#fff'
                         : '#717274',
-                  }}>
-                  동의 후 인증하기
-                </ModalButtonText>
-              </ModalButton>
-            </DropShadow>
-          </ButtonSection>
-        </SheetContainer>
-      )}
-
-      {currentPageIndex === 1 && (
-        <KeyboardAwareScrollView
-          ref={scrollViewRef}
-          style={{ flex: 1 }}
-          keyboardShouldPersistTaps="always"
-        >
-          <SheetContainer width={width}>
-            <ModalInputSection>
-              <CertLogoImage
-                source={require('../../assets/images/certLogo/kb_logo.png')}
-              />
-              <ModalTitle >KB 간편 인증 정보 입력</ModalTitle>
-              <ModalDescription
-
-                style={{
-                  lineHeight: 20,
-                }}>
-                인증사별 고객 정보가 필요해요{'\n'}아래 표시된 정보들을
-                입력해주세요
-              </ModalDescription>
-              <ModalInputContainer>
-                <ModalLabel >이름</ModalLabel>
-                <ModalInput
-                  ref={input1}
-                  onSubmitEditing={() => input2.current.focus()}
-                  placeholder="이름"
-                  value={name}
-                  onChangeText={setName}
-                  maxLength={20}
-                  autoFocus
-                  autoCompleteType="name"
-                  autoCapitalize="none"
-                />
-              </ModalInputContainer>
-              <ModalInputContainer>
-                <ModalLabel >휴대폰 번호</ModalLabel>
-                <ModalInput
-                  ref={input2}
-                  onSubmitEditing={() => input3.current.focus()}
-                  placeholder="휴대폰 번호를 입력해주세요"
-                  value={phone}
-                  onChangeText={setPhone}
-                  maxLength={11}
-                  keyboardType="number-pad"
-                  autoCompleteType="tel"
-                />
-              </ModalInputContainer>
-              <ModalInputContainer>
-                <ModalLabel >주민등록번호</ModalLabel>
-                <RegisterNumberInput
-                  ref={input3}
-                  value={residentNumber}
-                  keyboardType="number-pad"
-                  onChangeText={(masked, unmasked, obfuscated) => {
-                    setResidentNumber(unmasked);
-                    // ////console.log("mask:", masked);
-                    // ////console.log("unmask:", unmasked);
-                    // ////console.log("obfuscated:", obfuscated);
-                  }}
-                  obfuscationCharacter="*"
-                  showObfuscatedValue
-                  mask={rlno_mask}
-                />
-              </ModalInputContainer>
-            </ModalInputSection>
-
-            <ButtonSection>
-              <ButtonShadow
-                style={{
-                  shadowColor: '#fff',
-                }}>
-                <Button
-                  onPress={() => {
-                    Keyboard.dismiss()
-                    setTimeout(() => {
-                      setCurrentPageIndex(0);
-                    }, 100)
-                  }}
-                  style={{
-                    backgroundColor: '#fff',
-                    borderColor: '#E8EAED',
-                  }}>
-                  <ButtonText
-
-                    style={{
-                      color: '#717274',
-                    }}>
-                    이전으로
-                  </ButtonText>
-                </Button>
-              </ButtonShadow>
-              <ButtonShadow>
-                <Button onPress={nextHandler} style={{
-                  backgroundColor: name && phone.length === 11 && residentNumber.length === 13
-                    ? '#2F87FF'
-                    : '#E8EAED',
-                  borderColor: name && phone.length === 11 && residentNumber.length === 13
-                    ? '#2F87FF'
-                    : '#E8EAED',
-                }} disabled={!(name && phone.length === 11 && residentNumber.length === 13)}>
-                  <ButtonText style={{
-                    color: name && phone.length === 11 && residentNumber.length === 13
-                      ? '#fff'
-                      : '#717274',
-                  }}
-                  > 다음으로</ButtonText>
-                </Button>
-              </ButtonShadow>
-            </ButtonSection>
-          </SheetContainer>
-        </KeyboardAwareScrollView>
-      )
-      }
-      {currentPageIndex === 2 && (
-        <KeyboardAwareScrollView
-          ref={scrollViewRef}
-          style={{ flex: 1 }}
-          keyboardShouldPersistTaps="always"
-        >
-          <SheetContainer width={width}>
-            <ModalInputSection>
-              <CertLogoImage
-                source={require('../../assets/images/certLogo/naver_logo.png')}
-              />
-              <ModalTitle >네이버 간편 인증 정보 입력</ModalTitle>
-              <ModalDescription
-
-                style={{
-                  lineHeight: 20,
-                }}>
-                인증사별 고객 정보가 필요해요{'\n'}아래 표시된 정보들을
-                입력해주세요
-              </ModalDescription>
-
-              <ModalInputContainer>
-                <ModalLabel >아이디</ModalLabel>
-                <ModalInput
-                  ref={input1}
-                  onSubmitEditing={() => input2.current.focus()}
-                  placeholder="아이디"
-                  value={id}
-                  autoFocus
-                  onChangeText={setId}
-                  maxLength={30}
-                />
-              </ModalInputContainer>
-              <ModalInputContainer>
-                <ModalLabel >비밀번호</ModalLabel>
-                <ModalInput
-                  ref={input2}
-                  onSubmitEditing={() => input3.current.focus()}
-                  placeholder="비밀번호를 입력해주세요"
-                  value={password}
-                  onChangeText={setPassword}
-                  secureTextEntry
-                  maxLength={40}
-
-                />
-              </ModalInputContainer>
-              <ModalInputContainer>
-                <ModalLabel >주민등록번호</ModalLabel>
-                <RegisterNumberInput
-                  ref={input3}
-                  value={residentNumber}
-                  keyboardType="number-pad"
-                  onChangeText={(masked, unmasked, obfuscated) => {
-                    setResidentNumber(unmasked);
-                    // ////console.log("mask:", masked);
-                    // ////console.log("unmask:", unmasked);
-                    // ////console.log("obfuscated:", obfuscated);
-                  }}
-
-                  obfuscationCharacter="*"
-                  showObfuscatedValue
-                  mask={rlno_mask}
-                />
-              </ModalInputContainer>
-
-            </ModalInputSection>
-
-            <ButtonSection>
-              <ButtonShadow
-                style={{
-                  shadowColor: '#fff',
-                }}>
-                <Button
-                  onPress={() => {
-                    Keyboard.dismiss()
-                    setTimeout(() => {
-                      setCurrentPageIndex(0);
-                    }, 100)
-                  }}
-                  style={{
-                    backgroundColor: '#fff',
-                    borderColor: '#E8EAED',
-                  }}>
-                  <ButtonText
-                    style={{
-                      color: '#717274',
                     }}
-                  >
-                    이전으로
-                  </ButtonText>
-                </Button>
-              </ButtonShadow>
-              <ButtonShadow>
-                <Button onPress={nextHandler} style={{
-                  backgroundColor: id && password && residentNumber.length === 13
-                    ? '#2F87FF'
-                    : '#E8EAED',
-                  borderColor: id && password && residentNumber.length === 13
-                    ? '#2F87FF'
-                    : '#E8EAED',
-                }} disabled={!(id && password && residentNumber.length === 13)}>
-                  <ButtonText style={{
-                    color: id && password && residentNumber.length === 13
-                      ? '#fff'
-                      : '#717274',
-                  }} > 다음으로</ButtonText>
-                </Button>
-              </ButtonShadow>
-            </ButtonSection>
-          </SheetContainer>
-        </KeyboardAwareScrollView>
-      )
-      }
-      {
-        currentPageIndex === 3 && (
-          <KeyboardAwareScrollView
-            //extraScrollHeight={keyboardHeight}
-            ref={scrollViewRef}
-            style={{ flex: 1 }}
-            keyboardShouldPersistTaps="always"
-          >
+                    > 다음으로</ButtonText>
+                  </Button>
+                </ButtonShadow>
+              </ButtonSection>
+            </SheetContainer>
+          )
+        }
+        {
+          currentPageIndex === 2 && (
+
+            <SheetContainer width={width}>
+              <ModalInputSection>
+                <CertLogoImage
+                  source={require('../../assets/images/certLogo/naver_logo.png')}
+                />
+                <ModalTitle >네이버 간편 인증 정보 입력</ModalTitle>
+                <ModalDescription
+
+                  style={{
+                    lineHeight: 20,
+                  }}>
+                  인증사별 고객 정보가 필요해요{'\n'}아래 표시된 정보들을
+                  입력해주세요
+                </ModalDescription>
+
+                <ModalInputContainer>
+                  <ModalLabel >아이디</ModalLabel>
+                  <ModalInput
+                    ref={input1}
+                    onSubmitEditing={() => input2.current.focus()}
+                    placeholder="아이디"
+                    value={id}
+                    autoFocus
+                    onChangeText={setId}
+                    maxLength={30}
+                  />
+                </ModalInputContainer>
+                <ModalInputContainer>
+                  <ModalLabel >비밀번호</ModalLabel>
+                  <ModalInput
+                    ref={input2}
+                    onSubmitEditing={() => input3.current.focus()}
+                    placeholder="비밀번호를 입력해주세요"
+                    value={password}
+                    onChangeText={setPassword}
+                    secureTextEntry
+                    maxLength={40}
+
+                  />
+                </ModalInputContainer>
+                <ModalInputContainer>
+                  <ModalLabel >주민등록번호</ModalLabel>
+                  <RegisterNumberInput
+                    ref={input3}
+                    value={residentNumber}
+                    keyboardType="number-pad"
+                    onChangeText={(masked, unmasked, obfuscated) => {
+                      setResidentNumber(unmasked);
+                      // ////console.log("mask:", masked);
+                      // ////console.log("unmask:", unmasked);
+                      // ////console.log("obfuscated:", obfuscated);
+                    }}
+
+                    obfuscationCharacter="*"
+                    showObfuscatedValue
+                    mask={rlno_mask}
+                  />
+                </ModalInputContainer>
+
+              </ModalInputSection>
+
+              <ButtonSection>
+                <ButtonShadow
+                  style={{
+                    shadowColor: '#fff',
+                  }}>
+                  <Button
+                    onPress={() => {
+                      Keyboard.dismiss();
+                      toggleModal();
+                    }}
+                    style={{
+                      backgroundColor: '#fff',
+                      borderColor: '#E8EAED',
+                    }}>
+                    <ButtonText
+                      style={{
+                        color: '#717274',
+                      }}
+                    >
+                      이전으로
+                    </ButtonText>
+                  </Button>
+                </ButtonShadow>
+                <ButtonShadow>
+                  <Button onPress={nextHandler} style={{
+                    backgroundColor: id && password && residentNumber.length === 13
+                      ? '#2F87FF'
+                      : '#E8EAED',
+                    borderColor: id && password && residentNumber.length === 13
+                      ? '#2F87FF'
+                      : '#E8EAED',
+                  }} disabled={!(id && password && residentNumber.length === 13)}>
+                    <ButtonText style={{
+                      color: id && password && residentNumber.length === 13
+                        ? '#fff'
+                        : '#717274',
+                    }} > 다음으로</ButtonText>
+                  </Button>
+                </ButtonShadow>
+              </ButtonSection>
+            </SheetContainer>
+
+          )
+        }
+        {
+          currentPageIndex === 3 && (
             <SheetContainer width={width}>
               <ModalInputSection>
                 <CertLogoImage
@@ -1386,10 +1259,8 @@ const CertSheet = props => {
                   }}>
                   <Button
                     onPress={() => {
-                      Keyboard.dismiss()
-                      setTimeout(() => {
-                        setCurrentPageIndex(0);
-                      }, 100)
+                      Keyboard.dismiss();
+                      toggleModal();
                     }}
                     style={{
                       backgroundColor: '#fff',
@@ -1421,13 +1292,27 @@ const CertSheet = props => {
                 </ButtonShadow>
               </ButtonSection>
             </SheetContainer>
-          </KeyboardAwareScrollView>
-        )
-      }
+          )
+        }
+      </KeyboardAwareScrollView>
     </ActionSheet >
 
 
   );
 };
+
+const styles = StyleSheet.create({
+  dropShadow: {
+    shadowColor: 'rgba(0,0,0,0.25)',
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.15,
+    shadowRadius: 2,
+    alignSelf: 'center',
+    width: 130,
+  },
+});
 
 export default CertSheet;

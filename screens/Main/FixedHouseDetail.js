@@ -208,19 +208,19 @@ const OwnedHouseDetail = props => {
     if (houseFixType === 'A') {
       await infoFixHouse();
       await updateHouseDetailName('');
-    } else if(houseFixType === 'B') {
+    } else if (houseFixType === 'B') {
       await infoFixHouse();
       await updateAddress(houseFixType);
-    } else if(houseFixType === 'C') {
+    } else if (houseFixType === 'C') {
       await infoFixHouse();
       await updateAddress(houseFixType);
-    } else if(houseFixType === 'D') {
+    } else if (houseFixType === 'D') {
       await infoFixHouse();
       await updateBuyPrice();
-    } else if(houseFixType === 'E') {
+    } else if (houseFixType === 'E') {
       await infoFixHouse();
       await updateAddress(houseFixType);
-      await updateBuyDate(); 
+      await updateBuyDate();
       await updateBuyPrice();
     }
 
@@ -565,15 +565,15 @@ const OwnedHouseDetail = props => {
         },
       });
       console.log('DongHo', DongHo);
-      if(houseFixType === 'B'){
+      if (houseFixType === 'B') {
         await updateHouseDetailName2(DongHo);
-      } else if(houseFixType === 'C' || houseFixType === 'E'){
+      } else if (houseFixType === 'C' || houseFixType === 'E') {
         await updateHouseDetailName(DongHo);
-      } 
+      }
     }
   };
 
-  
+
 
 
   const updateHouseDetailName = async (DongHo) => {
@@ -828,7 +828,7 @@ const OwnedHouseDetail = props => {
 
           }}>
           <Text
-            
+
             style={{
               fontFamily: 'Pretendard-Regular',
               fontSize: 13,
@@ -940,7 +940,7 @@ const OwnedHouseDetail = props => {
     }
 
     if (ownHouseList?.find(item => item.houseId === data?.houseId)) {
-      dispatch(editOwnHouseList({ ...item,  houseName: data?.houseName, detailAdr: data?.detailAdr, houseType: data?.houseType, isMoveInRight: data?.isMoveInRight }));
+      dispatch(editOwnHouseList({ ...item, houseName: data?.houseName, detailAdr: data?.detailAdr, houseType: data?.houseType, isMoveInRight: data?.isMoveInRight }));
     }
     navigation.goBack();
     if (!props.route.params?.prevSheet) return true;
@@ -974,6 +974,8 @@ const OwnedHouseDetail = props => {
   return (
     <Container>
       <KeyboardAwareScrollView
+        keyboardShouldPersistTaps='always'
+        enableAutomaticScroll={false}
         contentContainerStyle={{
           paddingBottom: 20,
         }}>
@@ -982,7 +984,7 @@ const OwnedHouseDetail = props => {
             <HoustInfoSection>
               <View style={{ width: 'auto', flexDirection: 'row' }}>
                 <HoustInfoBadge
-                  
+
                   style={{
                     backgroundColor: HOUSE_TYPE.find(
                       el => el.id === data?.houseType,
@@ -991,7 +993,7 @@ const OwnedHouseDetail = props => {
                   <HoustInfoBadgeText >
                     {HOUSE_TYPE.find(el => el.id === data?.houseType)?.name}
                   </HoustInfoBadgeText>
-                  {(data?.houseType !== '3' && data?.isMoveInRight === true) && <HoustInfoBadgeText  style={{ fontSize: 8 }}>
+                  {(data?.houseType !== '3' && data?.isMoveInRight === true) && <HoustInfoBadgeText style={{ fontSize: 8 }}>
                     {'(입주권)'}
                   </HoustInfoBadgeText>}
                 </HoustInfoBadge>
@@ -1007,7 +1009,7 @@ const OwnedHouseDetail = props => {
                 </HoustInfoBadge>*/}
               </View>
               <HoustInfoTitle >{data?.houseName}</HoustInfoTitle>
-              <HoustInfoText  ellipsizeMode='tail' numberOfLines={1} style={{ flex: 1, textAlign: 'left' }}>{data?.detailAdr}</HoustInfoText>
+              <HoustInfoText ellipsizeMode='tail' numberOfLines={1} style={{ flex: 1, textAlign: 'left' }}>{data?.detailAdr}</HoustInfoText>
             </HoustInfoSection>
             <MapContainer>
               <NaverMapView
@@ -1098,7 +1100,7 @@ const OwnedHouseDetail = props => {
             </InfoContentItem>
             <InfoContentItem>
               <NecessaryInfoBadge
-                
+
                 style={{
                   backgroundColor: HOUSE_TYPE.find(
                     color => color.id === '8',
@@ -1109,7 +1111,7 @@ const OwnedHouseDetail = props => {
                 </NecessaryInfoBadgeText>
               </NecessaryInfoBadge>
               <InfoContentLabel >주소      </InfoContentLabel>
-              <InfoContentText  ellipsizeMode='tail' numberOfLines={1} style={{ flex: 1, textAlign: 'right' }}>{data?.roadAddr}</InfoContentText>
+              <InfoContentText ellipsizeMode='tail' numberOfLines={1} style={{ flex: 1, textAlign: 'right' }}>{data?.roadAddr}</InfoContentText>
               <TouchableOpacity activeOpacity={0.6}
                 hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
                 onPress={() => {
@@ -1120,7 +1122,7 @@ const OwnedHouseDetail = props => {
             </InfoContentItem>
             <InfoContentItem>
               <NecessaryInfoBadge
-                
+
                 style={{
                   backgroundColor: HOUSE_TYPE.find(
                     color => color.id === '8',
@@ -1131,7 +1133,7 @@ const OwnedHouseDetail = props => {
                 </NecessaryInfoBadgeText>
               </NecessaryInfoBadge>
               <InfoContentLabel >상세주소</InfoContentLabel>
-              <InfoContentText  ellipsizeMode='tail' numberOfLines={1} style={{ flex: 1, textAlign: 'right' }}>{data?.detailAdr}</InfoContentText>
+              <InfoContentText ellipsizeMode='tail' numberOfLines={1} style={{ flex: 1, textAlign: 'right' }}>{data?.detailAdr}</InfoContentText>
               <TouchableOpacity activeOpacity={0.6}
                 hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
                 onPress={() => {
@@ -1165,7 +1167,7 @@ const OwnedHouseDetail = props => {
 
             <InfoContentItem>
               {(prevSheet === 'own2') && <NecessaryInfoBadge
-                
+
                 style={{
                   backgroundColor: HOUSE_TYPE.find(
                     color => color.id === '8',
@@ -1176,7 +1178,7 @@ const OwnedHouseDetail = props => {
                 </NecessaryInfoBadgeText>
               </NecessaryInfoBadge>}
               <InfoContentLabel >취득계약일자</InfoContentLabel>
-              <InfoContentText  style={{ flex: 1, textAlign: 'right' }}>{data?.contractDate ? dayjs(data?.contractDate).format(
+              <InfoContentText style={{ flex: 1, textAlign: 'right' }}>{data?.contractDate ? dayjs(data?.contractDate).format(
                 'YYYY년 MM월 DD일',
               ) : ''}</InfoContentText>
               <TouchableOpacity activeOpacity={0.6}
@@ -1221,7 +1223,7 @@ const OwnedHouseDetail = props => {
 
             <InfoContentItem>
               {(prevSheet === 'own2') && <NecessaryInfoBadge
-                
+
                 style={{
                   backgroundColor: HOUSE_TYPE.find(
                     color => color.id === '8',
@@ -1232,7 +1234,7 @@ const OwnedHouseDetail = props => {
                 </NecessaryInfoBadgeText>
               </NecessaryInfoBadge>}
               <InfoContentLabel >취득일자</InfoContentLabel>
-              <InfoContentText  style={{ flex: 1, textAlign: 'right' }}>{data?.buyDate ? dayjs(data?.buyDate).format(
+              <InfoContentText style={{ flex: 1, textAlign: 'right' }}>{data?.buyDate ? dayjs(data?.buyDate).format(
                 'YYYY년 MM월 DD일',
               ) : ''}</InfoContentText>
               <TouchableOpacity activeOpacity={0.6}
@@ -1245,7 +1247,7 @@ const OwnedHouseDetail = props => {
             </InfoContentItem>
             <InfoContentItem>
               {(prevSheet === 'own2') && <NecessaryInfoBadge
-                
+
                 style={{
                   backgroundColor: HOUSE_TYPE.find(
                     color => color.id === '8',
@@ -1255,7 +1257,7 @@ const OwnedHouseDetail = props => {
                   {HOUSE_TYPE.find(color => color.id === '8').name}
                 </NecessaryInfoBadgeText>
               </NecessaryInfoBadge>}
-              <InfoContentLabel  style={{ marginRight: 5 }}>취득금액</InfoContentLabel>
+              <InfoContentLabel style={{ marginRight: 5 }}>취득금액</InfoContentLabel>
               {/* <TouchableOpacity
                 activeOpacity={0.8}
                 hitSlop={{ top: 20, bottom: 20, left: 20, right: 20 }}>
@@ -1381,7 +1383,7 @@ const OwnedHouseDetail = props => {
                 <InfoContentText >
                   {Number(data?.ownerCnt) > 1 && (
                     <Text
-                      
+
                       style={{
                         color: '#B5283B',
                       }}>

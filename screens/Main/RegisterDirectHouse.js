@@ -485,6 +485,8 @@ const RegisterDirectHouse = props => {
   return (
     <Container>
       <KeyboardAwareScrollView
+        keyboardShouldPersistTaps='always'
+        enableAutomaticScroll={false}
         contentContainerStyle={{
           paddingBottom: 60,
         }}>
@@ -506,6 +508,7 @@ const RegisterDirectHouse = props => {
                 등록하실 주택이 아파트인지, 그 외 주택 형태인지 선택해주세요.
               </DescText>
               <ScrollView
+                keyboardShouldPersistTaps='always'
                 horizontal
                 showsHorizontalScrollIndicator={false}
                 contentContainerStyle={{
@@ -513,7 +516,7 @@ const RegisterDirectHouse = props => {
                 }}>
                 {HOUSE_TYPE.map((item, index) => (
                   <SelectButton
-                    
+
                     key={item.id}
                     active={selectedHouseType === item.id}
                     onPress={() => {
@@ -535,7 +538,7 @@ const RegisterDirectHouse = props => {
               </DescText>
               <InputContainer width={width}>
                 <TextInput
-                  
+
                   ref={addressInputRef}
                   placeholder="주소를 검색해주세요"
                   placeholderTextColor={'#A3A5A8'}
@@ -631,7 +634,7 @@ const RegisterDirectHouse = props => {
                   marginTop: 10,
                 }}>
                 <TextInput
-                  
+
                   ref={addressDetailInputRef}
                   placeholderTextColor={'#A3A5A8'}
                   placeholder="상세주소"
@@ -699,7 +702,7 @@ const RegisterDirectHouse = props => {
               width={width}
               onPress={registerDirectHouse}>
               <ButtonText
-                
+
                 disabled={!selectedHouseType || !directRegister.address || !directRegister.addressDetail}
                 active={selectedHouseType && directRegister.address && directRegister.addressDetail}>
                 등록하기

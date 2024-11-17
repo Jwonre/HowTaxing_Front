@@ -8,6 +8,7 @@ import StartPage from '../screens/Auth/StartPage';
 import Login from '../screens/Auth/Login';
 import Login_ID from '../screens/Auth/Login_ID';
 import AddMembership from '../screens/Auth/AddMembership';
+import AddMembershipFinish from '../screens/Auth/AddMembershipFinish';
 import Home from '../screens/Main/Home';
 import LoginWebview from '../screens/Auth/LoginWebview';
 
@@ -82,10 +83,13 @@ import Cert3 from '../screens/Main/Terms/Cert3';
 import InfoCert from '../screens/Main/Terms/InfoCert';
 import Privacy2 from '../screens/Main/Terms/Privacy2';
 import Privacy3 from '../screens/Main/Terms/Privacy3';
+import OwnHousePrivacy from '../screens/Main/Terms/OwnHousePrivacy';
+import CertificationPrivacy from '../screens/Main/Terms/CertificationPrivacy';
 import InfoPrivacy from '../screens/Main/Terms/InfoPrivacy';
 import Location2 from '../screens/Main/Terms/Location2';
 import InfoLocation from '../screens/Main/Terms/InfoLocation';
 import Copyright3 from '../screens/Main/Terms/Copyright3';
+import Marketing2 from '../screens/Main/Terms/Marketing2';
 import Gov24 from '../screens/Main/Terms/Gov24';
 import HouseDetail from '../screens/Main/HouseDetail';
 import SearchHouseSheet2 from '../components/bottomSheets/SearchHouseSheet2';
@@ -284,6 +288,8 @@ const AppNavigator = () => {
               />
               <Stack.Screen name="GainsTaxChat" component={GainsTaxChat} />
               <Stack.Screen name="HouseDetail" component={HouseDetail} />
+              <Stack.Screen name="OwnHousePrivacy" component={OwnHousePrivacy} />
+              <Stack.Screen name="CertificationPrivacy" component={CertificationPrivacy} />
               <Stack.Group screenOptions={{ presentation: 'modal' }}>
                 <Stack.Screen name="Cert" component={Cert} />
                 <Stack.Screen name="Privacy" component={Privacy} />
@@ -314,11 +320,13 @@ const AppNavigator = () => {
               <Stack.Screen name="Login" component={Login} />
               <Stack.Screen name="Login_ID" component={Login_ID} />
               <Stack.Screen name="AddMembership" component={AddMembership} />
+              <Stack.Screen name="AddMembershipFinish" component={AddMembershipFinish} />
               <Stack.Screen name="CheckTerms" component={CheckTerms} />
               <Stack.Group screenOptions={{ presentation: 'modal' }}>
                 <Stack.Screen name="Cert2" component={Cert2} />
                 <Stack.Screen name="Privacy2" component={Privacy2} />
                 <Stack.Screen name="Location2" component={Location2} />
+                <Stack.Screen name="Marketing2" component={Marketing2} />
               </Stack.Group>
               <Stack.Screen
                 name="NetworkAlert"

@@ -384,7 +384,7 @@ const FixedHouseList = props => {
         <SubTitle3>만약 현재 보유하고 있지 않은 주택이 있다면, 삭제를 해주세요.</SubTitle3>
       </IntroSection2>
 
-        <InfoContentSection overScrollMode="never" style={{ width: width, height: height - 370 }}>
+        <InfoContentSection keyboardShouldPersistTaps='always' overScrollMode="never" style={{ width: width, height: height - 370 }}>
           {fixHouseFinishAndWait && fixHouseList?.map((item, index) => (
             <HoustInfoSection
               style={{

@@ -22,10 +22,9 @@ import VillaIcon from '../../assets/icons/house/villa.svg';
 
 
 const SheetContainer = styled.View`
-  flex: 1;
   background-color: #fff;
   width: ${props => props.width - 40}px;
-  height: auto;
+  height: 100%;
 `;
 
 const ModalTitle = styled.Text`
@@ -228,6 +227,7 @@ const ChooseHouseTypeAlert = props => {
             <View>
               <ScrollView
                 horizontal
+                keyboardShouldPersistTaps='always'
                 showsHorizontalScrollIndicator={false}
                 contentContainerStyle={{
                   flexGrow: 1,

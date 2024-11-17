@@ -79,7 +79,7 @@ const InfoCert = props => {
       </ProgressSection>
       <View style={{ flex: 1 }}>
         <WebView
-          source={{ uri: 'https://app.how-taxing.com/terms-of-service' }}
+          source={{ uri: 'https://deep-hortensia-87c.notion.site/01-21b491ee8865420483acec873c30ddd9?pvs=4' }}
           javaScriptEnabled={true}
           domStorageEnabled={true}
           startInLoadingState={false}

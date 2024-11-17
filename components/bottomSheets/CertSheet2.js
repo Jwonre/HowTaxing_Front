@@ -1,8 +1,9 @@
 // 본인인증 시트
 
-import { View, useWindowDimensions, Pressable, BackHandler, StyleSheet } from 'react-native';
+import { View, TouchableOpacity, useWindowDimensions, Pressable, BackHandler, StyleSheet } from 'react-native';
 import React, { useEffect, useRef, useState } from 'react';
 import ActionSheet, { SheetManager } from 'react-native-actions-sheet';
+import Modal from 'react-native-modal';
 import styled from 'styled-components';
 import getFontSize from '../../utils/getFontSize';
 import CloseIcon from '../../assets/icons/close_button.svg';
@@ -12,6 +13,7 @@ import { useNavigation } from '@react-navigation/native';
 import MaskInput from 'react-native-mask-input';
 import axios from 'axios';
 import { useDispatch, useSelector } from 'react-redux';
+import InfoCircleIcon from '../../assets/icons/info_circle.svg';
 import SelectDropdown from 'react-native-select-dropdown';
 import { setOwnHouseList } from '../../redux/ownHouseListSlice';
 import { acquisitionTax, gainTax } from '../../data/chatData';
@@ -27,10 +29,9 @@ import dayjs from 'dayjs';
 import Config from 'react-native-config'
 
 const SheetContainer = styled.View`
-  flex: 1;
   background-color: #fff;
   width: ${props => props.width - 40}px;
-  height: auto;
+  height: 100%;
 `;
 
 const ModalTitle = styled.Text`
@@ -56,6 +57,17 @@ const ModalDescription = styled.Text`
   line-height: 26px;
   margin-top: 10px;
   text-align: center;
+`;
+
+
+const ModalContentSection = styled.View`
+  width: 100%;
+  height: 105%;
+  background-color: #fff;
+  align-items: center;
+  justify-content: center;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
 `;
 
 const ListItem = styled.View`
@@ -276,8 +288,36 @@ const SelectItemText = styled.Text`
   line-height: 20px;
 `;
 
+const FirstItem = styled.View`
+  flex-direction: row; 
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 20px;
+`;
 
-const CertSheet = props => {
+const FirstItemTitle = styled.Text`
+  font-size: 13px;
+  font-family: Pretendard-Bold;
+  color: #1b1c1f;
+  line-height: 18px;
+`;
+
+
+const FirstCheckCircle = styled.TouchableOpacity.attrs(props => ({
+  activeOpacity: 0.8,
+}))`
+    width: 20px;
+    height: 20px;
+    border-radius: 5px;  
+    background-color: #fff;
+    border: 2px solid #BAC7D5;  
+    align-items: center;
+    justify-content: center;
+    margin-right: 10px;
+`;
+
+
+const CertSheet2 = props => {
   LogBox.ignoreLogs(['to contain units']);
   const actionSheetRef = useRef(null);
   const data = props.payload.data;
@@ -415,6 +455,7 @@ const CertSheet = props => {
   const [residentNumber, setResidentNumber] = useState('');
   const [maskedResidentNumber, setMaskedResidentNumber] = useState('');
   const chatDataList = useSelector(state => state.chatDataList.value);
+  const [CheckPrivacy, setCheckPrivacy] = useState(true);
   const dispatch = useDispatch();
 
   //https://www.npmjs.com/package/react-native-mask-input
@@ -434,6 +475,31 @@ const CertSheet = props => {
     [/\d/],
     [/\d/],
   ];
+
+
+  const toggleModal = () => {
+    if (CheckPrivacy) {
+      setCheckPrivacy(false);
+      if (props.payload.data === 'KB') {
+        setCurrentPageIndex(1);
+      } else if (props.payload.data === 'naver') {
+        setCurrentPageIndex(2);
+      } else if (props.payload.data === 'toss') {
+        setCurrentPageIndex(3);
+      } else if (props.payload.data === 'KAKAO') {
+        setCurrentPageIndex(4);
+      } else if (props.payload.data === 'PASS') {
+        setCurrentPageIndex(5);
+      } else if (props.payload.data === 'SAMSUNG') {
+        setCurrentPageIndex(6);
+      } else if (props.payload.data === 'PAYCO') {
+        setCurrentPageIndex(7);
+      }
+    } else {
+      setCheckPrivacy(true);
+      setCurrentPageIndex(0);
+    }
+  };
 
 
   const hypenHouseAPI = async (url, data, headers) => {
@@ -505,7 +571,7 @@ const CertSheet = props => {
     //////console.log('@@@@@@@@@headers:', headers);
 
     const data = {
-      certOrg: certType === 'KB' ? 'kb' : certType === 'naver' ? 'naver' : certType === 'toss' ? 'toss' : certType === 'pass' ? 'pass' : certType === 'payco' ? 'payco' : certType === 'samsung' ? 'samsung' : 'kakao',
+      certOrg: props.payload.data === 'KB' ? 'kb' : props.payload.data === 'naver' ? 'naver' : props.payload.data === 'toss' ? 'toss' : props.payload.data === 'pass' ? 'pass' : props.payload.data === 'payco' ? 'payco' : props.payload.data === 'samsung' ? 'samsung' : 'kakao',
       userNm: name,
       mobileNo: phone,
       rlno: residentNumber,
@@ -605,8 +671,8 @@ const CertSheet = props => {
                   questionId: additionalQuestion.detaildata?.nextQuestionId,
                   select: gainTax[chatIndex].select.map(item => ({
                     ...item,
-                    name: item.id === 'additionalQuestionY' ?  additionalQuestion?.detaildata?.answerSelectList[0]?.answerContent : additionalQuestion?.detaildata?.answerSelectList[1]?.answerContent,
-                    answer: item.id === 'additionalQuestionY' ?  additionalQuestion?.detaildata?.answerSelectList[0]?.answerValue : additionalQuestion?.detaildata?.answerSelectList[1]?.answerValue,
+                    name: item.id === 'additionalQuestionY' ? additionalQuestion?.detaildata?.answerSelectList[0]?.answerContent : additionalQuestion?.detaildata?.answerSelectList[1]?.answerContent,
+                    answer: item.id === 'additionalQuestionY' ? additionalQuestion?.detaildata?.answerSelectList[0]?.answerValue : additionalQuestion?.detaildata?.answerSelectList[1]?.answerValue,
                     select: ['ExpenseInquiry', 'ExpenseAnswer'],
                   }))
                 };
@@ -725,238 +791,65 @@ const CertSheet = props => {
         height: currentPageIndex === 0 ? 560 : 630,
         width: width - 40,
       }}>
-      <KeyboardAwareScrollView showsVerticalScrollIndicator={false}>
+      <KeyboardAwareScrollView enableAutomaticScroll showsVerticalScrollIndicator={false}>
         {currentPageIndex === 0 && (
-          <SheetContainer width={width}>
-            <ModalInputSection>
-              <ModalTitle>본인인증을 진행해주세요</ModalTitle>
-              <ModalDescription>
-                전자증명서 이용을 위해{'\n'}서비스 약관에 동의해주세요
-              </ModalDescription>
-              <ListItem style={{ marginTop: 20 }}>
-                <CheckCircle
-                  onPress={() => {
-                    if (agreeCert && agreePrivacy && agreeCopyright && agreeGov24) {
-                      dispatch(
-                        setCert({
-                          certType,
-                          agreeCert: false,
-                          agreePrivacy: false,
-                          agreeCopyright: false,
-                          agreeGov24: false
-                        }),
-                      );
-                    } else {
-                      dispatch(
-                        setCert({
-                          certType,
-                          agreeCert: true,
-                          agreePrivacy: true,
-                          agreeCopyright: true,
-                          agreeGov24: true
-                        }),
-                      );
-                    }
-                  }}>
-                  {agreeCert && agreePrivacy && agreeCopyright && agreeGov24 && <CheckOnIcon />}
-                </CheckCircle>
-                <ListItemTitle
+          <Modal isVisible={CheckPrivacy} backdropColor="#000" // 원하는 색으로 설정
+            backdropOpacity={0}>
+            <SheetContainer style={{ borderRadius: 8 }}>
+              <ModalContentSection>
+                <InfoCircleIcon
                   style={{
-                    fontSize: 15,
-                    fontFamily: 'Pretendard-Medium',
-                  }}>
-                  전체 동의하기
-                </ListItemTitle>
-              </ListItem>
-              <View
-                style={{
-                  width: '100%',
-                  height: 1,
-                  backgroundColor: '#E8EAED',
-                  marginTop: 20,
-                }}
-              />
-              <ListItem style={{ marginTop: 20 }}>
-                <CheckCircle
+                    color: '#FF7401',
+                  }}
+                />
+                <ModalTitle >본인인증을 진행해주세요.</ModalTitle>
+
+                <FirstItem style={{ marginTop: 10, marginBottom: 10 }}>
+                  <View style={{ flexDirection: 'row' }}>
+                    <TouchableOpacity
+                      onPress={async () => {
+                        await actionSheetRef.current?.hide();
+                        navigation.navigate('CertificationPrivacy', {
+                          prevChat: 'GainsTaxChat',
+                          prevSheet: 'cert2',
+                          cert: props.payload.data,
+                          isGainsTax: props.payload.isGainsTax,
+                          index: props.payload.index,
+                          navigation: navigation
+                        });
+                      }}>
+                      <FirstItemTitle style={{ color: '#2F87FF', textDecorationLine: 'underline' }}>개인정보 수집 및 이용</FirstItemTitle>
+                    </TouchableOpacity>
+                    <FirstItemTitle>에 대하여 동의하시나요?</FirstItemTitle>
+                  </View>
+                  <FirstCheckCircle
+                    onPress={() => {
+                      dispatch(
+                        setCert({
+                          agreePrivacy: !agreePrivacy,
+                        }),
+                      );
+                    }}>
+                    {agreePrivacy && <CheckOnIcon />}
+                  </FirstCheckCircle>
+                </FirstItem>
+              </ModalContentSection>
+              <ButtonSection>
+                <Button
                   onPress={() => {
-                    dispatch(
-                      setCert({
-                        certType,
-                        agreePrivacy,
-                        agreeCopyright,
-                        agreeGov24,
-                        agreeCert: !agreeCert,
-                      }),
-                    );
-                  }}>
-                  {agreeCert && <CheckOnIcon />}
-                </CheckCircle>
-                <ListItemTitle>
-                  [필수] 전자증명서 서비스 이용 약관
-                </ListItemTitle>
-                <ListItemButton
-                  onPress={() => {
-                    actionSheetRef.current?.hide();
-                    navigation.navigate('Cert3', {
-                      cert: certType,
-                      isGainsTax: props.payload.isGainsTax,
-                      index: props.payload.index,
-                      navigation: props.payload?.navigation
-                    });
-                  }}>
-                  <ListItemButtonText>보기</ListItemButtonText>
-                </ListItemButton>
-              </ListItem>
-              <ListItem style={{ marginTop: 20 }}>
-                <CheckCircle
-                  onPress={() => {
-                    dispatch(
-                      setCert({
-                        certType,
-                        agreeCert,
-                        agreeCopyright,
-                        agreeGov24,
-                        agreePrivacy: !agreePrivacy,
-                      }),
-                    );
-                  }}>
-                  {agreePrivacy && <CheckOnIcon />}
-                </CheckCircle>
-                <ListItemTitle>[필수] 정부24 개인정보처리방침</ListItemTitle>
-                <ListItemButton
-                  onPress={() => {
-                    actionSheetRef.current?.hide();
-                    navigation.navigate('Privacy3', {
-                      cert: certType,
-                      isGainsTax: props.payload.isGainsTax,
-                      index: props.payload.index,
-                      navigation: props.payload?.navigation
-                    });
-                  }}>
-                  <ListItemButtonText>보기</ListItemButtonText>
-                </ListItemButton>
-              </ListItem>
-              <ListItem style={{ marginTop: 20 }}>
-                <CheckCircle
-                  onPress={() => {
-                    dispatch(
-                      setCert({
-                        certType,
-                        agreeCert,
-                        agreePrivacy,
-                        agreeCopyright: !agreeCopyright,
-                        agreeGov24,
-                      }),
-                    );
-                  }}>
-                  {agreeCopyright && <CheckOnIcon />}
-                </CheckCircle>
-                <ListItemTitle>
-                  [필수] 정부24 저작권보호정책
-                </ListItemTitle>
-                <ListItemButton
-                  onPress={() => {
-                    actionSheetRef.current?.hide();
-                    navigation.navigate('Copyright3', {
-                      cert: certType,
-                      isGainsTax: props.payload.isGainsTax,
-                      index: props.payload.index,
-                      navigation: props.payload?.navigation
-                    });
-                  }}>
-                  <ListItemButtonText>보기</ListItemButtonText>
-                </ListItemButton>
-              </ListItem>
-              <ListItem style={{ marginTop: 20 }}>
-                <CheckCircle
-                  onPress={() => {
-                    dispatch(
-                      setCert({
-                        certType,
-                        agreeCert,
-                        agreePrivacy,
-                        agreeCopyright,
-                        agreeGov24: !agreeGov24,
-                      }),
-                    );
-                  }}>
-                  {agreeGov24 && <CheckOnIcon />}
-                </CheckCircle>
-                <ListItemTitle>
-                  [필수] 정부24 이용약관
-                </ListItemTitle>
-                <ListItemButton
-                  onPress={() => {
-                    actionSheetRef.current?.hide();
-                    //   ////console.log('certType', certType);
-                    navigation.navigate('Gov24', {
-                      cert: certType,
-                      isGainsTax: props.payload.isGainsTax,
-                      index: props.payload.index
-                    });
-                  }}>
-                  <ListItemButtonText>보기</ListItemButtonText>
-                </ListItemButton>
-              </ListItem>
-            </ModalInputSection>
-            <ButtonSection
-              style={{
-                justifyContent: 'center',
-              }}>
-              <DropShadow
-                style={{
-                  shadowColor: 'rgba(0,0,0,0.25)',
-                  shadowOffset: {
-                    width: 0,
-                    height: 4,
-                  },
-                  shadowOpacity: 0.25,
-                  shadowRadius: 4,
-                  alignSelf: 'center',
-                }}>
-                <ModalButton
-                  disabled={!(agreeCert && agreePrivacy && agreeCopyright && agreeGov24)}
-                  onPress={() => {
-                    //////console.log('certType', certType);
-                    if (certType === 'KB') {
-                      setCurrentPageIndex(1);
-                    } else if (certType === 'naver') {
-                      setCurrentPageIndex(2);
-                    } else if (certType === 'toss') {
-                      setCurrentPageIndex(3);
-                    } else if (certType === 'KAKAO') {
-                      setCurrentPageIndex(4);
-                    } else if (certType === 'PASS') {
-                      setCurrentPageIndex(5);
-                    } else if (certType === 'SAMSUNG') {
-                      setCurrentPageIndex(6);
-                    } else if (certType === 'PAYCO') {
-                      setCurrentPageIndex(7);
-                    }
+                    toggleModal();
                   }}
                   style={{
-                    width: width - 80,
-                    alignSelf: 'center',
-                    marginTop: 20,
-                    marginBottom: 50,
-                    backgroundColor:
-                      agreeCert && agreePrivacy && agreeCopyright && agreeGov24
-                        ? '#2F87FF'
-                        : '#E8EAED',
+                    width: 130,
+                    backgroundColor: '#fff',
+                    borderColor: '#E8EAED',
+                    marginRight: 10,
                   }}>
-                  <ModalButtonText
-                    style={{
-                      color:
-                        agreeCert && agreePrivacy && agreeCopyright && agreeGov24
-                          ? '#fff'
-                          : '#717274',
-                    }}>
-                    동의 후 인증하기
-                  </ModalButtonText>
-                </ModalButton>
-              </DropShadow>
-            </ButtonSection>
-          </SheetContainer>
+                  <ButtonText style={{ color: '#717274' }}>동의 후 인증하기</ButtonText>
+                </Button>
+              </ButtonSection>
+            </SheetContainer>
+          </Modal >
         )}
         {currentPageIndex === 1 && (
           <SheetContainer width={width}>
@@ -1112,7 +1005,7 @@ const CertSheet = props => {
                 }}>
                 <Button
                   onPress={() => {
-                    setCurrentPageIndex(0);
+                    toggleModal();
                   }}
                   style={{
                     backgroundColor: '#fff',
@@ -1296,7 +1189,7 @@ const CertSheet = props => {
                 }}>
                 <Button
                   onPress={() => {
-                    setCurrentPageIndex(0);
+                    toggleModal();
                   }}
                   style={{
                     backgroundColor: '#fff',
@@ -1475,7 +1368,7 @@ const CertSheet = props => {
                 }}>
                 <Button
                   onPress={() => {
-                    setCurrentPageIndex(0);
+                    toggleModal();
                   }}
                   style={{
                     backgroundColor: '#fff',
@@ -1662,7 +1555,7 @@ const CertSheet = props => {
                 }}>
                 <Button
                   onPress={() => {
-                    setCurrentPageIndex(0);
+                    toggleModal();
                   }}
                   style={{
                     backgroundColor: '#fff',
@@ -1849,7 +1742,7 @@ const CertSheet = props => {
                 }}>
                 <Button
                   onPress={() => {
-                    setCurrentPageIndex(0);
+                    toggleModal();
                   }}
                   style={{
                     backgroundColor: '#fff',
@@ -2036,7 +1929,7 @@ const CertSheet = props => {
                 }}>
                 <Button
                   onPress={() => {
-                    setCurrentPageIndex(0);
+                    toggleModal();
                   }}
                   style={{
                     backgroundColor: '#fff',
@@ -2223,7 +2116,7 @@ const CertSheet = props => {
                 }}>
                 <Button
                   onPress={() => {
-                    setCurrentPageIndex(0);
+                    toggleModal();
                   }}
                   style={{
                     backgroundColor: '#fff',
@@ -2301,16 +2194,17 @@ const styles = StyleSheet.create({
     letterSpacing: -0.3,
     lineHeight: 16,
   },
-  dropshadow: {
-    width: '48%',
-    shadowColor: '#000',
+  dropShadow: {
+    shadowColor: 'rgba(0,0,0,0.25)',
     shadowOffset: {
       width: 0,
       height: 4,
     },
     shadowOpacity: 0.15,
     shadowRadius: 2,
+    alignSelf: 'center',
+    width: 130,
   },
 });
 
-export default CertSheet;
+export default CertSheet2;
