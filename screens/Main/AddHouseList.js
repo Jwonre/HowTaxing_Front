@@ -219,14 +219,14 @@ const AddHouseList = props => {
     }
   }, [AddHouseList])
 
-  useEffect(() => {
+ /* useEffect(() => {
     _scrollViewRef.current?.scrollTo({
       x: (width) * currentPageIndex,
       y: 0,
       animated: true,
     });
   }, [currentPageIndex]);
-
+*/
   const handleBackPress = () => {
     if (currentPageIndex === 0) {
 
@@ -320,8 +320,8 @@ const AddHouseList = props => {
               ...returndata,
             ]));
 
-           //console.log('[hypenHouseAPI] home response.data : ', response.data.data);
-            //console.log('[hypenHouseAPI] ownhouse : ', ownHouseList);
+           console.log('[hypenHouseAPI] home response.data : ', response.data.data);
+            console.log('[hypenHouseAPI] ownhouse : ', ownHouseList);
           }
         })
         .catch(async error => {
@@ -392,7 +392,7 @@ const AddHouseList = props => {
       showsHorizontalScrollIndicator={false}
       scrollEnabled={false}
       scrollEventThrottle={16}>
-      <Container style={{ width: width }}>
+      {currentPageIndex === 0 && <Container style={{ width: width }}>
         <ProgressSection>
         </ProgressSection>
         <><IntroSection2 style={{ width: width, marginBottom: 20 }}>
@@ -512,9 +512,9 @@ const AddHouseList = props => {
               </Button>
             </DropShadow>
           </ButtonSection></>
-      </Container>
+      </Container>}
 
-      <Container style={{ width: width }}>
+      {currentPageIndex === 1 && <Container style={{ width: width }}>
         <ProgressSection>
         </ProgressSection>
         <><IntroSection2 style={{ width: width, marginBottom: 20 }}>
@@ -656,7 +656,7 @@ const AddHouseList = props => {
               </Button>
             </DropShadow>
           </ButtonSection></>
-      </Container>
+      </Container>}
 
     </ScrollView >
 

@@ -280,7 +280,6 @@ const ButtonSection = styled.View`
   align-items: center;
   flex-direction: row;
   justify-content: space-between;
-  padding: 10px;
 `;
 
 
@@ -1252,7 +1251,7 @@ const GainsTaxChat = () => {
                   }
                 }}
                 style={{
-                  width: (width - 60) / 2,
+                  width: (width - 50) / 2,
                   alignSelf: 'center',
                   marginTop: 10,
                   marginRight: 10,
@@ -1278,7 +1277,7 @@ const GainsTaxChat = () => {
                   }
                 }}
                 style={{
-                  width: (width - 60) / 2,
+                  width: (width - 50) / 2,
                   alignSelf: 'center',
                   marginTop: 10,
                 }}>

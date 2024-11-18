@@ -55,10 +55,10 @@ const OwnHousePrivacy = props => {
   const dispatch = useDispatch();
   const { width } = useWindowDimensions();
   const webviewRef = useRef(null);
-  const { agreeCert, agreePrivacy, agreeLocation, agreeAge, agreeMarketing } = useSelector(
+  const { agreePrivacy } = useSelector(
     state => state.cert.value,
   );
-
+  console.log('OwnHousePrivacy  pㄴrops.route?.params?.selectedList', props.route?.params?.selectedList);
   const handleBackPress = () => {
     navigation.goBack();
     SheetManager.show(props.route?.params?.prevSheet === 'own2' ? 'own2' : 'own', {
@@ -69,6 +69,8 @@ const OwnHousePrivacy = props => {
         index: props.route?.params?.index,
         data: props.route?.params?.data,
         chungYackYn: props.route?.params?.chungYackYn,
+        selectedList: props.route?.params?.selectedList,
+
       },
     });
     return true;
@@ -98,6 +100,7 @@ const OwnHousePrivacy = props => {
                 index: props.route?.params?.index,
                 data: props.route?.params?.data,
                 chungYackYn: props.route?.params?.chungYackYn,
+                selectedList: props.route?.params?.selectedList,
               },
             });
           }}>
@@ -152,10 +155,6 @@ const OwnHousePrivacy = props => {
             onPress={() => {
               dispatch(
                 setCert({
-                  agreeAge,
-                  agreeLocation,
-                  agreeMarketing,
-                  agreeCert,
                   agreePrivacy: true,
                 }),
               );
@@ -168,6 +167,7 @@ const OwnHousePrivacy = props => {
                   index: props.route?.params?.index,
                   data: props.route?.params?.data,
                   chungYackYn: props.route?.params?.chungYackYn,
+                  selectedList: props.route?.params?.selectedList,
                 },
               });
             }

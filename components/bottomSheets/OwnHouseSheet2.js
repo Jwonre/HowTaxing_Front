@@ -277,7 +277,7 @@ const OwnHouseSheet2 = props => {
   const [hasNavigatedBack, setHasNavigatedBack] = useState(false);
   const hasNavigatedBackRef = useRef(hasNavigatedBack);
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [selectedList, setSelectedList] = useState([]);
+  const [selectedList, setSelectedList] = useState(props.payload?.selectedList ? props.payload?.selectedList : []);
   const ownHouseList = useSelector(state => state.ownHouseList.value);
   const chatDataList = useSelector(state => state.chatDataList.value);
   const houseInfo = useSelector(state => state.houseInfo.value);
@@ -286,6 +286,8 @@ const OwnHouseSheet2 = props => {
   const { agreePrivacy } = useSelector(
     state => state.cert.value,
   );
+  console.log('selectedList', selectedList);
+  console.log('props.route?.params?.selectedList', props.route?.params?.selectedList);
   useEffect(() => {
     console.log('agreePrivacy', agreePrivacy);
     if (ownHouseList.length > 0 && props?.payload?.isGainsTax === true) {
@@ -697,6 +699,7 @@ const OwnHouseSheet2 = props => {
                   await actionSheetRef.current?.hide();
                   navigation.navigate('OwnHousePrivacy', {
                     navigation: navigation,
+                    selectedList: selectedList,
                     prevChat: 'GainsTaxChat',
                     prevSheet: 'own2',
                     index: props.payload?.index,

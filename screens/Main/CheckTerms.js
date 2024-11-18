@@ -21,7 +21,7 @@ const Container = styled.View`
 `;
 
 const IntroSection = styled.View`
-  flex: 0.65;
+  flex: 0.8;
   width: 100%;
   padding: 25px;
   justify-content: flex-end;
@@ -78,7 +78,7 @@ const ListItem = styled.View`
   flex-direction: row; 
   justify-content: space-between;
   align-items: center;
-  padding: 0 20px;
+  padding: 0 25px;
 `;
 
 const ListItemTitle = styled.Text`
@@ -335,6 +335,15 @@ const CheckTerms = props => {
 
         <SubTitle >원활한 하우택싱 서비스 이용을 위해 약관에 동의해주세요.</SubTitle>
       </IntroSection>
+      <TouchableOpacity
+        style={{
+          width: '100%',
+          height: 1,
+          backgroundColor: '#E8EAED',
+          marginBottom: 20,
+        }}
+      />
+      
       <ListItem>
 
         <ListItemTitle
@@ -374,10 +383,10 @@ const CheckTerms = props => {
           width: '100%',
           height: 1,
           backgroundColor: '#E8EAED',
-          marginTop: 10,
+          marginTop: 20,
         }}
       />
-      <ListItem style={{ marginTop: 10 }}>
+      <ListItem style={{ marginTop: 20 }}>
         <ListItemTitle >
           [필수] 14세 이상입니다.
         </ListItemTitle>
@@ -396,7 +405,7 @@ const CheckTerms = props => {
         </CheckCircle>
       </ListItem>
 
-      <ListItem style={{ marginTop: 10 }}>
+      <ListItem style={{ marginTop: 20 }}>
         <View style={{ flexDirection: 'row' }}>
           <ListItemTitle>[필수] </ListItemTitle>
           <TouchableOpacity
@@ -422,7 +431,7 @@ const CheckTerms = props => {
         </CheckCircle>
       </ListItem>
 
-      <ListItem style={{ marginTop: 10 }}>
+      <ListItem style={{ marginTop: 20 }}>
         <View style={{ flexDirection: 'row' }}>
           <ListItemTitle>[필수] </ListItemTitle>
           <TouchableOpacity
@@ -475,7 +484,7 @@ const CheckTerms = props => {
         </ListItemButton>
       </ListItem>*/}
 
-      <ListItem style={{ marginTop: 10 }}>
+      <ListItem style={{ marginTop: 20 }}>
         <View style={{ flexDirection: 'row' }}>
           <ListItemTitle>[선택] </ListItemTitle>
           <TouchableOpacity

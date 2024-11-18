@@ -1,5 +1,5 @@
 
-import { View, TouchableOpacity, useWindowDimensions, Pressable, Keyboard, StyleSheet } from 'react-native';
+import { View, TouchableOpacity, useWindowDimensions, Pressable, Keyboard, StyleSheet, ScrollView } from 'react-native';
 import React, { useEffect, useRef, useState } from 'react';
 import ActionSheet, { SheetManager } from 'react-native-actions-sheet';
 import Modal from 'react-native-modal';
@@ -162,7 +162,7 @@ const ButtonSection = styled.View`
   flex-direction: row;
   justify-content: space-between;
   padding: 20px;
-  margin-top: 10px;
+  bottom: 0px;
 `;
 
 const ButtonShadow = styled(DropShadow)`
@@ -233,6 +233,7 @@ const CertSheet = props => {
   LogBox.ignoreLogs(['to contain units']);
   console.log('props', props);
   const actionSheetRef = useRef(null);
+  const scrollViewRef = useRef(null);
   const cert = props.payload?.data;
   const navigation = props.payload?.navigation;
   ////console.log('navigation', navigation);
@@ -243,7 +244,7 @@ const CertSheet = props => {
   const [isGainsTax, setIsGainsTax] = useState('');
   //const [certresult, setCertresult] = useState(false);
   const [keyboardHeight, setKeyboardHeight] = useState(0);
-  const { certType, agreeCert, agreePrivacy } = useSelector(
+  const { agreePrivacy } = useSelector(
     state => state.cert.value,
   );
   //console.log('props', props);
@@ -251,6 +252,7 @@ const CertSheet = props => {
   const hasNavigatedBackRef = useRef(hasNavigatedBack);
   const [isConnected, setIsConnected] = useState(true);
   const [CheckPrivacy, setCheckPrivacy] = useState(props?.payload?.checkPrivacy ? props?.payload?.checkPrivacy : true);
+
   const handleNetInfoChange = (state) => {
     return new Promise((resolve, reject) => {
       if (!state.isConnected && isConnected) {
@@ -303,14 +305,14 @@ const CertSheet = props => {
       'keyboardDidShow',
       (e) => {
         setKeyboardHeight(e.endCoordinates.height);
-        //console.log('scrollViewRef.current', scrollViewRef.current);
+        scrollViewRef.current?.scrollTo({ y: 100, animated: true });
       }
     );
 
     // 키보드가 사라질 때 높이를 초기화
     const keyboardDidHideListener = Keyboard.addListener(
       'keyboardDidHide',
-      () => { setKeyboardHeight(0); }
+      () => { setKeyboardHeight(0); scrollViewRef.current?.scrollTo({ y: 0, animated: true }); }
     );
 
     return () => {
@@ -318,6 +320,8 @@ const CertSheet = props => {
       keyboardDidHideListener.remove();
     };
   }, []);
+
+
 
   useEffect(() => {
 
@@ -336,6 +340,7 @@ const CertSheet = props => {
   const input1 = useRef(null);
   const input2 = useRef(null);
   const input3 = useRef(null);
+  console.log('height', height);
   console.log('keyboardHeight', keyboardHeight);
 
   const registerDirectHouse = async (list) => {
@@ -927,6 +932,7 @@ const CertSheet = props => {
                   <TouchableOpacity
                     onPress={async () => {
                       await actionSheetRef.current?.hide();
+                      console.log('props.payload?.data : ', props.payload?.data);
                       navigation.navigate('CertificationPrivacy', {
                         prevChat: 'GainsTaxChat',
                         prevSheet: 'cert',
@@ -976,10 +982,11 @@ const CertSheet = props => {
         </Modal >
       )
       }
-      <KeyboardAwareScrollView>
-        {
-          currentPageIndex === 1 && (
-            <SheetContainer width={width}>
+
+      {
+        currentPageIndex === 1 && (
+          <SheetContainer width={width} height={height - (keyboardHeight * 1.3)}>
+            <ScrollView keyboardShouldPersistTaps='always' ref={scrollViewRef}>
               <ModalInputSection>
                 <CertLogoImage
                   source={require('../../assets/images/certLogo/kb_logo.png')}
@@ -1080,13 +1087,16 @@ const CertSheet = props => {
                   </Button>
                 </ButtonShadow>
               </ButtonSection>
-            </SheetContainer>
-          )
-        }
-        {
-          currentPageIndex === 2 && (
+            </ScrollView>
+          </SheetContainer>
+        )
+      }
 
-            <SheetContainer width={width}>
+      {
+        currentPageIndex === 2 && (
+
+          <SheetContainer width={width} height={height - (keyboardHeight * 1.3)}>
+            <ScrollView keyboardShouldPersistTaps='always' ref={scrollViewRef}>
               <ModalInputSection>
                 <CertLogoImage
                   source={require('../../assets/images/certLogo/naver_logo.png')}
@@ -1187,13 +1197,15 @@ const CertSheet = props => {
                   </Button>
                 </ButtonShadow>
               </ButtonSection>
-            </SheetContainer>
+            </ScrollView>
+          </SheetContainer>
 
-          )
-        }
-        {
-          currentPageIndex === 3 && (
-            <SheetContainer width={width}>
+        )
+      }
+      {
+        currentPageIndex === 3 && (
+          <SheetContainer width={width} height={height - (keyboardHeight * 1.3)}>
+            <ScrollView keyboardShouldPersistTaps='always' ref={scrollViewRef}>
               <ModalInputSection>
                 <CertLogoImage
                   source={require('../../assets/images/certLogo/toss_logo.png')}
@@ -1291,10 +1303,11 @@ const CertSheet = props => {
                   </Button>
                 </ButtonShadow>
               </ButtonSection>
-            </SheetContainer>
-          )
-        }
-      </KeyboardAwareScrollView>
+            </ScrollView>
+          </SheetContainer>
+        )
+      }
+
     </ActionSheet >
 
 

@@ -1,6 +1,6 @@
 // 본인인증 시트
 
-import { View, TouchableOpacity, useWindowDimensions, Pressable, BackHandler, StyleSheet } from 'react-native';
+import { View, TouchableOpacity, useWindowDimensions, Pressable, BackHandler, StyleSheet, ScrollView } from 'react-native';
 import React, { useEffect, useRef, useState } from 'react';
 import ActionSheet, { SheetManager } from 'react-native-actions-sheet';
 import Modal from 'react-native-modal';
@@ -320,6 +320,7 @@ const FirstCheckCircle = styled.TouchableOpacity.attrs(props => ({
 const CertSheet2 = props => {
   LogBox.ignoreLogs(['to contain units']);
   const actionSheetRef = useRef(null);
+  const scrollViewRef = useRef(null);
   const data = props.payload.data;
   const navigation = props.payload?.navigation;
   const { width, height } = useWindowDimensions();
@@ -761,6 +762,29 @@ const CertSheet2 = props => {
     }
   };
 
+  useEffect(() => {
+    // 키보드가 보여질 때 높이를 설정
+    const keyboardDidShowListener = Keyboard.addListener(
+      'keyboardDidShow',
+      (e) => {
+        setKeyboardHeight(e.endCoordinates.height);
+        scrollViewRef.current?.scrollTo({ y: 50, animated: true });
+      }
+    );
+
+    // 키보드가 사라질 때 높이를 초기화
+    const keyboardDidHideListener = Keyboard.addListener(
+      'keyboardDidHide',
+      () => { setKeyboardHeight(0); scrollViewRef.current?.scrollTo({ y: 0, animated: true }); }
+    );
+
+    return () => {
+      keyboardDidShowListener.remove();
+      keyboardDidHideListener.remove();
+    };
+  }, []);
+
+
   return (
     <ActionSheet
       ref={actionSheetRef}
@@ -791,7 +815,6 @@ const CertSheet2 = props => {
         height: currentPageIndex === 0 ? 560 : 630,
         width: width - 40,
       }}>
-      <KeyboardAwareScrollView enableAutomaticScroll showsVerticalScrollIndicator={false}>
         {currentPageIndex === 0 && (
           <Modal isVisible={CheckPrivacy} backdropColor="#000" // 원하는 색으로 설정
             backdropOpacity={0}>
@@ -852,7 +875,8 @@ const CertSheet2 = props => {
           </Modal >
         )}
         {currentPageIndex === 1 && (
-          <SheetContainer width={width}>
+          <SheetContainer width={width} height={height - (keyboardHeight * 1.3)}>
+            <ScrollView keyboardShouldPersistTaps='always' ref={scrollViewRef}>
             <ModalInputSection>
               <CertLogoImage
                 source={require('../../assets/images/certLogo/kb_logo.png')}
@@ -1036,10 +1060,12 @@ const CertSheet2 = props => {
                 </Button>
               </ButtonShadow>
             </ButtonSection>
+            </ScrollView>
           </SheetContainer>
         )}
         {currentPageIndex === 2 && (
-          <SheetContainer width={width}>
+          <SheetContainer width={width} height={height - (keyboardHeight * 1.3)}>
+            <ScrollView keyboardShouldPersistTaps='always' ref={scrollViewRef}>
             <ModalInputSection>
               <CertLogoImage
                 source={require('../../assets/images/certLogo/naver_logo.png')}
@@ -1220,10 +1246,12 @@ const CertSheet2 = props => {
                 </Button>
               </ButtonShadow>
             </ButtonSection>
+            </ScrollView>
           </SheetContainer>
         )}
         {currentPageIndex === 3 && (
-          <SheetContainer width={width}>
+          <SheetContainer width={width} height={height - (keyboardHeight * 1.3)}>
+            <ScrollView keyboardShouldPersistTaps='always' ref={scrollViewRef}>
             <ModalInputSection>
               <CertLogoImage
                 source={require('../../assets/images/certLogo/toss_logo.png')}
@@ -1399,10 +1427,12 @@ const CertSheet2 = props => {
                 </Button>
               </ButtonShadow>
             </ButtonSection>
+            </ScrollView>
           </SheetContainer>
         )}
         {currentPageIndex === 4 && (
-          <SheetContainer width={width}>
+          <SheetContainer width={width} height={height - (keyboardHeight * 1.3)}>
+            <ScrollView keyboardShouldPersistTaps='always' ref={scrollViewRef}>
             <ModalInputSection>
               <CertLogoImage
                 source={require('../../assets/images/certLogo/kakao_logo.png')}
@@ -1586,10 +1616,12 @@ const CertSheet2 = props => {
                 </Button>
               </ButtonShadow>
             </ButtonSection>
+            </ScrollView>
           </SheetContainer>
         )}
         {currentPageIndex === 5 && (
-          <SheetContainer width={width}>
+          <SheetContainer width={width} height={height - (keyboardHeight * 1.3)}>
+            <ScrollView keyboardShouldPersistTaps='always' ref={scrollViewRef}>
             <ModalInputSection>
               <CertLogoImage
                 source={require('../../assets/images/certLogo/pass_logo.png')}
@@ -1773,10 +1805,12 @@ const CertSheet2 = props => {
                 </Button>
               </ButtonShadow>
             </ButtonSection>
+            </ScrollView>
           </SheetContainer>
         )}
         {currentPageIndex === 6 && (
-          <SheetContainer width={width}>
+          <SheetContainer width={width} height={height - (keyboardHeight * 1.3)}>
+            <ScrollView keyboardShouldPersistTaps='always' ref={scrollViewRef}>
             <ModalInputSection>
               <CertLogoImage
                 source={require('../../assets/images/certLogo/samsung_logo.png')}
@@ -1960,10 +1994,12 @@ const CertSheet2 = props => {
                 </Button>
               </ButtonShadow>
             </ButtonSection>
+            </ScrollView>
           </SheetContainer>
         )}
         {currentPageIndex === 7 && (
-          <SheetContainer width={width}>
+          <SheetContainer width={width} height={height - (keyboardHeight * 1.3)}>
+            <ScrollView keyboardShouldPersistTaps='always' ref={scrollViewRef}>
             <ModalInputSection>
               <CertLogoImage
                 source={require('../../assets/images/certLogo/payco_logo.png')}
@@ -2147,9 +2183,9 @@ const CertSheet2 = props => {
                 </Button>
               </ButtonShadow>
             </ButtonSection>
+            </ScrollView>
           </SheetContainer>
         )}
-      </KeyboardAwareScrollView>
     </ActionSheet>
   );
 };

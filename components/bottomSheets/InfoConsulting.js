@@ -64,7 +64,7 @@ const ButtonSection = styled.View`
   align-items: center;
   flex-direction: row;
   justify-content: center;
-  padding: 10px;
+  padding: 20px;
 `;
 
 const Button = styled.TouchableOpacity.attrs(props => ({

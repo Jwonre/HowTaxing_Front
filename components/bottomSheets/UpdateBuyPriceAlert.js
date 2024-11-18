@@ -116,7 +116,7 @@ const ButtonSection = styled.View`
   align-items: center;
   flex-direction: row;
   justify-content: space-between;
-  padding: 20px 10px;
+  padding: 20px;
   border-top-width: 1px;
   border-top-color: #e8eaed;
 `;

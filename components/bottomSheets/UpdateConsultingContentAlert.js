@@ -7,6 +7,7 @@ import {
   ScrollView,
   StyleSheet,
   Keyboard,
+  Animated,
 } from 'react-native';
 import React, { useEffect, useState, useRef } from 'react';
 import ActionSheet, { SheetManager } from 'react-native-actions-sheet';
@@ -125,7 +126,7 @@ const ButtonSection = styled.View`
   align-items: center;
   flex-direction: row;
   justify-content: space-between;
-  padding: 20px 
+  padding: 20px;
 `;
 
 
@@ -267,7 +268,7 @@ const UpdateConsultingContentAlert = props => {
   useEffect(() => {
     const keyboardDidShowListener = Keyboard.addListener(
       'keyboardDidShow',
-      () => {
+      (e) => {
         setKeyboardVisible(true); // or some other action
       },
     );
@@ -319,87 +320,83 @@ const UpdateConsultingContentAlert = props => {
         borderTopLeftRadius: 20,
         borderTopRightRadius: 20,
         width: width - 40,
-        height: 450,
+        height: isKeyboardVisible ? 100 : 450,
       }}>
-
-
-      <KeyboardAwareScrollView enableAutomaticScroll={false} showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="always" >
-        <SheetContainer>
-          <ModalTitle>
-            상담 내용을 알려주세요.
-          </ModalTitle>
-          <ApartmentInfoGroup>
-            <SubTitle2>정확한 상담을 위해{'\n'}사실 관계 및 문의사항을 자세하게 입력해주세요.</SubTitle2>
-          </ApartmentInfoGroup>
-          <View style={{
-            flexDirection: 'row', justifyContent: 'space-between', marginTop: 20, paddingLeft: 20, paddingRight: 20, borderTopWidth: 1,
-            borderTopColor: '#E8EAED'
-          }}>
-            {ConsultingList.map((item, index) => (
-              <Tag
-                style={{
-                  borderColor: taxTypeList.indexOf(item) < 0 ? '#E8EAED'
-                    : item === '취득세'
+      <SheetContainer>
+        <ModalTitle>
+          상담 내용을 알려주세요.
+        </ModalTitle>
+        <ApartmentInfoGroup>
+          <SubTitle2>정확한 상담을 위해{'\n'}사실 관계 및 문의사항을 자세하게 입력해주세요.</SubTitle2>
+        </ApartmentInfoGroup>
+        <View style={{
+          flexDirection: 'row', justifyContent: 'space-between', marginTop: 20, paddingLeft: 20, paddingRight: 20, borderTopWidth: 1,
+          borderTopColor: '#E8EAED'
+        }}>
+          {ConsultingList.map((item, index) => (
+            <Tag
+              style={{
+                borderColor: taxTypeList.indexOf(item) < 0 ? '#E8EAED'
+                  : item === '취득세'
+                    ? '#2F87FF'
+                    : item === '양도소득세'
                       ? '#2F87FF'
-                      : item === '양도소득세'
+                      : item === '상속세'
                         ? '#2F87FF'
-                        : item === '상속세'
+                        : item === '증여세'
                           ? '#2F87FF'
-                          : item === '증여세'
-                            ? '#2F87FF'
-                            : '#E8EAED'
-                }}
-                //disabled={taxTypeList.indexOf(item) < 0}
-                active={taxTypeList.indexOf(item) > -1}
-                onPress={() => {
-                  if (taxTypeList.indexOf(item) > -1) {
-                    setTaxTypeList(
-                      taxTypeList.filter(selectedItem => selectedItem !== item),
-                    );
-                  } else {
-                    setTaxTypeList([...taxTypeList, item]);
-                  }
-                }}
-                key={index}>
-                <TagText style={{
-                  color: taxTypeList.indexOf(item) < 0 ? '#E8EAED'
-                    : item === '취득세'
+                          : '#E8EAED'
+              }}
+              //disabled={taxTypeList.indexOf(item) < 0}
+              active={taxTypeList.indexOf(item) > -1}
+              onPress={() => {
+                if (taxTypeList.indexOf(item) > -1) {
+                  setTaxTypeList(
+                    taxTypeList.filter(selectedItem => selectedItem !== item),
+                  );
+                } else {
+                  setTaxTypeList([...taxTypeList, item]);
+                }
+              }}
+              key={index}>
+              <TagText style={{
+                color: taxTypeList.indexOf(item) < 0 ? '#E8EAED'
+                  : item === '취득세'
+                    ? '#2F87FF'
+                    : item === '양도소득세'
                       ? '#2F87FF'
-                      : item === '양도소득세'
+                      : item === '상속세'
                         ? '#2F87FF'
-                        : item === '상속세'
+                        : item === '증여세'
                           ? '#2F87FF'
-                          : item === '증여세'
-                            ? '#2F87FF'
-                            : '#E8EAED'
-                }}>
-                  {item}
-                </TagText>
-              </Tag>
-            ))}
-          </View>
-          <View style={{
-            paddingLeft: 20, paddingRight: 20,
-          }}>
-            <ModalAddressInputContainer>
-              <DetailAddressInput
-                multiline={true}
-                value={text}
-                onChangeText={setText}
-                blurOnSubmit={true}
-              />
-            </ModalAddressInputContainer>
+                          : '#E8EAED'
+              }}>
+                {item}
+              </TagText>
+            </Tag>
+          ))}
+        </View>
+        <View style={{
+          paddingLeft: 20, paddingRight: 20,
+        }}>
+          <ModalAddressInputContainer>
+            <DetailAddressInput
+              multiline={true}
+              value={text}
+              onChangeText={setText}
+              blurOnSubmit={true}
+            />
+          </ModalAddressInputContainer>
 
-          </View>
-          <ButtonSection width={width}>
-            <DropShadow style={styles.dropshadow}>
-              <Button onPress={nextHandler}>
-                <ButtonText >변경하기</ButtonText>
-              </Button>
-            </DropShadow>
-          </ButtonSection>
-        </SheetContainer>
-      </KeyboardAwareScrollView >
+        </View>
+        <ButtonSection width={width}>
+          <DropShadow style={styles.dropshadow}>
+            <Button onPress={nextHandler}>
+              <ButtonText >변경하기</ButtonText>
+            </Button>
+          </DropShadow>
+        </ButtonSection>
+      </SheetContainer>
     </ActionSheet >
   );
 };

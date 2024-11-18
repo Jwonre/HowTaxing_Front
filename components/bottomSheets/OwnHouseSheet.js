@@ -276,7 +276,7 @@ const OwnHouseSheet = props => {
   const { width, height } = useWindowDimensions();
   const houseInfo = useSelector(state => state.houseInfo.value);
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [selectedList, setSelectedList] = useState([]);
+  const [selectedList, setSelectedList] = useState(props.payload?.selectedList ? props.payload?.selectedList : []);
   const ownHouseList = useSelector(state => state.ownHouseList?.value);
   const chatDataList = useSelector(state => state.chatDataList?.value);
   const navigation = props.payload?.navigation;
@@ -341,6 +341,8 @@ const OwnHouseSheet = props => {
       //console.log('response.data', response.data);
       if (response.data.errYn == 'Y') {
         setTimeout(() => {
+
+          
           SheetManager.show('info', {
             payload: {
               type: 'error',
@@ -756,6 +758,7 @@ const OwnHouseSheet = props => {
                   index: props.payload?.index,
                   data: props.payload?.data,
                   chungYackYn: props.payload?.chungYackYn,
+                  selectedList: selectedList,
                 });
               }}>
               <ListItemTitle style={{ color: '#2F87FF', textDecorationLine: 'underline' }}>개인정보 수집 및 이용</ListItemTitle>

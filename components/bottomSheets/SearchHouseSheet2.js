@@ -320,6 +320,7 @@ const SearchHouseSheet2 = props => {
   const [currentPageIndex, setCurrentPageIndex] = useState(0);
   const [isLastPage, setIsLastPage] = useState(false);
   const [keyboardVisible, setKeyboardVisible] = useState(false);
+  const [keyboardHeight, setKeyboardHeight] = useState(0);
   const [listData, setListData] = useState([]);
   const [searchText, setSearchText] = useState('');
   const [address, setAddress] = useState('');
@@ -341,22 +342,28 @@ const SearchHouseSheet2 = props => {
   const [expandedItems, setExpandedItems] = useState({});
 
   useEffect(() => {
+    // 키보드가 보여질 때 높이를 설정
     const keyboardDidShowListener = Keyboard.addListener(
       'keyboardDidShow',
-      () => {
+      (e) => {
+        setKeyboardHeight(e.endCoordinates.height);
         setKeyboardVisible(true); // or some other action
-      },
+        scrollViewRef.current?.scrollTo({ y: 100, animated: true });
+      }
     );
+
+    // 키보드가 사라질 때 높이를 초기화
     const keyboardDidHideListener = Keyboard.addListener(
       'keyboardDidHide',
       () => {
-        setKeyboardVisible(false); // or some other action
-      },
+        setKeyboardHeight(0); scrollViewRef.current?.scrollTo({ y: 0, animated: true });
+        setKeyboardVisible(false); // or some other action 
+      }
     );
 
     return () => {
-      keyboardDidHideListener.remove();
       keyboardDidShowListener.remove();
+      keyboardDidHideListener.remove();
     };
   }, []);
 
@@ -852,7 +859,7 @@ const SearchHouseSheet2 = props => {
         borderTopRightRadius: 20,
         height:
           currentPageIndex === 0
-            ? 850
+            ? height
             : currentPageIndex === 2
               ? keyboardVisible
                 ? 360 + apartmentInfoGroupHeight
@@ -862,7 +869,7 @@ const SearchHouseSheet2 = props => {
 
       }}>
       {currentPageIndex === 0 && (
-        <SheetContainer width={width}>
+        <SheetContainer width={width} height={height - (keyboardHeight * 1.3)}>
           <FlatList
             keyboardShouldPersistTaps='always'
             data={listData}

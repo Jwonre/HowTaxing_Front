@@ -480,14 +480,14 @@ const FixedHouse = props => {
 
   const [isConnected, setIsConnected] = useState(true);
 
-  useEffect(() => {
+  /*useEffect(() => {
     _scrollViewRef.current?.scrollTo({
       x: (width) * currentPageIndex,
       y: 0,
       animated: true,
     });
   }, [currentPageIndex]);
-
+*/
   /*useEffect(() => {
     _scrollViewRef2.current?.scrollTo({
       x: (width) * currentPageIndex2,
@@ -978,7 +978,7 @@ const FixedHouse = props => {
       scrollEnabled={false}
       scrollEventThrottle={16}>
 
-      <Container style={{ width: width }}>
+      {currentPageIndex === 0 && <Container style={{ width: width }}>
         <ProgressSection>
         </ProgressSection>
 
@@ -1169,9 +1169,9 @@ const FixedHouse = props => {
             </Container>
 
           </ScrollView></>
-      </Container>
+      </Container>}
 
-      <Container style={{ width: width }}>
+      {currentPageIndex === 1 && <Container style={{ width: width }}>
         <ProgressSection>
         </ProgressSection>
         <><IntroSection2 style={{ width: width }}>
@@ -1439,8 +1439,8 @@ const FixedHouse = props => {
               </Button>
             </DropShadow>
           </ButtonSection></>
-      </Container>
-      <Container style={{ width: width }}>
+      </Container>}
+      {currentPageIndex === 2 && <Container style={{ width: width }}>
         <ProgressSection>
         </ProgressSection>
         <><IntroSection2 style={{ width: width }}>
@@ -1729,8 +1729,8 @@ const FixedHouse = props => {
               </Button>
             </DropShadow>
           </ButtonSection></>
-      </Container>
-      <Container style={{ width: width }}>
+      </Container>}
+      {currentPageIndex === 3 && <Container style={{ width: width }}>
         <ProgressSection>
         </ProgressSection>
         <><IntroSection2 style={{ width: width }}>
@@ -1916,9 +1916,9 @@ const FixedHouse = props => {
               </Button>
             </DropShadow>
           </ButtonSection></>
-      </Container>
+      </Container>}
 
-      <Container style={{ width: width }}>
+      {currentPageIndex === 4 && <Container style={{ width: width }}>
         <ProgressSection>
         </ProgressSection>
         <><IntroSection2 style={{ width: width }}>
@@ -2106,7 +2106,7 @@ const FixedHouse = props => {
               </Button>
             </DropShadow>
           </ButtonSection></>
-      </Container>
+      </Container>}
 
 
 

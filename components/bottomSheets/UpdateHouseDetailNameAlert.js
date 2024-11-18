@@ -210,6 +210,7 @@ const UpdateHouseDetailNameAlert = props => {
         borderTopLeftRadius: 20,
         borderTopRightRadius: 20,
         width: width - 40,
+        height: 400,
       }}>
 
 

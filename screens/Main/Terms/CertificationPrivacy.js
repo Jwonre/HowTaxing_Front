@@ -54,7 +54,7 @@ const CertificationPrivacy = props => {
   const dispatch = useDispatch();
   const { width } = useWindowDimensions();
   const webviewRef = useRef(null);
-  const { agreeCert, agreePrivacy, agreeLocation, agreeAge, agreeMarketing } = useSelector(
+  const { agreePrivacy } = useSelector(
     state => state.cert.value,
   );
 
@@ -63,7 +63,7 @@ const CertificationPrivacy = props => {
     SheetManager.show(props.route?.params?.prevSheet === 'cert2' ? 'cert2' : props.route?.params?.prevSheet === 'cert' ? 'cert' : 'cert_ori', {
       payload: {
         navigation: navigation,
-        cert: props.route?.params?.cert,
+        data: props.route?.params?.cert,
         isGainsTax: props.route?.params?.isGainsTax,
         prevChat: props.route?.params?.prevChat,
         prevSheet: props.route?.params?.prevSheet,
@@ -92,7 +92,7 @@ const CertificationPrivacy = props => {
             SheetManager.show(props.route?.params?.prevSheet === 'cert2' ? 'cert2' : props.route?.params?.prevSheet === 'cert' ? 'cert' : 'cert_ori', {
               payload: {
                 navigation: navigation,
-                cert: props.route?.params?.cert,
+                data: props.route?.params?.cert,
                 isGainsTax: props.route?.params?.isGainsTax,
                 prevChat: props.route?.params?.prevChat,
                 prevSheet: props.route?.params?.prevSheet,
@@ -151,18 +151,15 @@ const CertificationPrivacy = props => {
             onPress={() => {
               dispatch(
                 setCert({
-                  agreeAge,
-                  agreeLocation,
-                  agreeMarketing,
-                  agreeCert,
                   agreePrivacy: true,
                 }),
               );
               navigation.goBack();
+              console.log('props.route?.params?.prevSheet', props.route?.params?.prevSheet);
               SheetManager.show(props.route?.params?.prevSheet === 'cert2' ? 'cert2' : props.route?.params?.prevSheet === 'cert' ? 'cert' : 'cert_ori', {
                 payload: {
                   navigation: navigation,
-                  cert: props.route?.params?.cert,
+                  data: props.route?.params?.cert,
                   isGainsTax: props.route?.params?.isGainsTax,
                   prevChat: props.route?.params?.prevChat,
                   prevSheet: props.route?.params?.prevSheet,

@@ -1,5 +1,5 @@
 
-import { View, TouchableOpacity, useWindowDimensions, Pressable, Keyboard } from 'react-native';
+import { View, TouchableOpacity, useWindowDimensions, Pressable, Keyboard, ScrollView } from 'react-native';
 import React, { useEffect, useRef, useState } from 'react';
 import ActionSheet, { SheetManager } from 'react-native-actions-sheet';
 import Modal from 'react-native-modal';
@@ -31,7 +31,7 @@ const SheetContainer = styled.View`
 `;
 
 const ModalTitle = styled.Text`
-  font-size: ${getFontSize(17)}px;
+  font-size: 17px;
   font-family: Pretendard-Bold;
   color: #1b1c1f;
   line-height: 26px;
@@ -47,7 +47,7 @@ const ModalLabel = styled.Text`
 `;
 
 const ModalDescription = styled.Text`
-  font-size: ${getFontSize(15)}px;
+  font-size: 15px;
   font-family: Pretendard-Regular;
   color: #a3a5a8;
   line-height: 20px;
@@ -56,47 +56,6 @@ const ModalDescription = styled.Text`
   text-align: center;
 `;
 
-const ListItem = styled.View`
-  flex-direction: row;
-  align-items: center;
-  justify-content: flex-start;
-  padding: 0 20px;
-`;
-
-const CheckCircle = styled.TouchableOpacity.attrs(props => ({
-  activeOpacity: 0.8,
-}))`
-  width: 30px;
-  height: 30px;
-  border-radius: 15px;
-  background-color: #fff;
-  border: 1px solid #cfd1d5;
-  align-items: center;
-  justify-content: center;
-  margin-right: 10px;
-`;
-
-const ListItemTitle = styled.Text`
-  flex: 1;
-  font-size: ${getFontSize(12)}px;
-  font-family: Pretendard-Regular;
-  color: #1b1c1f;
-  line-height: 20px;
-`;
-
-const ListItemButton = styled.TouchableOpacity.attrs(props => ({
-  activeOpacity: 0.8,
-  hitSlop: { top: 20, bottom: 20, left: 20, right: 20 },
-}))``;
-
-const ListItemButtonText = styled.Text`
-  font-size: ${getFontSize(12)}px;
-  font-family: Pretendard-Regular;
-  color: #717274;
-  line-height: 20px;
-  text-decoration-line: underline;
-  text-decoration-color: #717274;
-`;
 
 const CertLogoImage = styled.Image.attrs(props => ({
   resizeMode: 'contain',
@@ -185,7 +144,7 @@ const ButtonSection = styled.View`
   flex-direction: row;
   justify-content: space-between;
   padding: 20px;
-  margin-top: 10px;
+  bottom: 0px;
 `;
 
 const ButtonShadow = styled(DropShadow)`
@@ -253,6 +212,7 @@ const FirstCheckCircle = styled.TouchableOpacity.attrs(props => ({
 const CertSheet_ori = props => {
   LogBox.ignoreLogs(['to contain units']);
   const actionSheetRef = useRef(null);
+  const scrollViewRef = useRef(null);
   const cert = props.payload.data;
   const navigation = props.payload?.navigation;
   ////console.log('navigation', navigation);
@@ -270,6 +230,9 @@ const CertSheet_ori = props => {
   const hasNavigatedBackRef = useRef(hasNavigatedBack);
 
   const [isConnected, setIsConnected] = useState(true);
+  console.log('height', height);
+  console.log('keyboardHeight', keyboardHeight);
+
 
   const handleNetInfoChange = (state) => {
     return new Promise((resolve, reject) => {
@@ -323,14 +286,14 @@ const CertSheet_ori = props => {
       'keyboardDidShow',
       (e) => {
         setKeyboardHeight(e.endCoordinates.height);
-        //console.log('scrollViewRef.current', scrollViewRef.current);
+        scrollViewRef.current?.scrollTo({ y: 100, animated: true });
       }
     );
 
     // 키보드가 사라질 때 높이를 초기화
     const keyboardDidHideListener = Keyboard.addListener(
       'keyboardDidHide',
-      () => { setKeyboardHeight(0); }
+      () => { setKeyboardHeight(0); scrollViewRef.current?.scrollTo({ y: 0, animated: true }); }
     );
 
     return () => {
@@ -338,6 +301,7 @@ const CertSheet_ori = props => {
       keyboardDidHideListener.remove();
     };
   }, []);
+
 
   const [id, setId] = useState('');
   const [password, setPassword] = useState('');
@@ -349,7 +313,6 @@ const CertSheet_ori = props => {
   const input1 = useRef(null);
   const input2 = useRef(null);
   const input3 = useRef(null);
-  const [scrollHeight, setScrollHeight] = useState(420);
   const [CheckPrivacy, setCheckPrivacy] = useState(props?.payload?.CheckPrivacy ? props?.payload?.CheckPrivacy : true);
   //https://www.npmjs.com/package/react-native-mask-input
   const rlno_mask = [
@@ -719,7 +682,6 @@ const CertSheet_ori = props => {
         borderTopRightRadius: 20,
         height: currentPageIndex === 0 ? 0 : 600,
         width: width - 40,
-        overflow: 'hidden'
       }}>
 
       {currentPageIndex === 0 && (
@@ -791,10 +753,9 @@ const CertSheet_ori = props => {
         </Modal >
       )
       }
-      <KeyboardAwareScrollView>
-        {currentPageIndex === 1 && (
-
-          <SheetContainer width={width}>
+      {currentPageIndex === 1 && (
+        <SheetContainer width={width} height={height - (keyboardHeight * 1.3)}>
+          <ScrollView keyboardShouldPersistTaps='always' ref={scrollViewRef}>
             <ModalInputSection>
               <CertLogoImage
                 source={require('../../assets/images/certLogo/kb_logo.png')}
@@ -892,11 +853,13 @@ const CertSheet_ori = props => {
                 </Button>
               </ButtonShadow>
             </ButtonSection>
-          </SheetContainer>
-        )
-        }
-        {currentPageIndex === 2 && (
-          <SheetContainer width={width}>
+          </ScrollView>
+        </SheetContainer>
+      )
+      }
+      {currentPageIndex === 2 && (
+        <SheetContainer width={width} height={height - (keyboardHeight * 1.3)}>
+          <ScrollView keyboardShouldPersistTaps='always' ref={scrollViewRef}>
             <ModalInputSection>
               <CertLogoImage
                 source={require('../../assets/images/certLogo/naver_logo.png')}
@@ -995,12 +958,14 @@ const CertSheet_ori = props => {
                 </Button>
               </ButtonShadow>
             </ButtonSection>
-          </SheetContainer>
-        )
-        }
-        {
-          currentPageIndex === 3 && (
-            <SheetContainer width={width}>
+          </ScrollView>
+        </SheetContainer>
+      )
+      }
+      {
+        currentPageIndex === 3 && (
+          <SheetContainer width={width} height={height - (keyboardHeight * 1.3)}>
+            <ScrollView keyboardShouldPersistTaps='always' ref={scrollViewRef}>
               <ModalInputSection>
                 <CertLogoImage
                   source={require('../../assets/images/certLogo/toss_logo.png')}
@@ -1098,9 +1063,10 @@ const CertSheet_ori = props => {
                   </Button>
                 </ButtonShadow>
               </ButtonSection>
-            </SheetContainer>
-          )
-        }</KeyboardAwareScrollView>
+            </ScrollView>
+          </SheetContainer>
+        )
+      }
     </ActionSheet >
 
 

@@ -121,7 +121,7 @@ const ButtonSection = styled.View`
   align-items: center;
   flex-direction: row;
   justify-content: space-between;
-  padding: 10px;
+  padding: 20px;
   border-top-width: 1px;
   border-top-color: #e8eaed;
 `;
@@ -169,7 +169,6 @@ const InfoMessage = styled.Text`
 
 const ExpenseSheet = props => {
   const actionSheetRef = useRef(null);
-  const _scrollViewRef = useRef(null);
   const dispatch = useDispatch();
   const { width, height } = useWindowDimensions();
   const [currentPageIndex, setCurrentPageIndex] = useState(0);
@@ -263,178 +262,167 @@ const ExpenseSheet = props => {
         height: currentPageIndex === 0 ? (isKeyboardVisible ? 280 : 460) : 600,
         width: width - 40,
       }}>
-      <ScrollView
-        ref={_scrollViewRef}
-        keyboardShouldPersistTaps='always'
-        pagingEnabled
-        style={{
-          width: width - 40,
-        }}
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        scrollEnabled={false}
-        scrollEventThrottle={16}>
-        <SheetContainer width={width}>
-          <ModalInputSection>
-            <ModalTitle >필요경비를 입력해주세요.</ModalTitle>
-            <InfoMessage >
-              * 적합한 증빙 없이 현금(계좌이체)으로{'\n'}지출한 필요경비는 인정받지 못할 수 있습니다.
-            </InfoMessage>
-            <ModalSubtitle >{numberToKorean(ExpenseAmount === null ? 0 : ExpenseAmount)}{(ExpenseAmount !== null && ExpenseAmount !== 0) ? '원' : null}</ModalSubtitle>
 
+      <SheetContainer width={width}>
+        <ModalInputSection>
+          <ModalTitle >필요경비를 입력해주세요.</ModalTitle>
+          <InfoMessage >
+            * 적합한 증빙 없이 현금(계좌이체)으로{'\n'}지출한 필요경비는 인정받지 못할 수 있습니다.
+          </InfoMessage>
+          <ModalSubtitle >{numberToKorean(ExpenseAmount === null ? 0 : ExpenseAmount)}{(ExpenseAmount !== null && ExpenseAmount !== 0) ? '원' : null}</ModalSubtitle>
+
+          <View
+            style={{
+              paddingHorizontal: 20,
+              paddingBottom: 20,
+            }}>
             <View
               style={{
-                paddingHorizontal: 20,
-                paddingBottom: 20,
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'flex-start',
               }}>
-              <View
-                style={{
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  justifyContent: 'flex-start',
-                }}>
-                <ModalLabel >필요경비</ModalLabel>
-                <TouchableOpacity
-                  activeOpacity={0.8}
-                  hitSlop={{ top: 20, bottom: 20, left: 20, right: 20 }}>
-                  <InfoIcon
-                    onPress={() => {
-                      SheetManager.show('infoExpense', {
-                        payload: {
-                          Title: "필요경비",
-                          Description: "부동산을 취득할 때부터 매매할 때까지 발생\n하는 비용 중 소득세법에서 인정하는 비용들을\n말해요. 취득세, 중개수수료, 보일러 교체비용\n등이 해당돼요. 양도소득세는 양도차익이 클\n수록 세금이 많아지므로 필요경비 금액이 커질\n수록 세금은 줄어들게 돼요.",
-                          height: 360,
-                        },
-                      });
-                    }}
-                  />
-                </TouchableOpacity>
-              </View>
-              <ModalInputContainer>
-                <StyledInput
-                  
-                  placeholder="필요경비를 입력해주세요."
-                  keyboardType="number-pad"
-                  value={ExpenseAmount === null ? '' : ExpenseAmount.toLocaleString()}
-                  onChangeText={text => {
-                    const numericValue = Number(text.replace(/[^0-9]/g, ''));
-                    if (numericValue <= 1000000000000000) {
-                      setExpenseAmount(numericValue);
-                    } else {
-                      setExpenseAmount(1000000000000000)
-                    }
+              <ModalLabel >필요경비</ModalLabel>
+              <TouchableOpacity
+                activeOpacity={0.8}
+                hitSlop={{ top: 20, bottom: 20, left: 20, right: 20 }}>
+                <InfoIcon
+                  onPress={() => {
+                    SheetManager.show('infoExpense', {
+                      payload: {
+                        Title: "필요경비",
+                        Description: "부동산을 취득할 때부터 매매할 때까지 발생\n하는 비용 중 소득세법에서 인정하는 비용들을\n말해요. 취득세, 중개수수료, 보일러 교체비용\n등이 해당돼요. 양도소득세는 양도차익이 클\n수록 세금이 많아지므로 필요경비 금액이 커질\n수록 세금은 줄어들게 돼요.",
+                        height: 360,
+                      },
+                    });
                   }}
                 />
-                {(ExpenseAmount !== null) && (
-                  <TouchableOpacity onPress={() => setExpenseAmount(null)}>
-                    <CancelCircle style={{ marginRight: 10 }} width={20} height={20} />
-                  </TouchableOpacity>
-                )}
-              </ModalInputContainer>
-              <View
-                style={{
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  marginTop: 10,
-                }}>
-                {AC_AMOUNT_LIST.map((item, index) => (
-                  <ModalSelectButton
-                    key={index}
-                    onPress={() => {
-                      setExpenseAmount(prev => prev + item);
-                    }}>
-                    <ModalSelectButtonText >
-                      {item === 50000000 ? '5천만' : item === 10000000 ? '1천만' : item === 5000000 ? '5백만' : '1백만'}
-                    </ModalSelectButtonText>
-                  </ModalSelectButton>
-                ))}
-              </View>
+              </TouchableOpacity>
             </View>
-          </ModalInputSection>
-          <ButtonSection
-            style={{
-              borderTopWidth: 0,
-            }}>
-            <ButtonShadow
+            <ModalInputContainer>
+              <StyledInput
+
+                placeholder="필요경비를 입력해주세요."
+                keyboardType="number-pad"
+                value={ExpenseAmount === null ? '' : ExpenseAmount.toLocaleString()}
+                onChangeText={text => {
+                  const numericValue = Number(text.replace(/[^0-9]/g, ''));
+                  if (numericValue <= 1000000000000000) {
+                    setExpenseAmount(numericValue);
+                  } else {
+                    setExpenseAmount(1000000000000000)
+                  }
+                }}
+              />
+              {(ExpenseAmount !== null) && (
+                <TouchableOpacity onPress={() => setExpenseAmount(null)}>
+                  <CancelCircle style={{ marginRight: 10 }} width={20} height={20} />
+                </TouchableOpacity>
+              )}
+            </ModalInputContainer>
+            <View
               style={{
-                shadowColor: '#fff',
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                marginTop: 10,
               }}>
-              <Button
-                onPress={() => {
-                  actionSheetRef.current?.hide();
-                }}
+              {AC_AMOUNT_LIST.map((item, index) => (
+                <ModalSelectButton
+                  key={index}
+                  onPress={() => {
+                    setExpenseAmount(prev => prev + item);
+                  }}>
+                  <ModalSelectButtonText >
+                    {item === 50000000 ? '5천만' : item === 10000000 ? '1천만' : item === 5000000 ? '5백만' : '1백만'}
+                  </ModalSelectButtonText>
+                </ModalSelectButton>
+              ))}
+            </View>
+          </View>
+        </ModalInputSection>
+        <ButtonSection
+          style={{
+            borderTopWidth: 0,
+          }}>
+          <ButtonShadow
+            style={{
+              shadowColor: '#fff',
+            }}>
+            <Button
+              onPress={() => {
+                actionSheetRef.current?.hide();
+              }}
+              style={{
+                backgroundColor: '#fff',
+                borderColor: '#E8EAED',
+              }}>
+              <ButtonText
                 style={{
-                  backgroundColor: '#fff',
-                  borderColor: '#E8EAED',
-                }}>
-                <ButtonText
-                  style={{
-                    color: '#717274',
-                  }} >
-                  이전으로
-                </ButtonText>
-              </Button>
-            </ButtonShadow>
-            <ButtonShadow>
-              <Button
-                onPress={async () => {
-                  // ////console.log('ExpenseAmount', ExpenseAmount);
-                  dispatch(
-                    setHouseInfo({
-                      ...houseInfo,
-                      necessaryExpense: ExpenseAmount ? ExpenseAmount : 50000000,
-                    }),
-                  );
-                  actionSheetRef.current?.hide();
-                  const chat = {
-                    id: 'ExpenseAnswer',
-                    type: 'system',
-                    message: '필요경비를 입력해주세요.',
-                    select: [
-                      {
-                        id: 'ExpenseAmount',
-                        name: '필요경비 입력하기',
-                        openSheet: 'Expense',
-                        currentPageIndex: 0,
-                        key: 'ExpenseAnswer',
-                      },
-                    ],
-                    progress: 9,
-                  };
+                  color: '#717274',
+                }} >
+                이전으로
+              </ButtonText>
+            </Button>
+          </ButtonShadow>
+          <ButtonShadow>
+            <Button
+              onPress={async () => {
+                // ////console.log('ExpenseAmount', ExpenseAmount);
+                dispatch(
+                  setHouseInfo({
+                    ...houseInfo,
+                    necessaryExpense: ExpenseAmount ? ExpenseAmount : 50000000,
+                  }),
+                );
+                actionSheetRef.current?.hide();
+                const chat = {
+                  id: 'ExpenseAnswer',
+                  type: 'system',
+                  message: '필요경비를 입력해주세요.',
+                  select: [
+                    {
+                      id: 'ExpenseAmount',
+                      name: '필요경비 입력하기',
+                      openSheet: 'Expense',
+                      currentPageIndex: 0,
+                      key: 'ExpenseAnswer',
+                    },
+                  ],
+                  progress: 9,
+                };
 
-                  const chat2 = {
-                    id: 'ExpenseAmount2',
-                    type: 'my',
-                    progress: 4,
-                    message: `${ExpenseAmount?.toLocaleString()}원`,
-                    data: {
-                      necessaryExpense: ExpenseAmount,
-                    }
-                  };
+                const chat2 = {
+                  id: 'ExpenseAmount2',
+                  type: 'my',
+                  progress: 4,
+                  message: `${ExpenseAmount?.toLocaleString()}원`,
+                  data: {
+                    necessaryExpense: ExpenseAmount,
+                  }
+                };
 
-                  const chatList =
-                    chatDataList[chatDataList.length - 1].id ===
-                      'ExpenseAnswer'
-                      ? chat2
-                      : [chat, chat2];
+                const chatList =
+                  chatDataList[chatDataList.length - 1].id ===
+                    'ExpenseAnswer'
+                    ? chat2
+                    : [chat, chat2];
 
-                  const chat3 = gainTax.find(el => el.id === 'getInfoDone');
-                  const chat4 = gainTax.find(el => el.id === 'getInfoConfirm');
+                const chat3 = gainTax.find(el => el.id === 'getInfoDone');
+                const chat4 = gainTax.find(el => el.id === 'getInfoConfirm');
 
-                  dispatch(setChatDataList([...chatDataList, chatList, chat3, chat4]));
-                }} style={{
-                  backgroundColor: ExpenseAmount !== null ? '#2f87ff' : '#E8EAED',
-                  borderColor: ExpenseAmount !== null ? '#2f87ff' : '#E8EAED',
-                }}
-                active={ExpenseAmount !== null}
-                disabled={!(ExpenseAmount !== null)}>
-                <ButtonText  active={ExpenseAmount !== null} style={{ color: ExpenseAmount !== '' ? '#fff' : '#717274' }}>다음으로</ButtonText>
-              </Button>
-            </ButtonShadow>
-          </ButtonSection>
-        </SheetContainer>
-      </ScrollView>
+                dispatch(setChatDataList([...chatDataList, chatList, chat3, chat4]));
+              }} style={{
+                backgroundColor: ExpenseAmount !== null ? '#2f87ff' : '#E8EAED',
+                borderColor: ExpenseAmount !== null ? '#2f87ff' : '#E8EAED',
+              }}
+              active={ExpenseAmount !== null}
+              disabled={!(ExpenseAmount !== null)}>
+              <ButtonText active={ExpenseAmount !== null} style={{ color: ExpenseAmount !== '' ? '#fff' : '#717274' }}>다음으로</ButtonText>
+            </Button>
+          </ButtonShadow>
+        </ButtonSection>
+      </SheetContainer>
     </ActionSheet>
   );
 };
