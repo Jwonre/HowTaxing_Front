@@ -8,3 +8,11 @@
 #   http://developer.android.com/guide/developing/tools/proguard.html
 
 # Add any project specific keep options here:
+
+-keep class com.kakao.** { *; }
+-keepattributes Signature
+-keepattributes *Annotation*
+
+
+# 네이버
+-keep public class com.navercorp.nid.** { *; }

@@ -1,4 +1,16 @@
 {
   "name": "HowTaxingRelease",
-  "displayName": "HowTaxingRelease"
+  "displayName": "HowTaxingRelease",
+
+  "version": "1.0.0",
+    "orientation": "portrait",
+    "platforms": ["ios", "android"],
+    "plugins": [
+      [
+        "@react-native-seoul/naver-login",
+        {
+          "urlScheme": "howtaxingrelease"
+        }
+      ]
+    ]
 }

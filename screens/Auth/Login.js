@@ -9,6 +9,9 @@ import axios from 'axios';
 import { SheetManager } from 'react-native-actions-sheet';
 import NetInfo from '@react-native-community/netinfo';
 import Config from 'react-native-config'
+import platformToKorean from '../../utils/platformUtils';
+import kakaoAuthManager from '../../screens/Auth/KakaoAuthManager';
+import NaverAuthManager from '../../screens/Auth/NaverAuthManager';
 
 const Container = styled.ImageBackground.attrs(props => ({
   source: require('../../assets/images/BackGroundLogin2.png'),
@@ -93,6 +96,7 @@ const Overlay = styled.View`
   background-color: rgba(27, 28, 31, 0.73);
 `;
 
+
 const Login = () => {
   const { width, height } = useWindowDimensions();
   const navigation = useNavigation();
@@ -101,6 +105,7 @@ const Login = () => {
   //const [isConnected, setIsConnected] = useState(true);
   const agreeMarketing = route.params ? route.params.agreeMarketing : false;
   const accessToken = null;
+  // const [result, setResult] = useState<string | null>(null);
 
   const [hasNavigatedBack, setHasNavigatedBack] = useState(false);
   const hasNavigatedBackRef = useRef(hasNavigatedBack);
@@ -112,6 +117,8 @@ const Login = () => {
       headerShown: false,
     });
   }, [navigation]);
+
+
 
   const handleNetInfoChange = (state) => {
     return new Promise((resolve, reject) => {
@@ -132,24 +139,24 @@ const Login = () => {
   };
 
 
-  const handleWebViewMessage = async (event) => {
-    const tokens = temp(event);
-    //console.log('Login:', event.nativeEvent.data);
-    if (event.nativeEvent.data.role === 'GUEST') {
-      await navigation.push('CheckTerms', { tokens: tokens });
-      //약관확인 화면으로 이동 후 약관 동의 완료시 handleSignUp 진행
-    } else {
-      //console.log('Login token:', tokens[0]);
-      const tokenObject = { 'accessToken': tokens[0], 'refreshToken': tokens[1] };
-      //console.log('Login tokenObject:', tokenObject);
-      dispatch(setCurrentUser(tokenObject));
-    }
-  };
-  const temp = (event) => {
-    const accessToken = event.nativeEvent.data.accessToken;
-    const refreshToken = event.nativeEvent.data.refreshToken;
-    return [accessToken, refreshToken];
-  }
+  // const handleWebViewMessage = async (event) => {
+  //   const tokens = temp(event);
+  //   //console.log('Login:', event.nativeEvent.data);
+  //   if (event.nativeEvent.data.role === 'GUEST') {
+  //     await navigation.push('CheckTerms', { tokens: tokens });
+  //     //약관확인 화면으로 이동 후 약관 동의 완료시 handleSignUp 진행
+  //   } else {
+  //     //console.log('Login token:', tokens[0]);
+  //     const tokenObject = { 'accessToken': tokens[0], 'refreshToken': tokens[1] };
+  //     //console.log('Login tokenObject:', tokenObject);
+  //     dispatch(setCurrentUser(tokenObject));
+  //   }
+  // };
+  // const temp = (event) => {
+  //   const accessToken = event.nativeEvent.data.accessToken;
+  //   const refreshToken = event.nativeEvent.data.refreshToken;
+  //   return [accessToken, refreshToken];
+  // }
 
 
   // 카카오 로그인
@@ -163,7 +170,26 @@ const Login = () => {
     const state = await NetInfo.fetch();
     const canProceed = await handleNetInfoChange(state);
     if (canProceed) {
-      navigation.navigate('LoginWebview', { onWebViewMessage: handleWebViewMessage, 'socialType': 'kakao', });
+      try{
+       
+        const message = await kakaoAuthManager.unlink();
+        // setResult(message ? message : '로그아웃 실패');
+        console.log("message ",message ? message : '로그아웃 실패');
+
+        const token = await kakaoAuthManager.signIn();
+        // setResult(token ? JSON.stringify(token) : '로그인 실패');
+
+        //성공시 토큰 처리 ; 
+
+        const profile = await kakaoAuthManager.getProfile();
+        // setResult(profile ? JSON.stringify(profile) : '프로필 가져오기 실패');
+        console.log("token ",token ? JSON.stringify(token): '로그인 실패');
+
+        console.log("profile ",profile ? JSON.stringify(profile): '로그인 실패');
+      }catch(error){
+        console.error("kakao Login Error : ",error);
+      }
+      // navigation.navigate('LoginWebview', { onWebViewMessage: handleWebViewMessage, 'socialType': 'kakao', });
     }
 
   };
@@ -189,10 +215,34 @@ const Login = () => {
     const state = await NetInfo.fetch();
     const canProceed = await handleNetInfoChange(state);
     if (canProceed) {
-      navigation.navigate('LoginWebview', { onWebViewMessage: handleWebViewMessage, 'socialType': 'naver', });
+      NaverAuthManager.signIn();
+      // navigation.navigate('LoginWebview', { onWebViewMessage: handleWebViewMessage, 'socialType': 'naver', });
     }
   };
-
+// 네이버 로그인
+const onAppleLogin = async () => {
+  /*
+  await NaverLogin.login({
+    appName: '하우택싱',
+    consumerKey: 'orG8AAE8iHfRSoiySAbv',
+    consumerSecret: 'DEn_pJGqup',
+    serviceUrlScheme: 'howtaxing',
+  }).then(async res => {
+    const { accessToken } = res?.successResponse;
+ 
+    ////console.log('accessToken', accessToken);
+ 
+    if (accessToken) {
+      socialLogin(1, accessToken);
+    }
+  });
+  */
+  const state = await NetInfo.fetch();
+  const canProceed = await handleNetInfoChange(state);
+  if (canProceed) {
+    // navigation.navigate('LoginWebview', { onWebViewMessage: handleWebViewMessage, 'socialType': 'naver', });
+  }
+};
   const onIDLogin = async () => {
     /*
     await NaverLogin.login({
@@ -213,7 +263,7 @@ const Login = () => {
     const state = await NetInfo.fetch();
     const canProceed = await handleNetInfoChange(state);
     if (canProceed) {
-      navigation.navigate('Login_ID', { onWebViewMessage: handleWebViewMessage, 'socialType': 'naver', });
+      // navigation.navigate('Login_ID', { onWebViewMessage: handleWebViewMessage, 'socialType': 'naver', });
     }
   };
 
@@ -245,7 +295,7 @@ const Login = () => {
     const state = await NetInfo.fetch();
     const canProceed = await handleNetInfoChange(state);
     if (canProceed) {
-      navigation.navigate('LoginWebview', { onWebViewMessage: handleWebViewMessage, 'socialType': 'google', });
+      // navigation.navigate('LoginWebview', { onWebViewMessage: handleWebViewMessage, 'socialType': 'google', });
     }
 
 
@@ -447,7 +497,30 @@ const Login = () => {
             }}>
             네이버로 시작하기
           </SocialButtonText>
+          
         </SocialButton>
+
+        {platformToKorean.isIOS && (
+        <SocialButton
+          onPress={onAppleLogin}
+          width={width}
+          style={{
+            backgroundColor: '#000000',
+          }}>
+          <SocialButtonIcon
+            source={require('../../assets/images/socialIcon/naver_ico.png')}
+          />
+          <SocialButtonText
+
+            style={{
+              color: '#fff',
+            }}>
+            애플로 시작하기
+          </SocialButtonText>
+          
+        </SocialButton>
+          )}
+
         <View>
           <Text
             style={{
