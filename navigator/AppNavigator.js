@@ -11,6 +11,8 @@ import AddMembership from '../screens/Auth/AddMembership';
 import AddMembershipFinish from '../screens/Auth/AddMembershipFinish';
 import Home from '../screens/Main/Home';
 import LoginWebview from '../screens/Auth/LoginWebview';
+import IdLoginScreen from '../screens/Auth/IdLoginScreen';
+
 
 // Redux
 import { useSelector, useDispatch } from 'react-redux';
@@ -322,6 +324,9 @@ const AppNavigator = () => {
               <Stack.Screen name="AddMembership" component={AddMembership} />
               <Stack.Screen name="AddMembershipFinish" component={AddMembershipFinish} />
               <Stack.Screen name="CheckTerms" component={CheckTerms} />
+              <Stack.Screen name="IdLoginScreen" component={IdLoginScreen} />
+
+              
               <Stack.Group screenOptions={{ presentation: 'modal' }}>
                 <Stack.Screen name="Cert2" component={Cert2} />
                 <Stack.Screen name="Privacy2" component={Privacy2} />

@@ -30,6 +30,8 @@
     "@types/styled-components": "^5.1.29",
     "axios": "^1.6.2",
     "dayjs": "^1.11.10",
+    "expo": "^52.0.7",
+    "expo-build-properties": "~0.13.1",
     "lottie-react-native": "^6.7.2",
     "num-to-korean": "^0.5.2",
     "react": "18.3.1",
