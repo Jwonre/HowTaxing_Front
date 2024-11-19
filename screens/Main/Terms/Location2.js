@@ -6,9 +6,10 @@ import {
     TouchableOpacity,
     useWindowDimensions,
     ScrollView,
+    BackHandler,
 } from 'react-native';
-import React, { useLayoutEffect, useState, useRef } from 'react';
-import { useNavigation } from '@react-navigation/native';
+import React, { useLayoutEffect, useState, useRef, useCallback } from 'react';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import styled from 'styled-components';
 import CloseIcon from '../../../assets/icons/close_button.svg';
 import DropShadow from 'react-native-drop-shadow';
@@ -63,6 +64,20 @@ const Location2 = props => {
         state => state.cert.value,
     );
 
+    
+  const handleBackPress = () => {
+    navigation.goBack({ tokens: props?.route?.params?.tokens ? props?.route?.params?.tokens : null, id: props?.route?.params?.id ? props?.route?.params?.id : null, password: props?.route?.params?.password ? props?.route?.params?.password : null});
+    return true;
+  }
+  useFocusEffect(
+    useCallback(() => {
+      BackHandler.addEventListener('hardwareBackPress', handleBackPress)
+      return () => {
+        BackHandler.removeEventListener('hardwareBackPress', handleBackPress);
+      }
+    }, [handleBackPress])
+  );
+
     useLayoutEffect(() => {
         navigation.setOptions({
             headerLeft: () => (
@@ -70,7 +85,7 @@ const Location2 = props => {
                     activeOpacity={0.6}
                     hitSlop={{ top: 20, bottom: 20, left: 20, right: 20 }}
                     onPress={() => {
-                        navigation.goBack({ tokens: props?.route?.params?.tokens });
+                        navigation.goBack({ tokens: props?.route?.params?.tokens ? props?.route?.params?.tokens : null, id: props?.route?.params?.id ? props?.route?.params?.id : null, password: props?.route?.params?.password ? props?.route?.params?.password : null });
                     }}>
                     <CloseIcon />
                 </TouchableOpacity>
@@ -133,7 +148,7 @@ const Location2 = props => {
                             );
 
                             // 채팅방으로 이동
-                            navigation.goBack({ tokens: props?.route?.params?.tokens });
+                            navigation.goBack({ tokens: props?.route?.params?.tokens ? props?.route?.params?.tokens : null, id: props?.route?.params?.id ? props?.route?.params?.id : null, password: props?.route?.params?.password ? props?.route?.params?.password : null });
                         }
                         }>
                         <ButtonText active={agreeLocation}>{'동의하기'}</ButtonText>

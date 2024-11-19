@@ -1,5 +1,5 @@
 import { View, Text, FlatList, TouchableOpacity, Pressable } from 'react-native';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import styled from 'styled-components';
 import getFontSize from '../utils/getFontSize';
 import dayjs from 'dayjs';
@@ -35,9 +35,9 @@ const ModalSubtitle = styled.Text`
 const Calendar = props => {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [calendarData, setCalendarData] = useState([]);
-  const [selectedDate, setSelectedDate] = useState(props.selectedDate ? props.selectedDate : new Date());
+  const [selectedDate, setSelectedDate] = useState(props.selectedDate ? new Date(props.selectedDate) : new Date());
   const [dateList, setDataList] = useState(props.dateList ? props.dateList : []);
-
+  console.log('selectedDate', selectedDate);
   useEffect(() => {
     generateDatesInRange();
   }, [currentDate]);

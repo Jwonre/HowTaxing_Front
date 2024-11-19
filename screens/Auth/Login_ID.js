@@ -6,17 +6,19 @@ import {
   TouchableOpacity,
   useWindowDimensions,
   ScrollView,
+  BackHandler,
 } from 'react-native';
-import React, { useLayoutEffect, useRef, useState } from 'react';
-import { WebView } from 'react-native-webview';
-import getFontSize from '../../utils/getFontSize';
-import DropShadow from 'react-native-drop-shadow';
+import React, { useLayoutEffect, useRef, useCallback, useState } from 'react';
 import { SheetManager } from 'react-native-actions-sheet';
 import DeleteIcon from '../../assets/icons/delete_circle.svg';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import styled from 'styled-components';
 import CloseIcon from '../../assets/icons/close_button.svg';
 import { useDispatch, useSelector } from 'react-redux';
+import Config from 'react-native-config'
+import axios from 'axios';
+import NetInfo from '@react-native-community/netinfo';
+import { setCurrentUser } from '../../redux/currentUserSlice';
 
 const Container = styled.View`
   flex: 1;
@@ -129,15 +131,98 @@ const Login_ID = props => {
   const input2 = useRef(null);
   const [id, setId] = useState('');
   const [password, setPassword] = useState('');
+  const [isConnected, setIsConnected] = useState(true);
   const [hasNavigatedBack, setHasNavigatedBack] = useState(false);
   const hasNavigatedBackRef = useRef(hasNavigatedBack);
 
 
-  console.log('props:', props); 
-  console.log('width:', width); 
-  console.log('activeButton:', activeButton); 
-  console.log('id:', id); 
-  console.log('password:', password);
+
+  const getLogin = async () => {
+    console.log('아이디 로그인');
+    const data = {
+      id,
+      password
+    }
+    try {
+      //////console.log('[HouseDetail] Fetching house details for item:', item);
+      const response = await axios.post(`${Config.APP_API_URL}user/login`, data, { headers: null });
+      console.log('response', response);
+      const detaildata = response.data.data;
+      console.log('detaildata', detaildata);
+      if (response.data.errYn === 'Y') {
+        if (response.data.errCode === 'LOGIN-003') {
+          SheetManager.show('info', {
+            payload: {
+              prevSheet: 'Login_ID',
+              type: 'error',
+              message: '존재하지 않는 아이디에요.',
+            },
+          });
+        } else if (response.data.errCode === 'LOGIN-002') {
+          SheetManager.show('info', {
+            payload: {
+              prevSheet: 'Login_ID',
+              type: 'error',
+              message: '비밀번호가 정확하지 않아요.',
+              description: '5회 잘못 입력 시 5분 후 재시도 할 수 있어요.\n(현재 ' + response.data.errMsgDtl.substring(0, 1) + '회 불일치)',
+            },
+          });
+        } else if (response.data.errCode === 'LOGIN-004') {
+          SheetManager.show('info', {
+            payload: {
+              prevSheet: 'Login_ID',
+              type: 'error',
+              message: '잠시 후에 다시 시도해주세요.',
+              description: '비밀번호를 반복하여 잘못 입력하셨어요.',
+            },
+          });
+        } else {
+          SheetManager.show('info', {
+            payload: {
+              prevSheet: 'Login_ID',
+              type: 'error',
+              message: response.data.errMsg ? response.data.errMsg : '로그인을 하는데 문제가 발생했어요.',
+              description: response.data.errMsgDtl ? response.data.errMsgDtl : '',
+            },
+          });
+        }
+      } else {
+        console.log('detaildata.accessToken', detaildata.accessToken);
+        console.log('detaildata.refreshToken', detaildata.refreshToken);
+        await onIDLogin(detaildata.accessToken, detaildata.refreshToken);
+      }
+    } catch (error) {
+      console.log('error', error);
+      SheetManager.show('info', {
+        payload: {
+          prevSheet: 'Login_ID',
+          type: 'error',
+          message: error?.errMsg ? error?.errMsg : '로그인을 하는데 문제가 발생했어요.',
+          errorMessage: error?.errCode ? error?.errCode : 'error',
+        },
+      });
+    }
+  };
+
+
+  const onIDLogin = async (accessToken, refreshToken) => {
+    const state = await NetInfo.fetch();
+    const canProceed = await handleNetInfoChange(state);
+    if (canProceed) {
+      const tokens = temp(accessToken, refreshToken);
+      console.log('tokens', tokens);
+      //console.log('Login:', event.nativeEvent.data);
+      //console.log('Login token:', tokens[0]);
+      const tokenObject = { 'accessToken': tokens[0], 'refreshToken': tokens[1] };
+      //console.log('Login tokenObject:', tokenObject);
+      dispatch(setCurrentUser(tokenObject));
+
+    }
+  };
+
+  const temp = (accessToken, refreshToken) => {
+    return [accessToken, refreshToken];
+  }
 
 
   /**
@@ -172,6 +257,21 @@ const Login_ID = props => {
     });
   };
 
+  const handleBackPress = () => {
+    navigation.navigate('Login');
+    return true;
+  }
+  useFocusEffect(
+    useCallback(() => {
+      BackHandler.addEventListener('hardwareBackPress', handleBackPress)
+      return () => {
+        BackHandler.removeEventListener('hardwareBackPress', handleBackPress);
+      }
+    }, [handleBackPress])
+  );
+
+
+
   useLayoutEffect(() => {
     navigation.setOptions({
       headerLeft: () => (
@@ -179,7 +279,7 @@ const Login_ID = props => {
           activeOpacity={0.6}
           hitSlop={{ top: 20, bottom: 20, left: 20, right: 20 }}
           onPress={() => {
-            //navigation.goBack({ tokens: props?.route?.params?.tokens });
+            navigation.navigate('Login');
           }}>
           <CloseIcon />
         </TouchableOpacity>
@@ -257,8 +357,12 @@ const Login_ID = props => {
       <ButtonSection>
         <Button
           width={width}
-          onPress={() => {
-
+          onPress={async() => {
+            const state = await NetInfo.fetch();
+            const canProceed = await handleNetInfoChange(state);
+            if (canProceed) {
+              getLogin();
+            }
           }
             // 동의하기 버튼 클릭 시 redux에 저장
           }>

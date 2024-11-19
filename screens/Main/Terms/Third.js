@@ -156,7 +156,7 @@ const Third = props => {
     <Container>
       <ProgressSection>
       </ProgressSection>
-      <ScrollView
+      <ScrollView keyboardShouldPersistTaps='always'
         ref={scrollViewRef}
         showsVerticalScrollIndicator={true}
         contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 80 }}

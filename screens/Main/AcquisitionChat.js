@@ -233,7 +233,7 @@ const KakaoButton = styled.TouchableOpacity.attrs(props => ({
   width: 100%;
   height: 50px;
   border-radius: 25px;
-  background-color: #fbe54d;
+  background-color: #2f87ff;
   align-items: center;
   justify-content: center;
   margin-top: 15px;
@@ -241,8 +241,8 @@ const KakaoButton = styled.TouchableOpacity.attrs(props => ({
 
 const KakaoButtonText = styled.Text`
   font-size: 15px;
-  font-family: Pretendard-Regular;
-  color: #3b1f1e;
+  font-family: Pretendard-bold;
+  color: #fff;
   line-height: 20px;
 `;
 
@@ -344,7 +344,7 @@ const ButtonSection = styled.View`
   align-items: center;
   flex-direction: row;
   justify-content: space-between;
-  padding: 10px;
+
 `;
 
 
@@ -1321,7 +1321,7 @@ const AcquisitionChat = () => {
                   }
                 }}
                 style={{
-                  width: (width - 60) / 2,
+                  width: (width - 50) / 2,
                   alignSelf: 'center',
                   marginTop: 10,
                   marginRight: 10,
@@ -1349,7 +1349,7 @@ const AcquisitionChat = () => {
                   }
                 }}
                 style={{
-                  width: (width - 60) / 2,
+                  width: (width - 50) / 2,
                   alignSelf: 'center',
                   marginTop: 10,
                 }}>

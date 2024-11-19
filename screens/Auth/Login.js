@@ -44,7 +44,7 @@ const SocialButton = styled.TouchableOpacity.attrs(props => ({
   flex-direction: row;
   align-items: center;
   justify-content: center;
-  height: 50px;
+  height: 55px;
   border-radius: 30px;
   padding: 10px;
   margin: 5px;
@@ -171,7 +171,7 @@ const Login = () => {
     const canProceed = await handleNetInfoChange(state);
     if (canProceed) {
       try{
-       
+
         const message = await kakaoAuthManager.unlink();
         // setResult(message ? message : '로그아웃 실패');
         console.log("message ",message ? message : '로그아웃 실패');
@@ -179,7 +179,7 @@ const Login = () => {
         const token = await kakaoAuthManager.signIn();
         // setResult(token ? JSON.stringify(token) : '로그인 실패');
 
-        //성공시 토큰 처리 ; 
+        //성공시 토큰 처리 ;
 
         const profile = await kakaoAuthManager.getProfile();
         // setResult(profile ? JSON.stringify(profile) : '프로필 가져오기 실패');
@@ -229,9 +229,9 @@ const onAppleLogin = async () => {
     serviceUrlScheme: 'howtaxing',
   }).then(async res => {
     const { accessToken } = res?.successResponse;
- 
+
     ////console.log('accessToken', accessToken);
- 
+
     if (accessToken) {
       socialLogin(1, accessToken);
     }
@@ -497,7 +497,7 @@ const onAppleLogin = async () => {
             }}>
             네이버로 시작하기
           </SocialButtonText>
-          
+
         </SocialButton>
 
         {platformToKorean.isIOS && (
@@ -517,7 +517,7 @@ const onAppleLogin = async () => {
             }}>
             애플로 시작하기
           </SocialButtonText>
-          
+
         </SocialButton>
           )}
 

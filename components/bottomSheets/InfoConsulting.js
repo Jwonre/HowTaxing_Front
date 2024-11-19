@@ -12,10 +12,9 @@ import { useDispatch, useSelector } from 'react-redux';
 
 
 const SheetContainer = styled.View`
-  flex: 1;
   background-color: #fff;
   width: ${props => props.width - 40}px;
-  height: auto;
+  height: 100%;
 `;
 
 const ModalTitle = styled.Text`
@@ -65,7 +64,7 @@ const ButtonSection = styled.View`
   align-items: center;
   flex-direction: row;
   justify-content: center;
-  padding: 10px;
+  padding: 20px;
 `;
 
 const Button = styled.TouchableOpacity.attrs(props => ({
@@ -92,7 +91,6 @@ const ButtonText = styled.Text`
 const InfoConsulting = props => {
   const actionSheetRef = useRef(null);
   const { width, height } = useWindowDimensions();
-
 
 
   return (

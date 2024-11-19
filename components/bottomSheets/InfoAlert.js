@@ -16,10 +16,9 @@ import { View } from 'react-native-animatable';
 
 
 const SheetContainer = styled.View`
-  flex: 1;
   background-color: #fff;
   width: ${props => props.width - 40}px;
-  height: auto;
+  height: 100%;
 `;
 
 const ModalTitle = styled.Text`
@@ -160,11 +159,7 @@ const InfoAlert = props => {
               } else if (props?.payload?.closeSheet === true) {
                 props?.payload?.navigation.goBack();
               }
-              if (props?.payload?.networkisConnected === false) {
-                if (props?.payload?.CheckTerms === true) {
-                  navigation.navigate('Login')
-                }
-              }
+
 
             }}>
             <CloseIcon width={16} height={16} />
@@ -181,7 +176,7 @@ const InfoAlert = props => {
         backgroundColor: '#fff',
         borderTopLeftRadius: 20,
         borderTopRightRadius: 20,
-        height: errorMessage ? 490 : props?.payload?.type === 'error' ? 370 : 270,
+        height: errorMessage ? props.payload?.prevSheet !== 'Login_ID' ? 490 : 420 : props?.payload?.type === 'error' ? props.payload?.prevSheet !== 'Login_ID' ? 370 : 300 : 270,
         width: width - 40
       }}>
       <SheetContainer width={width}>
@@ -205,8 +200,8 @@ const InfoAlert = props => {
               alignContent: 'center'
             }}
           >
-            {(props?.payload?.type == 'error') &&
-              <View style={{ justifyContent: 'center', alignItems: 'center', marginBottom: 15 }}>
+            {(props?.payload?.type == 'error' && props.payload?.prevSheet !== 'Login_ID') &&
+              <View style={{ justifyContent: 'center', alignItems: 'center' }}>
                 <KakaoButton
                   onPress={() => Linking.openURL('http://pf.kakao.com/_sxdxdxgG')}>
                   <SocialButtonIcon
@@ -219,7 +214,8 @@ const InfoAlert = props => {
               style={{
                 flexDirection: 'row',
                 justifyContent: 'center',
-                alignContent: 'center'
+                alignContent: 'center',
+                marginTop: 10,
               }}
             >
               {(props?.payload?.type === 'error' && props?.payload?.description) && (
@@ -258,7 +254,7 @@ const InfoAlert = props => {
                   shadowOpacity: 0.15,
                   shadowRadius: 2,
                   alignSelf: 'center',
-                  width: '49%',
+                  width: props?.payload?.type === 'error' && props?.payload?.description ? '49%' : '100%',
                 }}>
                 <Button
                   onPress={() => {
@@ -268,12 +264,6 @@ const InfoAlert = props => {
                     } else if (props?.payload?.closeSheet === true) {
                       props?.payload?.navigation.goBack();
                     }
-                    if (props?.payload?.networkisConnected === false) {
-                      if (props?.payload?.CheckTerms === true) {
-                        navigation.navigate('Login')
-                      }
-                    }
-
                   }}>
                   <ButtonText >{props?.payload?.buttontext ? props?.payload?.buttontext : '확인하기'}</ButtonText>
                 </Button>
@@ -326,7 +316,7 @@ const InfoAlert = props => {
                 <Button
                   onPress={() => {
                     actionSheetRef.current?.hide();
-                    props?.payload?.navigation.goBack();
+                    props?.payload?.navigation.navigate('Home');
                   }}>
                   <ButtonText >네</ButtonText>
                 </Button>

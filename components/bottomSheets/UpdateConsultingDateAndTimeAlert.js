@@ -21,10 +21,9 @@ import Config from 'react-native-config'
 import Calendar from '../ReservationCalendar';
 
 const SheetContainer = styled.View`
-  flex: 1;
   background-color: #fff;
   width: ${props => props.width - 40}px;
-  height: auto;
+  height: 100%;
 `;
 
 const ModalTitle = styled.Text`
@@ -117,7 +116,7 @@ const ButtonSection = styled.View`
   align-items: center;
   flex-direction: row;
   justify-content: space-between;
-  padding: 20px 10px;
+  padding: 20px;
   position: absolute;
   bottom: 30;
 `;
@@ -187,13 +186,13 @@ const UpdateConsultingDateAndTimeAlert = props => {
   }
 
 
-  useEffect(() => {
-    _scrollViewRef.current?.scrollTo({
-      x: (width - 40) * currentPageIndex,
-      y: 0,
-      animated: true,
-    });
-  }, [currentPageIndex]);
+  /*  useEffect(() => {
+      _scrollViewRef.current?.scrollTo({
+        x: (width - 40) * currentPageIndex,
+        y: 0,
+        animated: true,
+      });
+    }, [currentPageIndex]);*/
 
   useEffect(() => {
     getDateTimelist('1', '');
@@ -425,23 +424,25 @@ const UpdateConsultingDateAndTimeAlert = props => {
         width: width - 40,
       }}>
       <ScrollView
+        keyboardShouldPersistTaps='always'
         ref={_scrollViewRef}
         pagingEnabled
         style={{
           width: width - 40,
+          height: currentPageIndex === 0 ? height - 190 : height - 150,
         }}
         horizontal
         showsHorizontalScrollIndicator={false}
         scrollEnabled={false}
         scrollEventThrottle={16}>
-        <SheetContainer width={width}>
+        {currentPageIndex === 0 && <SheetContainer width={width}>
           <ModalInputSection>
             <ModalTitle>변경하실 날짜를 선택해주세요.</ModalTitle>
             <SubTitle2>예약과 동시에 일정이 확정되니{'\n'}신중하게 선택해주세요.</SubTitle2>
             <View
               style={{
                 width: '100%',
-                height: 500,
+                height: 460,
                 marginTop: 20,
               }}>
               <Calendar
@@ -479,9 +480,9 @@ const UpdateConsultingDateAndTimeAlert = props => {
               </Button>
             </ButtonShadow>
           </ButtonSection>
-        </SheetContainer>
+        </SheetContainer>}
 
-        <SheetContainer width={width}>
+        {currentPageIndex === 1 && <SheetContainer width={width} >
           <ModalInputSection>
             <ModalTitle>변경하실 시간을 선택해주세요.</ModalTitle>
             <SubTitle2>예약과 동시에 일정이 확정되니{'\n'}신중하게 선택해주세요.</SubTitle2>
@@ -581,7 +582,7 @@ const UpdateConsultingDateAndTimeAlert = props => {
               </Button>
             </ButtonShadow>
           </ButtonSection>
-        </SheetContainer>
+        </SheetContainer>}
 
 
       </ScrollView>

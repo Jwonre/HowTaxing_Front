@@ -18,10 +18,9 @@ import CancelCircle from '../../assets/icons/cancel_circle.svg';
 import NetInfo from "@react-native-community/netinfo";
 
 const SheetContainer = styled.View`
-  flex: 1;
   background-color: #fff;
   width: ${props => props.width - 40}px;
-  height: auto;
+  height: 100%;
 `;
 
 const ModalTitle = styled.Text`
@@ -112,7 +111,7 @@ const ButtonSection = styled.View`
   align-items: center;
   flex-direction: row;
   justify-content: space-between;
-  padding: 20px 10px;
+  padding: 20px;
   border-top-width: 1px;
   border-top-color: #e8eaed;
 `;
@@ -157,6 +156,7 @@ const UpdateAreaMeterAlert = props => {
 
   const [hasNavigatedBack, setHasNavigatedBack] = useState(false);
   const hasNavigatedBackRef = useRef(hasNavigatedBack);
+  const [keyboardVisible, setKeyboardVisible] = useState(false);
   const dispatch = useDispatch();
   const actionSheetRef = useRef(null);
   const { width, height } = useWindowDimensions();

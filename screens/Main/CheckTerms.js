@@ -1,15 +1,13 @@
 
-import { TouchableOpacity, useWindowDimensions, BackHandler } from 'react-native';
+import { TouchableOpacity, useWindowDimensions, BackHandler, View } from 'react-native';
 import React, { useLayoutEffect, useState, useCallback, useRef } from 'react';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import BackIcon from '../../assets/icons/back_button.svg';
 import CheckOnIcon from '../../assets/icons/check_on.svg';
 import styled from 'styled-components';
 import HomeIcon from '../../assets/images/home_checkterms.svg';
-import FastImage from 'react-native-fast-image';
 import { SheetManager } from 'react-native-actions-sheet';
 import DropShadow from 'react-native-drop-shadow';
-import getFontSize from '../../utils/getFontSize';
 import { useDispatch, useSelector } from 'react-redux';
 import NetInfo from '@react-native-community/netinfo';
 import { setCurrentUser } from '../../redux/currentUserSlice';
@@ -23,7 +21,7 @@ const Container = styled.View`
 `;
 
 const IntroSection = styled.View`
-  flex: 0.6;
+  flex: 0.8;
   width: 100%;
   padding: 25px;
   justify-content: flex-end;
@@ -59,7 +57,7 @@ const Title = styled.Text`
 
 const SubTitle = styled.Text`
   font-size: 13px;
-  font-family: Pretendard-Regular;
+  font-family: Pretendard-Bold;
   color: #a3a5a8;
   line-height: 20px;
   margin-top: 6px;
@@ -77,52 +75,36 @@ const IconView = styled.View`
   border: 1px solid #e8eaed;
 `;
 const ListItem = styled.View`
-  flex-direction: row;
+  flex-direction: row; 
+  justify-content: space-between;
   align-items: center;
-  justify-content: flex-start;
-  padding: 0 20px;
+  padding: 0 25px;
 `;
 
 const ListItemTitle = styled.Text`
-  flex: 1;
   font-size: 12px;
-  font-family: Pretendard-Regular;
+  font-family: Pretendard-Bold;
   color: #1b1c1f;
   line-height: 18px;
 `;
 
 
-
-
 const CheckCircle = styled.TouchableOpacity.attrs(props => ({
   activeOpacity: 0.8,
 }))`
-    width: 30px;
-    height: 30px;
-    border-radius: 15px;
+    width: 20px;
+    height: 20px;
+    border-radius: 5px;  
     background-color: #fff;
-    border: 1px solid #cfd1d5;
+    border: 2px solid #BAC7D5;  
     align-items: center;
     justify-content: center;
     margin-right: 10px;
 `;
-const ListItemButton = styled.TouchableOpacity.attrs(props => ({
-  activeOpacity: 0.8,
-  hitSlop: { top: 20, bottom: 20, left: 20, right: 20 },
-}))``;
-
-const ListItemButtonText = styled.Text`
-  font-size: 12px;
-  font-family: Pretendard-Regular;
-  color: #717274;
-  line-height: 15px;
-  text-decoration-line: underline;
-  text-decoration-color: #717274;
-`;
 
 const ButtonSection = styled.View`
-  flex: 0.3;
   padding: 0 20px;
+  padding-top: 20px;
 `;
 
 const Button = styled.TouchableOpacity.attrs(props => ({
@@ -157,7 +139,7 @@ const CheckTerms = props => {
   const navigation = useNavigation()
   const { width, height } = useWindowDimensions()
   const dispatch = useDispatch();
-  const { agreeAge, agreeCert, agreePrivacy, agreeMarketing, agreeLocation } = useSelector(
+  const { agreeAge, agreeCert, agreePrivacy, agreeMarketing } = useSelector(
     state => state.cert.value,
   );
   const [isConnected, setIsConnected] = useState(true);
@@ -184,7 +166,37 @@ const CheckTerms = props => {
 
 
   const handleBackPress = () => {
-    navigation.navigate('Login');
+    if (props?.route?.params?.LoginAcessType === 'SOCIAL') {
+      dispatch(
+        setCert({
+          agreeCert: false,
+          agreePrivacy: false,
+          agreeThird: false,
+          agreeAge: false,
+          agreeLocation: false,
+          agreeMarketing: false,
+          agreeCopyright: false,
+          agreeGov24: false
+        }),
+      );
+      navigation.navigate('Login');
+
+    } else {
+      dispatch(
+        setCert({
+          agreeCert: false,
+          agreePrivacy: false,
+          agreeThird: false,
+          agreeAge: false,
+          agreeLocation: false,
+          agreeMarketing: false,
+          agreeCopyright: false,
+          agreeGov24: false
+        }),
+      );
+      navigation.goBack();
+
+    }
     return true;
   }
   useFocusEffect(
@@ -198,7 +210,7 @@ const CheckTerms = props => {
 
 
 
-  const handleSignUp = async (accessToken, handleSignUpagreeMarketing) => {
+  const handleSignUp = async (accessToken, agreeMarketing) => {
     // 요청 헤더
     const headers = {
       'Content-Type': 'application/json',
@@ -207,13 +219,15 @@ const CheckTerms = props => {
 
     // 요청 바디
     const data = {
-      mktAgr: handleSignUpagreeMarketing,
+      joinType: props?.route?.params?.LoginAcessType === 'SOCIAL' ? 'SOCIAL' : 'IDPASS',
+      id: props?.route?.params?.LoginAcessType === 'SOCIAL' ? null : props?.route?.params?.id,
+      password: props?.route?.params?.LoginAcessType === 'SOCIAL' ? null : props?.route?.params?.password,
+      mktAgr: agreeMarketing,
     };
-
+    console.log('data', data);
     try {
-
-      const response = await axios.post(`${Config.APP_API_URL}user/signUp`, data, { headers: headers });
-
+      const response = await axios.post(`${Config.APP_API_URL}user/signUp`, data, { headers: props?.route?.params?.LoginAcessType === 'SOCIAL' ? headers : null });
+      console.log('response', response);
       if (response.data.errYn === 'Y') {
         SheetManager.show('info', {
           payload: {
@@ -263,7 +277,36 @@ const CheckTerms = props => {
           activeOpacity={0.6}
           hitSlop={{ top: 20, bottom: 20, left: 20, right: 20 }}
           onPress={() => {
-            navigation.navigate('Login');
+            if (props?.route?.params?.LoginAcessType === 'SOCIAL') {
+              dispatch(
+                setCert({
+                  agreeCert: false,
+                  agreePrivacy: false,
+                  agreeThird: false,
+                  agreeAge: false,
+                  agreeLocation: false,
+                  agreeMarketing: false,
+                  agreeCopyright: false,
+                  agreeGov24: false
+                }),
+              );
+              navigation.navigate('Login');
+            } else {
+              dispatch(
+                setCert({
+                  agreeCert: false,
+                  agreePrivacy: false,
+                  agreeThird: false,
+                  agreeAge: false,
+                  agreeLocation: false,
+                  agreeMarketing: false,
+                  agreeCopyright: false,
+                  agreeGov24: false
+                }),
+              );
+              navigation.goBack();
+            }
+
           }}>
           <BackIcon />
         </TouchableOpacity>
@@ -288,22 +331,35 @@ const CheckTerms = props => {
         <HomeIcon />
       </IconView>
       <IntroSection>
-        <Tag>
-          <TagText >하우택싱</TagText>
-        </Tag>
         <Title >약관을 확인해주세요.</Title>
 
-        <SubTitle >원활한 하우택싱 서비스 이용을 위해{'\n'}약관에 동의해주세요.</SubTitle>
+        <SubTitle >원활한 하우택싱 서비스 이용을 위해 약관에 동의해주세요.</SubTitle>
       </IntroSection>
+      <TouchableOpacity
+        style={{
+          width: '100%',
+          height: 1,
+          backgroundColor: '#E8EAED',
+          marginBottom: 20,
+        }}
+      />
+      
       <ListItem>
+
+        <ListItemTitle
+          style={{
+            fontSize: 16,
+          }} >
+          전체 동의하기
+        </ListItemTitle>
+
         <CheckCircle onPress={() => {
-          if (agreeAge && agreeCert && agreePrivacy && agreeLocation && agreeMarketing) {
+          if (agreeAge && agreeCert && agreePrivacy && agreeMarketing) {
             dispatch(
               setCert({
                 agreeAge: false,
                 agreeCert: false,
                 agreePrivacy: false,
-                agreeLocation: false,
                 agreeMarketing: false,
               }),
             );
@@ -313,22 +369,15 @@ const CheckTerms = props => {
                 agreeAge: true,
                 agreeCert: true,
                 agreePrivacy: true,
-                agreeLocation: true,
                 agreeMarketing: true,
               }),
             );
           }
         }}>
-          {agreeAge && agreeCert && agreePrivacy && agreeLocation && agreeMarketing && <CheckOnIcon />}
+          {agreeAge && agreeCert && agreePrivacy && agreeMarketing && <CheckOnIcon />}
         </CheckCircle>
-        <ListItemTitle
-          style={{
-            fontSize: 15,
-            fontFamily: 'Pretendard-Medium',
-          }} >
-          전체 동의하기
-        </ListItemTitle>
       </ListItem>
+
       <TouchableOpacity
         style={{
           width: '100%',
@@ -337,9 +386,10 @@ const CheckTerms = props => {
           marginTop: 20,
         }}
       />
-
-
       <ListItem style={{ marginTop: 20 }}>
+        <ListItemTitle >
+          [필수] 14세 이상입니다.
+        </ListItemTitle>
         <CheckCircle
           onPress={() => {
             dispatch(
@@ -347,19 +397,25 @@ const CheckTerms = props => {
                 agreeAge: !agreeAge,
                 agreeCert,
                 agreePrivacy,
-                agreeLocation,
                 agreeMarketing,
               }),
             );
           }}>
           {agreeAge && <CheckOnIcon />}
         </CheckCircle>
-        <ListItemTitle >
-          [필수] 14세 이상입니다.
-        </ListItemTitle>
       </ListItem>
 
-      <ListItem style={{ marginTop: 10 }}>
+      <ListItem style={{ marginTop: 20 }}>
+        <View style={{ flexDirection: 'row' }}>
+          <ListItemTitle>[필수] </ListItemTitle>
+          <TouchableOpacity
+            onPress={() => {
+              navigation.navigate('Cert2', { agreeCert: agreeCert, navigation: navigation, tokens: props?.route?.params?.tokens ? props?.route?.params?.tokens : null, id: props?.route?.params?.id ? props?.route?.params?.id : null, password: props?.route?.params?.password ? props?.route?.params?.password : null });
+            }} >
+            <ListItemTitle style={{ color: '#2F87FF', textDecorationLine: 'underline' }}>하우택싱 서비스 이용약관</ListItemTitle>
+          </TouchableOpacity>
+          <ListItemTitle>에 대하여 동의하시나요?</ListItemTitle>
+        </View>
         <CheckCircle
           onPress={() => {
             dispatch(
@@ -367,26 +423,25 @@ const CheckTerms = props => {
                 agreeAge,
                 agreeCert: !agreeCert,
                 agreePrivacy,
-                agreeLocation,
                 agreeMarketing,
               }),
             );
           }}>
           {agreeCert && <CheckOnIcon />}
         </CheckCircle>
-        <ListItemTitle >
-          [필수] 하우택싱 서비스 이용약관
-        </ListItemTitle>
-        <ListItemButton
-          onPress={() => {
-            //    ////console.log('agreeCert', agreeCert)
-            navigation.navigate('Cert2', { agreeCert: agreeCert, navigation: navigation, tokens: props?.route?.params?.tokens },);
-          }}>
-          <ListItemButtonText >보기</ListItemButtonText>
-        </ListItemButton>
       </ListItem>
 
-      <ListItem style={{ marginTop: 10 }}>
+      <ListItem style={{ marginTop: 20 }}>
+        <View style={{ flexDirection: 'row' }}>
+          <ListItemTitle>[필수] </ListItemTitle>
+          <TouchableOpacity
+            onPress={() => {
+              navigation.navigate('Privacy2', { agreePrivacy: agreePrivacy, navigation: navigation, tokens: props?.route?.params?.tokens ? props?.route?.params?.tokens : null, id: props?.route?.params?.id ? props?.route?.params?.id : null, password: props?.route?.params?.password ? props?.route?.params?.password : null });
+            }} >
+            <ListItemTitle style={{ color: '#2F87FF', textDecorationLine: 'underline' }}>개인정보 수집 및 이용</ListItemTitle>
+          </TouchableOpacity>
+          <ListItemTitle>에 대하여 동의하시나요?</ListItemTitle>
+        </View>
         <CheckCircle
           onPress={() => {
             dispatch(
@@ -394,25 +449,15 @@ const CheckTerms = props => {
                 agreeAge,
                 agreeCert,
                 agreePrivacy: !agreePrivacy,
-                agreeLocation,
                 agreeMarketing,
               }),
             );
           }}>
           {agreePrivacy && <CheckOnIcon />}
         </CheckCircle>
-        <ListItemTitle >
-          [필수] 개인정보 수집 및 이용 동의 
-        </ListItemTitle>
-        <ListItemButton
-          onPress={() => {
-            navigation.navigate('Privacy2', { agreePrivacy: agreePrivacy, navigation: navigation, tokens: props?.route?.params?.tokens });
-          }}>
-          <ListItemButtonText >보기</ListItemButtonText>
-        </ListItemButton>
       </ListItem>
 
-      <ListItem style={{ marginTop: 10 }}>
+      {/*<ListItem style={{ marginTop: 10 }}>
         <CheckCircle
           onPress={() => {
             dispatch(
@@ -437,9 +482,19 @@ const CheckTerms = props => {
           }}>
           <ListItemButtonText >보기</ListItemButtonText>
         </ListItemButton>
-      </ListItem>
+      </ListItem>*/}
 
-      <ListItem style={{ marginTop: 10 }}>
+      <ListItem style={{ marginTop: 20 }}>
+        <View style={{ flexDirection: 'row' }}>
+          <ListItemTitle>[선택] </ListItemTitle>
+          <TouchableOpacity
+            onPress={() => {
+              navigation.navigate('Marketing2', { agreeMarketing: agreeMarketing, navigation: navigation, tokens: props?.route?.params?.tokens ? props?.route?.params?.tokens : null, id: props?.route?.params?.id ? props?.route?.params?.id : null, password: props?.route?.params?.password ? props?.route?.params?.password : null });
+            }} >
+            <ListItemTitle style={{ color: '#2F87FF', textDecorationLine: 'underline' }}>마케팅 정보 수신</ListItemTitle>
+          </TouchableOpacity>
+          <ListItemTitle>에 대하여 동의하시나요?</ListItemTitle>
+        </View>
         <CheckCircle
           onPress={() => {
             dispatch(
@@ -447,45 +502,39 @@ const CheckTerms = props => {
                 agreeAge,
                 agreeCert,
                 agreePrivacy,
-                agreeLocation,
                 agreeMarketing: !agreeMarketing,
               }),
             );
           }}>
           {agreeMarketing && <CheckOnIcon />}
         </CheckCircle>
-        <ListItemTitle >
-          [선택] 마케팅 및 프로모션 수신동의
-        </ListItemTitle>
-
       </ListItem>
-      <ListItem style={{ marginTop: 50 }}>
 
-      </ListItem>
       <ButtonSection style={{ marginTop: 20 }}>
         <ShadowContainer>
           <Button
             width={width}
-            disabled={!(agreeCert && agreeAge && agreePrivacy && agreeLocation)}
+            disabled={!(agreeCert && agreeAge && agreePrivacy)}
             onPress={async () => {
               const state = await NetInfo.fetch();
               const canProceed = await handleNetInfoChange(state);
               if (canProceed) {
-               // console.log('props.tokens', props?.route?.params?.tokens);
-                const Sighupresult = await handleSignUp(props?.route?.params?.tokens[0], agreeMarketing);
-                if (Sighupresult) {
-                  const tokenObject = { 'accessToken': props?.route?.params?.[tokens0], 'refreshToken': props?.route?.params?.tokens[1] };
-                //  console.log('Login tokenObject:', tokenObject);
-                  dispatch(setCurrentUser(tokenObject));
+                console.log('props?.route?.params', props?.route?.params);
+                if (props?.route?.params?.LoginAcessType === 'SOCIAL') {
+                  const Sighupresult = await handleSignUp(props?.route?.params?.tokens[0] ? props?.route?.params?.tokens[0] : null, agreeMarketing);
+                  console.log('Sighupresult', Sighupresult);
+                  if (Sighupresult) {
 
+                    const tokenObject = { 'accessToken': props?.route?.params?.tokens[0], 'refreshToken': props?.route?.params?.tokens[1] };
+                    //  console.log('Login tokenObject:', tokenObject);
+                    dispatch(setCurrentUser(tokenObject));
+                  }
                 } else {
-                  SheetManager.show('info', {
-                    payload: {
-                      message: '로그인에 실패했습니다.',
-                      type: 'error',
-                      buttontext: '확인하기',
-                    }
-                  });
+                  const Sighupresult = await handleSignUp(null, agreeMarketing);
+                  console.log('Sighupresult', Sighupresult);
+                  if (Sighupresult) {
+                    navigation.navigate('AddMembershipFinish', { prevSheet: 'CheckTerms', id: props?.route?.params?.id ? props?.route?.params?.id : null, password: props?.route?.params?.password ? props?.route?.params?.password : null });
+                  }
                 }
               }
             }
@@ -497,7 +546,7 @@ const CheckTerms = props => {
               marginTop: 20,
               marginBottom: 50,
               backgroundColor:
-                agreeCert && agreeAge && agreePrivacy && agreeLocation
+                agreeCert && agreeAge && agreePrivacy
                   ? '#2F87FF'
                   : '#E8EAED',
             }}>

@@ -9,7 +9,7 @@ import {
   BackHandler,
 } from 'react-native';
 import { WebView } from 'react-native-webview';
-import React, { useLayoutEffect, useRef, useState, useEffect } from 'react';
+import React, { useLayoutEffect, useRef, useState, useEffect, useCallback } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import styled from 'styled-components';
 import CloseIcon from '../../../assets/icons/close_button.svg';

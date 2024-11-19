@@ -1,6 +1,6 @@
 // 양도소득세 홈페이지
 
-import { TouchableOpacity, useWindowDimensions, BackHandler, View, ScrollView, Animated, Text, TextInput } from 'react-native';
+import { TouchableOpacity, useWindowDimensions, BackHandler, View, ScrollView, Animated, Text, TextInput, Dimensions } from 'react-native';
 import { FlatList } from 'react-native-gesture-handler';
 import React, { useRef, useLayoutEffect, useState, useCallback, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -378,7 +378,8 @@ const ConsultingReservation = () => {
 
 
   const navigation = useNavigation();
-  const { width, height } = useWindowDimensions();
+  const { width, height } = Dimensions.get('window');
+  console.log('width', width);
   const input1 = useRef(null);
   const input2 = useRef(null);
   const input3 = useRef(null);
@@ -435,13 +436,13 @@ const ConsultingReservation = () => {
 
   const [isConnected, setIsConnected] = useState(true);
 
-  useEffect(() => {
-    _scrollViewRef.current?.scrollTo({
-      x: (width) * currentPageIndex,
-      y: 0,
-      animated: true,
-    });
-  }, [currentPageIndex]);
+  /* useEffect(() => {
+     _scrollViewRef.current?.scrollTo({
+       x: Math.round(width * currentPageIndex),
+       y: 0, animated: true,
+     });
+   }, [currentPageIndex]);
+ */
 
   const handleNetInfoChange = (state) => {
     return new Promise((resolve, reject) => {
@@ -465,7 +466,7 @@ const ConsultingReservation = () => {
     if (currentPageIndex === 2) {
       getDateTimelist('1', '');
     }
-    // console.log('dataList', dataList);
+
   }, [currentPageIndex]);
 
 
@@ -722,10 +723,11 @@ const ConsultingReservation = () => {
         width: width,
       }}
       horizontal
+      keyboardShouldPersistTaps='always'
       showsHorizontalScrollIndicator={false}
       scrollEnabled={false}
       scrollEventThrottle={16}>
-      <Container style={{ width: width }}>
+      {currentPageIndex === 0 && <Container style={{ width: width }}>
         <ProgressSection>
         </ProgressSection>
 
@@ -856,13 +858,11 @@ const ConsultingReservation = () => {
               ))}
             </View>
           </ButtonSection></>
-      </Container>
+      </Container>}
 
-      <Container style={{ width: width }}>
+      {currentPageIndex === 1 && <Container style={{ width: width }}>
         <ProgressSection>
         </ProgressSection>
-
-
         <><IntroSection2 style={{ width: width }}>
           <Title>고객님의 이름을 알려주세요.</Title>
           <SubTitle>이름을 밝히고 싶지않다면 닉네임도 괜찮아요.</SubTitle>
@@ -940,8 +940,8 @@ const ConsultingReservation = () => {
             </View>
           </ButtonSection></>
 
-      </Container>
-      <Container style={{ width: width }}>
+      </Container>}
+      {currentPageIndex === 2 && <Container style={{ width: width }}>
         <ProgressSection>
         </ProgressSection>
         <><IntroSection2 style={{ width: width }}>
@@ -1067,8 +1067,8 @@ const ConsultingReservation = () => {
             </View>
           </ButtonSection></>
 
-      </Container>
-      <Container style={{ width: width }}>
+      </Container>}
+      {currentPageIndex === 3 && <Container style={{ width: width }}>
         <ProgressSection>
         </ProgressSection>
         <><FlatList
@@ -1087,7 +1087,6 @@ const ConsultingReservation = () => {
               </IntroSection2>
               <View
                 style={{
-                  width: '100%',
                   height: 350,
                   borderBottomWidth: 1,
                   borderBottomColor: '#E8EAED',
@@ -1098,7 +1097,6 @@ const ConsultingReservation = () => {
                   currentDate={dataList ? new Date(dataList[0]).setHours(0, 0, 0, 0) : new Date().setHours(0, 0, 0, 0)}
                   dateList={dataList}
                 />
-
               </View>
               <ReservationtimeSection>
                 <TimeTitle>오전</TimeTitle>
@@ -1249,9 +1247,9 @@ const ConsultingReservation = () => {
             </ButtonSection></>
           }
         /></>
-      </Container>
+      </Container>}
 
-      <Container style={{ width: width }}>
+      {currentPageIndex === 4 && <Container style={{ width: width }}>
         <ProgressSection>
         </ProgressSection>
         <>
@@ -1316,7 +1314,7 @@ const ConsultingReservation = () => {
             </View>
             <SubTitle4 style={{ marginTop: 20, marginBottom: 20 }}>상세 내용</SubTitle4>
             <ConsultingItem>
-              <ScrollView>
+              <ScrollView keyboardShouldPersistTaps='always'>
                 <ConsultingInput
                   ref={input3}
                   autoFocus={currentPageIndex === 4}
@@ -1427,7 +1425,7 @@ const ConsultingReservation = () => {
             </View>
           </ButtonSection2>
         </>
-      </Container>
+      </Container>}
 
 
 

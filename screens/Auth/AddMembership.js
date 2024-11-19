@@ -22,6 +22,7 @@ import BackIcon from '../../assets/icons/back_button.svg';
 import { useDispatch, useSelector } from 'react-redux';
 import NetInfo from '@react-native-community/netinfo';
 import Config from 'react-native-config'
+import axios from 'axios';
 
 const Container = styled.View`
   flex: 1;
@@ -126,6 +127,7 @@ const CircleButton = styled.TouchableOpacity.attrs(props => ({
 
 const AddMembership = props => {
   const navigation = useNavigation();
+
   const dispatch = useDispatch();
   const webviewRef = useRef(null);
   const { width } = useWindowDimensions();
@@ -137,8 +139,10 @@ const AddMembership = props => {
   const [password, setPassword] = useState('');
   const [checkpassword, setCheckPassword] = useState('');
   const [IdOk, setIdOk] = useState('1');
+  const [IdCheckresult, setIdCheckresult] = useState('');
   const [PasswordOk, setPasswordOk] = useState('1');
   const [PasswordCheckOk, setPasswordCheckOk] = useState('1');
+  const [isConnected, setIsConnected] = useState(true);
   const [hasNavigatedBack, setHasNavigatedBack] = useState(false);
   const hasNavigatedBackRef = useRef(hasNavigatedBack);
 
@@ -184,6 +188,28 @@ const AddMembership = props => {
     return regex.test(password);
   };
 
+  const getLoginYn = async () => {
+    try {
+      const url = `${Config.APP_API_URL}user/idCheck?id=${encodeURIComponent(id)}`;
+      console.log('url', url);
+      const response = await axios.get(url);
+      if (response.data.errYn == 'Y') {
+        setIdOk('3');
+        setIdCheckresult(response.data.errMsg ? response.data.errMsg : '로그인 중복체크 중 문제가 생겼어요.');
+        return false;
+      } else {
+        setIdOk('2');
+        setIdCheckresult('');
+        return true;
+      }
+
+    } catch (error) {
+      setIdOk('3');
+      setIdCheckresult('로그인 중복체크 중 문제가 생겼어요.');
+      return false;
+    }
+  };
+
   useLayoutEffect(() => {
     navigation.setOptions({
       headerLeft: () => (
@@ -221,11 +247,30 @@ const AddMembership = props => {
           <ModalInputContainer>
             <ModalInput
               ref={input1}
-              onSubmitEditing={async () => { input2.current.focus(); setIdOk('2'); }}
+              onSubmitEditing={async () => {
+                const logincheck = await getLoginYn();
+                if (logincheck) {
+                  input2.current.focus();
+                } else {
+                  input1.current.focus();
+                }
+
+              }
+              }
+              onBlur={async () => {
+                const logincheck = await getLoginYn();
+                if (logincheck) {
+                  input2.current.focus();
+                } else {
+                  input1.current.focus();
+                }
+
+              }
+              }
               placeholder="아이디를 입력해주세요."
               //  autoFocus={currentPageIndex === 2}
               value={id}
-              onChangeText={async (id) => { setId(id.replace(/[^a-zA-Z0-9!@#$%^&*(),.?":{}|<>]/g, '')); setIdOk('2'); }}
+              onChangeText={async (id) => { setId(id.replace(/[^a-zA-Z0-9!@#$%^&*(),.?":{}|<>]/g, '')); setIdOk('1'); setIdCheckresult(''); }}
               autoCompleteType="id"
               autoCapitalize="none"
             />
@@ -242,7 +287,7 @@ const AddMembership = props => {
             </CircleButton>
             }
           </ModalInputContainer>
-          <Text style={{ fontSize: 13, color: '#2F87FF', marginTop: 5, marginLeft: 5 }}>{password === checkpassword ? '' : '입력하신 비밀번호가 일치하지 않아요.'}</Text>
+          <Text style={{ fontSize: 13, color: '#2F87FF', marginTop: 5, marginLeft: 5 }}>{IdCheckresult}</Text>
         </View>
         <View style={{ marginBottom: 15 }}>
           <ModalText>비밀번호</ModalText>
@@ -340,11 +385,11 @@ const AddMembership = props => {
           disabled={IdOk !== '2' || PasswordOk !== '2' || PasswordCheckOk !== '2'}
           style={{ backgroundColor: (IdOk === '2' && PasswordOk === '2' && PasswordCheckOk === '2') ? '#2F87FF' : '#E8EAED' }}
           width={width}
-          onPress={async() => {
+          onPress={async () => {
             const state = await NetInfo.fetch();
             const canProceed = await handleNetInfoChange(state);
             if (canProceed) {
-
+              await navigation.push('CheckTerms', { LoginAcessType: 'IDPASS', id: id, password: password });
             }
           }
             // 동의하기 버튼 클릭 시 redux에 저장

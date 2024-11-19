@@ -402,7 +402,7 @@ const ReservationDetail = props => {
                 <ModalInputContainer>
                   <SubTitle>상담 예약일시</SubTitle>
                   <SubTitle2>확정된 상담 예약 날짜와 시간이에요.</SubTitle2>
-                  <ModalInput
+                  <ModalInput keyboardShouldPersistTaps='always'
                     style={{ height: 50, textAlignVertical: 'top', paddingTop: reservationDetail.consultingStatus === 'WAITING' ? 10 : 20 }}
                   >
                     <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -452,7 +452,7 @@ const ReservationDetail = props => {
                       </HoustInfoBadge>
                     ))}
                   </View>
-                  <ModalInput
+                  <ModalInput keyboardShouldPersistTaps='always'
                     style={{ height: reservationDetail.consultingInflowPath && reservationDetail.consultingInflowPath !== '00' ? 130 : 150, textAlignVertical: 'top', paddingTop: reservationDetail.consultingStatus === 'WAITING' ? 10 : 20 }}>
                     <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
                       <ModalInputText style={{ width: '90%', paddingTop: 10 }}>{reservationDetail.consultingRequestContent}</ModalInputText>

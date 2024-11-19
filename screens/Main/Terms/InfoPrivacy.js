@@ -71,7 +71,7 @@ const InfoPrivacy = props => {
       </ProgressSection>
       <View style={{ flex: 1 }}>
         <WebView
-          source={{ uri: 'https://app.how-taxing.com/privacy-policy' }}
+          source={{ uri: 'https://deep-hortensia-87c.notion.site/04-1116041b8ebc8026bfd7e32c4d1fe76f?pvs=4' }}
           javaScriptEnabled={true}
           domStorageEnabled={true}
           startInLoadingState={false}

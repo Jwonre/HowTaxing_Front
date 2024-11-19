@@ -289,6 +289,8 @@ const HouseDetail = props => {
   return (
     <Container>
       <KeyboardAwareScrollView
+        keyboardShouldPersistTaps='always'
+        enableAutomaticScroll={false}
         contentContainerStyle={{
           paddingBottom: 20,
         }}>
@@ -321,7 +323,7 @@ const HouseDetail = props => {
                 </HoustInfoBadge>*/}
               </View>
               <HoustInfoTitle >{item?.houseName}</HoustInfoTitle>
-              <HoustInfoText  ellipsizeMode='tail' numberOfLines={1} style={{ flex: 1, textAlign: 'left' }}>{item?.houseDetailName}</HoustInfoText>
+              <HoustInfoText ellipsizeMode='tail' numberOfLines={1} style={{ flex: 1, textAlign: 'left' }}>{item?.houseDetailName}</HoustInfoText>
             </HoustInfoSection>
             <MapContainer>
               <NaverMapView
@@ -407,7 +409,7 @@ const HouseDetail = props => {
                 </NecessaryInfoBadgeText>
               </NecessaryInfoBadge>
               <InfoContentLabel >주소      </InfoContentLabel>
-              <InfoContentText  ellipsizeMode='tail' numberOfLines={1} style={{ flex: 1, textAlign: 'right' }}>{item?.roadAddr}</InfoContentText>
+              <InfoContentText ellipsizeMode='tail' numberOfLines={1} style={{ flex: 1, textAlign: 'right' }}>{item?.roadAddr}</InfoContentText>
             </InfoContentItem>
 
             <InfoContentItem>
@@ -422,7 +424,7 @@ const HouseDetail = props => {
                 </NecessaryInfoBadgeText>
               </NecessaryInfoBadge>
               <InfoContentLabel >상세주소</InfoContentLabel>
-              <InfoContentText  ellipsizeMode='tail' numberOfLines={1} style={{ flex: 1, textAlign: 'right' }}>{item?.houseName}</InfoContentText>
+              <InfoContentText ellipsizeMode='tail' numberOfLines={1} style={{ flex: 1, textAlign: 'right' }}>{item?.houseName}</InfoContentText>
             </InfoContentItem>
 
             {(prevSheet === 'confirm2' || prevSheet === 'GainsTaxChat') && <InfoContentItem>
@@ -437,7 +439,7 @@ const HouseDetail = props => {
                 </NecessaryInfoBadgeText>
               </NecessaryInfoBadge>
               <InfoContentLabel >취득계약일자</InfoContentLabel>
-              <InfoContentText  style={{ flex: 1, textAlign: 'right' }}>{item?.contractDate ? dayjs(item?.contractDate).format(
+              <InfoContentText style={{ flex: 1, textAlign: 'right' }}>{item?.contractDate ? dayjs(item?.contractDate).format(
                 'YYYY년 MM월 DD일',
               ) : ''}</InfoContentText>
             </InfoContentItem>}
@@ -486,7 +488,7 @@ const HouseDetail = props => {
             </InfoContentItem>
             {(prevSheet === 'confirm' || prevSheet === 'AcquisitionChat') && <InfoContentItem>
               <InfoContentLabel >취득계약일자</InfoContentLabel>
-              <InfoContentText  style={{ flex: 1, textAlign: 'right' }}>{item?.contractDate ? dayjs(item?.contractDate).format(
+              <InfoContentText style={{ flex: 1, textAlign: 'right' }}>{item?.contractDate ? dayjs(item?.contractDate).format(
                 'YYYY년 MM월 DD일',
               ) : ''}</InfoContentText>
             </InfoContentItem>}
@@ -498,7 +500,7 @@ const HouseDetail = props => {
                 }}>
                 <InfoContentText >{item?.area ? item?.area + 'm²' : (item?.isAreaOver85 === true ? '국민평형(85m2) 초과' : item?.isAreaOver85 === undefined ? '' : '국민평형(85m2) 이하')}</InfoContentText>
                 {item?.area !== 0 || undefined && <InfoContentText
-                  
+
                   style={{
                     fontSize: 10,
                     color: '#A3A5A8',
@@ -509,7 +511,7 @@ const HouseDetail = props => {
             </InfoContentItem>
             {(prevSheet === 'confirm' || prevSheet === 'AcquisitionChat') && <InfoContentItem>
               <InfoContentLabel >취득일자</InfoContentLabel>
-              <InfoContentText  style={{ flex: 1, textAlign: 'right' }}>
+              <InfoContentText style={{ flex: 1, textAlign: 'right' }}>
                 {(item?.buyDate ? dayjs(item?.buyDate).format('YYYY년 MM월 DD일') : '')}
               </InfoContentText>
             </InfoContentItem>}
@@ -530,7 +532,7 @@ const HouseDetail = props => {
                   justifyContent: 'space-between',
                 }}>
                 <Label
-                  
+
                   style={{
                     marginBottom: 0,
                   }}>

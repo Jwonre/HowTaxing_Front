@@ -21,10 +21,9 @@ import { useNavigation } from '@react-navigation/native';
 
 
 const SheetContainer = styled.View`
-  flex: 1;
   background-color: #fff;
   width: ${props => props.width - 40}px;
-  height: auto;
+  height: 100%;
 `;
 
 const ModalTitle = styled.Text`
@@ -58,7 +57,7 @@ const ButtonSection = styled.View`
   align-items: center;
   flex-direction: row;
   justify-content: space-between;
-  padding: 20px 10px;
+  padding: 20px;
   border-top-width: 1px;
   border-top-color: #e8eaed;
   margin-bottom: 20px;
@@ -200,6 +199,7 @@ const UpdateBalanceDateAlert = props => {
         width: width - 40,
       }}>
       <ScrollView
+        keyboardShouldPersistTaps='always'
         ref={_scrollViewRef}
         pagingEnabled
         style={{

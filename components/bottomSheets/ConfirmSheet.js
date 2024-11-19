@@ -15,10 +15,9 @@ import Config from 'react-native-config'
 import numberToKorean from '../../utils/numToKorean';
 
 const SheetContainer = styled.View`
-  flex: 1;
   background-color: #fff;
   width: ${props => props.width - 40}px;
-  height: auto;
+  height: 100%;
 `;
 
 const ModalTitle = styled.Text`
@@ -149,7 +148,7 @@ const InfoContentSection = styled.ScrollView.attrs(props => ({
   showsVerticalScrollIndicator: false,
 }))`
   width: 100%;
-  height: auto;
+  height: 48%;
   background-color: #f7f8fa;
   padding: 0px 20px;
 `;
@@ -354,7 +353,7 @@ const ConfirmSheet = props => {
           </InfoContentItem>*/}
 
           <InfoContentItem>
-            <InfoContentLabel style={{ width: '110%' }} >주택 보유 수</InfoContentLabel>
+            <InfoContentLabel style={{ width: '90%' }} >주택 보유 수</InfoContentLabel>
             <InfoContentText >{houseInfo?.ownHouseCnt ? houseInfo?.ownHouseCnt : 0}채</InfoContentText>
           </InfoContentItem>
         </InfoContentSection>

@@ -490,14 +490,14 @@ const AddHouse = props => {
 
   const [isConnected, setIsConnected] = useState(true);
 
-  useEffect(() => {
+ /* useEffect(() => {
     _scrollViewRef.current?.scrollTo({
       x: (width) * currentPageIndex,
       y: 0,
       animated: true,
     });
   }, [currentPageIndex]);
-
+*/
   /*useEffect(() => {
     _scrollViewRef2.current?.scrollTo({
       x: (width) * currentPageIndex2,
@@ -974,6 +974,7 @@ const AddHouse = props => {
 
   return (
     <ScrollView
+      keyboardShouldPersistTaps='always'
       overScrollMode="never"
       ref={_scrollViewRef}
       pagingEnabled
@@ -985,7 +986,7 @@ const AddHouse = props => {
       scrollEnabled={false}
       scrollEventThrottle={16}>
 
-      <Container style={{ width: width }}>
+      {currentPageIndex === 0 && <Container style={{ width: width }}>
         <ProgressSection>
         </ProgressSection>
 
@@ -995,6 +996,7 @@ const AddHouse = props => {
           <SubTitle2>보유한 주택의 주소를 정확히 입력하여 조회해주세요.</SubTitle2>
         </IntroSection2>
           <ScrollView
+            keyboardShouldPersistTaps='always'
             overScrollMode="never"
             ref={_scrollViewRef2}
             pagingEnabled
@@ -1181,9 +1183,9 @@ const AddHouse = props => {
             </Container>
 
           </ScrollView></>
-      </Container>
+      </Container>}
 
-      <Container style={{ width: width }}>
+      {currentPageIndex === 1 && <Container style={{ width: width }}>
         <ProgressSection>
         </ProgressSection>
         <><IntroSection2 style={{ width: width }}>
@@ -1450,8 +1452,8 @@ const AddHouse = props => {
               </Button>
             </DropShadow>
           </ButtonSection></>
-      </Container>
-      <Container style={{ width: width }}>
+      </Container>}
+      {currentPageIndex === 2 && <Container style={{ width: width }}>
         <ProgressSection>
         </ProgressSection>
         <><IntroSection2 style={{ width: width }}>
@@ -1741,8 +1743,8 @@ const AddHouse = props => {
               </Button>
             </DropShadow>
           </ButtonSection></>
-      </Container>
-      <Container style={{ width: width }}>
+      </Container>}
+      {currentPageIndex === 3 && <Container style={{ width: width }}>
         <ProgressSection>
         </ProgressSection>
         <><IntroSection2 style={{ width: width }}>
@@ -1937,9 +1939,9 @@ const AddHouse = props => {
               </Button>
             </DropShadow>
           </ButtonSection></>
-      </Container>
+      </Container>}
 
-      <Container style={{ width: width }}>
+      {currentPageIndex === 4 && <Container style={{ width: width }}>
         <ProgressSection>
         </ProgressSection>
         <><IntroSection2 style={{ width: width }}>
@@ -2127,7 +2129,7 @@ const AddHouse = props => {
               </Button>
             </DropShadow>
           </ButtonSection></>
-      </Container>
+      </Container>}
 
 
 

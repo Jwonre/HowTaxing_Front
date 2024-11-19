@@ -455,7 +455,7 @@ const ConsultingReservation = props => {
 
   const [isConnected, setIsConnected] = useState(true);
 
-  useEffect(() => {
+  {/*useEffect(() => {
     _scrollViewRef.current?.scrollTo({
       x: (width) * currentPageIndex,
       y: 0,
@@ -467,8 +467,14 @@ const ConsultingReservation = props => {
       }
     }, 300)
 
+  }, [currentPageIndex]);*/}
+  useEffect(() => {
+    setTimeout(() => {
+      if (currentPageIndex !== 4) {
+        setIsExpanded(false);
+      }
+    }, 300)
   }, [currentPageIndex]);
-
   const handleNetInfoChange = (state) => {
     return new Promise((resolve, reject) => {
       if (!state.isConnected && isConnected) {
@@ -745,10 +751,11 @@ const ConsultingReservation = props => {
         width: width,
       }}
       horizontal
+      keyboardShouldPersistTaps='always'
       showsHorizontalScrollIndicator={false}
       scrollEnabled={false}
       scrollEventThrottle={16}>
-      <Container style={{ width: width }}>
+      {currentPageIndex === 0 && <Container style={{ width: width }}>
         <ProgressSection>
         </ProgressSection>
 
@@ -879,9 +886,9 @@ const ConsultingReservation = props => {
               ))}
             </View>
           </ButtonSection></>
-      </Container>
+      </Container>}
 
-      <Container style={{ width: width }}>
+      {currentPageIndex === 1 && <Container style={{ width: width }}>
         <ProgressSection>
         </ProgressSection>
 
@@ -963,8 +970,8 @@ const ConsultingReservation = props => {
             </View>
           </ButtonSection></>
 
-      </Container>
-      <Container style={{ width: width }}>
+      </Container>}
+      {currentPageIndex === 2 && <Container style={{ width: width }}>
         <ProgressSection>
         </ProgressSection>
         <><IntroSection2 style={{ width: width }}>
@@ -1089,8 +1096,8 @@ const ConsultingReservation = props => {
             </View>
           </ButtonSection></>
 
-      </Container>
-      <Container style={{ width: width }}>
+      </Container>}
+      {currentPageIndex === 3 && <Container style={{ width: width }}>
         <ProgressSection>
         </ProgressSection>
         <><FlatList
@@ -1109,7 +1116,6 @@ const ConsultingReservation = props => {
               </IntroSection2>
               <View
                 style={{
-                  width: '100%',
                   height: 350,
                   borderBottomWidth: 1,
                   borderBottomColor: '#E8EAED',
@@ -1275,9 +1281,9 @@ const ConsultingReservation = props => {
             </ButtonSection></>
           }
         /></>
-      </Container>
+      </Container>}
 
-      <Container style={{ width: width }}>
+      {currentPageIndex === 4 && <Container style={{ width: width }}>
         <ProgressSection>
         </ProgressSection>
         <><FlatList
@@ -1355,7 +1361,7 @@ const ConsultingReservation = props => {
                 }}>
                   <SubTitle4 style={{ marginTop: 20, marginBottom: 20 }}>상세 내용</SubTitle4>
                   <ConsultingItem>
-                    <ScrollView>
+                    <ScrollView keyboardShouldPersistTaps='always'>
                       <ConsultingInput
                         ref={input3}
                         autoFocus={currentPageIndex === 4}
@@ -1507,7 +1513,7 @@ const ConsultingReservation = props => {
                 </View>
               </ButtonSection2></>}
         /></>
-      </Container>
+      </Container>}
 
 
 

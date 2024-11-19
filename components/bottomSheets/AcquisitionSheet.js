@@ -28,10 +28,9 @@ import { LogBox } from 'react-native';
 
 
 const SheetContainer = styled.View`
-  flex: 1;
   background-color: #fff;
   width: ${props => props.width - 40}px;
-  height: auto;
+  height: 100%;
 `;
 
 const ModalTitle = styled.Text`
@@ -150,7 +149,7 @@ const ButtonSection = styled.View`
   align-items: center;
   flex-direction: row;
   justify-content: space-between;
-  padding: 20px 10px;
+  padding: 20px;
   border-top-width: 1px;
   border-top-color: #e8eaed;
 `;
@@ -194,11 +193,9 @@ const AcquisitionSheet = props => {
 
   LogBox.ignoreLogs(['to contain units']);
   const actionSheetRef = useRef(null);
-  const _scrollViewRef = useRef(null);
   const dispatch = useDispatch();
   const { width, height } = useWindowDimensions();
   const [currentPageIndex, setCurrentPageIndex] = useState(0);
-
   // 계약일자
   const [selectedDate, setSelectedDate] = useState(new Date());
   // 취득일자
@@ -234,32 +231,33 @@ const AcquisitionSheet = props => {
   }, []);
 
   // 스크롤 이동
-  useEffect(() => {
-    _scrollViewRef.current?.scrollTo({
-      x: (width - 40) * currentPageIndex,
-      y: 0,
-      animated: true,
-    });
-  }, [currentPageIndex]);
-
+  /* useEffect(() => {
+     _scrollViewRef.current?.scrollTo({
+       x: (width - 40) * currentPageIndex,
+       y: 0,
+       animated: true,
+     });
+   }, [currentPageIndex]);
+ */
   // 키보드 이벤트
   useEffect(() => {
+    // 키보드가 보여질 때 높이를 설정
     const keyboardDidShowListener = Keyboard.addListener(
       'keyboardDidShow',
       () => {
-        setKeyboardVisible(true); // or some other action
-      },
+        setKeyboardVisible(true);
+      }
     );
+
+    // 키보드가 사라질 때 높이를 초기화
     const keyboardDidHideListener = Keyboard.addListener(
       'keyboardDidHide',
-      () => {
-        setKeyboardVisible(false); // or some other action
-      },
+      () => { setKeyboardVisible(false); }
     );
 
     return () => {
-      keyboardDidHideListener.remove();
       keyboardDidShowListener.remove();
+      keyboardDidHideListener.remove();
     };
   }, []);
 
@@ -317,17 +315,8 @@ const AcquisitionSheet = props => {
         height: currentPageIndex === 2 ? (isKeyboardVisible ? 400 : 420) : 620,
         width: width - 40,
       }}>
-      <ScrollView
-        ref={_scrollViewRef}
-        pagingEnabled
-        style={{
-          width: width - 40,
-        }}
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        scrollEnabled={false}
-        scrollEventThrottle={16}>
-        <SheetContainer width={width}>
+     
+        {currentPageIndex === 0 && <SheetContainer width={width}>
           <ModalInputSection>
             <ModalTitle >계약일자를 선택해주세요.</ModalTitle>
             <InfoMessage >
@@ -407,13 +396,13 @@ const AcquisitionSheet = props => {
                   backgroundColor: selectedDate ? '#2f87ff' : '#E8EAED',
                   borderColor: selectedDate ? '#2f87ff' : '#E8EAED',
                 }}>
-                <ModalButtonText active={selectedDate}  style={{ color: selectedDate ? '#fff' : '#717274' }}>다음으로</ModalButtonText>
+                <ModalButtonText active={selectedDate} style={{ color: selectedDate ? '#fff' : '#717274' }}>다음으로</ModalButtonText>
               </ModalButton>
             </DropShadow>
           </ButtonSection>
-        </SheetContainer>
+        </SheetContainer>}
 
-        <SheetContainer width={width}>
+        {currentPageIndex === 1 && <SheetContainer width={width}>
           <ModalInputSection>
             <ModalTitle >취득일자를 선택해주세요.</ModalTitle>
             <InfoMessage >
@@ -451,7 +440,7 @@ const AcquisitionSheet = props => {
                   borderColor: '#E8EAED',
                 }}>
                 <ButtonText
-                  
+
                   style={{
                     color: '#717274',
                   }}>
@@ -505,139 +494,138 @@ const AcquisitionSheet = props => {
                 }}
                 active={selectedDate2}
                 disabled={!(selectedDate2)}>
-                <ButtonText  active={selectedDate2} style={{ color: selectedDate2 ? '#fff' : '#717274' }}>다음으로</ButtonText>
+                <ButtonText active={selectedDate2} style={{ color: selectedDate2 ? '#fff' : '#717274' }}>다음으로</ButtonText>
               </Button>
             </ButtonShadow>
           </ButtonSection>
-        </SheetContainer>
+        </SheetContainer>}
 
-        <SheetContainer width={width}>
-          <ModalInputSection>
-            <ModalTitle >취득금액을 입력해주세요.</ModalTitle>
-            <ModalSubtitle >{numberToKorean(acAmount)}{(acAmount !== null && acAmount !== 0) ? '원' : ' '}</ModalSubtitle>
-            <View
-              style={{
-                paddingHorizontal: 20,
-                paddingBottom: 20,
-              }}>
+        {currentPageIndex === 2 && <SheetContainer width={width}>
+            <ModalInputSection>
+              <ModalTitle >취득금액을 입력해주세요.</ModalTitle>
+              <ModalSubtitle >{numberToKorean(acAmount)}{(acAmount !== null && acAmount !== 0) ? '원' : ' '}</ModalSubtitle>
               <View
                 style={{
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  justifyContent: 'flex-start',
+                  paddingHorizontal: 20,
+                  paddingBottom: 20,
                 }}>
-                <ModalLabel >취득금액</ModalLabel>
-              </View>
-              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                <ModalInputContainer>
-                  <StyledInput
-                    placeholder="취득금액을 입력해주세요."
-                    keyboardType="number-pad"
-                    value={acAmount ? acAmount.toLocaleString() : null}
-                    onChangeText={text => {
-                      const numericValue = Number(text.replace(/[^0-9]/g, ''));
-                      if (numericValue <= 1000000000000000) {
-                        setAcAmount(numericValue);
-                      } else {
-                        setAcAmount(1000000000000000)
-                      }
-                    }}
-                  />
-                  {(acAmount !== null && acAmount !== 0) && (
-                    <TouchableOpacity onPress={() => setAcAmount(null)}>
-                      <CancelCircle style={{ marginRight: 10 }} width={20} height={20} />
-                    </TouchableOpacity>
-                  )}
-                </ModalInputContainer>
-              </View>
-              <View
-                style={{
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  marginTop: 10,
-                }}>
-                {AC_AMOUNT_LIST.map((item, index) => (
-                  <ModalSelectButton
-                    key={index}
-                    onPress={() => {
-                      setAcAmount(prev => prev + item);
-                    }}>
-                    <ModalSelectButtonText >
-                      {item === 10000000 ? '1천만' : item === 1000000 ? '1백만' : numberToKorean(item)}
-                    </ModalSelectButtonText>
-                  </ModalSelectButton>
-                ))}
-              </View>
-            </View>
-          </ModalInputSection>
-          <ButtonSection
-            style={{
-              borderTopWidth: 0,
-            }}>
-            <ButtonShadow
-              style={{
-                shadowColor: '#fff',
-              }}>
-              <Button
-                onPress={() => {
-                  const newChatDataList = chatDataList.filter(item => item.id !== 'aquiAmountSystem').filter(item => item.id !== 'acquisitionDateMy');
-                  dispatch(setChatDataList(newChatDataList));
-                  setCurrentPageIndex(1);
-                }}
-                style={{
-                  backgroundColor: '#fff',
-                  borderColor: '#E8EAED',
-                }}>
-                <ButtonText
-                  
+                <View
                   style={{
-                    color: '#717274',
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    justifyContent: 'flex-start',
                   }}>
-                  이전으로
-                </ButtonText>
-              </Button>
-            </ButtonShadow>
-            <ButtonShadow>
-              <Button
-                onPress={() => {
-                  // 취득세 계산 할 주택 정보 업데이트
-                  dispatch(
-                    setHouseInfo({
-                      ...houseInfo,
-                      acAmount,
-                    }),
-                  );
+                  <ModalLabel >취득금액</ModalLabel>
+                </View>
+                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                  <ModalInputContainer>
+                    <StyledInput
+                      placeholder="취득금액을 입력해주세요."
+                      keyboardType="number-pad"
+                      value={acAmount ? acAmount.toLocaleString() : null}
+                      onChangeText={text => {
+                        const numericValue = Number(text.replace(/[^0-9]/g, ''));
+                        if (numericValue <= 1000000000000000) {
+                          setAcAmount(numericValue);
+                        } else {
+                          setAcAmount(1000000000000000)
+                        }
+                      }}
+                    />
+                    {(acAmount !== null && acAmount !== 0) && (
+                      <TouchableOpacity onPress={() => setAcAmount(null)}>
+                        <CancelCircle style={{ marginRight: 10 }} width={20} height={20} />
+                      </TouchableOpacity>
+                    )}
+                  </ModalInputContainer>
+                </View>
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    marginTop: 10,
+                  }}>
+                  {AC_AMOUNT_LIST.map((item, index) => (
+                    <ModalSelectButton
+                      key={index}
+                      onPress={() => {
+                        setAcAmount(prev => prev + item);
+                      }}>
+                      <ModalSelectButtonText >
+                        {item === 10000000 ? '1천만' : item === 1000000 ? '1백만' : numberToKorean(item)}
+                      </ModalSelectButtonText>
+                    </ModalSelectButton>
+                  ))}
+                </View>
+              </View>
+            </ModalInputSection>
+            <ButtonSection
+              style={{
+                borderTopWidth: 0,
+              }}>
+              <ButtonShadow
+                style={{
+                  shadowColor: '#fff',
+                }}>
+                <Button
+                  onPress={() => {
+                    const newChatDataList = chatDataList.filter(item => item.id !== 'aquiAmountSystem').filter(item => item.id !== 'acquisitionDateMy');
+                    dispatch(setChatDataList(newChatDataList));
+                    setCurrentPageIndex(1);
+                  }}
+                  style={{
+                    backgroundColor: '#fff',
+                    borderColor: '#E8EAED',
+                  }}>
+                  <ButtonText
 
-                  actionSheetRef.current?.hide();
+                    style={{
+                      color: '#717274',
+                    }}>
+                    이전으로
+                  </ButtonText>
+                </Button>
+              </ButtonShadow>
+              <ButtonShadow>
+                <Button
+                  onPress={() => {
+                    // 취득세 계산 할 주택 정보 업데이트
+                    dispatch(
+                      setHouseInfo({
+                        ...houseInfo,
+                        acAmount,
+                      }),
+                    );
 
-                  const chat2 = {
-                    id: 'auiAmont',
-                    type: 'my',
-                    message: `${acAmount.toLocaleString()}원`,
-                    questionId: 'apartment',
-                    data: {
-                      acAmount,
-                      contractDate: selectedDate,
-                      buyDate: selectedDate2,
-                    },
-                  };
-                  const chat3 = acquisitionTax.find(el => el.id === 'joint');
-                  dispatch(setChatDataList([...chatDataList, chat2, chat3]));
+                    actionSheetRef.current?.hide();
 
-                  //  setTimeout(() => { ////console.log('aquiAmountDate', houseInfo) }, 500);
-                }} style={{
-                  backgroundColor: acAmount ? '#2f87ff' : '#E8EAED',
-                  borderColor: acAmount ? '#2f87ff' : '#E8EAED',
-                }}
-                active={acAmount}
-                disabled={!(acAmount)}>
-                <ButtonText active={acAmount}  style={{ color: acAmount ? '#fff' : '#717274' }}>다음으로</ButtonText>
-              </Button>
-            </ButtonShadow>
-          </ButtonSection>
-        </SheetContainer>
-      </ScrollView>
+                    const chat2 = {
+                      id: 'auiAmont',
+                      type: 'my',
+                      message: `${acAmount.toLocaleString()}원`,
+                      questionId: 'apartment',
+                      data: {
+                        acAmount,
+                        contractDate: selectedDate,
+                        buyDate: selectedDate2,
+                      },
+                    };
+                    const chat3 = acquisitionTax.find(el => el.id === 'joint');
+                    dispatch(setChatDataList([...chatDataList, chat2, chat3]));
+
+                    //  setTimeout(() => { ////console.log('aquiAmountDate', houseInfo) }, 500);
+                  }} style={{
+                    backgroundColor: acAmount ? '#2f87ff' : '#E8EAED',
+                    borderColor: acAmount ? '#2f87ff' : '#E8EAED',
+                  }}
+                  active={acAmount}
+                  disabled={!(acAmount)}>
+                  <ButtonText active={acAmount} style={{ color: acAmount ? '#fff' : '#717274' }}>다음으로</ButtonText>
+                </Button>
+              </ButtonShadow>
+            </ButtonSection>
+        </SheetContainer>}
     </ActionSheet >
   );
 };

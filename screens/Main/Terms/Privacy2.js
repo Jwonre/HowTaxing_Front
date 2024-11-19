@@ -1,8 +1,8 @@
 // 개인정보 처리방침
 
-import { View, TouchableOpacity, useWindowDimensions, ScrollView } from 'react-native';
-import React, { useLayoutEffect, useState, useRef } from 'react';
-import { useNavigation } from '@react-navigation/native';
+import { View, TouchableOpacity, useWindowDimensions, ScrollView, BackHandler } from 'react-native';
+import React, { useLayoutEffect, useState, useRef, useCallback } from 'react';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import styled from 'styled-components';
 import CloseIcon from '../../../assets/icons/close_button.svg';
 import DropShadow from 'react-native-drop-shadow';
@@ -57,6 +57,19 @@ const Privacy2 = props => {
     state => state.cert.value,
   );
 
+  
+  const handleBackPress = () => {
+    navigation.goBack({ tokens: props?.route?.params?.tokens ? props?.route?.params?.tokens : null, id: props?.route?.params?.id ? props?.route?.params?.id : null, password: props?.route?.params?.password ? props?.route?.params?.password : null});
+    return true;
+  }
+  useFocusEffect(
+    useCallback(() => {
+      BackHandler.addEventListener('hardwareBackPress', handleBackPress)
+      return () => {
+        BackHandler.removeEventListener('hardwareBackPress', handleBackPress);
+      }
+    }, [handleBackPress])
+  );
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -65,7 +78,7 @@ const Privacy2 = props => {
           activeOpacity={0.6}
           hitSlop={{ top: 20, bottom: 20, left: 20, right: 20 }}
           onPress={() => {
-            navigation.goBack({ tokens: props?.route?.params?.tokens });
+            navigation.goBack({ tokens: props?.route?.params?.tokens ? props?.route?.params?.tokens : null, id: props?.route?.params?.id ? props?.route?.params?.id : null, password: props?.route?.params?.password ? props?.route?.params?.password : null });
           }}>
           <CloseIcon />
         </TouchableOpacity>
@@ -92,7 +105,7 @@ const Privacy2 = props => {
       <View style={{ flex: 1 }}>
         <WebView
           ref={webviewRef}
-          source={{ uri: 'https://app.how-taxing.com/privacy-policy' }}
+          source={{ uri: 'https://deep-hortensia-87c.notion.site/04-1116041b8ebc8026bfd7e32c4d1fe76f?pvs=4' }}
           javaScriptEnabled={true}
           domStorageEnabled={true}
           startInLoadingState={false}
@@ -125,7 +138,7 @@ const Privacy2 = props => {
                   agreePrivacy: true,
                 }),
               );
-              navigation.goBack({ tokens: props?.route?.params?.tokens });
+              navigation.goBack({ tokens: props?.route?.params?.tokens ? props?.route?.params?.tokens : null, id: props?.route?.params?.id ? props?.route?.params?.id : null, password: props?.route?.params?.password ? props?.route?.params?.password : null });
 
             }
             }>
