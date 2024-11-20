@@ -18,10 +18,10 @@
   <category android:name="android.intent.category.BROWSABLE"/>
   <data android:scheme="howtaxingrelease" android:host="main"/>
   <data android:scheme="howtaxingrelease" android:host="naverlogin"/>
-  <data android:host="oauth" android:scheme="kakao9b9f977d588a05bbf9d5d2f77a327e8c"/>
+  <data android:host="oauth" android:scheme="kakaofe69357976f38cd298eab638d110249c"/>
   </intent-filter>
   </activity>
-  <meta-data android:name="com.kakao.sdk.AppKey" android:value="9b9f977d588a05bbf9d5d2f77a327e8c"/>
+  <meta-data android:name="com.kakao.sdk.AppKey" android:value="fe69357976f38cd298eab638d110249c"/>
   <meta-data android:name="com.naver.maps.map.CLIENT_ID" android:value="0wc83sxbri"/>
  <!-- <activity android:name="com.kakao.sdk.common.KakaoSdkActivity" android:exported="true">
     <intent-filter>
@@ -39,7 +39,7 @@
         <category android:name="android.intent.category.DEFAULT" />
         <category android:name="android.intent.category.BROWSABLE" />
         <data android:host="oauth"
-            android:scheme="kakao9b9f977d588a05bbf9d5d2f77a327e8c" />
+            android:scheme="kakaofe69357976f38cd298eab638d110249c" />
       </intent-filter>
     </activity>
 
