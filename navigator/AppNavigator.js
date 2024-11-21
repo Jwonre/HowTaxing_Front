@@ -12,6 +12,8 @@ import AddMembershipFinish from '../screens/Auth/AddMembershipFinish';
 import Home from '../screens/Main/Home';
 import LoginWebview from '../screens/Auth/LoginWebview';
 import IdLoginScreen from '../screens/Auth/IdLoginScreen';
+import IdFindScreen from '../screens/Auth/IdFindScreen';
+import PasswordReSettingScreen from '../screens/Auth/PasswordReSettingScreen';
 
 
 // Redux
@@ -325,6 +327,8 @@ const AppNavigator = () => {
               <Stack.Screen name="AddMembershipFinish" component={AddMembershipFinish} />
               <Stack.Screen name="CheckTerms" component={CheckTerms} />
               <Stack.Screen name="IdLoginScreen" component={IdLoginScreen} />
+              <Stack.Screen name="IdFindScreen" component={IdFindScreen} />
+              <Stack.Screen name="PasswordReSettingScreen" component={PasswordReSettingScreen} />
 
               
               <Stack.Group screenOptions={{ presentation: 'modal' }}>

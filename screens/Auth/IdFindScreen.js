@@ -86,7 +86,7 @@ const IdLoginScreen = () => {
       ),
   
       headerTitleAlign: 'center',
-      title: '아이디를 입력해주세요.',
+      title: '아이디 찾기',
       headerShadowVisible: false,
       // contentStyle: {
       //   borderTopColor: '#D9D9D9',
@@ -135,11 +135,7 @@ const IdLoginScreen = () => {
             </View>
 
             {/* Find ID Button */}
-            <TouchableOpacity style={styles.findIdButton}
-             onPress={() => {
-              navigation.navigate('IdFindScreen');
-              // dispatch(clearHouseInfo());
-            }}>
+            <TouchableOpacity style={styles.findIdButton}>
               <Text style={styles.findId}>아이디 찾기</Text>
             </TouchableOpacity>
           </View>
@@ -169,13 +165,7 @@ const IdLoginScreen = () => {
                     </View>
 
                     {/* Find ID Button */}
-                    <TouchableOpacity style={styles.findIdButton}
-                     onPress={() => {
-                      console.log('비밀번호 재설정 버튼 클릭됨');
-
-                      navigation.navigate('PasswordReSettingScreen');
-                      // dispatch(clearHouseInfo());
-                    }}>
+                    <TouchableOpacity style={styles.findIdButton}>
                       <Text style={styles.findId}>비밀번호 재설정</Text>
                     </TouchableOpacity>
               </View>
