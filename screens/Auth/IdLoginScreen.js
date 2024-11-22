@@ -1,13 +1,15 @@
 
 
 // import Icon from 'react-native-vector-icons/Ionicons';
-import { TouchableOpacity, useWindowDimensions, BackHandler,View,
+import {
+  TouchableOpacity, useWindowDimensions, BackHandler, View,
   Text,
   TextInput,
   ScrollView,
   Animated,
-  StyleSheet,Dimensions,
-  StatusBar } from 'react-native';
+  StyleSheet, Dimensions,
+  StatusBar
+} from 'react-native';
 import React, { useRef, useLayoutEffect, useState, useCallback } from 'react';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import BackIcon from '../../assets/icons/back_button.svg';
@@ -65,13 +67,12 @@ const IdLoginScreen = () => {
   const navigation = useNavigation();
   const { width, height } = Dimensions.get('window');
   const _scrollViewRef = useRef(null);
-  const [inputValue, setInputValue] = useState('');
 
 
   useLayoutEffect(() => {
-   // 상태 표시줄 설정 (전역 설정)
-   StatusBar.setBarStyle('dark-content', true); // 아이콘 색상: 어두운 색
-   StatusBar.setBackgroundColor('#ffffff'); // 배경색: 흰색 (안드로이드 전용)
+    // 상태 표시줄 설정 (전역 설정)
+    StatusBar.setBarStyle('dark-content', true); // 아이콘 색상: 어두운 색
+    StatusBar.setBackgroundColor('#ffffff'); // 배경색: 흰색 (안드로이드 전용)
     navigation.setOptions({
       headerLeft: () => (
         <TouchableOpacity
@@ -84,7 +85,7 @@ const IdLoginScreen = () => {
           <CloseIcon />
         </TouchableOpacity>
       ),
-  
+
       headerTitleAlign: 'center',
       title: '아이디를 입력해주세요.',
       headerShadowVisible: false,
@@ -97,37 +98,71 @@ const IdLoginScreen = () => {
         fontSize: 17,
         color: '#333',
         letterSpacing: -0.8,
-    
+
       },
-      
+
     });
-  },[]);
+  }, []);
 
   return (
     <View style={styles.rootContainer}>
-    {/* 파란색 라인 */}
-    <View style={styles.blueLine} />
+      {/* 파란색 라인 */}
+      <View style={styles.blueLine} />
 
-    {/* 스크롤 뷰 */}
-    <ScrollView contentContainerStyle={styles.scrollContent}>
+      {/* 스크롤 뷰 */}
+      <ScrollView contentContainerStyle={styles.scrollContent}>
         {/* Input Section */}
         <View style={styles.inputSection}>
+          {/* Label */}
+          <Text style={styles.label}>아이디</Text>
+
+          {/* Input Field */}
+          <View style={styles.inputWrapper}>
+            <TextInput
+              style={styles.input}
+              placeholder="아이디를 입력해주세요."
+              placeholderTextColor="#A3A5A8"
+              value={id}
+              onChangeText={setId}
+            />
+            {id !== '' && (
+              <TouchableOpacity
+                style={styles.clearButton}
+                onPress={() => setId('')}
+              >
+                <DeleteIcon />
+              </TouchableOpacity>
+            )}
+          </View>
+
+          {/* Find ID Button */}
+          <TouchableOpacity style={styles.findIdButton}
+            onPress={() => {
+              navigation.navigate('IdFindScreen');
+              // dispatch(clearHouseInfo());
+            }}>
+            <Text style={styles.findId}>아이디 찾기</Text>
+          </TouchableOpacity>
+        </View>
+
+        <View style={styles.secondContent}>
+          <View style={styles.inputSection}>
             {/* Label */}
-            <Text style={styles.label}>아이디</Text>
+            <Text style={styles.label}>비밀번호</Text>
 
             {/* Input Field */}
             <View style={styles.inputWrapper}>
               <TextInput
                 style={styles.input}
-                placeholder="아이디를 입력해주세요."
+                placeholder="비밀번호를 입력해주세요."
                 placeholderTextColor="#A3A5A8"
-                value={inputValue}
-                onChangeText={setInputValue}
+                value={password}
+                onChangeText={setPassword}
               />
-              {inputValue !== '' && (
+              {password !== '' && (
                 <TouchableOpacity
                   style={styles.clearButton}
-                  onPress={() => setInputValue('')}
+                  onPress={() => setPassword('')}
                 >
                   <DeleteIcon />
                 </TouchableOpacity>
@@ -136,71 +171,37 @@ const IdLoginScreen = () => {
 
             {/* Find ID Button */}
             <TouchableOpacity style={styles.findIdButton}
-             onPress={() => {
-              navigation.navigate('IdFindScreen');
-              // dispatch(clearHouseInfo());
-            }}>
-              <Text style={styles.findId}>아이디 찾기</Text>
+              onPress={() => {
+                console.log('비밀번호 재설정 버튼 클릭됨');
+
+                navigation.navigate('PasswordReSettingScreen');
+                // dispatch(clearHouseInfo());
+              }}>
+              <Text style={styles.findId}>비밀번호 재설정</Text>
             </TouchableOpacity>
           </View>
 
-            <View style = {styles.secondContent}>
-                <View style={styles.inputSection}>
-                    {/* Label */}
-                    <Text style={styles.label}>비밀번호</Text>
 
-                    {/* Input Field */}
-                    <View style={styles.inputWrapper}>
-                      <TextInput
-                        style={styles.input}
-                        placeholder="비밀번호를 입력해주세요."
-                        placeholderTextColor="#A3A5A8"
-                        value={inputValue}
-                        onChangeText={setInputValue}
-                      />
-                      {inputValue !== '' && (
-                        <TouchableOpacity
-                          style={styles.clearButton}
-                          onPress={() => setInputValue('')}
-                        >
-                          <DeleteIcon />
-                        </TouchableOpacity>
-                      )}
-                    </View>
+          {/* Login Button */}
+          <TouchableOpacity style={styles.loginButton}>
+            <Text style={styles.loginButtonLabel}>시작하기</Text>
+          </TouchableOpacity>
+          {/* Sign Up */}
+          <View style={styles.footer}>
+            <Text style={styles.footerText}>계정이 없으신가요?</Text>
+          </View>
 
-                    {/* Find ID Button */}
-                    <TouchableOpacity style={styles.findIdButton}
-                     onPress={() => {
-                      console.log('비밀번호 재설정 버튼 클릭됨');
-
-                      navigation.navigate('PasswordReSettingScreen');
-                      // dispatch(clearHouseInfo());
-                    }}>
-                      <Text style={styles.findId}>비밀번호 재설정</Text>
-                    </TouchableOpacity>
-              </View>
-
-              
-                {/* Login Button */}
-                <TouchableOpacity style={styles.loginButton}>
-                  <Text style={styles.loginButtonLabel}>시작하기</Text>
-                </TouchableOpacity>
-                {/* Sign Up */}
-                <View style={styles.footer}>
-                  <Text style={styles.footerText}>계정이 없으신가요?</Text>
-                </View>
-
-                <View style={styles.signUpFooter}>
-                <TouchableOpacity>
-                    <Text style={styles.signUpText}>회원가입</Text>
-                  </TouchableOpacity>
-                </View>
+          <View style={styles.signUpFooter}>
+            <TouchableOpacity>
+              <Text style={styles.signUpText}>회원가입</Text>
+            </TouchableOpacity>
+          </View>
         </View>
-          
+
         {/* 추가 콘텐츠를 여기에 배치 가능 */}
       </ScrollView>
-  </View>
-    
+    </View>
+
   );
 };
 
@@ -239,7 +240,7 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 17,
     marginBottom: 10,
-    color:'#1b1C1F',
+    color: '#1b1C1F',
     fontFamily: 'Pretendard-Bold', // 원하는 폰트 패밀리
     fontWeight: '700', // 폰트 두께 (400은 기본)
   },
@@ -309,7 +310,7 @@ const styles = StyleSheet.create({
     color: '#000',
     fontFamily: 'Pretendard-Bold', // 원하는 폰트 패밀리
     fontWeight: '700', // 폰트 두께 (400은 기본)
-   
+
   },
 
   signUpText: {

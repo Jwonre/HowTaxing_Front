@@ -2,29 +2,27 @@
 
 // import Icon from 'react-native-vector-icons/Ionicons';
 import {
-  TouchableOpacity, 
-   View,
+  TouchableOpacity,
+  View,
   Text,
   TextInput,
   ScrollView,
-  
+
   StyleSheet,
   StatusBar
 } from 'react-native';
 import React, { useRef, useLayoutEffect, useState, useEffect } from 'react';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
-import BackIcon from '../../assets/icons/back_button.svg';
-import styled from 'styled-components';
-import getFontSize from '../../utils/getFontSize';
 import CloseIcon from '../../assets/icons/close_button.svg';
 import DeleteIcon from '../../assets/icons/delete_circle.svg';
 import ConfirmIcon from '../../assets/icons/iucide_check.svg';
+import FailPwdIcon from '../../assets/icons/fail_pwd.svg';
 
 
-const PasswordReSettingScreen = () => {
-  const [id, setId] = useState('');
-  const [phoneNumber, setPhoneNumber] = useState('');
-  const [authNum, setAuthNumber] = useState('');
+const PasswordChangeScreen = () => {
+  const [newPwd, setNewPwd] = useState('');
+  const [newConfirmPwd, setNewConfirmPwd] = useState('');
+
   const navigation = useNavigation();
   const [step, setStep] = useState(1); // 현재 단계 상태 (1: 휴대폰 입력, 2: 인증번호 입력)
   const [timer, setTimer] = useState(180); // 3분 = 180초
@@ -67,7 +65,7 @@ const PasswordReSettingScreen = () => {
       // 두 번째 단계에서 확인 버튼 클릭
       console.log('인증번호 확인:', authNum);
       // 여기서 인증번호 검증 로직 추가
-      navigation.navigate('PasswordChangeScreen'); // 다음 화면으로 이동
+      navigation.navigate('NextScreen'); // 다음 화면으로 이동
     }
   };
 
@@ -104,7 +102,7 @@ const PasswordReSettingScreen = () => {
       },
 
     });
-  }, );
+  },);
 
   return (
     <View style={styles.rootContainer}>
@@ -116,118 +114,55 @@ const PasswordReSettingScreen = () => {
         {/* Input Section */}
         <View style={styles.inputSection}>
           {/* Label */}
-          <Text style={styles.label}>아이디</Text>
-          <Text style={styles.subTitleLabel}>사용하고 계신 아이디를 알려주세요.</Text>
+          <Text style={styles.label}>새 비밀번호 설정</Text>
+          <Text style={styles.subTitleLabel}>인증이 완료되었어요. 새로운 비밀번호를 입력해주세요.</Text>
 
-          {/* Input Field */}
+          <Text style={styles.newpasswordLabel}>새 비밀번호</Text>
           <View style={styles.inputWrapper}>
             <TextInput
               style={styles.input}
-              placeholder="아이디를 입력해주세요."
+              placeholder="새로운 비밀번호를 입력해주세요."
               placeholderTextColor="#A3A5A8"
-              value={id}
-              onChangeText={setId}
+              secureTextEntry={true} // 비밀번호 마스킹 처리
+              keyboardType="default" // 기본 키보드
+              autoCapitalize="none" // 자동 대문자 변환 비활성화
+              autoCorrect={false} // 자동 교정 비활성화
+              value={newPwd}
+              onChangeText={setNewPwd}
             />
-            {id !== '' && (
+            {newPwd !== '' && (
               <ConfirmIcon />
             )}
           </View>
-          <Text style={styles.idCheckMsg}>유효한 아이디에요.</Text>
-
-        </View>
-
-        <View style={styles.inputSection}>
-          {/* Label */}
-          <Text style={styles.label}>휴대폰 번호</Text>
-          <Text style={styles.subTitleLabel}>본인 인증을 위해 휴대폰 번호를 알려주세요.</Text>
-
-          {/* Input Field */}
+          <Text style={styles.newpasswordLabel}>새 비밀번호</Text>
           <View style={styles.inputWrapper}>
             <TextInput
-              keyboardType="phone-pad" // 숫자 키보드 표시
-              maxLength={13} // 최대 11자리 (01012345678)
               style={styles.input}
-              placeholder="휴대폰 번호를 입력해주세요."
+              placeholder="설정하신 비밀번호를 다시 입력해주세요."
               placeholderTextColor="#A3A5A8"
-              value={phoneNumber}
-              onChangeText={(text) => setPhoneNumber(formatPhoneNumber(text))} // 포맷팅 적용
+              secureTextEntry={true} // 비밀번호 마스킹 처리
+              keyboardType="default" // 기본 키보드
+              autoCapitalize="none" // 자동 대문자 변환 비활성화
+              autoCorrect={false} // 자동 교정 비활성화
+              value={newPwd}
+              onChangeText={setNewPwd}
             />
-            {phoneNumber !== '' && (
-              <TouchableOpacity
-                style={styles.clearButton}
-                onPress={() => setPhoneNumber('')}
-              >
-                <DeleteIcon />
-              </TouchableOpacity>
+            {newPwd !== '' && (
+              <ConfirmIcon />
             )}
           </View>
 
         </View>
 
-        {step === 2 && (
-          <View style={styles.secondContent}>
-            <View style={styles.inputSection}>
-              {/* Label */}
-              <Text style={styles.label}>인증번호</Text>
-              <Text style={styles.subTitleLabel}>SMS로 도착한 인증번호를 알려주세요.</Text>
-
-              {/* Input Field */}
-              <View style={styles.inputAuthWrapper}>
-                <TextInput
-                  keyboardType="numeric"
-                  style={styles.input}
-                  placeholder="SMS로 도착한 인증번호를 알려주세요."
-                  placeholderTextColor="#A3A5A8"
-                  value={authNum}
-                  onChangeText={setAuthNumber}
-                />
-                {isTimerActive && timer > 0 && (
-                  <Text style={styles.timerText}>{formatTime(timer)}</Text>
-                )}
-                {authNum !== '' && (
-                  <TouchableOpacity
-                    style={styles.clearButton}
-                    onPress={() => setAuthNumber('')}
-                  >
-                    <DeleteIcon />
-                  </TouchableOpacity>
-                )}
-              </View>
-
-              <View
-                style={[
-                  styles.resendWrapper,
-                  timer === 0 ? styles.spaceBetween : styles.flexEnd,
-                ]}
-              >
-                {timer === 0 && (
-                  <Text style={styles.expiredText}>인증번호가 만료되었습니다.</Text>
-                )}
-                <TouchableOpacity style={styles.findIdButton} onPress={handleResendAuth}>
-                  <Text style={styles.authReSend}>인증번호 재전송</Text>
-                </TouchableOpacity>
-              </View>
-
-
-
-            </View>
-
-
-
-          </View>
-        )}
+        
         {/* Login Button */}
         <TouchableOpacity
           style={[
-            styles.loginButton,
-            (!phoneNumber || timer === 0) && styles.disabledButton, // 조건부 스타일
+            styles.loginButton, // 조건부 스타일
           ]}
           onPress={handleNextStep}
-          disabled={!phoneNumber || timer === 0} // 비활성화 조건
         >
-          <Text style={styles.loginButtonLabel}>
-            {step === 1 ? '인증번호 전송하기' : '다음으로'}
-          </Text>
+          <Text style={styles.loginButtonLabel}>변경하기</Text>
         </TouchableOpacity>
         {/* 추가 콘텐츠를 여기에 배치 가능 */}
       </ScrollView>
@@ -297,8 +232,20 @@ const styles = StyleSheet.create({
   inputSection: {
     marginTop: 10,
   },
+  newpasswordLabel: {
+    fontSize: 17,
+    marginTop: 20,
+
+    marginBottom: 10,
+    color: '#1b1C1F',
+    fontFamily: 'Pretendard-Bold', // 원하는 폰트 패밀리
+    fontWeight: '700', // 폰트 두께 (400은 기본)
+  },
+
   label: {
     fontSize: 17,
+    marginTop: 15,
+
     marginBottom: 10,
     color: '#1b1C1F',
     fontFamily: 'Pretendard-Bold', // 원하는 폰트 패밀리
@@ -312,13 +259,7 @@ const styles = StyleSheet.create({
     fontWeight: '500', // 폰트 두께 (400은 기본)
   },
 
-  idCheckMsg: {
-    fontSize: 13,
-    marginBottom: 10,
-    color: '#2F87FF',
-    fontFamily: 'Pretendard-Regular', // 원하는 폰트 패밀리
-    fontWeight: '400', // 폰트 두께 (400은 기본)
-  },
+
   inputWrapper: {
     flexDirection: 'row', // TextInput과 Clear 버튼 가로 배치
     alignItems: 'center', // 세로 가운데 정렬
@@ -428,4 +369,4 @@ const styles = StyleSheet.create({
 
 
 
-export default PasswordReSettingScreen;
+export default PasswordChangeScreen;

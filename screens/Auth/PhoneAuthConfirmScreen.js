@@ -2,13 +2,13 @@
 
 // import Icon from 'react-native-vector-icons/Ionicons';
 import {
-  TouchableOpacity, 
-   View,
+  TouchableOpacity,
+  View,
   Text,
   TextInput,
   ScrollView,
-  
   StyleSheet,
+  Dimensions,
   StatusBar
 } from 'react-native';
 import React, { useRef, useLayoutEffect, useState, useEffect } from 'react';
@@ -18,14 +18,14 @@ import styled from 'styled-components';
 import getFontSize from '../../utils/getFontSize';
 import CloseIcon from '../../assets/icons/close_button.svg';
 import DeleteIcon from '../../assets/icons/delete_circle.svg';
-import ConfirmIcon from '../../assets/icons/iucide_check.svg';
 
 
-const PasswordReSettingScreen = () => {
-  const [id, setId] = useState('');
+const PhoneAuthConfirmScreen = () => {
   const [phoneNumber, setPhoneNumber] = useState('');
   const [authNum, setAuthNumber] = useState('');
   const navigation = useNavigation();
+  const { width, height } = Dimensions.get('window');
+  const _scrollViewRef = useRef(null);
   const [step, setStep] = useState(1); // 현재 단계 상태 (1: 휴대폰 입력, 2: 인증번호 입력)
   const [timer, setTimer] = useState(180); // 3분 = 180초
   const [isTimerActive, setIsTimerActive] = useState(false);
@@ -67,9 +67,10 @@ const PasswordReSettingScreen = () => {
       // 두 번째 단계에서 확인 버튼 클릭
       console.log('인증번호 확인:', authNum);
       // 여기서 인증번호 검증 로직 추가
-      navigation.navigate('PasswordChangeScreen'); // 다음 화면으로 이동
+      navigation.navigate('NextScreen'); // 다음 화면으로 이동
     }
   };
+
 
   useLayoutEffect(() => {
     // 상태 표시줄 설정 (전역 설정)
@@ -89,7 +90,7 @@ const PasswordReSettingScreen = () => {
       ),
 
       headerTitleAlign: 'center',
-      title: '비밀번호 재설정하기.',
+      title: '휴대폰 인증하기',
       headerShadowVisible: false,
       // contentStyle: {
       //   borderTopColor: '#D9D9D9',
@@ -104,7 +105,7 @@ const PasswordReSettingScreen = () => {
       },
 
     });
-  }, );
+  }, []);
 
   return (
     <View style={styles.rootContainer}>
@@ -115,28 +116,10 @@ const PasswordReSettingScreen = () => {
       <ScrollView contentContainerStyle={styles.scrollContent}>
         {/* Input Section */}
         <View style={styles.inputSection}>
-          {/* Label */}
-          <Text style={styles.label}>아이디</Text>
-          <Text style={styles.subTitleLabel}>사용하고 계신 아이디를 알려주세요.</Text>
+        <Text style={styles.bigTitle}>휴대폰 인증을 진행해주세요.</Text>
+          <Text style={styles.bigSubTitleLabel}>편리한 서비스 이용을 위해 본인 인증을 부탁드려요.</Text>
 
-          {/* Input Field */}
-          <View style={styles.inputWrapper}>
-            <TextInput
-              style={styles.input}
-              placeholder="아이디를 입력해주세요."
-              placeholderTextColor="#A3A5A8"
-              value={id}
-              onChangeText={setId}
-            />
-            {id !== '' && (
-              <ConfirmIcon />
-            )}
-          </View>
-          <Text style={styles.idCheckMsg}>유효한 아이디에요.</Text>
 
-        </View>
-
-        <View style={styles.inputSection}>
           {/* Label */}
           <Text style={styles.label}>휴대폰 번호</Text>
           <Text style={styles.subTitleLabel}>본인 인증을 위해 휴대폰 번호를 알려주세요.</Text>
@@ -216,6 +199,10 @@ const PasswordReSettingScreen = () => {
 
           </View>
         )}
+
+        {/* 만료 메시지 */}
+        {/* 만료 메시지와 재전송 버튼 */}
+
         {/* Login Button */}
         <TouchableOpacity
           style={[
@@ -229,12 +216,16 @@ const PasswordReSettingScreen = () => {
             {step === 1 ? '인증번호 전송하기' : '다음으로'}
           </Text>
         </TouchableOpacity>
-        {/* 추가 콘텐츠를 여기에 배치 가능 */}
+
+
+
+
       </ScrollView>
     </View>
 
   );
 };
+
 const formatPhoneNumber = (number) => {
   // 숫자만 남기기
   const cleaned = ('' + number).replace(/\D/g, '');
@@ -248,6 +239,7 @@ const formatPhoneNumber = (number) => {
   // 포맷이 적용되지 않는 경우 원본 반환
   return number;
 };
+
 const styles = StyleSheet.create({
   timerText: {
     fontSize: 13,
@@ -278,16 +270,6 @@ const styles = StyleSheet.create({
     marginBottom: 30,
     textAlign: 'center',
   },
-  inputAuthWrapper: {
-    flexDirection: 'row', // 가로 정렬
-    alignItems: 'center', // 세로 중앙 정렬
-    borderRadius: 12,
-    backgroundColor: '#F5F7FA',
-    paddingHorizontal: 15,
-    height: 56,
-    marginBottom: 8,
-  },
-
   scrollContent: {
     padding: 20,
   },
@@ -297,6 +279,15 @@ const styles = StyleSheet.create({
   inputSection: {
     marginTop: 10,
   },
+  bigTitle: {
+    fontSize: 25,
+    marginTop: 15,
+    marginBottom: 20,
+    color: '#1b1C1F',
+    fontFamily: 'Pretendard-Bold', // 원하는 폰트 패밀리
+    fontWeight: '700', // 폰트 두께 (400은 기본)
+  },
+
   label: {
     fontSize: 17,
     marginBottom: 10,
@@ -304,20 +295,19 @@ const styles = StyleSheet.create({
     fontFamily: 'Pretendard-Bold', // 원하는 폰트 패밀리
     fontWeight: '700', // 폰트 두께 (400은 기본)
   },
+  bigSubTitleLabel: {
+    fontSize: 17,
+    marginBottom: 30,
+    color: '#A3A5A8',
+    fontFamily: 'Pretendard_Bold', // 원하는 폰트 패밀리
+    fontWeight: '700', // 폰트 두께 (400은 기본)
+  },
   subTitleLabel: {
     fontSize: 13,
     marginBottom: 10,
     color: '#717274',
-    fontFamily: 'Pretendard-medium', // 원하는 폰트 패밀리
+    fontFamily: 'Pretendard-Medium', // 원하는 폰트 패밀리
     fontWeight: '500', // 폰트 두께 (400은 기본)
-  },
-
-  idCheckMsg: {
-    fontSize: 13,
-    marginBottom: 10,
-    color: '#2F87FF',
-    fontFamily: 'Pretendard-Regular', // 원하는 폰트 패밀리
-    fontWeight: '400', // 폰트 두께 (400은 기본)
   },
   inputWrapper: {
     flexDirection: 'row', // TextInput과 Clear 버튼 가로 배치
@@ -328,12 +318,23 @@ const styles = StyleSheet.create({
     height: 56,
     marginBottom: 8, // TextInput과 "아이디 찾기" 버튼 사이 간격
   },
+
+  inputAuthWrapper: {
+    flexDirection: 'row', // 가로 정렬
+    alignItems: 'center', // 세로 중앙 정렬
+    borderRadius: 12,
+    backgroundColor: '#F5F7FA',
+    paddingHorizontal: 15,
+    height: 56,
+    marginBottom: 8,
+  },
+
   input: {
-    flex: 1, // TextInput이 가로로 공간을 채움
-    color: '#000', // 글자 색상
-    fontSize: 13, // 폰트 크기
-    fontFamily: 'Pretendard-Regular', // 원하는 폰트 패밀리
-    fontWeight: '400', // 폰트 두께 (400은 기본)
+    flex: 1, // TextInput이 남은 공간을 차지하도록 설정
+    color: '#000',
+    fontSize: 13,
+    fontFamily: 'Pretendard-Regular',
+    fontWeight: '400',
   },
   clearButton: {
     justifyContent: 'center',
@@ -360,8 +361,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginVertical: 30,
   },
-
-
 
   loginButton: {
     backgroundColor: '#2F87ff',
@@ -428,4 +427,4 @@ const styles = StyleSheet.create({
 
 
 
-export default PasswordReSettingScreen;
+export default PhoneAuthConfirmScreen;

@@ -13,15 +13,12 @@ import {
 } from 'react-native';
 import React, { useRef, useLayoutEffect, useState, useEffect } from 'react';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
-import BackIcon from '../../assets/icons/back_button.svg';
-import styled from 'styled-components';
-import getFontSize from '../../utils/getFontSize';
 import CloseIcon from '../../assets/icons/close_button.svg';
 import DeleteIcon from '../../assets/icons/delete_circle.svg';
 import ConfirmIcon from '../../assets/icons/iucide_check.svg';
 
 
-const PasswordReSettingScreen = () => {
+const PasswordChangeScreen = () => {
   const [id, setId] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [authNum, setAuthNumber] = useState('');
@@ -67,7 +64,7 @@ const PasswordReSettingScreen = () => {
       // 두 번째 단계에서 확인 버튼 클릭
       console.log('인증번호 확인:', authNum);
       // 여기서 인증번호 검증 로직 추가
-      navigation.navigate('PasswordChangeScreen'); // 다음 화면으로 이동
+      navigation.navigate('NextScreen'); // 다음 화면으로 이동
     }
   };
 
@@ -428,4 +425,4 @@ const styles = StyleSheet.create({
 
 
 
-export default PasswordReSettingScreen;
+export default PasswordChangeScreen;
