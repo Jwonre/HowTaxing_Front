@@ -154,45 +154,88 @@ const InfoCertification = props => {
 
   const hypenHouseAPI = async (url, data, headers) => {
     try {
-      const response = await axios.post(url, data, { headers });
+      const response = await axios.post(url, data, { headers, timeout: 65000 });
+      console.log('response.data : ', response.data);
       if (response.data.errYn === 'Y') {
-        if (response.data.errCode === 'HOUSE-005') {
-          //console.log('response.data.errMsg.includes([LOGIN)', response.data.errMsg.includes('[LOGIN'));
-          if (response.data.errMsgDtl) {
-            if (response.data.errMsgDtl.includes("[LOGIN-301]") || response.data.errMsgDtl.includes("[LOGIN-302]") || response.data.errMsgDtl.includes("[LOGIN-999]")) {
-              await SheetManager.hide('infoCertification');
-              await SheetManager.show('info', {
-                payload: {
-                  type: 'error',
-                  message: response.data.errMsg ? response.data.errMsg : '청약홈 인증 중\n오류가 발생했어요.\n입력하신 정보를 다시 확인해주세요.',
-                  description: response.data?.errMsgDtl ? response.data?.errMsgDtl : '',
-                  buttontext: '다시 확인하기',
-                },
-              });
-              dispatch(setResend(false));
-              setActiveYN(false);
-              setTimeout(async () => {
+        if (props.payload.isGainsTax) {
+          if (response.data.errCode === 'HOUSE-005') {
+            //console.log('response.data.errMsg.includes([LOGIN)', response.data.errMsg.includes('[LOGIN'));
+            if (response.data.errMsgDtl) {
+              if (response.data.errMsgDtl.includes("[LOGIN-301]") || response.data.errMsgDtl.includes("[LOGIN-302]") || response.data.errMsgDtl.includes("[LOGIN-999]")) {
+                await SheetManager.hide('infoCertification');
+                await SheetManager.show('info', {
+                  payload: {
+                    type: 'error',
+                    message: response.data.errMsg ? response.data.errMsg : '청약홈 인증 중\n오류가 발생했어요.\n입력하신 정보를 다시 확인해주세요.',
+                    description: response.data?.errMsgDtl ? response.data?.errMsgDtl : '',
+                    buttontext: '다시 확인하기',
+                  },
+                });
+                dispatch(setResend(false));
+                setActiveYN(false);
+                setTimeout(async () => {
+                  const networkState = await NetInfo.fetch();
+                  // 네트워크가 연결되어 있을 때만 updateHouseDetailName() 함수를 실행합니다.
+                  if (networkState.isConnected) {
+                    SheetManager.show('cert_ori', {
+                      payload: {
+                        data: props.payload.data,
+                        certType: certType,
+                        isGainsTax: props.payload?.isGainsTax,
+                        index: props.payload?.index,
+                        currentPageIndex,
+                        name,
+                        phone,
+                        id,
+                        password,
+                        residentNumber,
+                        failreturn: true,
+                        CheckPrivacy: true
+                      },
+                    });
+
+
+                  }
+                }, 500);
+                const newChatDataList = chatDataList.slice(0, props.payload?.index + 1);
+                dispatch(setChatDataList(newChatDataList));
+              } else {
+                await SheetManager.show('info', {
+                  payload: {
+                    type: 'error',
+                    message: response.data.errMsg ? response.data.errMsg : '청약홈 정보를 불러오는 중\n오류가 발생했어요.\n인증을 다시 진행해주세요.',
+                    description: response.data?.errMsgDtl ? response.data?.errMsgDtl : '',
+                    buttontext: '인증하기',
+                  },
+                });
+                dispatch(setResend(true));
+                setActiveYN(true);
+              }
+              /*else if (response.data.errMsgDtl.includes("[LOGIN-303]")) {
+                await SheetManager.hide('infoCertification');
+                await SheetManager.show('info', {
+                  payload: {
+                    type: 'error',
+                    message: response.data.errMsg ? response.data.errMsg : '청약홈 인증 결과\n청약통장을 보유하고 있지 않으시군요.\n보유주택을 직접 등록해주세요.',
+                    description: response.data?.errMsgDtl ? response.data?.errMsgDtl : '',
+                    buttontext: '직접 등록하기',
+                  },
+                });
+                dispatch(setResend(false));
+  
                 const networkState = await NetInfo.fetch();
                 // 네트워크가 연결되어 있을 때만 updateHouseDetailName() 함수를 실행합니다.
                 if (networkState.isConnected) {
-                  SheetManager.show('cert', {
-                    payload: {
-                      cert: cert,
-                      index: props.payload?.index,
-                      currentPageIndex,
-                      name,
-                      phone,
-                      id,
-                      password,
-                      residentNumber,
-                      failreturn: true,
-                      CheckPrivacy: false
-                    },
+                  navigation.push('DirectRegister', {
+                    prevChat: props?.payload?.isGainsTax ? props?.payload?.isGainsTax == true ? 'GainsTax' : 'AcquisitionChat' : '',
+                    index: props?.payload?.index,
+                    certError: true,
                   });
                 }
-              }, 300);
-              const newChatDataList = chatDataList.slice(0, props.payload?.index + 1);
-              dispatch(setChatDataList(newChatDataList));
+  
+                //     const newChatDataList = chatDataList.slice(0, props.payload?.index + 1);
+                //    dispatch(setChatDataList(newChatDataList));
+              }*/
             } else {
               await SheetManager.show('info', {
                 payload: {
@@ -204,177 +247,267 @@ const InfoCertification = props => {
               });
               dispatch(setResend(true));
               setActiveYN(true);
+
             }
-            /*else if (response.data.errMsgDtl.includes("[LOGIN-303]")) {
-              await SheetManager.hide('infoCertification');
-              await SheetManager.show('info', {
-                payload: {
-                  type: 'error',
-                  message: response.data.errMsg ? response.data.errMsg : '청약홈 인증 결과\n청약통장을 보유하고 있지 않으시군요.\n보유주택을 직접 등록해주세요.',
-                  description: response.data?.errMsgDtl ? response.data?.errMsgDtl : '',
-                  buttontext: '직접 등록하기',
-                },
-              });
-              dispatch(setResend(false));
-
-              const networkState = await NetInfo.fetch();
-              // 네트워크가 연결되어 있을 때만 updateHouseDetailName() 함수를 실행합니다.
-              if (networkState.isConnected) {
-                navigation.push('DirectRegister', {
-                  prevChat: props?.payload?.isGainsTax ? props?.payload?.isGainsTax == true ? 'GainsTax' : 'AcquisitionChat' : '',
-                  index: props?.payload?.index,
-                  certError: true,
-                });
-              }
-
-              //     const newChatDataList = chatDataList.slice(0, props.payload?.index + 1);
-              //    dispatch(setChatDataList(newChatDataList));
-            }*/
-          } else {
+          } else if (response.data.errCode === 'HOUSE-006') {
+            await SheetManager.hide('infoCertification');
             await SheetManager.show('info', {
               payload: {
                 type: 'error',
-                message: response.data.errMsg ? response.data.errMsg : '청약홈 정보를 불러오는 중\n오류가 발생했어요.\n인증을 다시 진행해주세요.',
+                message: response.data.errMsg ? response.data.errMsg : '청약홈 인증 결과\n청약통장을 보유하고 있지 않으시군요.\n보유주택을 직접 등록해주세요.',
                 description: response.data?.errMsgDtl ? response.data?.errMsgDtl : '',
-                buttontext: '인증하기',
+                buttontext: '직접 등록하기',
               },
             });
-            dispatch(setResend(true));
-            setActiveYN(true);
-
-          }
-        } else if (response.data.errCode === 'HOUSE-006') {
-          await SheetManager.hide('infoCertification');
-          await SheetManager.show('info', {
-            payload: {
-              type: 'error',
-              message: response.data.errMsg ? response.data.errMsg : '청약홈 인증 결과\n청약통장을 보유하고 있지 않으시군요.\n보유주택을 직접 등록해주세요.',
-              description: response.data?.errMsgDtl ? response.data?.errMsgDtl : '',
-              buttontext: '직접 등록하기',
-            },
-          });
-          dispatch(setResend(false));
-          setActiveYN(false);
-          const networkState = await NetInfo.fetch();
-          // 네트워크가 연결되어 있을 때만 updateHouseDetailName() 함수를 실행합니다.
-          if (networkState.isConnected) {
-            navigation.push('DirectRegister', {
-              prevChat: props?.payload?.isGainsTax ? props?.payload?.isGainsTax == true ? 'GainsTax' : 'AcquisitionChat' : '',
-              index: props?.payload?.index,
-              certError: true,
-            });
-          }
-
-        } else if (response.data.errCode === 'HOUSE-018') {
-          await SheetManager.hide('infoCertification');
-          await SheetManager.show('info', {
-            payload: {
-              type: 'error',
-              message: response.data.errMsg ? response.data.errMsg : '청약홈 인증 중\n오류가 발생했어요.\n입력하신 정보를 다시 확인해주세요.',
-              description: response.data?.errMsgDtl ? response.data?.errMsgDtl : '',
-              buttontext: '다시 확인하기',
-            },
-          });
-          dispatch(setResend(false));
-          setActiveYN(false);
-          setTimeout(async () => {
+            dispatch(setResend(false));
+            setActiveYN(false);
             const networkState = await NetInfo.fetch();
             // 네트워크가 연결되어 있을 때만 updateHouseDetailName() 함수를 실행합니다.
             if (networkState.isConnected) {
-              SheetManager.show('cert', {
-                payload: {
-                  cert: cert,
-                  index: props.payload?.index,
-                  currentPageIndex,
-                  name,
-                  phone,
-                  id,
-                  password,
-                  residentNumber,
-                  failreturn: true,
-                  CheckPrivacy: false
-                },
+              navigation.push('DirectRegister', {
+                prevChat: props?.payload?.isGainsTax ? props?.payload?.isGainsTax == true ? 'GainsTax' : 'AcquisitionChat' : '',
+                index: props?.payload?.index,
+                certError: true,
               });
             }
-          }, 300);
-          const newChatDataList = chatDataList.slice(0, props.payload?.index + 1);
-          dispatch(setChatDataList(newChatDataList));
-        } else {
 
-          setTimeout(async () => {
+          } else if (response.data.errCode === 'HOUSE-018') {
+            await SheetManager.hide('infoCertification');
             await SheetManager.show('info', {
               payload: {
                 type: 'error',
-                message: response.data.errMsg ? response.data.errMsg : '청약홈에서 정보를 불러오는 중\n오류가 발생했어요.\n인증을 다시 진행해주세요.',
-                description: response.data?.errMsgDtl ? response.data?.errMsgDtl : null,
-                buttontext: '확인하기',
+                message: response.data.errMsg ? response.data.errMsg : '청약홈 인증 중\n오류가 발생했어요.\n입력하신 정보를 다시 확인해주세요.',
+                description: response.data?.errMsgDtl ? response.data?.errMsgDtl : '',
+                buttontext: '다시 확인하기',
               },
             });
-          }, 400);
-          dispatch(setResend(true));
-          setActiveYN(true);
-        }
-        return false;
-      } else {
-        setTimeout(async () => {
-          SheetManager.hide("infoCertification");
-        }, 300);
-
-
-
-        if (response.data.data && response.data.data.length > 0) {
-          list = response.data.data.map((item, index) => ({ ...item, index }));
-          //console.log('[hypenHouseAPI] list:', list);
-          dispatch(setResend(false));
-          setActiveYN(false);
-          if (list.some(item => item.complete === false)) {
+            dispatch(setResend(false));
+            setActiveYN(false);
             setTimeout(async () => {
-              dispatch(
-                setFixHouseList(
-                  list
-                ));
-              // console.log('[hypenHouseAPI] props.payload?.isGainsTax:', props.payload?.isGainsTax);
-              navigation.push('FixedHouseList', { isGainsTax: props.payload?.isGainsTax === true ? true : false, chatListindex: props?.payload?.index });
-            }, 300);
-            return false;
-          } else {
-            const registerDirectHouseResult = await registerDirectHouse(list);
-            if (registerDirectHouseResult) {
+              const networkState = await NetInfo.fetch();
+              // 네트워크가 연결되어 있을 때만 updateHouseDetailName() 함수를 실행합니다.
+              if (networkState.isConnected) {
+                SheetManager.show('cert', {
+                  payload: {
+                    data: props.payload.data,
+                    certType: certType,
+                    index: props.payload?.index,
+                    isGainsTax: props.payload?.isGainsTax,
+                    currentPageIndex,
+                    name,
+                    phone,
+                    id,
+                    password,
+                    residentNumber,
+                    failreturn: true,
+                    CheckPrivacy: true
+                  },
+                });
 
-              const getEtcHouseReturn = await getEtcHouse();
-              console.log('getEtcHouseReturn : ', getEtcHouseReturn);
-              if (getEtcHouseReturn === 'getEtcHouseNull') {
-                console.log('getEtcHouseNull');
-                return true;
-              } else if (getEtcHouseReturn === 'getEtcHouse') {
-                navigation.navigate('AddHouseList', { chatListindex: props?.payload?.index });
-                return false;
-              } else if (getEtcHouseReturn === 'getEtcHouseFailed') {
+              }
+            }, 300);
+            const newChatDataList = chatDataList.slice(0, props.payload?.index + 1);
+            dispatch(setChatDataList(newChatDataList));
+          } else {
+
+            setTimeout(async () => {
+              await SheetManager.show('info', {
+                payload: {
+                  type: 'error',
+                  message: response.data.errMsg ? response.data.errMsg : '청약홈에서 정보를 불러오는 중\n오류가 발생했어요.\n인증을 다시 진행해주세요.',
+                  description: response.data?.errMsgDtl ? response.data?.errMsgDtl : null,
+                  buttontext: '확인하기',
+                },
+              });
+            }, 400);
+            dispatch(setResend(true));
+            setActiveYN(true);
+          }
+          return false;
+        } else {
+          if (response.data.errCode === 'HOUSE-005') {
+            //console.log('response.data.errMsg.includes([LOGIN)', response.data.errMsg.includes('[LOGIN'));
+            if (response.data.errMsgDtl) {
+              if (response.data.errMsgDtl.includes("[LOGIN-301]") || response.data.errMsgDtl.includes("[LOGIN-302]")) {
+                SheetManager.hide('infoCertification');
+                await SheetManager.show('info', {
+                  payload: {
+                    type: 'error',
+                    message: response.data.errMsg ? response.data.errMsg : '청약홈 인증 중\n오류가 발생했어요.\n입력하신 정보를 다시 확인해주세요.',
+                    description: response.data?.errMsgDtl ? response.data?.errMsgDtl : '',
+                    buttontext: '다시 확인하기',
+                  },
+                });
+                dispatch(setResend(false));
+                setTimeout(async () => {
+                  const networkState = await NetInfo.fetch();
+                  // 네트워크가 연결되어 있을 때만 updateHouseDetailName() 함수를 실행합니다.
+                  if (networkState.isConnected) {
+                    SheetManager.show('cert_ori', {
+                      payload: {
+                        data: props.payload.data,
+                        certType: certType,
+                        index: props.payload?.index,
+                        currentPageIndex,
+                        name,
+                        phone,
+                        id,
+                        password,
+                        residentNumber,
+                        failreturn: true,
+                        CheckPrivacy: true
+                      },
+                    });
+                  }
+                }, 700);
+                const newChatDataList = chatDataList.slice(0, props.payload?.index + 1);
+                dispatch(setChatDataList(newChatDataList));
+              }
+              /*else if (response.data.errMsgDtl.includes("[LOGIN-303]")) {
+                await SheetManager.hide('infoCertification');
+                await SheetManager.show('info', {
+                  payload: {
+                    type: 'error',
+                    message: response.data.errMsg ? response.data.errMsg : '청약홈 인증 결과\n청약통장을 보유하고 있지 않으시군요.\n보유주택을 직접 등록해주세요.',
+                    description: response.data?.errMsgDtl ? response.data?.errMsgDtl : '',
+                    buttontext: '직접 등록하기',
+                  },
+                });
+                dispatch(setResend(false));
+  
+                const networkState = await NetInfo.fetch();
+                // 네트워크가 연결되어 있을 때만 updateHouseDetailName() 함수를 실행합니다.
+                if (networkState.isConnected) {
+                  navigation.push('DirectRegister', {
+                    prevChat: props?.payload?.isGainsTax ? props?.payload?.isGainsTax == true ? 'GainsTax' : 'AcquisitionChat' : '',
+                    index: props?.payload?.index,
+                    certError: true,
+                  });
+                }
+  
+                //     const newChatDataList = chatDataList.slice(0, props.payload?.index + 1);
+                //    dispatch(setChatDataList(newChatDataList));
+              }*/
+            } else {
+              await SheetManager.show('info', {
+                payload: {
+                  type: 'error',
+                  message: response.data.errMsg ? response.data.errMsg : '청약홈 정보를 불러오는 중\n오류가 발생했어요.\n인증을 다시 진행해주세요.',
+                  description: response.data?.errMsgDtl ? response.data?.errMsgDtl : '',
+                  buttontext: '인증하기',
+                },
+              });
+              dispatch(setResend(true));
+
+            }
+          } else if (response.data.errCode === 'HOUSE-006') {
+            await SheetManager.hide('infoCertification');
+            await SheetManager.show('info', {
+              payload: {
+                type: 'error',
+                message: response.data.errMsg ? response.data.errMsg : '청약홈 인증 결과\n청약통장을 보유하고 있지 않으시군요.\n보유주택을 직접 등록해주세요.',
+                description: response.data?.errMsgDtl ? response.data?.errMsgDtl : '',
+                buttontext: '직접 등록하기',
+              },
+            });
+            dispatch(setResend(false));
+
+            const networkState = await NetInfo.fetch();
+            // 네트워크가 연결되어 있을 때만 updateHouseDetailName() 함수를 실행합니다.
+            if (networkState.isConnected) {
+              navigation.push('DirectRegister', {
+                prevChat: props?.payload?.isGainsTax ? props?.payload?.isGainsTax == true ? 'GainsTax' : 'AcquisitionChat' : '',
+                index: props?.payload?.index,
+                certError: true,
+              });
+            }
+
+          } else {
+
+            setTimeout(async () => {
+              await SheetManager.show('info', {
+                payload: {
+                  type: 'error',
+                  message: response.data.errMsg ? response.data.errMsg : '청약홈에서 정보를 불러오는 중\n오류가 발생했어요.\n인증을 다시 진행해주세요.',
+                  description: response.data?.errMsgDtl ? response.data?.errMsgDtl : null,
+                  buttontext: '확인하기',
+                },
+              });
+            }, 400);
+            dispatch(setResend(true));
+          }
+          return false;
+        }
+
+      } else {
+        console.log('response info', response);
+        console.log('props.payload?.isGainsTax',props.payload?.isGainsTax);
+        if (props.payload?.isGainsTax) {
+          setTimeout(async () => {
+            SheetManager.hide("infoCertification");
+          }, 300);
+
+
+
+          if (response.data.data && response.data.data.length > 0) {
+            list = response.data.data.map((item, index) => ({ ...item, index }));
+            //console.log('[hypenHouseAPI] list:', list);
+            dispatch(setResend(false));
+            setActiveYN(false);
+            if (list.some(item => item.complete === false)) {
+              setTimeout(async () => {
+                dispatch(
+                  setFixHouseList(
+                    list
+                  ));
+                // console.log('[hypenHouseAPI] props.payload?.isGainsTax:', props.payload?.isGainsTax);
+                navigation.push('FixedHouseList', { isGainsTax: props.payload?.isGainsTax === true ? true : false, chatListindex: props?.payload?.index });
+              }, 300);
+              return false;
+            } else {
+              const registerDirectHouseResult = await registerDirectHouse(list);
+              if (registerDirectHouseResult) {
+
+                const getEtcHouseReturn = await getEtcHouse();
+                console.log('getEtcHouseReturn : ', getEtcHouseReturn);
+                if (getEtcHouseReturn === 'getEtcHouseNull') {
+                  console.log('getEtcHouseNull');
+                  return true;
+                } else if (getEtcHouseReturn === 'getEtcHouse') {
+                  navigation.navigate('AddHouseList', { chatListindex: props?.payload?.index });
+                  return false;
+                } else if (getEtcHouseReturn === 'getEtcHouseFailed') {
+                  const newChatDataList = chatDataList.slice(0, props.payload?.index + 1);
+                  dispatch(setChatDataList(newChatDataList));
+                  return false;
+                }
+              } else {
                 const newChatDataList = chatDataList.slice(0, props.payload?.index + 1);
                 dispatch(setChatDataList(newChatDataList));
                 return false;
               }
-            } else {
+            }
+          } else {
+            dispatch(setResend(false));
+            const getEtcHouseReturn = await getEtcHouse();
+            if (getEtcHouseReturn === 'getEtcHouseNull') {
+              dispatch(setOwnHouseList([]));
+              return true;
+            } else if (getEtcHouseReturn === 'getEtcHouse') {
+              navigation.navigate('AddHouseList', { chatListindex: props?.payload?.index });
+              return false;
+            } else if (getEtcHouseReturn === 'getEtcHouseFailed') {
               const newChatDataList = chatDataList.slice(0, props.payload?.index + 1);
               dispatch(setChatDataList(newChatDataList));
               return false;
             }
-          }
-        } else {
-          dispatch(setResend(false));
-          const getEtcHouseReturn = await getEtcHouse();
-          if (getEtcHouseReturn === 'getEtcHouseNull') {
-            dispatch(setOwnHouseList([]));
-            return true;
-          } else if (getEtcHouseReturn === 'getEtcHouse') {
-            navigation.navigate('AddHouseList', { chatListindex: props?.payload?.index });
-            return false;
-          } else if (getEtcHouseReturn === 'getEtcHouseFailed') {
-            const newChatDataList = chatDataList.slice(0, props.payload?.index + 1);
-            dispatch(setChatDataList(newChatDataList));
-            return false;
+
           }
 
+        } else {
+          const list = response.data.data.list ? response.data.data.list : null;
+          dispatch(setOwnHouseList(list));
+          return true;
         }
 
 
@@ -397,7 +530,13 @@ const InfoCertification = props => {
   };
 
   const postOwnHouse = async () => {
-    const url = `${Config.APP_API_URL}house/loadHouse`;
+    var url = '';
+    if(props.payload?.isGainsTax){
+      url = `${Config.APP_API_URL}house/loadHouse`;
+    } else {
+      url = `${Config.APP_API_URL}house/search`;
+    }
+
     const headers = {
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${currentUser.accessToken}`
@@ -458,8 +597,11 @@ const InfoCertification = props => {
       };
 
       // 요청 바디
-      const data = list;
-      //console.log('data : ', data);
+      const data = {
+        calcType: '02',
+        houseSaveRequestList: list.map(({ index, complete, createAt, houseId, isCurOwn, isDestruction, kbMktPrice, moveInDate, moveOutDate, ownerCnt, sellDate, sellPrice, sourceType, updateAt, userId, userProportion, ...rest }) => rest),
+      }
+      console.log('data : ', data);
       axios
         .post(`${Config.APP_API_URL}house/saveAllHouse`, data, { headers: headers })
         .then(async response => {
@@ -475,12 +617,13 @@ const InfoCertification = props => {
             return false;
 
           } else {
-            const returndata = response.data.data;
+            console.log('[hypenHouseAPI] response.data : ', response.data.data);
+            const returndata = response.data.data.list;
             dispatch(setOwnHouseList([
               ...returndata,
             ]));
             return true;
-            //console.log('[hypenHouseAPI] response.data : ', response.data);
+
           }
         })
         .catch(error => {
@@ -701,7 +844,7 @@ const InfoCertification = props => {
                   //////console.log('certresult', certresult)
                   if (certresult) {
                     SheetManager.hide("infoCertification");
-                    const { isGainsTax } = props.payload?.isGainsTax;
+                    const { isGainsTax } = props.payload;
                     const chatItem = isGainsTax
                       ? gainTax.find(el => el.id === 'allHouse1')
                       : acquisitionTax.find(el => el.id === 'moment1');

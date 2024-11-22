@@ -176,7 +176,7 @@ const InfoAlert = props => {
         backgroundColor: '#fff',
         borderTopLeftRadius: 20,
         borderTopRightRadius: 20,
-        height: errorMessage ? props.payload?.prevSheet !== 'Login_ID' ? 490 : 420 : props?.payload?.type === 'error' ? props.payload?.prevSheet !== 'Login_ID' ? 370 : 300 : 270,
+        height: errorMessage ? props.payload?.prevSheet !== 'Login_ID' ? 490 : 420 : props?.payload?.type === 'error' ? props.payload?.prevSheet !== 'Login_ID' ? 370 : 300 : 300,
         width: width - 40
       }}>
       <SheetContainer width={width}>

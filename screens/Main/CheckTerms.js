@@ -335,15 +335,6 @@ const CheckTerms = props => {
 
         <SubTitle >원활한 하우택싱 서비스 이용을 위해 약관에 동의해주세요.</SubTitle>
       </IntroSection>
-      <TouchableOpacity
-        style={{
-          width: '100%',
-          height: 1,
-          backgroundColor: '#E8EAED',
-          marginBottom: 20,
-        }}
-      />
-      
       <ListItem>
 
         <ListItemTitle
@@ -377,15 +368,6 @@ const CheckTerms = props => {
           {agreeAge && agreeCert && agreePrivacy && agreeMarketing && <CheckOnIcon />}
         </CheckCircle>
       </ListItem>
-
-      <TouchableOpacity
-        style={{
-          width: '100%',
-          height: 1,
-          backgroundColor: '#E8EAED',
-          marginTop: 20,
-        }}
-      />
       <ListItem style={{ marginTop: 20 }}>
         <ListItemTitle >
           [필수] 14세 이상입니다.

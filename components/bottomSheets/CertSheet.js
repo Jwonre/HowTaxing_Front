@@ -244,7 +244,7 @@ const CertSheet = props => {
   const [isGainsTax, setIsGainsTax] = useState('');
   //const [certresult, setCertresult] = useState(false);
   const [keyboardHeight, setKeyboardHeight] = useState(0);
-  const { agreePrivacy } = useSelector(
+  const { certType, agreeCert, agreePrivacy } = useSelector(
     state => state.cert.value,
   );
   //console.log('props', props);
@@ -340,10 +340,12 @@ const CertSheet = props => {
   const input1 = useRef(null);
   const input2 = useRef(null);
   const input3 = useRef(null);
-  console.log('height', height);
-  console.log('keyboardHeight', keyboardHeight);
+  //console.log('height', height);
+  //console.log('keyboardHeight', keyboardHeight);
 
   const registerDirectHouse = async (list) => {
+    
+    //console.log('list : ', list);
     try {
       const state = await NetInfo.fetch();
       const canProceed = await handleNetInfoChange(state);
@@ -356,18 +358,23 @@ const CertSheet = props => {
         'Authorization': `Bearer ${accessToken}`
       };
 
-      const data = list || [];
-      console.log('data : ', data);
+      //console.log('list : ', list);
+      const data = {
+        calcType : '02',
+        houseSaveRequestList : list.map(({ index, complete, createAt, houseId, isCurOwn, isDestruction, kbMktPrice, moveInDate, moveOutDate, ownerCnt, sellDate, sellPrice, sourceType, updateAt, userId, userProportion, ...rest }) => rest),
+      }
+      console.log('request : ', data);
 
       const response = await axios.post(`${Config.APP_API_URL}house/saveAllHouse`, data, { headers });
 
-      console.log('response : ', response);
+      //console.log('response : ', response);
 
       if (response.data.errYn === 'Y') {
+        //console.log('response.data', response.data);
         await showErrorMessage(response.data.errMsg, response.data.errMsgDtl);
         return false;
       } else {
-        dispatch(setOwnHouseList([...response.data.data]));
+        dispatch(setOwnHouseList([...response.data.data.list]));
         return true;
       }
     } catch (error) {
@@ -413,7 +420,7 @@ const CertSheet = props => {
 
   const hypenHouseAPI = async (url, data, headers) => {
     try {
-      const response = await axios.post(url, data, { headers });
+      const response = await axios.post(url, data, { headers, timeout: 65000 });
       console.log('response', response);
       console.log('response.data', response.data);
       if (response.data.errYn === 'Y') {
@@ -437,7 +444,7 @@ const CertSheet = props => {
                 if (networkState.isConnected) {
                   SheetManager.show('cert', {
                     payload: {
-                      cert: props.payload.data,
+                      data: props.payload.data,
                       index: props.payload?.index,
                       currentPageIndex,
                       name,
@@ -540,7 +547,7 @@ const CertSheet = props => {
             if (networkState.isConnected) {
               SheetManager.show('cert', {
                 payload: {
-                  cert: props.payload.data,
+                  data: props.payload.data,
                   index: props.payload?.index,
                   currentPageIndex,
                   name,
@@ -580,6 +587,7 @@ const CertSheet = props => {
 
         if (response.data.data && response.data.data.length > 0) {
           list = response.data.data.map((item, index) => ({ ...item, index }));
+          
           console.log('[hypenHouseAPI] list:', list);
           dispatch(setResend(false));
           if (list.some(item => item.complete === false)) {
@@ -781,7 +789,7 @@ const CertSheet = props => {
             message: '인증 알림을 보냈어요.\n인증이 완료되면 다음화면으로 넘어가요.',
             certType: props.payload?.data,
             index: props.payload?.index,
-            isGainsTax: props.payload,
+            isGainsTax: props.payload.isGainsTax,
             name: name,
             phone: phone,
             residentNumber: residentNumber,
@@ -796,6 +804,7 @@ const CertSheet = props => {
 
       //console.log('certresult', certresult)
       if (certresult) {
+        SheetManager.hide("infoCertification");
         const { isGainsTax } = props.payload;
         const chatItem = isGainsTax
           ? gainTax.find(el => el.id === 'allHouse1')

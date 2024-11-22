@@ -149,11 +149,13 @@ const CertificationPrivacy = props => {
             width={width}
             active={agreePrivacy}
             onPress={() => {
-              dispatch(
-                setCert({
-                  agreePrivacy: true,
-                }),
-              );
+              setTimeout(() => {
+                dispatch(
+                  setCert({
+                    agreePrivacy: true,
+                  }),
+                );
+              }, 300);
               navigation.goBack();
               console.log('props.route?.params?.prevSheet', props.route?.params?.prevSheet);
               SheetManager.show(props.route?.params?.prevSheet === 'cert2' ? 'cert2' : props.route?.params?.prevSheet === 'cert' ? 'cert' : 'cert_ori', {

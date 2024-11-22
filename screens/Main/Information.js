@@ -1,5 +1,5 @@
 import { View, Text, TouchableOpacity, BackHandler } from 'react-native';
-import React, { useLayoutEffect, useCallback, useRef, useState } from 'react';
+import React, { useEffect, useLayoutEffect, useCallback, useRef, useState } from 'react';
 import BackIcon from '../../assets/icons/back_button.svg';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import styled from 'styled-components';
@@ -8,10 +8,10 @@ import getFontSize from '../../utils/getFontSize';
 import { SheetManager } from 'react-native-actions-sheet';
 import { useDispatch, useSelector } from 'react-redux';
 import { setCurrentUser } from '../../redux/currentUserSlice';
+import { setAdBanner } from '../../redux/adBannerSlice';
 import NetInfo from '@react-native-community/netinfo';
 import axios from 'axios';
 import Config from 'react-native-config'
-
 const Container = styled.View`
   flex: 1;
   background-color: #fff;
@@ -213,6 +213,10 @@ const Information = props => {
     });
   };
 
+  useEffect(() => {
+    dispatch(setAdBanner(false));
+  }, []);
+
   return (
     <Container>
       <IntroSection>
@@ -271,7 +275,7 @@ const Information = props => {
           const canProceed = await handleNetInfoChange(state);
           if (canProceed) { navigation.navigate('InfoLocation') }
         }}>
-          <OptionText >위치정보 이용약관</OptionText>
+          <OptionText >마케팅정보 이용약관</OptionText>
         </Option>
         <Divider />
         <Option onPress={goLogout}>
