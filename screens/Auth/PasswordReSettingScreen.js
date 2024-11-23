@@ -322,7 +322,7 @@ const styles = StyleSheet.create({
   inputWrapper: {
     flexDirection: 'row', // TextInput과 Clear 버튼 가로 배치
     alignItems: 'center', // 세로 가운데 정렬
-    borderRadius: 12,
+    borderRadius: 10,
     backgroundColor: '#F5F7FA',
     paddingHorizontal: 15,
     height: 56,

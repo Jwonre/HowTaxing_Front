@@ -7,6 +7,8 @@ import {
   useWindowDimensions,
   ScrollView,
   BackHandler,
+  StyleSheet,
+  StatusBar,
 } from 'react-native';
 import React, { useLayoutEffect, useRef, useCallback, useState } from 'react';
 import { SheetManager } from 'react-native-actions-sheet';
@@ -57,7 +59,15 @@ const MembershipText = styled.Text`
   text-decoration: underline;
 `;
 
-
+const UnserLineButtonText = styled.Text`
+  font-size: 13px;
+  font-family: Pretendard-regular;
+  text-align: center;
+  color: #717274;
+  line-height: 20px;
+  letter-spacing: -0.3px;
+  text-decoration: underline;
+`;
 
 const ModalInputContainer = styled.View`
   width: 100%;
@@ -83,9 +93,14 @@ const ModalInput = styled.TextInput.attrs(props => ({
 `;
 
 const ButtonSection = styled.View`
+margin-top: 10px;
   width: 100%;
 `;
-
+const Button2 = styled.TouchableOpacity.attrs(props => ({
+  activeOpacity: 0.6,
+}))`
+  align-self: center;
+`;
 const Button = styled.TouchableOpacity.attrs(props => ({
   activeOpacity: 0.6,
 }))`
@@ -273,6 +288,8 @@ const Login_ID = props => {
 
 
   useLayoutEffect(() => {
+    StatusBar.setBarStyle('dark-content', true); // 아이콘 색상: 어두운 색
+    StatusBar.setBackgroundColor('#ffffff'); // 배경색: 흰색 (안드로이드 전용)
     navigation.setOptions({
       headerLeft: () => (
         <TouchableOpacity
@@ -324,6 +341,15 @@ const Login_ID = props => {
               <DeleteIcon />
             </DeleteCircleButton>
           </ModalInputContainer>
+          {/* Find ID Button */}
+          <TouchableOpacity style={styles.findIdButton}
+            onPress={() => {
+              // navigation.push('CheckTerms', { LoginAcessType: 'IDPASS', id: id, password: password })
+              navigation.navigate('IdFindScreen');
+              // dispatch(clearHouseInfo());
+            }}>
+            <UnserLineButtonText>아이디 찾기</UnserLineButtonText>
+          </TouchableOpacity>
         </View>
         <View>
           <ModalText>비밀번호</ModalText>
@@ -351,7 +377,13 @@ const Login_ID = props => {
               <DeleteIcon />
             </DeleteCircleButton>
           </ModalInputContainer>
-
+          <TouchableOpacity style={styles.findIdButton}
+            onPress={() => {
+              navigation.navigate('PasswordReSettingScreen');
+              // dispatch(clearHouseInfo());
+            }}>
+            <UnserLineButtonText>비밀번호 재설정</UnserLineButtonText>
+          </TouchableOpacity>
         </View>
       </IntroSection>
       <ButtonSection>
@@ -379,4 +411,21 @@ const Login_ID = props => {
   );
 };
 
+
+const styles = StyleSheet.create({
+  
+  findId: {
+    fontSize: 13, // 폰트 크기
+    fontFamily: 'Pretendard-Regular', // 원하는 폰트 패밀리
+    fontWeight: '400', // 폰트 두께 (400은 기본)
+    color: '#717274',
+    textDecorationLine: 'underline', // 밑줄 추가
+    textDecorationColor: '#717274', // 밑줄 색상 설정
+  },
+ 
+  findIdButton: {
+    marginTop:10,
+    alignSelf: 'flex-end', // 부모의 오른쪽 끝에 정렬
+  },
+});
 export default Login_ID;

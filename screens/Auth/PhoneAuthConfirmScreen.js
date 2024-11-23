@@ -20,7 +20,7 @@ import CloseIcon from '../../assets/icons/close_button.svg';
 import DeleteIcon from '../../assets/icons/delete_circle.svg';
 
 
-const PhoneAuthConfirmScreen = () => {
+const PhoneAuthConfirmScreen = props => {
   const [phoneNumber, setPhoneNumber] = useState('');
   const [authNum, setAuthNumber] = useState('');
   const navigation = useNavigation();
@@ -67,7 +67,7 @@ const PhoneAuthConfirmScreen = () => {
       // 두 번째 단계에서 확인 버튼 클릭
       console.log('인증번호 확인:', authNum);
       // 여기서 인증번호 검증 로직 추가
-      navigation.navigate('NextScreen'); // 다음 화면으로 이동
+      navigation.navigate('AddMembershipFinish', { prevSheet: 'PhoneAuthConfirmScreen', id: props?.route?.params?.id ? props?.route?.params?.id : null, password: props?.route?.params?.password ? props?.route?.params?.password : null });
     }
   };
 
@@ -290,7 +290,7 @@ const styles = StyleSheet.create({
 
   label: {
     fontSize: 17,
-    marginBottom: 10,
+    marginBottom: 5,
     color: '#1b1C1F',
     fontFamily: 'Pretendard-Bold', // 원하는 폰트 패밀리
     fontWeight: '700', // 폰트 두께 (400은 기본)
@@ -312,7 +312,7 @@ const styles = StyleSheet.create({
   inputWrapper: {
     flexDirection: 'row', // TextInput과 Clear 버튼 가로 배치
     alignItems: 'center', // 세로 가운데 정렬
-    borderRadius: 12,
+    borderRadius: 10,
     backgroundColor: '#F5F7FA',
     paddingHorizontal: 15,
     height: 56,
@@ -322,7 +322,7 @@ const styles = StyleSheet.create({
   inputAuthWrapper: {
     flexDirection: 'row', // 가로 정렬
     alignItems: 'center', // 세로 중앙 정렬
-    borderRadius: 12,
+    borderRadius: 10,
     backgroundColor: '#F5F7FA',
     paddingHorizontal: 15,
     height: 56,
@@ -332,9 +332,9 @@ const styles = StyleSheet.create({
   input: {
     flex: 1, // TextInput이 남은 공간을 차지하도록 설정
     color: '#000',
-    fontSize: 13,
-    fontFamily: 'Pretendard-Regular',
-    fontWeight: '400',
+    fontSize: 17,
+    fontFamily: 'Pretendard-Bold',
+    fontWeight: '700',
   },
   clearButton: {
     justifyContent: 'center',

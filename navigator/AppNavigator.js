@@ -11,13 +11,10 @@ import AddMembership from '../screens/Auth/AddMembership';
 import AddMembershipFinish from '../screens/Auth/AddMembershipFinish';
 import Home from '../screens/Main/Home';
 import LoginWebview from '../screens/Auth/LoginWebview';
-import IdLoginScreen from '../screens/Auth/IdLoginScreen';
 import IdFindScreen from '../screens/Auth/IdFindScreen';
 import PasswordReSettingScreen from '../screens/Auth/PasswordChangeScreen';
 import PasswordChangeScreen from '../screens/Auth/PasswordChangeScreen';
-import JoinCompletScreen from '../screens/Auth/JoinCompletScreen';
 import PhoneAuthConfirmScreen from '../screens/Auth/PhoneAuthConfirmScreen';
-import TermsConfirmScreen from '../screens/Auth/TermsConfirmScreen';
 
 
 // Redux
@@ -330,13 +327,10 @@ const AppNavigator = () => {
               <Stack.Screen name="AddMembership" component={AddMembership} />
               <Stack.Screen name="AddMembershipFinish" component={AddMembershipFinish} />
               <Stack.Screen name="CheckTerms" component={CheckTerms} />
-              <Stack.Screen name="IdLoginScreen" component={IdLoginScreen} />
               <Stack.Screen name="IdFindScreen" component={IdFindScreen} />
               <Stack.Screen name="PasswordReSettingScreen" component={PasswordReSettingScreen} />
               <Stack.Screen name="PasswordChangeScreen" component={PasswordChangeScreen} />
-              <Stack.Screen name="JoinCompletScreen" component={JoinCompletScreen} />
               <Stack.Screen name="PhoneAuthConfirmScreen" component={PhoneAuthConfirmScreen} />
-              <Stack.Screen name="TermsConfirmScreen" component={TermsConfirmScreen} />
 
               
               <Stack.Group screenOptions={{ presentation: 'modal' }}>

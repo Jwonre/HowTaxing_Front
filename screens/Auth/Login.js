@@ -264,7 +264,7 @@ const onAppleLogin = async () => {
     const state = await NetInfo.fetch();
     const canProceed = await handleNetInfoChange(state);
     if (canProceed) {
-      navigation.navigate('IdLoginScreen');
+      navigation.navigate('Login_ID');
     }
   };
 

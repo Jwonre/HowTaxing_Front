@@ -19,6 +19,12 @@ import getFontSize from '../../utils/getFontSize';
 import CloseIcon from '../../assets/icons/close_button.svg';
 import DeleteIcon from '../../assets/icons/delete_circle.svg';
 
+const ProgressSection = styled.View`
+  flex-direction: row;
+  width: 100%;
+  height: 5px;
+  background-color: #2f87ff;
+`;
 
 const IdFindScreen = () => {
   const [phoneNumber, setPhoneNumber] = useState('');
@@ -92,17 +98,15 @@ const IdFindScreen = () => {
       headerTitleAlign: 'center',
       title: '아이디 찾기',
       headerShadowVisible: false,
-      // contentStyle: {
-      //   borderTopColor: '#D9D9D9',
-      //   borderTopWidth: 1,
-      // },
-      headerTitleStyle: {
-        fontFamily: 'Pretendard-Bold',
-        fontSize: 17,
-        color: '#333',
-        letterSpacing: -0.8,
-
-      },
+     contentStyle: {
+             borderTopWidth: 0,
+           },
+           headerTitleStyle: {
+             fontFamily: 'Pretendard-Bold',
+             fontSize: 17,
+             color: '#333',
+             letterSpacing: -0.8,
+           },
 
     });
   }, []);
@@ -110,7 +114,8 @@ const IdFindScreen = () => {
   return (
     <View style={styles.rootContainer}>
       {/* 파란색 라인 */}
-      <View style={styles.blueLine} />
+      <ProgressSection>
+      </ProgressSection>
 
       {/* 스크롤 뷰 */}
       <ScrollView contentContainerStyle={styles.scrollContent}>
@@ -292,7 +297,7 @@ const styles = StyleSheet.create({
   inputWrapper: {
     flexDirection: 'row', // TextInput과 Clear 버튼 가로 배치
     alignItems: 'center', // 세로 가운데 정렬
-    borderRadius: 12,
+    borderRadius: 10,
     backgroundColor: '#F5F7FA',
     paddingHorizontal: 15,
     height: 56,

@@ -72,7 +72,7 @@ const IconView = styled.View`
   justify-content: center;
   position: absolute;
   right: 25px;
-  border: 1px solid #e8eaed;
+   margin-top: 50px;
 `;
 const ListItem = styled.View`
   flex-direction: row; 
@@ -132,6 +132,12 @@ const ShadowContainer = styled(DropShadow)`
   shadow-offset: 2px 3px;
   shadow-opacity: 0.2;
   shadow-radius: 3px;
+`;
+const ProgressSection = styled.View`
+  flex-direction: row;
+  width: 100%;
+  height: 5px;
+  background-color: #2f87ff;
 `;
 
 
@@ -311,7 +317,7 @@ const CheckTerms = props => {
           <BackIcon />
         </TouchableOpacity>
       ),
-      title: '',
+      title: '약관 확인하기',
       headerShadowVisible: false,
       contentStyle: {
         borderTopWidth: 0,
@@ -327,24 +333,26 @@ const CheckTerms = props => {
 
   return (
     <Container>
+       <ProgressSection>
+       </ProgressSection>
       <IconView>
-        <HomeIcon />
+      <HomeIcon />
       </IconView>
       <IntroSection>
         <Title >약관을 확인해주세요.</Title>
 
         <SubTitle >원활한 하우택싱 서비스 이용을 위해 약관에 동의해주세요.</SubTitle>
       </IntroSection>
-      <TouchableOpacity
+      {/* <TouchableOpacity
         style={{
           width: '100%',
           height: 1,
           backgroundColor: '#E8EAED',
           marginBottom: 20,
         }}
-      />
+      /> */}
       
-      <ListItem>
+      {/* <ListItem>
 
         <ListItemTitle
           style={{
@@ -385,8 +393,8 @@ const CheckTerms = props => {
           backgroundColor: '#E8EAED',
           marginTop: 20,
         }}
-      />
-      <ListItem style={{ marginTop: 20 }}>
+      /> */}
+      <ListItem style={{ marginTop: 0 }}>
         <ListItemTitle >
           [필수] 14세 이상입니다.
         </ListItemTitle>
@@ -511,8 +519,7 @@ const CheckTerms = props => {
       </ListItem>
 
       <ButtonSection style={{ marginTop: 20 }}>
-        <ShadowContainer>
-          <Button
+      <Button
             width={width}
             disabled={!(agreeCert && agreeAge && agreePrivacy)}
             onPress={async () => {
@@ -533,7 +540,8 @@ const CheckTerms = props => {
                   const Sighupresult = await handleSignUp(null, agreeMarketing);
                   console.log('Sighupresult', Sighupresult);
                   if (Sighupresult) {
-                    navigation.navigate('AddMembershipFinish', { prevSheet: 'CheckTerms', id: props?.route?.params?.id ? props?.route?.params?.id : null, password: props?.route?.params?.password ? props?.route?.params?.password : null });
+
+                    navigation.navigate('PhoneAuthConfirmScreen', { prevSheet: 'CheckTerms', id: props?.route?.params?.id ? props?.route?.params?.id : null, password: props?.route?.params?.password ? props?.route?.params?.password : null });
                   }
                 }
               }
@@ -552,7 +560,6 @@ const CheckTerms = props => {
             }}>
             <ButtonText >시작하기</ButtonText>
           </Button>
-        </ShadowContainer>
       </ButtonSection>
     </Container>
   );
