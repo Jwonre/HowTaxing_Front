@@ -335,8 +335,8 @@ const CertSheet_ori = props => {
 
   const hypenHouseAPI = async (url, data, headers) => {
     try {
-      const response = await axios.post(url, data, { headers });
-      // console.log('response.data', response);
+      const response = await axios.post(url, data, { headers, timeout: 65000 });
+       console.log('response.data', response);
       if (response.data.errYn === 'Y') {
         if (response.data.errCode === 'HOUSE-005') {
           //console.log('response.data.errMsg.includes([LOGIN)', response.data.errMsg.includes('[LOGIN'));
@@ -356,9 +356,10 @@ const CertSheet_ori = props => {
                 const networkState = await NetInfo.fetch();
                 // 네트워크가 연결되어 있을 때만 updateHouseDetailName() 함수를 실행합니다.
                 if (networkState.isConnected) {
-                  SheetManager.show('cert', {
+                  SheetManager.show('cert_ori', {
                     payload: {
-                      cert: props.payload.data,
+                      data: props.payload.data,
+                      certType: certType,
                       index: props.payload?.index,
                       currentPageIndex,
                       name,
@@ -367,11 +368,11 @@ const CertSheet_ori = props => {
                       password,
                       residentNumber,
                       failreturn: true,
-                      CheckPrivacy: false
+                      CheckPrivacy: true
                     },
                   });
                 }
-              }, 700);
+              }, 300);
               const newChatDataList = chatDataList.slice(0, props.payload?.index + 1);
               dispatch(setChatDataList(newChatDataList));
             }
@@ -601,7 +602,7 @@ const CertSheet_ori = props => {
             message: '인증 알림을 보냈어요.\n인증이 완료되면 다음화면으로 넘어가요.',
             certType: props.payload?.data,
             index: props.payload?.index,
-            isGainsTax: props.payload,
+            isGainsTax: props.payload.isGainsTax,
             name: name,
             phone: phone,
             residentNumber: residentNumber,

@@ -1,14 +1,15 @@
 // 취득세 홈페이지
 
 import { TouchableOpacity, useWindowDimensions, BackHandler } from 'react-native';
-import React, { useRef, useLayoutEffect, useState, useCallback } from 'react';
+import React, { useRef, useLayoutEffect, useState, useCallback, useEffect } from 'react';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
+import { useDispatch } from 'react-redux';
 import BackIcon from '../../assets/icons/back_button.svg';
 import styled from 'styled-components';
 import HomeIcon from '../../assets/images/home_home_lg.svg';
 import FastImage from 'react-native-fast-image';
 import DropShadow from 'react-native-drop-shadow';
-import getFontSize from '../../utils/getFontSize';
+import { setAdBanner } from '../../redux/adBannerSlice';
 import NetInfo from "@react-native-community/netinfo";
 
 const Container = styled.View`
@@ -171,7 +172,7 @@ const Acquisition = () => {
   const navigation = useNavigation();
   const { width, height } = useWindowDimensions();
   const AC_HASHTAG_LIST = ['취득세 계산', '조정 지역', '주택 매수'];
-
+  const dispatch = useDispatch();
   const [hasNavigatedBack, setHasNavigatedBack] = useState(false);
   const hasNavigatedBackRef = useRef(hasNavigatedBack);
 
@@ -232,6 +233,10 @@ const Acquisition = () => {
         letterSpacing: -0.8,
       },
     });
+  }, []);
+
+  useEffect(() => {
+    dispatch(setAdBanner(false));
   }, []);
 
   return (

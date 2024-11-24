@@ -351,7 +351,7 @@ const CheckTerms = props => {
           marginBottom: 20,
         }}
       /> */}
-      
+
       {/* <ListItem>
 
         <ListItemTitle

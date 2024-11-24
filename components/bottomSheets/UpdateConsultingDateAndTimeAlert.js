@@ -429,11 +429,11 @@ const UpdateConsultingDateAndTimeAlert = props => {
         pagingEnabled
         style={{
           width: width - 40,
-          height: currentPageIndex === 0 ? height - 190 : height - 150,
+          height: currentPageIndex === 0 ? height - 190 : height - 100,
         }}
         horizontal
         showsHorizontalScrollIndicator={false}
-        scrollEnabled={false}
+        scrollEnabled={true}
         scrollEventThrottle={16}>
         {currentPageIndex === 0 && <SheetContainer width={width}>
           <ModalInputSection>

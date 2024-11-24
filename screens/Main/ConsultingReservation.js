@@ -1,6 +1,6 @@
 // 양도소득세 홈페이지
 
-import { TouchableOpacity, useWindowDimensions, BackHandler, View, ScrollView, Animated, Text, TextInput, Dimensions } from 'react-native';
+import { TouchableOpacity, TouchableWithoutFeedback, useWindowDimensions, BackHandler, View, ScrollView, Animated, Text, TextInput, Dimensions, Keyboard } from 'react-native';
 import { FlatList } from 'react-native-gesture-handler';
 import React, { useRef, useLayoutEffect, useState, useCallback, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -15,6 +15,8 @@ import NetInfo from "@react-native-community/netinfo";
 import Calendar from '../../components/ReservationCalendar';
 import Config from 'react-native-config'
 import axios from 'axios';
+import { setAdBanner } from '../../redux/adBannerSlice';
+
 
 const Container = styled.View`
   flex: 1.0;
@@ -382,6 +384,7 @@ const ConsultingReservation = () => {
   console.log('width', width);
   const input1 = useRef(null);
   const input2 = useRef(null);
+  const dispatch = useDispatch();
   const input3 = useRef(null);
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
@@ -468,6 +471,10 @@ const ConsultingReservation = () => {
     }
 
   }, [currentPageIndex]);
+
+  useEffect(() => {
+    dispatch(setAdBanner(false));
+  }, []);
 
 
   useEffect(() => {
@@ -1249,7 +1256,7 @@ const ConsultingReservation = () => {
         /></>
       </Container>}
 
-      {currentPageIndex === 4 && <Container style={{ width: width }}>
+      {currentPageIndex === 4 && <TouchableWithoutFeedback onPress={Keyboard.dismiss}><Container style={{ width: width }}>
         <ProgressSection>
         </ProgressSection>
         <>
@@ -1425,7 +1432,8 @@ const ConsultingReservation = () => {
             </View>
           </ButtonSection2>
         </>
-      </Container>}
+      </Container>
+      </TouchableWithoutFeedback>}
 
 
 

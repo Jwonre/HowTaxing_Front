@@ -293,10 +293,13 @@ const AddHouseList = props => {
       };
 
       // 요청 바디
-      console.log('last AddHouseList', AddHouseList);
+      //console.log('last AddHouseList', AddHouseList);
       var loadHouseList = AddHouseList ? AddHouseList.filter(house => house.complete === true) : [];
-      const data = loadHouseList.map(({ index, ...rest }) => rest);
-      console.log('[hypenHouseAPI] data : ', data);
+      const data = {
+        calcType : '02',
+        houseSaveRequestList : loadHouseList.map(({ index, complete, createAt, houseId, isCurOwn, isDestruction, kbMktPrice, moveInDate, moveOutDate, ownerCnt, sellDate, sellPrice, sourceType, updateAt, userId, userProportion, ...rest }) => rest),
+      }
+      console.log('request : ', data);
 
       axios
         .post(`${Config.APP_API_URL}house/saveAllHouse`, data, { headers: headers })
@@ -314,8 +317,8 @@ const AddHouseList = props => {
 
           } else {
             console.log('[hypenHouseAPI] ownHouseList : ', ownHouseList);
-            console.log('[hypenHouseAPI] home response.data : ', response.data.data);
-            const returndata = response.data.data;
+            console.log('[hypenHouseAPI] home response.data : ', response.data.data.list);
+            const returndata = response.data.data.list;
             dispatch(setOwnHouseList([
               ...returndata,
             ]));

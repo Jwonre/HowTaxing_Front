@@ -101,9 +101,7 @@ const StarButton = styled.TouchableOpacity.attrs(props => ({
 const ReviewItem = styled.View`
   width: 100%;
   height: auto;
-  flex-direction: row;
-  align-items: center;
-  justify-content: space-between;
+  align-items: right;
   padding: 20px;
   border-bottom-width: 1px;
   border-bottom-color: #e8eaed;
@@ -295,7 +293,7 @@ const ReviewSheet = props => {
             ))}
           </StarSection>
           <ReviewItem>
-            <ScrollView keyboardShouldPersistTaps='always'>
+    
               <ReviewInput
                 
                 multiline={true}
@@ -311,7 +309,7 @@ const ReviewSheet = props => {
                 value={text.slice(0, 1000)}
               />
               <TextLength >{encodeURI(text).split(/%..|./).length - 1}/1000</TextLength>
-            </ScrollView>
+  
           </ReviewItem>
         </ModalInputSection>
 

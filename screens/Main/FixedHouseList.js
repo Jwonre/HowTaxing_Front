@@ -259,11 +259,15 @@ const FixedHouseList = props => {
       // 요청 바디
       console.log('last fixHouseList', fixHouseList);
       var loadHouseList = fixHouseList ? fixHouseList : [];
-      const data = loadHouseList.map(({ index, ...rest }) => rest);
-
+      const data = {
+        calcType : '02',
+        houseSaveRequestList : loadHouseList.map(({ index, complete, createAt, houseId, isCurOwn, isDestruction, kbMktPrice, moveInDate, moveOutDate, ownerCnt, sellDate, sellPrice, sourceType, updateAt, userId, userProportion, ...rest }) => rest),
+      }
+      console.log('[hypenHouseAPI] data : ',data);
       try {
         const response = await axios.post(`${Config.APP_API_URL}house/saveAllHouse`, data, { headers: headers });
         if (response.data.errYn === 'Y') {
+         // console.log('response.data', response.data);
           await SheetManager.show('info', {
             payload: {
               type: 'error',
@@ -274,8 +278,8 @@ const FixedHouseList = props => {
           });
           return false;
         } else {
-          console.log('returndata',response.data.data);
-          const returndata = response.data.data;
+          //console.log('returndata',response.data.data.list);
+          const returndata = response.data.data.list;
           dispatch(setOwnHouseList([...returndata]));
           return true;
         }

@@ -79,7 +79,7 @@ const InfoLocation = props => {
       </ProgressSection>
       <View style={{ flex: 1 }}>
         <WebView
-          source={{ uri: 'https://app.how-taxing.com/location-policy' }}
+          source={{ uri: 'https://deep-hortensia-87c.notion.site/03-a56cc46c6a78498f8e026fb49e1317bf?pvs=4' }}
           javaScriptEnabled={true}
           domStorageEnabled={true}
           startInLoadingState={false}

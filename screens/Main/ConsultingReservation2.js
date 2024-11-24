@@ -1365,7 +1365,7 @@ const ConsultingReservation = props => {
                       <ConsultingInput
                         ref={input3}
                         autoFocus={currentPageIndex === 4}
-                        multiline={false}
+                        multiline={true}
                         width={width}
                         placeholder="정확한 상담을 위해 사실 관계 및 문의사항을 자세하게 입력해주세요."
                         onChangeText={(input) => {

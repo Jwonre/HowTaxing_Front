@@ -1,6 +1,6 @@
 import { useWindowDimensions, Pressable } from 'react-native';
 import React, { useRef, useState } from 'react';
-import ActionSheet from 'react-native-actions-sheet';
+import ActionSheet, { SheetManager } from 'react-native-actions-sheet';
 import styled from 'styled-components';
 import getFontSize from '../../utils/getFontSize';
 import CloseIcon from '../../assets/icons/close_button.svg';
@@ -9,6 +9,9 @@ import { useNavigation } from '@react-navigation/native';
 import InfoCircleIcon from '../../assets/icons/info_circle.svg';
 import { setOwnHouseList } from '../../redux/ownHouseListSlice';
 import { useDispatch, useSelector } from 'react-redux';
+import axios from 'axios';
+import NetInfo from "@react-native-community/netinfo"
+import Config from 'react-native-config'
 
 const SheetContainer = styled.View`
   background-color: #fff;
@@ -85,12 +88,95 @@ const ButtonText = styled.Text`
 `;
 
 const InfoConsultingCancel = props => {
+  const { item } = props.payload;
   const navigation = useNavigation();
   const actionSheetRef = useRef(null);
   const { width, height } = useWindowDimensions();
   const ownHouseList = useSelector(state => state.ownHouseList?.value);
   const dispatch = useDispatch();
+  const currentUser = useSelector(state => state.currentUser.value);
+  
   // ////console.log('props', props);
+  
+  const [hasNavigatedBack, setHasNavigatedBack] = useState(false);
+  const hasNavigatedBackRef = useRef(hasNavigatedBack);
+
+    const [isConnected, setIsConnected] = useState(true);
+  
+  const handleNetInfoChange = (state) => {
+    return new Promise((resolve, reject) => {
+      if (!state.isConnected && isConnected) {
+        setIsConnected(false);
+        navigation.push('NetworkAlert', navigation);
+        resolve(false);
+      } else if (state.isConnected && !isConnected) {
+        setIsConnected(true);
+        if (!hasNavigatedBackRef.current) {
+          setHasNavigatedBack(true);
+        }
+        resolve(true);
+      } else {
+        resolve(true);
+      }
+    });
+  };
+
+  const deleteHouse = async () => {
+    const state = await NetInfo.fetch();
+    const canProceed = await handleNetInfoChange(state);
+    if (canProceed) {
+      const url = `${Config.APP_API_URL}house/delete`;
+      const headers = {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${currentUser.accessToken}`
+      };
+      const data = {
+        houseId: item?.houseId === undefined ? '' : item?.houseId,
+      };
+
+      try {
+        const response = await axios.delete(url, { headers: headers, data: data });
+        if (response.data.errYn === 'Y') {
+
+          SheetManager.show('info', {
+            payload: {
+              type: 'error',
+              message: response.data.errMsg ? response.data.errMsg : '보유주택을 삭제하는데 문제가 발생했어요.', 
+              description: response.data.errMsgDtl ? response.data.errMsgDtl : '',
+              closemodal: true,
+              actionSheetRef: actionSheetRef,
+              buttontext: '확인하기',
+            },
+          });
+          return;
+
+        } else {
+          //  ////console.log('deleteHouse', response);
+          //  ////console.log('item?.houseId', item?.houseId);
+
+          const filteredList = ownHouseList.filter(el => el.houseId !== item?.houseId);
+          dispatch(setOwnHouseList(filteredList));
+
+          actionSheetRef.current?.hide();
+        }
+
+
+      } catch (error) {
+        SheetManager.show('info', {
+          payload: {
+            type: 'error',
+            message: '보유주택 삭제 중 오류가 발생했습니다.',
+            closemodal: true,
+            actionSheetRef: actionSheetRef,
+            buttontext: '확인하기',
+          },
+        });
+        console.error(error);
+      }
+    } else {
+      actionSheetRef.current?.hide();
+    }
+  };
 
   return (
     <ActionSheet
@@ -166,13 +252,7 @@ const InfoConsultingCancel = props => {
               onPress={() => {
                 // actionSheetRef.current?.hide();
                 ////console.log('YES');
-                var Temp = ownHouseList;
-                dispatch(
-                  setOwnHouseList(
-                    Temp.filter(ownHouseItem => ownHouseItem !== props?.payload?.item),
-                  )
-                );
-                actionSheetRef.current?.hide();
+                deleteHouse();
 
               }}>
               <ButtonText >네</ButtonText>

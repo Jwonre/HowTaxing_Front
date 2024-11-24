@@ -1,15 +1,17 @@
 // 양도소득세 홈페이지
 
 import { TouchableOpacity, useWindowDimensions, BackHandler } from 'react-native';
-import React, { useRef, useLayoutEffect, useState, useCallback } from 'react';
+import React, { useRef, useLayoutEffect, useState, useCallback, useEffect } from 'react';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
+import { useDispatch } from 'react-redux';
 import BackIcon from '../../assets/icons/back_button.svg';
 import styled from 'styled-components';
 import HomeIcon from '../../assets/images/home_home_lg.svg';
 import FastImage from 'react-native-fast-image';
 import DropShadow from 'react-native-drop-shadow';
 import NetInfo from "@react-native-community/netinfo";
-import getFontSize from '../../utils/getFontSize';
+import { setAdBanner } from '../../redux/adBannerSlice';
+
 
 const Container = styled.View`
   flex: 1;
@@ -162,7 +164,7 @@ const ButtonText = styled.Text`
 const GainsTax = () => {
   const navigation = useNavigation();
   const { width, height } = useWindowDimensions();
-  
+  const dispatch = useDispatch();
   const [hasNavigatedBack, setHasNavigatedBack] = useState(false);
   const hasNavigatedBackRef = useRef(hasNavigatedBack);
 
@@ -230,6 +232,10 @@ const GainsTax = () => {
         letterSpacing: -0.8,
       },
     });
+  }, []);
+
+  useEffect(() => {
+    dispatch(setAdBanner(false));
   }, []);
 
   return (
