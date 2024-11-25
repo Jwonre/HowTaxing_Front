@@ -103,9 +103,10 @@ const Login = () => {
   const navigation = useNavigation();
   const route = useRoute();
   const dispatch = useDispatch();
-  //const [isConnected, setIsConnected] = useState(true);
+  const [socialType, setSocialType] = useState('');
+  const [accessToken, setAccessToken] = useState('');
+
   const agreeMarketing = route.params ? route.params.agreeMarketing : false;
-  const accessToken = null;
   // const [result, setResult] = useState<string | null>(null);
 
   const [hasNavigatedBack, setHasNavigatedBack] = useState(false);
@@ -171,24 +172,21 @@ const Login = () => {
     const state = await NetInfo.fetch();
     const canProceed = await handleNetInfoChange(state);
     if (canProceed) {
-      try{
+      try {
 
         const message = await kakaoAuthManager.unlink();
         // setResult(message ? message : '로그아웃 실패');
-        console.log("message ",message ? message : '로그아웃 실패');
+        console.log("message ", message ? message : '로그아웃 실패');
 
         const token = await kakaoAuthManager.signIn();
-        // setResult(token ? JSON.stringify(token) : '로그인 실패');
-
-        //성공시 토큰 처리 ;
-
+        console.log("token ", token ? JSON.stringify(token) : '로그인 실패');
         const profile = await kakaoAuthManager.getProfile();
-        // setResult(profile ? JSON.stringify(profile) : '프로필 가져오기 실패');
-        console.log("token ",token ? JSON.stringify(token): '로그인 실패');
-
         console.log("profile ",profile ? JSON.stringify(profile): '로그인 실패');
-      }catch(error){
-        console.error("kakao Login Error : ",error);
+
+        socialLogin('KAKAO', token.accessToken, profile.id);
+
+      } catch (error) {
+        console.error("kakao Login Error : ", error);
       }
       // navigation.navigate('LoginWebview', { onWebViewMessage: handleWebViewMessage, 'socialType': 'kakao', });
     }
@@ -216,34 +214,41 @@ const Login = () => {
     const state = await NetInfo.fetch();
     const canProceed = await handleNetInfoChange(state);
     if (canProceed) {
-      NaverAuthManager.signIn();
+      const response = await NaverAuthManager.signIn();
+
+      const profile = await NaverAuthManager.getProfile(response.accessToken)
+      socialLogin('NAVER', response.accessToken,profile);
+
       // navigation.navigate('LoginWebview', { onWebViewMessage: handleWebViewMessage, 'socialType': 'naver', });
     }
   };
-// 네이버 로그인
-const onAppleLogin = async () => {
-  /*
-  await NaverLogin.login({
-    appName: '하우택싱',
-    consumerKey: 'orG8AAE8iHfRSoiySAbv',
-    consumerSecret: 'DEn_pJGqup',
-    serviceUrlScheme: 'howtaxing',
-  }).then(async res => {
-    const { accessToken } = res?.successResponse;
+  // 네이버 로그인
+  const onAppleLogin = async () => {
+    /*
+    await NaverLogin.login({
+      appName: '하우택싱',
+      consumerKey: 'orG8AAE8iHfRSoiySAbv',
+      consumerSecret: 'DEn_pJGqup',
+      serviceUrlScheme: 'howtaxing',
+    }).then(async res => {
+      const { accessToken } = res?.successResponse;
+  
+      ////console.log('accessToken', accessToken);
+  
+      if (accessToken) {
+        socialLogin(1, accessToken);
+      }
+    });
+    */
+    const state = await NetInfo.fetch();
+    const canProceed = await handleNetInfoChange(state);
+    if (canProceed) {
+      setSocialType('APPLE');
+      socialLogin('NAVER', '');
 
-    ////console.log('accessToken', accessToken);
-
-    if (accessToken) {
-      socialLogin(1, accessToken);
+      // navigation.navigate('LoginWebview', { onWebViewMessage: handleWebViewMessage, 'socialType': 'naver', });
     }
-  });
-  */
-  const state = await NetInfo.fetch();
-  const canProceed = await handleNetInfoChange(state);
-  if (canProceed) {
-    // navigation.navigate('LoginWebview', { onWebViewMessage: handleWebViewMessage, 'socialType': 'naver', });
-  }
-};
+  };
   const onIDLogin = async () => {
     /*
     await NaverLogin.login({
@@ -264,7 +269,7 @@ const onAppleLogin = async () => {
     const state = await NetInfo.fetch();
     const canProceed = await handleNetInfoChange(state);
     if (canProceed) {
-      navigation.navigate('Login_ID');
+      navigation.push('Login_ID');
     }
   };
 
@@ -380,15 +385,16 @@ const onAppleLogin = async () => {
     };
     */
   // 소셜 로그인
-  const socialLogin = async (userType, accessToken) => {
+  const socialLogin = async (socialType, accessToken,id) => {
     const data = {
-      userType,
+      socialType,
       accessToken,
     };
 
+    console.log(`${Config.APP_API_URL}user/socialLogin}`);
     axios
       .post(`${Config.APP_API_URL}user/socialLogin`, data)
-      .then(response => {
+      .then(async response => {
         if (response.data.errYn === 'Y') {
           SheetManager.show('info', {
             payload: {
@@ -400,8 +406,28 @@ const onAppleLogin = async () => {
           });
           return;
         } else {
-          const { id } = response.data;
-          getUserData(id);
+          const userData = response.data.data;
+          console.log(`${response.data.role}`);
+          console.log(`${userData}`);
+
+          const { role, accessToken, refreshToken } = userData;
+          console.log("profile ",`role : ${role}`);
+          console.log("profile ",`accessToken : ${accessToken}`);
+          console.log("profile ",`refreshToken : ${refreshToken}`);
+
+
+          if (role === 'USER') {
+             //console.log('Login token:', tokens[0]);
+             const tokenObject = { 'accessToken': accessToken, 'refreshToken': refreshToken };
+             //console.log('Login tokenObject:', tokenObject);
+             dispatch(setCurrentUser(tokenObject));
+             await navigation.push('Home', { accessToken : accessToken ,LoginAcessType : 'SOCIAL'});
+ 
+        
+          } else {
+            await navigation.push('CheckTerms', { accessToken : accessToken , authType : 'JOIN',LoginAcessType : 'SOCIAL',id:id});
+            //약관확인 화면으로 이동 후 약관 동의 완료시 handleSignUp 진행
+          }
         }
         // 성공적인 응답 처리
 
@@ -487,7 +513,7 @@ const onAppleLogin = async () => {
   //   }
   // };
 
-   
+
   // 유저 정보 가져오기
   const getUserData = async id => {
     await axios
@@ -570,25 +596,25 @@ const onAppleLogin = async () => {
         </SocialButton>
 
         {platformToKorean.isIOS && (
-        <SocialButton
-          onPress={onAppleLogin}
-          width={width}
-          style={{
-            backgroundColor: '#000000',
-          }}>
-          <SocialButtonIcon
-            source={require('../../assets/images/socialIcon/apple_ico.png')}
-          />
-          <SocialButtonText
-
+          <SocialButton
+            onPress={onAppleLogin}
+            width={width}
             style={{
-              color: '#fff',
+              backgroundColor: '#000000',
             }}>
-            애플로 시작하기
-          </SocialButtonText>
+            <SocialButtonIcon
+              source={require('../../assets/images/socialIcon/apple_ico.png')}
+            />
+            <SocialButtonText
 
-        </SocialButton>
-          )}
+              style={{
+                color: '#fff',
+              }}>
+              애플로 시작하기
+            </SocialButtonText>
+
+          </SocialButton>
+        )}
 
         <View>
           <Text

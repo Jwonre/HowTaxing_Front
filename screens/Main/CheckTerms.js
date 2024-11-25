@@ -523,28 +523,34 @@ const CheckTerms = props => {
             width={width}
             disabled={!(agreeCert && agreeAge && agreePrivacy)}
             onPress={async () => {
-              const state = await NetInfo.fetch();
-              const canProceed = await handleNetInfoChange(state);
-              if (canProceed) {
-                console.log('props?.route?.params', props?.route?.params);
-                if (props?.route?.params?.LoginAcessType === 'SOCIAL') {
-                  const Sighupresult = await handleSignUp(props?.route?.params?.tokens[0] ? props?.route?.params?.tokens[0] : null, agreeMarketing);
-                  console.log('Sighupresult', Sighupresult);
-                  if (Sighupresult) {
+              navigation.push('PhoneAuthConfirmScreen', { prevSheet: 'CheckTerms', agreeMarketing: agreeMarketing,
+                id: props?.route?.params?.id ? props?.route?.params?.id : null,
+                password : props?.route?.params?.password ? props?.route?.params?.password : null,
+                 accessToken: props?.route?.params?.accessToken ? props?.route?.params?.accessToken : null , authType : 'JOIN',
+                 LoginAcessType : props?.route?.params?.LoginAcessType });
 
-                    const tokenObject = { 'accessToken': props?.route?.params?.tokens[0], 'refreshToken': props?.route?.params?.tokens[1] };
-                    //  console.log('Login tokenObject:', tokenObject);
-                    dispatch(setCurrentUser(tokenObject));
-                  }
-                } else {
-                  const Sighupresult = await handleSignUp(null, agreeMarketing);
-                  console.log('Sighupresult', Sighupresult);
-                  if (Sighupresult) {
+              // const state = await NetInfo.fetch();
+              // const canProceed = await handleNetInfoChange(state);
+              // if (canProceed) {
+              //   console.log('props?.route?.params', props?.route?.params);
+              //   if (props?.route?.params?.LoginAcessType === 'SOCIAL') {
+              //     const Sighupresult = await handleSignUp(props?.route?.params?.tokens[0] ? props?.route?.params?.tokens[0] : null, agreeMarketing);
+              //     console.log('Sighupresult', Sighupresult);
+              //     if (Sighupresult) {
 
-                    navigation.navigate('PhoneAuthConfirmScreen', { prevSheet: 'CheckTerms', id: props?.route?.params?.id ? props?.route?.params?.id : null, password: props?.route?.params?.password ? props?.route?.params?.password : null });
-                  }
-                }
-              }
+              //       const tokenObject = { 'accessToken': props?.route?.params?.tokens[0], 'refreshToken': props?.route?.params?.tokens[1] };
+              //       //  console.log('Login tokenObject:', tokenObject);
+              //       dispatch(setCurrentUser(tokenObject));
+              //     }
+              //   } else {
+              //     const Sighupresult = await handleSignUp(null, agreeMarketing);
+              //     console.log('Sighupresult', Sighupresult);
+              //     if (Sighupresult) {
+
+              //       navigation.navigate('PhoneAuthConfirmScreen', { prevSheet: 'CheckTerms', id: props?.route?.params?.id ? props?.route?.params?.id : null, password: props?.route?.params?.password ? props?.route?.params?.password : null });
+              //     }
+              //   }
+              // }
             }
             }
 

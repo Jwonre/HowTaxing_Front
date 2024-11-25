@@ -33,6 +33,17 @@ class NaverAuthManager {
       return null;
     }
   }
+  // 프로필 정보 가져오기
+  async getProfile(successResponse: { accessToken: string }): Promise<String | null> {
+    try {
+      const profileResult = await naverLogin.getProfile(successResponse!.accessToken);
+      console.log('카카오 프로필 가져오기 성공:', profileResult);
+      return profileResult.response.id;
+    } catch (error) {
+      console.error('카카오 프로필 가져오기 실패:', error);
+      return null;
+    }
+  }
 
   // 네이버 로그아웃
   async signOut(): Promise<void> {

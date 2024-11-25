@@ -9,15 +9,22 @@ import {
   ScrollView,
   StyleSheet,
   Dimensions,
-  StatusBar
+  StatusBar,
+  BackHandler,
+  
 } from 'react-native';
-import React, { useRef, useLayoutEffect, useState, useEffect } from 'react';
+import React, { useRef, useLayoutEffect, useState, useEffect,useCallback, } from 'react';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import BackIcon from '../../assets/icons/back_button.svg';
 import styled from 'styled-components';
 import getFontSize from '../../utils/getFontSize';
 import CloseIcon from '../../assets/icons/close_button.svg';
 import DeleteIcon from '../../assets/icons/delete_circle.svg';
+import NetInfo from '@react-native-community/netinfo';
+import axios from 'axios';
+import Config from 'react-native-config'
+import { SheetManager } from 'react-native-actions-sheet';
+import IdSendSmsCompletAlert from '../Auth/component/IdSendSmsCompletAlert';
 
 const ProgressSection = styled.View`
   flex-direction: row;
@@ -26,7 +33,7 @@ const ProgressSection = styled.View`
   background-color: #2f87ff;
 `;
 
-const IdFindScreen = () => {
+const IdFindScreen = props  => {
   const [phoneNumber, setPhoneNumber] = useState('');
   const [authNum, setAuthNumber] = useState('');
   const navigation = useNavigation();
@@ -35,8 +42,17 @@ const IdFindScreen = () => {
   const [step, setStep] = useState(1); // 현재 단계 상태 (1: 휴대폰 입력, 2: 인증번호 입력)
   const [timer, setTimer] = useState(180); // 3분 = 180초
   const [isTimerActive, setIsTimerActive] = useState(false);
+  const [isConnected, setIsConnected] = useState(true);
+  const [hasNavigatedBack, setHasNavigatedBack] = useState(false);
+  const hasNavigatedBackRef = useRef(hasNavigatedBack);
+  const [isModalVisible, setIsModalVisible] = useState(false); // 팝업 상태 관리
+  const openModal = () => {
+    setIsModalVisible(true); // 팝업 열기
+  };
 
-
+  const closeModal = () => {
+    setIsModalVisible(false); // 팝업 닫기
+  };
   useEffect(() => {
     let interval = null;
     if (isTimerActive && timer > 0) {
@@ -57,25 +73,189 @@ const IdFindScreen = () => {
   };
   const handleResendAuth = () => {
     setTimer(180); // 타이머를 3분으로 초기화
-    setIsTimerActive(true); // 타이머 활성화
+    setIsTimerActive(false); // 타이머 활성화
     console.log('인증번호 재전송');
+    handleNextStep(1);
     // 인증번호 재전송 API 호출 로직 추가
   };
 
   // 버튼 클릭 핸들러
   const handleNextStep = () => {
     if (step === 1) {
-      // 첫 번째 단계에서 다음 단계로 이동
-      setStep(2);
-      setIsTimerActive(true); // 타이머 활성화
+      console.log("test:",'팝업');
+  
+      async() => {
+       
+        const state = await NetInfo.fetch();
+        const canProceed = await handleNetInfoChange(state);
+        if (canProceed) {
+          sendAuthMobile(phoneNumber.replace(/-/g, ''),props.route?.params?.authType,props?.route?.params?.id  );
+      
+        }
+      }
+  
 
     } else {
-      // 두 번째 단계에서 확인 버튼 클릭
-      console.log('인증번호 확인:', authNum);
-      // 여기서 인증번호 검증 로직 추가
-      navigation.navigate('NextScreen'); // 다음 화면으로 이동
+      async() => {
+       
+        const state = await NetInfo.fetch();
+        const canProceed = await handleNetInfoChange(state);
+        if (canProceed) {
+          sendAuthMobileConfirm(phoneNumber.replace(/-/g, ''),props.route?.params?.authType,authNum);
+        }
+      }
+      // // 두 번째 단계에서 확인 버튼 클릭
+      // console.log('인증번호 확인:', authNum);
+      // // 여기서 인증번호 검증 로직 추가
+      // navigation.navigate('NextScreen'); // 다음 화면으로 이동
     }
   };
+
+
+
+  
+  const sendAuthMobile = async ( phoneNumber, authType, id = null) => {
+    const data = {
+      phoneNumber,
+      authType,
+    };
+
+    if (id) {
+      data.id = id;
+    }
+
+    axios
+      .post(`${Config.APP_API_URL}sms/sendAuthCode`, data)
+      .then(async response => {
+        if (response.data.errYn === 'Y') {
+          SheetManager.show('info', {
+            payload: {
+              type: 'error',
+              message: response.data.errMsg ? response.data.errMsg : '인증번호 발송에 실패하였습니다.',
+              description: response.data.errMsgDtl ? response.data.errMsgDtl : '',
+              buttontext: '확인하기',
+            },
+          });
+          return;
+        } else {
+          const userData = response.data.data;
+          setStep(2);
+          setIsTimerActive(true); // 타이머 활성화
+        }
+        // 성공적인 응답 처리
+
+      })
+      .catch(error => {
+        // 오류 처리
+        SheetManager.show('info', {
+          payload: {
+            message: '인증번호 발송에 실패하였습니다.',
+            description: error?.message,
+            type: 'error',
+            buttontext: '확인하기',
+          }
+        });
+        console.error(error);
+      });
+  };
+  const sendAuthMobileConfirm = async (joinType, phoneNumber, authType, authCode) => {
+    const data = {
+      authCode,
+      phoneNumber,
+      authType,
+    };
+
+    
+
+    axios
+      .post(`${Config.APP_API_URL}sms/checkAuthCode`, data)
+      .then(async response => {
+        if (response.data.errYn === 'Y') {
+          SheetManager.show('info', {
+            payload: {
+              type: 'error',
+              message: response.data.errMsg ? response.data.errMsg : '인증번호 검증에 실패했습니다..',
+              description: response.data.errMsgDtl ? response.data.errMsgDtl : '',
+              buttontext: '확인하기',
+            },
+          });
+          return;
+        } else {
+          const userData = response.data.data;
+          openModal();
+        }
+        // 성공적인 응답 처리
+
+      })
+      .catch(error => {
+        // 오류 처리
+        SheetManager.show('info', {
+          payload: {
+            message: '인증번호 발송에 실패하였습니다.',
+            description: error?.message,
+            type: 'error',
+            buttontext: '확인하기',
+          }
+        });
+        console.error(error);
+      });
+  };
+
+
+  
+
+  const temp = (accessToken, refreshToken) => {
+    return [accessToken, refreshToken];
+  }
+
+
+  /**
+   * This function is a callback function for NetInfo's
+   * event listener. It returns a promise that resolves
+   * to true if the internet is connected and false if
+   * it is not. It also navigates to the NetworkAlert
+   * screen if the internet is not connected.
+   *
+   * @param {Object} state - The state of the internet
+   *   connection.
+   *
+   * @return {Promise<Boolean>} - A promise that resolves
+   *   to true if the internet is connected and false if
+   *   it is not.
+   */
+  const handleNetInfoChange = (state) => {
+    return new Promise((resolve, reject) => {
+      if (!state.isConnected && isConnected) {
+        setIsConnected(false);
+        navigation.push('NetworkAlert', navigation);
+        resolve(false);
+      } else if (state.isConnected && !isConnected) {
+        setIsConnected(true);
+        if (!hasNavigatedBackRef.current) {
+          setHasNavigatedBack(true);
+        }
+        resolve(true);
+      } else {
+        resolve(true);
+      }
+    });
+  };
+
+
+  const handleBackPress = () => {
+    navigation.goBack();
+    return true;
+  }
+
+  useFocusEffect(
+    useCallback(() => {
+      BackHandler.addEventListener('hardwareBackPress', handleBackPress)
+      return () => {
+        BackHandler.removeEventListener('hardwareBackPress', handleBackPress);
+      }
+    }, [handleBackPress])
+  );
+
 
 
   useLayoutEffect(() => {
@@ -222,6 +402,8 @@ const IdFindScreen = () => {
 
 
       </ScrollView>
+        {/* 모달 */}
+        <IdSendSmsCompletAlert visible={isModalVisible} onClose={closeModal} />
     </View>
 
   );

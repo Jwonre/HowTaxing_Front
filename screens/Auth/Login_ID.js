@@ -345,7 +345,7 @@ const Login_ID = props => {
           <TouchableOpacity style={styles.findIdButton}
             onPress={() => {
               // navigation.push('CheckTerms', { LoginAcessType: 'IDPASS', id: id, password: password })
-              navigation.navigate('IdFindScreen');
+              navigation.navigate('IdFindScreen', { id:id, authType : 'FIND_ID',LoginAcessType : 'IDPASS'});
               // dispatch(clearHouseInfo());
             }}>
             <UnserLineButtonText>아이디 찾기</UnserLineButtonText>
@@ -379,7 +379,7 @@ const Login_ID = props => {
           </ModalInputContainer>
           <TouchableOpacity style={styles.findIdButton}
             onPress={() => {
-              navigation.navigate('PasswordReSettingScreen');
+              navigation.navigate('PasswordReSettingScreen', { id:id, authType : 'RESET_PW',LoginAcessType : 'IDPASS'});
               // dispatch(clearHouseInfo());
             }}>
             <UnserLineButtonText>비밀번호 재설정</UnserLineButtonText>

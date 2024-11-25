@@ -19,6 +19,10 @@ import getFontSize from '../../utils/getFontSize';
 import CloseIcon from '../../assets/icons/close_button.svg';
 import DeleteIcon from '../../assets/icons/delete_circle.svg';
 
+import axios from 'axios';
+import { SheetManager } from 'react-native-actions-sheet';
+import NetInfo from '@react-native-community/netinfo';
+import Config from 'react-native-config'
 
 const PhoneAuthConfirmScreen = props => {
   const [phoneNumber, setPhoneNumber] = useState('');
@@ -29,7 +33,27 @@ const PhoneAuthConfirmScreen = props => {
   const [step, setStep] = useState(1); // 현재 단계 상태 (1: 휴대폰 입력, 2: 인증번호 입력)
   const [timer, setTimer] = useState(180); // 3분 = 180초
   const [isTimerActive, setIsTimerActive] = useState(false);
+  const [isConnected, setIsConnected] = useState(true);
+  const [hasNavigatedBack, setHasNavigatedBack] = useState(false);
+  const hasNavigatedBackRef = useRef(hasNavigatedBack);
 
+  const handleNetInfoChange = (state) => {
+    return new Promise((resolve, reject) => {
+      if (!state.isConnected && isConnected) {
+        setIsConnected(false);
+        navigation.push('NetworkAlert', navigation);
+        resolve(false);
+      } else if (state.isConnected && !isConnected) {
+        setIsConnected(true);
+        if (!hasNavigatedBackRef.current) {
+          setHasNavigatedBack(true);
+        }
+        resolve(true);
+      } else {
+        resolve(true);
+      }
+    });
+  };
 
   useEffect(() => {
     let interval = null;
@@ -52,25 +76,198 @@ const PhoneAuthConfirmScreen = props => {
   const handleResendAuth = () => {
     setTimer(180); // 타이머를 3분으로 초기화
     setIsTimerActive(true); // 타이머 활성화
+    handleNextStep(1);
     console.log('인증번호 재전송');
     // 인증번호 재전송 API 호출 로직 추가
   };
 
   // 버튼 클릭 핸들러
-  const handleNextStep = () => {
+  const handleNextStep = async () => {
     if (step === 1) {
       // 첫 번째 단계에서 다음 단계로 이동
-      setStep(2);
-      setIsTimerActive(true); // 타이머 활성화
+      const state = await NetInfo.fetch();
+      const canProceed = await handleNetInfoChange(state);
+      if (canProceed) {
+        console.log("sendAuthMobile",`${props.route?.params?.authType}`)
+        sendAuthMobile(phoneNumber.replace(/-/g, ''),props.route?.params?.authType,props?.route?.params?.id);
+      }
+
 
     } else {
+       // 첫 번째 단계에서 다음 단계로 이동
+       const state = await NetInfo.fetch();
+       const canProceed = await handleNetInfoChange(state);
+       if (canProceed) {
+         sendAuthMobileConfirm(phoneNumber.replace(/-/g, ''),props.route?.params?.authType,authNum);
+       }
+
       // 두 번째 단계에서 확인 버튼 클릭
       console.log('인증번호 확인:', authNum);
       // 여기서 인증번호 검증 로직 추가
-      navigation.navigate('AddMembershipFinish', { prevSheet: 'PhoneAuthConfirmScreen', id: props?.route?.params?.id ? props?.route?.params?.id : null, password: props?.route?.params?.password ? props?.route?.params?.password : null });
     }
   };
 
+  const handleSignUp = async (phoneNumber,authKey, agreeMarketing) => {
+    // 요청 헤더
+   
+
+    // 요청 바디
+    const data = {
+      joinType: props?.route?.params?.LoginAcessType === 'SOCIAL' ? 'SOCIAL' : 'IDPASS',
+      id:  props?.route?.params?.id,
+      password: props?.route?.params?.LoginAcessType === 'SOCIAL' ? null : props?.route?.params?.password,
+      mktAgr: agreeMarketing,
+      phoneNumber : phoneNumber,
+      authKey : authKey,
+      email : props?.route?.params?.email ? props?.route?.params?.email : null,
+    };
+    console.log('sendAuthMobile', data.joinType);
+    console.log('sendAuthMobile', data.id);
+    console.log('sendAuthMobile', data.mktAgr);
+
+
+    try {
+      const response = await axios.post(`${Config.APP_API_URL}user/signUp`, data);
+      console.log('response', response);
+      if (response.data.errYn === 'Y') {
+        SheetManager.show('info', {
+          payload: {
+            type: 'error',
+            message: response.data.errMsg ? response.data.errMsg : '회원가입 도중에 문제가 발생했어요.',
+            description: response.data.errMsgDtl ? response.data.errMsgDtl : null,
+            buttontext: '확인하기',
+          },
+        });
+        return false;
+      } else {
+        /* SheetManager.show('info', {
+           payload: {
+             type: 'info',
+             message: '회원가입에 성공했습니다.',
+           },
+         });*/
+        // 성공적인 응답 처리
+        // const { id } = response.data;
+        //    ////console.log("1111111", response);
+        navigation.navigate('AddMembershipFinish', { prevSheet: 'PhoneAuthConfirmScreen',accessToken : props?.route?.params?.accessToken , });
+
+        return true;
+      }
+    } catch (error) {
+      // 오류 처리
+      SheetManager.show('info', {
+        payload: {
+          message: '회원가입에 실패했습니다.',
+          description: error?.message,
+          type: 'error',
+          buttontext: '확인하기',
+        }
+      });
+      console.error(error);
+      return false;
+    }
+  };
+
+
+  const sendAuthMobile = async ( phoneNumber, authType, id = null) => {
+    const data = {
+      phoneNumber,
+      authType,
+
+    };
+
+    console.log("sendAuthMobile",`data : ${data.joinType} ${data.phoneNumber} , ${data.authType}`);
+    if (id) {
+      data.id =id;
+    }
+
+    axios
+      .post(`${Config.APP_API_URL}sms/sendAuthCode`, data)
+      .then(async response => {
+        console.log("sendAuthMobile",`data : ${response.data.errYn} ${response.data.errMsg ? response.data.errMsg :''} , ${data.authType}`);
+
+        if (response.data.errYn === 'Y') {
+          SheetManager.show('info', {
+            payload: {
+              type: 'error',
+              message: response.data.errMsg ? response.data.errMsg : '',
+              description: response.data.errMsgDtl ? response.data.errMsgDtl : '',
+              buttontext: '확인하기',
+            },
+          });
+          return;
+        } else {
+          const userData = response.data.data;
+          setStep(2);
+          setIsTimerActive(true); // 타이머 활성화
+        }
+        // 성공적인 응답 처리
+
+      })
+      .catch(error => {
+        // 오류 처리
+        SheetManager.show('info', {
+          payload: {
+            message: '인증번호 발송에 실패하였습니다.',
+            description: error?.message,
+            type: 'error',
+            buttontext: '확인하기',
+          }
+        });
+        console.error(error);
+      });
+  };
+  const sendAuthMobileConfirm = async ( phoneNumber, authType, authCode) => {
+    const data = {
+      authCode,
+      phoneNumber,
+      authType,
+    };
+
+    
+
+    axios
+      .post(`${Config.APP_API_URL}sms/checkAuthCode`, data)
+      .then(async response => {
+
+        console.log('sendAuthMobile', response.data.errYn);
+
+        if (response.data.errYn === 'Y') {
+          SheetManager.show('info', {
+            payload: {
+              type: 'error',
+              message: response.data.errMsg ? response.data.errMsg : '인증번호 검증에 실패했습니다..',
+              description: response.data.errMsgDtl ? response.data.errMsgDtl : '',
+              buttontext: '확인하기',
+            },
+          });
+          return;
+        } else {
+          const userData = response.data.data;
+          console.log('sendAuthMobile', userData.authKey);
+
+          handleSignUp(
+            phoneNumber.replace(/-/g, ''),
+            userData.authKey,
+            props?.route?.params?.agreeMarketing
+          );
+        }
+        // 성공적인 응답 처리
+
+      })
+      .catch(error => {
+        // 오류 처리
+        SheetManager.show('info', {
+          payload: {
+            message: '인증번호 발송에 실패하였습니다.',
+            description: error?.message,
+            type: 'error',
+            buttontext: '확인하기',
+          }
+        });
+        console.error(error);
+      });
+  };
 
   useLayoutEffect(() => {
     // 상태 표시줄 설정 (전역 설정)
@@ -116,7 +313,7 @@ const PhoneAuthConfirmScreen = props => {
       <ScrollView contentContainerStyle={styles.scrollContent}>
         {/* Input Section */}
         <View style={styles.inputSection}>
-        <Text style={styles.bigTitle}>휴대폰 인증을 진행해주세요.</Text>
+          <Text style={styles.bigTitle}>휴대폰 인증을 진행해주세요.</Text>
           <Text style={styles.bigSubTitleLabel}>편리한 서비스 이용을 위해 본인 인증을 부탁드려요.</Text>
 
 
