@@ -74,8 +74,10 @@ const PhoneAuthConfirmScreen = props => {
     return `${minutes}:${seconds < 10 ? `0${seconds}` : seconds}`; // "분:초" 형식
   };
   const handleResendAuth = () => {
+    setStep(1);
     setTimer(180); // 타이머를 3분으로 초기화
-    setIsTimerActive(true); // 타이머 활성화
+    setIsTimerActive(false); // 타이머 활성화
+    setAuthNumber('');
     handleNextStep(1);
     console.log('인증번호 재전송');
     // 인증번호 재전송 API 호출 로직 추가
@@ -124,6 +126,7 @@ const PhoneAuthConfirmScreen = props => {
     console.log('sendAuthMobile', data.joinType);
     console.log('sendAuthMobile', data.id);
     console.log('sendAuthMobile', data.mktAgr);
+    console.log('sendAuthMobile', data.password);
 
 
     try {
@@ -149,7 +152,11 @@ const PhoneAuthConfirmScreen = props => {
         // 성공적인 응답 처리
         // const { id } = response.data;
         //    ////console.log("1111111", response);
-        navigation.navigate('AddMembershipFinish', { prevSheet: 'PhoneAuthConfirmScreen',accessToken : props?.route?.params?.accessToken , });
+        navigation.navigate('AddMembershipFinish', { prevSheet: 'PhoneAuthConfirmScreen',
+          LoginAcessType : props?.route?.params.LoginAcessType,
+          accessToken : props?.route?.params?.accessToken ,
+          id:  props?.route?.params?.id,
+          password: props?.route?.params?.LoginAcessType === 'SOCIAL' ? null : props?.route?.params?.password, });
 
         return true;
       }

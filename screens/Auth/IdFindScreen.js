@@ -11,9 +11,9 @@ import {
   Dimensions,
   StatusBar,
   BackHandler,
-  
+
 } from 'react-native';
-import React, { useRef, useLayoutEffect, useState, useEffect,useCallback, } from 'react';
+import React, { useRef, useLayoutEffect, useState, useEffect, useCallback, } from 'react';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import BackIcon from '../../assets/icons/back_button.svg';
 import styled from 'styled-components';
@@ -25,7 +25,8 @@ import axios from 'axios';
 import Config from 'react-native-config'
 import { SheetManager } from 'react-native-actions-sheet';
 import IdSendSmsCompletAlert from '../Auth/component/IdSendSmsCompletAlert';
-
+import CheckIcon from '../../assets/icons/check_circle.svg';
+import ImpossibleIcon from '../../assets/icons/impossible_circle.svg';
 const ProgressSection = styled.View`
   flex-direction: row;
   width: 100%;
@@ -33,7 +34,7 @@ const ProgressSection = styled.View`
   background-color: #2f87ff;
 `;
 
-const IdFindScreen = props  => {
+const IdFindScreen = props => {
   const [phoneNumber, setPhoneNumber] = useState('');
   const [authNum, setAuthNumber] = useState('');
   const navigation = useNavigation();
@@ -46,6 +47,8 @@ const IdFindScreen = props  => {
   const [hasNavigatedBack, setHasNavigatedBack] = useState(false);
   const hasNavigatedBackRef = useRef(hasNavigatedBack);
   const [isModalVisible, setIsModalVisible] = useState(false); // 팝업 상태 관리
+  const [phoneNumberOk, setPhoneNumberOk] = useState('1');
+
   const openModal = () => {
     setIsModalVisible(true); // 팝업 열기
   };
@@ -72,37 +75,35 @@ const IdFindScreen = props  => {
     return `${minutes}:${seconds < 10 ? `0${seconds}` : seconds}`; // "분:초" 형식
   };
   const handleResendAuth = () => {
+    setStep(1)
     setTimer(180); // 타이머를 3분으로 초기화
     setIsTimerActive(false); // 타이머 활성화
+    setPhoneNumberOk('1');
+    setAuthNumber('');
     console.log('인증번호 재전송');
-    handleNextStep(1);
     // 인증번호 재전송 API 호출 로직 추가
   };
 
   // 버튼 클릭 핸들러
-  const handleNextStep = () => {
+  const handleNextStep = async () => {
     if (step === 1) {
-      console.log("test:",'팝업');
-  
-      async() => {
-       
-        const state = await NetInfo.fetch();
-        const canProceed = await handleNetInfoChange(state);
-        if (canProceed) {
-          sendAuthMobile(phoneNumber.replace(/-/g, ''),props.route?.params?.authType,props?.route?.params?.id  );
-      
-        }
+      console.log("sendAuthMobile:", '팝업');
+
+      const state = await NetInfo.fetch();
+      const canProceed = await handleNetInfoChange(state);
+      console.log("test:", `state :$state [${canProceed}]`);
+
+      if (canProceed) {
+        sendAuthMobile(phoneNumber.replace(/-/g, ''), props.route?.params?.authType, props?.route?.params?.id);
+
       }
-  
+
 
     } else {
-      async() => {
-       
-        const state = await NetInfo.fetch();
-        const canProceed = await handleNetInfoChange(state);
-        if (canProceed) {
-          sendAuthMobileConfirm(phoneNumber.replace(/-/g, ''),props.route?.params?.authType,authNum);
-        }
+      const state = await NetInfo.fetch();
+      const canProceed = await handleNetInfoChange(state);
+      if (canProceed) {
+        sendAuthMobileConfirm(phoneNumber.replace(/-/g, ''), props.route?.params?.authType, authNum);
       }
       // // 두 번째 단계에서 확인 버튼 클릭
       // console.log('인증번호 확인:', authNum);
@@ -113,8 +114,9 @@ const IdFindScreen = props  => {
 
 
 
-  
-  const sendAuthMobile = async ( phoneNumber, authType, id = null) => {
+
+  const sendAuthMobile = async (phoneNumber, authType, id = null) => {
+    console.log("sendAuthMobile:", `${phoneNumber} || ${authType}`);
     const data = {
       phoneNumber,
       authType,
@@ -158,14 +160,18 @@ const IdFindScreen = props  => {
         console.error(error);
       });
   };
-  const sendAuthMobileConfirm = async (joinType, phoneNumber, authType, authCode) => {
+  const sendAuthMobileConfirm = async ( phoneNumber, authType, authCode) => {
     const data = {
-      authCode,
       phoneNumber,
       authType,
+      authCode,
+  
     };
 
-    
+    console.log("sendAuthMobile: ",data.phoneNumber);
+    console.log("sendAuthMobile: ",data.authCode);
+    console.log("sendAuthMobile: ",data.authType);
+
 
     axios
       .post(`${Config.APP_API_URL}sms/checkAuthCode`, data)
@@ -182,7 +188,10 @@ const IdFindScreen = props  => {
           return;
         } else {
           const userData = response.data.data;
-          openModal();
+          console.log("sendAuthMobile: ",userData.authKey);
+
+          findUserId(phoneNumber.replace(/-/g, ''), userData.authKey);
+
         }
         // 성공적인 응답 처리
 
@@ -202,7 +211,49 @@ const IdFindScreen = props  => {
   };
 
 
-  
+  const findUserId = async (phoneNumber, authKey ) => {
+    const data = {
+      phoneNumber,
+      authKey ,
+      
+    };
+
+    console.log("sendAuthMobile:22 ",data.authCode);
+
+
+    axios
+      .post(`${Config.APP_API_URL}user/findUserId`, data)
+      .then(async response => {
+        if (response.data.errYn === 'Y') {
+          SheetManager.show('info', {
+            payload: {
+              type: 'error',
+              message: response.data.errMsg ? response.data.errMsg : '아이디 찾기에 실패했습니다..',
+              description: response.data.errMsgDtl ? response.data.errMsgDtl : '',
+              buttontext: '확인하기',
+            },
+          });
+          return;
+        } else {
+          const userData = response.data.data;
+          openModal();
+        }
+        // 성공적인 응답 처리
+
+      })
+      .catch(error => {
+        // 오류 처리
+        SheetManager.show('info', {
+          payload: {
+            message: '아이디 찾기에 실패하였습니다.',
+            description: error?.message,
+            type: 'error',
+            buttontext: '확인하기',
+          }
+        });
+        console.error(error);
+      });
+  };
 
   const temp = (accessToken, refreshToken) => {
     return [accessToken, refreshToken];
@@ -240,8 +291,28 @@ const IdFindScreen = props  => {
       }
     });
   };
+  const validatePhoneNum = (phoneNumber) => {
+    const cleaned = ('' + phoneNumber).replace(/\D/g, '');
+    const match = cleaned.match(/^(\d{3})(\d{3,4})(\d{4})$/);
+    console.log("sendAuthMobile: ", `${match}, ${cleaned}`);
+    if (match) {
+      return true;
+    }
+    return false;
+  };
+  const handleResetPassword = () => {
+    console.log('비밀번호 재설정 로직 실행');
+    navigation.push('PasswordReSettingScreen', { authType: 'RESET_PW', LoginAcessType: 'IDPASS' });
+    closeModal();
 
+  };
 
+  const handleLogin = () => {
+    console.log('로그인 로직 실행');
+    closeModal();
+    navigation.goBack();
+
+  };
   const handleBackPress = () => {
     navigation.goBack();
     return true;
@@ -278,15 +349,15 @@ const IdFindScreen = props  => {
       headerTitleAlign: 'center',
       title: '아이디 찾기',
       headerShadowVisible: false,
-     contentStyle: {
-             borderTopWidth: 0,
-           },
-           headerTitleStyle: {
-             fontFamily: 'Pretendard-Bold',
-             fontSize: 17,
-             color: '#333',
-             letterSpacing: -0.8,
-           },
+      contentStyle: {
+        borderTopWidth: 0,
+      },
+      headerTitleStyle: {
+        fontFamily: 'Pretendard-Bold',
+        fontSize: 17,
+        color: '#333',
+        letterSpacing: -0.8,
+      },
 
     });
   }, []);
@@ -314,16 +385,46 @@ const IdFindScreen = props  => {
               placeholder="휴대폰 번호를 입력해주세요."
               placeholderTextColor="#A3A5A8"
               value={phoneNumber}
-              onChangeText={(text) => setPhoneNumber(formatPhoneNumber(text))} // 포맷팅 적용
+              onSubmitEditing={async () => {
+                const phoneCheck = await validatePhoneNum(phoneNumber);
+                console.log("sendAuthMobile:",phoneCheck);
+                setPhoneNumberOk(phoneCheck ? '2' : '3')
+
+              }
+              }
+              onChangeText={async (text) => { setPhoneNumber(formatPhoneNumber(text)); setPhoneNumberOk('1'); }}
+
             />
-            {phoneNumber !== '' && (
+            {phoneNumberOk === '1' &&
               <TouchableOpacity
                 style={styles.clearButton}
-                onPress={() => setPhoneNumber('')}
+                onPress={() => {
+                  setPhoneNumber('');
+                  setPhoneNumberOk('1');
+                }}
               >
+
                 <DeleteIcon />
               </TouchableOpacity>
-            )}
+            }
+            {phoneNumberOk === '2' && <TouchableOpacity
+              style={styles.clearButton}
+              onPress={() => setPhoneNumber('')}
+            >
+
+              <CheckIcon />
+            </TouchableOpacity>
+            }
+            {phoneNumberOk === '3' && <TouchableOpacity
+              style={styles.clearButton}
+              onPress={() => setPhoneNumber('')}
+            >
+
+              <ImpossibleIcon />
+            </TouchableOpacity>
+            }
+
+
           </View>
 
         </View>
@@ -402,8 +503,8 @@ const IdFindScreen = props  => {
 
 
       </ScrollView>
-        {/* 모달 */}
-        <IdSendSmsCompletAlert visible={isModalVisible} onClose={closeModal} />
+      {/* 모달 */}
+      <IdSendSmsCompletAlert visible={isModalVisible} onClose={closeModal} onLogin={handleLogin} onResetPassword={handleResetPassword} />
     </View>
 
   );

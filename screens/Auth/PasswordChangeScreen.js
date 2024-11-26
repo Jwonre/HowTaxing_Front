@@ -18,55 +18,129 @@ import DeleteIcon from '../../assets/icons/delete_circle.svg';
 import ConfirmIcon from '../../assets/icons/iucide_check.svg';
 import FailPwdIcon from '../../assets/icons/fail_pwd.svg';
 
+import axios from 'axios';
+import { SheetManager } from 'react-native-actions-sheet';
+import NetInfo from '@react-native-community/netinfo';
+import Config from 'react-native-config'
+import PasswordChangeConfirmMsgAlert from './component/PasswordChangeConfirmMsgAlert';
 
-const PasswordChangeScreen = () => {
-  const [newPwd, setNewPwd] = useState('');
-  const [newConfirmPwd, setNewConfirmPwd] = useState('');
-
+const PasswordChangeScreen = props => {
+  const [password, setPassword] = useState('');
+  const [checkpassword, setCheckPassword] = useState('');
+  const [PasswordOk, setPasswordOk] = useState('1');
+  const [PasswordCheckOk, setPasswordCheckOk] = useState('1');
   const navigation = useNavigation();
   const [step, setStep] = useState(1); // 현재 단계 상태 (1: 휴대폰 입력, 2: 인증번호 입력)
   const [timer, setTimer] = useState(180); // 3분 = 180초
   const [isTimerActive, setIsTimerActive] = useState(false);
-
-
-  useEffect(() => {
-    let interval = null;
-    if (isTimerActive && timer > 0) {
-      interval = setInterval(() => {
-        setTimer((prev) => prev - 1);
-      }, 1000); // 1초마다 감소
-    } else if (timer === 0) {
-      clearInterval(interval); // 타이머 종료
-    }
-    return () => clearInterval(interval); // 컴포넌트 언마운트 시 정리
-  }, [isTimerActive, timer]);
-
-  const formatTime = (time) => {
-    const minutes = Math.floor(time / 60); // 분
-    const seconds = time % 60; // 초
-    console.log("남은시간 : ", `${minutes}:${seconds < 10 ? `0${seconds}` : seconds}`);
-    return `${minutes}:${seconds < 10 ? `0${seconds}` : seconds}`; // "분:초" 형식
-  };
-  const handleResendAuth = () => {
-    setTimer(180); // 타이머를 3분으로 초기화
-    setIsTimerActive(true); // 타이머 활성화
-    console.log('인증번호 재전송');
-    // 인증번호 재전송 API 호출 로직 추가
+  const input1 = useRef(null);
+  const input2 = useRef(null);
+  const [isConnected, setIsConnected] = useState(true);
+  const [hasNavigatedBack, setHasNavigatedBack] = useState(false);
+  const hasNavigatedBackRef = useRef(hasNavigatedBack);
+  const [isModalVisible, setIsModalVisible] = useState(false); // 팝업 상태 관리
+  const openModal = () => {
+    setIsModalVisible(true); // 팝업 열기
   };
 
-  // 버튼 클릭 핸들러
-  const handleNextStep = () => {
-    if (step === 1) {
-      // 첫 번째 단계에서 다음 단계로 이동
-      setStep(2);
-      setIsTimerActive(true); // 타이머 활성화
-
-    } else {
-      // 두 번째 단계에서 확인 버튼 클릭
-      console.log('인증번호 확인:', authNum);
-      // 여기서 인증번호 검증 로직 추가
-      navigation.navigate('NextScreen'); // 다음 화면으로 이동
+  const closeModal = () => {
+    setIsModalVisible(false); // 팝업 닫기
+  };
+  const handlerChange = async () => {
+    console.log('로그인 로직 실행');
+    const state = await NetInfo.fetch();
+    const canProceed = await handleNetInfoChange(state);
+    if (canProceed) {
+      resetPassword(props?.route?.params?.phoneNumber,
+        props?.route?.params?.authKey,
+        props?.route?.params?.id,
+        password,
+        checkpassword
+      );
     }
+    closeModal();
+
+  };
+  const validatePassword = (password) => {
+    const minLength = 8;
+    const maxLength = 16;
+    const regex = /^(?=.*[A-Za-z])(?=.*\d|.*[!@#$%^&*]){2,}[A-Za-z\d!@#$%^&*]{8,16}$/;
+    if (password.length < minLength || password.length > maxLength) { return false; }
+    return regex.test(password);
+  };
+
+
+  const handleNetInfoChange = (state) => {
+    return new Promise((resolve, reject) => {
+      if (!state.isConnected && isConnected) {
+        setIsConnected(false);
+        navigation.push('NetworkAlert', navigation);
+        resolve(false);
+      } else if (state.isConnected && !isConnected) {
+        setIsConnected(true);
+        if (!hasNavigatedBackRef.current) {
+          setHasNavigatedBack(true);
+        }
+        resolve(true);
+      } else {
+        resolve(true);
+      }
+    });
+  };
+
+
+
+
+
+  const resetPassword = async (phoneNumber, authKey, id, newPassword, newPasswordConfirm) => {
+    const data = {
+      phoneNumber,
+      authKey,
+      id,
+      newPassword,
+      newPasswordConfirm,
+    };
+
+    console.log("resetPassword", `data : ${data.phoneNumber} ${data.authKey} , ${data.id}, ${data.newPassword},${data.newPasswordConfirm}`);
+    if (id) {
+      data.id = id;
+    }
+
+    axios
+      .post(`${Config.APP_API_URL}user/resetPassword`, data)
+      .then(async response => {
+        console.log("resetPassword", `data : ${response.data.errYn} ${response.data.errMsg ? response.data.errMsg : ''} , ${data.authType}`);
+
+        if (response.data.errYn === 'Y') {
+          SheetManager.show('info', {
+            payload: {
+              type: 'error',
+              message: response.data.errMsg ? response.data.errMsg : '',
+              description: response.data.errMsgDtl ? response.data.errMsgDtl : '',
+              buttontext: '확인하기',
+            },
+          });
+          return;
+        } else {
+          const userData = response.data.data;
+          navigation.push('Login_ID');
+
+        }
+        // 성공적인 응답 처리
+
+      })
+      .catch(error => {
+        // 오류 처리
+        SheetManager.show('info', {
+          payload: {
+            message: '인증번호 발송에 실패하였습니다.',
+            description: error?.message,
+            type: 'error',
+            buttontext: '확인하기',
+          }
+        });
+        console.error(error);
+      });
   };
 
   useLayoutEffect(() => {
@@ -87,7 +161,7 @@ const PasswordChangeScreen = () => {
       ),
 
       headerTitleAlign: 'center',
-      title: '비밀번호 재설정하기.',
+      title: '비밀번호 재설정하기',
       headerShadowVisible: false,
       // contentStyle: {
       //   borderTopColor: '#D9D9D9',
@@ -120,6 +194,9 @@ const PasswordChangeScreen = () => {
           <Text style={styles.newpasswordLabel}>새 비밀번호</Text>
           <View style={styles.inputWrapper}>
             <TextInput
+              ref={input1}
+              autoCompleteType="pwd"
+              maxLength={16}
               style={styles.input}
               placeholder="새로운 비밀번호를 입력해주세요."
               placeholderTextColor="#A3A5A8"
@@ -127,16 +204,42 @@ const PasswordChangeScreen = () => {
               keyboardType="default" // 기본 키보드
               autoCapitalize="none" // 자동 대문자 변환 비활성화
               autoCorrect={false} // 자동 교정 비활성화
-              value={newPwd}
-              onChangeText={setNewPwd}
+              value={password}
+              onChangeText={async (password) => {
+                if (password.length === 0) {
+                  setPasswordOk('1');
+                  setPassword('');
+                } else {
+                  if (validatePassword(password)) {
+                    setPassword(password);
+                    setPasswordOk('2');
+                    setCheckPassword('');
+                    setPasswordCheckOk('1');
+                  }
+                  else {
+                    setPassword(password);
+                    setPasswordOk('3');
+                    setCheckPassword('');
+                    setPasswordCheckOk('1');
+                  }
+                }
+
+              }}
+              onSubmitEditing={async () => {
+                if (validatePassword(password)) { input2.current.focus(); } else { input1.current.focus(); }
+              }}
             />
-            {newPwd !== '' && (
-              <ConfirmIcon />
+            {password !== '' && (
+              validatePassword(password) ?
+                <ConfirmIcon /> :
+                <FailPwdIcon />
             )}
           </View>
           <Text style={styles.newpasswordLabel}>새 비밀번호</Text>
           <View style={styles.inputWrapper}>
             <TextInput
+              autoCompleteType="pwd"
+              maxLength={16}
               style={styles.input}
               placeholder="설정하신 비밀번호를 다시 입력해주세요."
               placeholderTextColor="#A3A5A8"
@@ -144,45 +247,47 @@ const PasswordChangeScreen = () => {
               keyboardType="default" // 기본 키보드
               autoCapitalize="none" // 자동 대문자 변환 비활성화
               autoCorrect={false} // 자동 교정 비활성화
-              value={newPwd}
-              onChangeText={setNewPwd}
+              value={checkpassword}
+              onChangeText={async (checkpassword) => {
+                if (checkpassword.length === 0) {
+                  setCheckPassword('');
+                  setPasswordCheckOk('1');
+                }
+                else {
+                  if (checkpassword === password) {
+                    setCheckPassword(checkpassword); setPasswordCheckOk('2');
+                  } else { setCheckPassword(checkpassword); setPasswordCheckOk('3'); }
+                }
+              }}
             />
-            {newPwd !== '' && (
-              <ConfirmIcon />
+            {checkpassword !== '' && (
+             validatePassword(checkpassword) ?
+             <ConfirmIcon /> :
+             <FailPwdIcon />
             )}
           </View>
 
         </View>
 
-        
+
         {/* Login Button */}
         <TouchableOpacity
           style={[
             styles.loginButton, // 조건부 스타일
           ]}
-          onPress={handleNextStep}
+          onPress={openModal}
         >
           <Text style={styles.loginButtonLabel}>변경하기</Text>
         </TouchableOpacity>
         {/* 추가 콘텐츠를 여기에 배치 가능 */}
       </ScrollView>
+      <PasswordChangeConfirmMsgAlert visible={isModalVisible} onClose={closeModal} onChange={handlerChange} />
+
     </View>
 
   );
 };
-const formatPhoneNumber = (number) => {
-  // 숫자만 남기기
-  const cleaned = ('' + number).replace(/\D/g, '');
 
-  // 010-XXXX-XXXX 형식으로 포맷팅
-  const match = cleaned.match(/^(\d{3})(\d{3,4})(\d{4})$/);
-  if (match) {
-    return `${match[1]}-${match[2]}-${match[3]}`;
-  }
-
-  // 포맷이 적용되지 않는 경우 원본 반환
-  return number;
-};
 const styles = StyleSheet.create({
   timerText: {
     fontSize: 13,

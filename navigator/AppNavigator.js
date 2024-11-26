@@ -12,7 +12,7 @@ import AddMembershipFinish from '../screens/Auth/AddMembershipFinish';
 import Home from '../screens/Main/Home';
 import LoginWebview from '../screens/Auth/LoginWebview';
 import IdFindScreen from '../screens/Auth/IdFindScreen';
-import PasswordReSettingScreen from '../screens/Auth/PasswordChangeScreen';
+import PasswordReSettingScreen from '../screens/Auth/PasswordReSettingScreen';
 import PasswordChangeScreen from '../screens/Auth/PasswordChangeScreen';
 import PhoneAuthConfirmScreen from '../screens/Auth/PhoneAuthConfirmScreen';
 

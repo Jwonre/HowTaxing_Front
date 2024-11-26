@@ -2,7 +2,7 @@
 import React from 'react';
 import { Modal, View, Text, Pressable, StyleSheet, Dimensions } from 'react-native';
 import styled from 'styled-components';
-import InfoCircleIcon from '../../../assets/icons/info_2.svg';
+import InfoCircleIcon from '../../../assets/icons/info_circle.svg';
 const ModalContainer = styled.View`
   background-color: #fff;
   border-radius: 12px;
@@ -42,7 +42,7 @@ const ButtonText = styled.Text`
   font-family: Pretendard-Medium;
 `;
 
-const IdSendSmsCompletAlert = ({ visible, onClose, onResetPassword, onLogin }) => {
+const PasswordChangeConfirmMsgAlert = ({ visible, onClose,  onChange }) => {
   
   return (
     <Modal
@@ -54,20 +54,20 @@ const IdSendSmsCompletAlert = ({ visible, onClose, onResetPassword, onLogin }) =
       <View style={styles.modalOverlay}>
         <ModalContainer>
           <InfoCircleIcon style={{ color: '#2F87FF', marginBottom: 10 }} />
-          <ModalTitle>아이디를 문자로 전송 완료했어요.</ModalTitle>
-          <ModalDescription>아이디를 확인하신 후 로그인해주세요.</ModalDescription>
+          <ModalTitle>정말로 비밀번호를 변경하셌어요?</ModalTitle>
+          <ModalDescription>모든 기기와 브라우저에서 로그아웃돼요.</ModalDescription>
           <View style={styles.buttonContainer}>
             <Button
               style={[styles.button, styles.resetButton]}
-              onPress={onResetPassword}
+              onPress={onClose}
             >
-              <ButtonText style={styles.resetButtonText}>비밀번호 재설정</ButtonText>
+              <ButtonText style={styles.resetButtonText}>취소하기</ButtonText>
             </Button>
             <Button
               style={[styles.button, styles.loginButton]}
-              onPress={onLogin}
+              onPress={onChange}
             >
-              <ButtonText style={styles.loginButtonText}>로그인하기</ButtonText>
+              <ButtonText style={styles.loginButtonText}>변경하기</ButtonText>
             </Button>
           </View>
         </ModalContainer>
@@ -76,7 +76,7 @@ const IdSendSmsCompletAlert = ({ visible, onClose, onResetPassword, onLogin }) =
   );
 };
 
-export default IdSendSmsCompletAlert;
+export default PasswordChangeConfirmMsgAlert;
 
 const styles = StyleSheet.create({
   modalOverlay: {

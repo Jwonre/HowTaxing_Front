@@ -237,11 +237,20 @@ const AddMembershipFinish = props => {
           style={{ backgroundColor: '#2F87FF' }}
           width={width}
           onPress={async () => {
-            const state = await NetInfo.fetch();
+            
+            if( props?.route?.params?.LoginAcessType === 'SOCIAL'){
+              await navigation.push('Home', { accessToken : props?.route?.params?.accessToken ,
+                LoginAcessType : props?.route?.params?.LoginAcessType});
+
+            }else{
+              const state = await NetInfo.fetch();
             const canProceed = await handleNetInfoChange(state);
             if (canProceed) {
               getLogin();
+             
             }
+            }
+           
           }
             // 동의하기 버튼 클릭 시 redux에 저장
           }>

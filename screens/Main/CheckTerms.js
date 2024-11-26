@@ -1,5 +1,6 @@
 
-import { TouchableOpacity, useWindowDimensions, BackHandler, View } from 'react-native';
+import { TouchableOpacity, useWindowDimensions, BackHandler, View,  StatusBar
+} from 'react-native';
 import React, { useLayoutEffect, useState, useCallback, useRef } from 'react';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import BackIcon from '../../assets/icons/back_button.svg';
@@ -277,6 +278,9 @@ const CheckTerms = props => {
 
 
   useLayoutEffect(() => {
+      // 상태 표시줄 설정 (전역 설정)
+      StatusBar.setBarStyle('dark-content', true); // 아이콘 색상: 어두운 색
+      StatusBar.setBackgroundColor('#ffffff'); // 배경색: 흰색 (안드로이드 전용)
     navigation.setOptions({
       headerLeft: () => (
         <TouchableOpacity
