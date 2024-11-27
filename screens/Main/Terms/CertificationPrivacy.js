@@ -27,7 +27,7 @@ const Button = styled.TouchableOpacity.attrs(props => ({
   width: ${props => props.width - 40}px;
   height: 60px;
   border-radius: 30px;
-  background-color: ${props => (props.active ? '#2F87FF' : '#e5e5e5')};
+  background-color: #2F87FF;
   align-items: center;
   justify-content: center;
   margin-top: 20px;
@@ -37,7 +37,7 @@ const Button = styled.TouchableOpacity.attrs(props => ({
 const ButtonText = styled.Text`
   font-size: 18px;
   font-family: Pretendard-Bold;
-  color: ${props => (props.active ? '#fff' : '#a3a5a8')};
+  color: #fff;
   line-height: 20px;
 `;
 
@@ -59,17 +59,14 @@ const CertificationPrivacy = props => {
   );
 
   const handleBackPress = () => {
-    navigation.goBack();
-    SheetManager.show(props.route?.params?.prevSheet === 'cert2' ? 'cert2' : props.route?.params?.prevSheet === 'cert' ? 'cert' : 'cert_ori', {
-      payload: {
-        navigation: navigation,
-        data: props.route?.params?.cert,
-        isGainsTax: props.route?.params?.isGainsTax,
-        prevChat: props.route?.params?.prevChat,
-        prevSheet: props.route?.params?.prevSheet,
-        index: props.route?.params?.index,
-      },
-    });
+    navigation.navigate(props.route?.params?.prevSheet === 'CertificationGains2' ? 'CertificationGains2' : props.route?.params?.prevSheet === 'CertificationGains' ? 'CertificationGains' : 'CertificationAcq',{
+      navigation: navigation,
+      data: props.route?.params?.cert,
+      isGainsTax: props.route?.params?.isGainsTax,
+      prevChat: props.route?.params?.prevChat,
+      prevSheet: props.route?.params?.prevSheet,
+      index: props.route?.params?.index,
+  });
     return true;
   }
   useFocusEffect(
@@ -88,17 +85,14 @@ const CertificationPrivacy = props => {
           activeOpacity={0.6}
           hitSlop={{ top: 20, bottom: 20, left: 20, right: 20 }}
           onPress={() => {
-            navigation.goBack();
-            SheetManager.show(props.route?.params?.prevSheet === 'cert2' ? 'cert2' : props.route?.params?.prevSheet === 'cert' ? 'cert' : 'cert_ori', {
-              payload: {
-                navigation: navigation,
-                data: props.route?.params?.cert,
-                isGainsTax: props.route?.params?.isGainsTax,
-                prevChat: props.route?.params?.prevChat,
-                prevSheet: props.route?.params?.prevSheet,
-                index: props.route?.params?.index,
-              },
-            });
+            navigation.navigate(props.route?.params?.prevSheet === 'CertificationGains2' ? 'CertificationGains2' : props.route?.params?.prevSheet === 'CertificationGains' ? 'CertificationGains' : 'CertificationAcq',{
+              navigation: navigation,
+              data: props.route?.params?.cert,
+              isGainsTax: props.route?.params?.isGainsTax,
+              prevChat: props.route?.params?.prevChat,
+              prevSheet: props.route?.params?.prevSheet,
+              index: props.route?.params?.index,
+          });
           }}>
           <CloseIcon />
         </TouchableOpacity>
@@ -147,7 +141,6 @@ const CertificationPrivacy = props => {
           }}>
           <Button
             width={width}
-            active={agreePrivacy}
             onPress={() => {
               setTimeout(() => {
                 dispatch(
@@ -156,21 +149,18 @@ const CertificationPrivacy = props => {
                   }),
                 );
               }, 300);
-              navigation.goBack();
               console.log('props.route?.params?.prevSheet', props.route?.params?.prevSheet);
-              SheetManager.show(props.route?.params?.prevSheet === 'cert2' ? 'cert2' : props.route?.params?.prevSheet === 'cert' ? 'cert' : 'cert_ori', {
-                payload: {
-                  navigation: navigation,
-                  data: props.route?.params?.cert,
-                  isGainsTax: props.route?.params?.isGainsTax,
-                  prevChat: props.route?.params?.prevChat,
-                  prevSheet: props.route?.params?.prevSheet,
-                  index: props.route?.params?.index,
-                },
-              });
+              navigation.navigate(props.route?.params?.prevSheet === 'CertificationGains2' ? 'CertificationGains2' : props.route?.params?.prevSheet === 'CertificationGains' ? 'CertificationGains' : 'CertificationAcq',{
+                navigation: navigation,
+                data: props.route?.params?.cert,
+                isGainsTax: props.route?.params?.isGainsTax,
+                prevChat: props.route?.params?.prevChat,
+                prevSheet: props.route?.params?.prevSheet,
+                index: props.route?.params?.index,
+            });
             }
             }>
-            <ButtonText active={agreePrivacy}>
+            <ButtonText>
               {'동의하기'}
             </ButtonText>
           </Button>

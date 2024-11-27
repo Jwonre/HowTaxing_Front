@@ -628,7 +628,6 @@ const CertSheet_ori = props => {
       }
       dispatch(setCert({ agreePrivacy: false }));
     } else {
-      actionSheetRef.current?.hide();
       dispatch(setCert({ agreePrivacy: false }));
     }
 

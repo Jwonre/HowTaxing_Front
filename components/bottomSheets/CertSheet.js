@@ -295,7 +295,6 @@ const CertSheet = props => {
       setPhone(props.payload?.phone);
       setResidentNumber(props.payload?.residentNumber);
       setCurrentPageIndex(props.payload?.currentPageIndex);
-      setResidentNumber(props.payload?.residentNumber);
     }
   }, [cert]);
 

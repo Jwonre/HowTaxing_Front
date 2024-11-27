@@ -1112,7 +1112,7 @@ const GainsTaxChat = () => {
               </View>
               <View style={{ height: 'auto', flexWrap: 'wrap', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
                 <View style={{
-                  width: '60%', 
+                  width: '60%',
                   flexDirection: 'column',
                   alignContent: 'left',
                   alignItems: 'left',
@@ -1448,6 +1448,12 @@ const GainsTaxChat = () => {
                           if (item.id === 'certType' && item.type === 'system') {
                             if (item2.id === 'Nosubscriptionaccount') {
                               getOwnlist();
+                            } else if (item2.id === 'KB') {
+                              navigation.push('CertificationGains', { data: item2.id, index, isGainsTax: true, currentPageIndex: 0 });
+                            } else if (item2.id === 'naver') {
+                              navigation.push('CertificationGains', { data: item2.id, index, isGainsTax: true, currentPageIndex: 1 });
+                            } else if (item2.id === 'toss') {
+                              navigation.push('CertificationGains', { data: item2.id, index, isGainsTax: true, currentPageIndex: 2 });
                             };
                           }
                           //  ////console.log('item2?.openSheet : ', item2?.openSheet)

@@ -154,22 +154,16 @@ export const acquisitionTax = [
         id: 'KB',
         name: 'KB 간편인증',
         icon: <KBICon />,
-        openSheet: 'cert_ori',
-        prevchat: 'AcquisitionChat'
       },
       {
         id: 'naver',
         name: '네이버 간편인증',
         icon: <NaverIcon />,
-        openSheet: 'cert_ori',
-        prevchat: 'AcquisitionChat'
       },
       {
         id: 'toss',
         name: '토스 인증',
         icon: <TossIcon />,
-        openSheet: 'cert_ori',
-        prevchat: 'AcquisitionChat'
       },
       {
         id: 'Nosubscriptionaccount',
@@ -461,22 +455,16 @@ export const gainTax = [
         id: 'KB',
         name: 'KB 간편인증',
         icon: <KBICon />,
-        openSheet: 'cert',
-        prevchat: 'GainsTaxChat'
       },
       {
         id: 'naver',
         name: '네이버 간편인증',
         icon: <NaverIcon />,
-        openSheet: 'cert',
-        prevchat: 'GainsTaxChat'
       },
       {
         id: 'toss',
         name: '토스 인증',
         icon: <TossIcon />,
-        openSheet: 'cert',
-        prevchat: 'GainsTaxChat'
       },
       {
         id: 'Nosubscriptionaccount',
@@ -495,22 +483,16 @@ export const gainTax = [
         id: 'KB',
         name: 'KB 간편인증',
         icon: <KBICon />,
-        openSheet: 'cert',
-        prevchat: 'GainsTaxChat'
       },
       {
         id: 'naver',
         name: '네이버 간편인증',
         icon: <NaverIcon />,
-        openSheet: 'cert',
-        prevchat: 'GainsTaxChat'
       },
       {
         id: 'toss',
         name: '토스 인증',
         icon: <TossIcon />,
-        openSheet: 'cert',
-        prevchat: 'GainsTaxChat'
       },
     ],
   },
