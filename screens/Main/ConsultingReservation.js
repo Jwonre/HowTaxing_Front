@@ -1255,10 +1255,9 @@ const ConsultingReservation = () => {
           }
         /></>
       </Container>}
-
       {currentPageIndex === 4 && <ScrollView scrollEnabled={false} overScrollMode="never"><TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-
         <Container style={{ width: width, height: height * 0.89}}>
+
           <ProgressSection>
           </ProgressSection>
           <>
