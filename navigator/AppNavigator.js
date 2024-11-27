@@ -24,6 +24,8 @@ import FixedHouse from '../screens/Main/FixedHouse';
 import AddHouse from '../screens/Main/AddHouse';
 import FixedHouseList from '../screens/Main/FixedHouseList';
 import AddHouseList from '../screens/Main/AddHouseList';
+import CertificationAcq from '../screens/Main/CertificationAcq';
+import CertificationGains from '../screens/Main/CertificationGains';
 import ReservationList from '../screens/Main/ReservationList';
 import ReservationDetail from '../screens/Main/ReservationDetail';
 import AcquisitionChat from '../screens/Main/AcquisitionChat';
@@ -249,6 +251,14 @@ const AppNavigator = () => {
               <Stack.Screen
                 name="AddHouse"
                 component={AddHouse}
+              />
+              <Stack.Screen
+                name="CertificationAcq"
+                component={CertificationAcq}
+              />
+              <Stack.Screen
+                name="CertificationGains"
+                component={CertificationGains}
               />
               <Stack.Screen
                 name="FixedHouseList"
