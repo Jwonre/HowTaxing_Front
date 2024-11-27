@@ -33,7 +33,7 @@ const Button = styled.TouchableOpacity.attrs(props => ({
     width: ${props => props.width - 40}px;
     height: 60px;
     border-radius: 30px;
-    background-color: ${props => (props.active ? '#2F87FF' : '#e5e5e5')};
+    background-color: #2F87FF;
     align-items: center;
     justify-content: center;
     margin-top: 20px;
@@ -43,7 +43,7 @@ const Button = styled.TouchableOpacity.attrs(props => ({
 const ButtonText = styled.Text`
     font-size: 18px;
     font-family: Pretendard-Bold;
-    color: ${props => (props.active ? '#fff' : '#a3a5a8')};
+    color: #fff;
     line-height: 20px;
   `;
 
@@ -133,7 +133,6 @@ const Location2 = props => {
                     }}>
                     <Button
                         width={width}
-                        active={agreeLocation}
                         onPress={() => {
 
                             // 동의하기 버튼 클릭 시 redux에 저장
@@ -151,7 +150,7 @@ const Location2 = props => {
                             navigation.goBack({ tokens: props?.route?.params?.tokens ? props?.route?.params?.tokens : null, id: props?.route?.params?.id ? props?.route?.params?.id : null, password: props?.route?.params?.password ? props?.route?.params?.password : null });
                         }
                         }>
-                        <ButtonText active={agreeLocation}>{'동의하기'}</ButtonText>
+                        <ButtonText>{'동의하기'}</ButtonText>
                     </Button>
                 </DropShadow>
             </ButtonSection>

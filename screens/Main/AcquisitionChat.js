@@ -1184,7 +1184,7 @@ const AcquisitionChat = () => {
               </View>
               <View style={{ height: 'auto', flexWrap: 'wrap', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
                 <View style={{
-                  width: '60%', 
+                  width: '60%',
                   flexDirection: 'column',
                   alignContent: 'left',
                   alignItems: 'left',
@@ -1231,7 +1231,7 @@ const AcquisitionChat = () => {
                   }}
                   activeOpacity={0.8}
                   style={{
-                    width: '35%', 
+                    width: '35%',
                     height: 32,
                     borderRadius: 20,
                     backgroundColor: '#fff',
@@ -1469,7 +1469,16 @@ const AcquisitionChat = () => {
                           if (item.id === 'certType' && item.type === 'system') {
                             if (item2.id === 'Nosubscriptionaccount') {
                               getOwnlist();
+                            } else if (item2.id === 'KB') {
+                              navigation.push('CertificationAcq', { data: item2.id, index, isGainsTax: false, currentPageIndex: 0 });
+                            } else if (item2.id === 'naver') {
+                              navigation.push('CertificationAcq', { data: item2.id, index, isGainsTax: false, currentPageIndex: 1 });
+                            } else if (item2.id === 'toss') {
+                              navigation.push('CertificationAcq', { data: item2.id, index, isGainsTax: false, currentPageIndex: 2 });
                             };
+                            /*else if() {
+                              
+                            };*/
                           }
 
                           if (item.id === 'pubLandPrice' && item.type === 'system') {
