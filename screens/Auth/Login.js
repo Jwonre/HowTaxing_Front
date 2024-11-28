@@ -214,10 +214,15 @@ const Login = () => {
     const state = await NetInfo.fetch();
     const canProceed = await handleNetInfoChange(state);
     if (canProceed) {
+      await NaverAuthManager.signOut();
+
       const response = await NaverAuthManager.signIn();
 
-      const profile = await NaverAuthManager.getProfile(response.accessToken)
-      socialLogin('NAVER', response.accessToken,profile);
+      const profile = await NaverAuthManager.getProfile(response.successResponse);
+
+      console.log('네이버:',`${response.successResponse.accessToken} |${profile.id}`);
+
+      socialLogin('NAVER', response.successResponse.accessToken,profile.id);
 
       // navigation.navigate('LoginWebview', { onWebViewMessage: handleWebViewMessage, 'socialType': 'naver', });
     }
@@ -389,7 +394,10 @@ const Login = () => {
     const data = {
       socialType,
       accessToken,
+      id,
     };
+
+    console.log('네이버:',`${socialType} || ${accessToken} || ${id}`);
 
     console.log(`${Config.APP_API_URL}user/socialLogin}`);
     axios
