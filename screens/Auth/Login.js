@@ -218,11 +218,11 @@ const Login = () => {
 
       const response = await NaverAuthManager.signIn();
 
-      const profile = await NaverAuthManager.getProfile(response.successResponse);
+      const id = await NaverAuthManager.getProfile(response.successResponse);
 
-      console.log('네이버:',`${response.successResponse.accessToken} |${profile.id}`);
+      console.log('네이버:',`${response.successResponse.accessToken} |${id}`);
 
-      socialLogin('NAVER', response.successResponse.accessToken,profile.id);
+      socialLogin('NAVER', response.successResponse.accessToken,id);
 
       // navigation.navigate('LoginWebview', { onWebViewMessage: handleWebViewMessage, 'socialType': 'naver', });
     }
@@ -429,11 +429,10 @@ const Login = () => {
              const tokenObject = { 'accessToken': accessToken, 'refreshToken': refreshToken };
              //console.log('Login tokenObject:', tokenObject);
              dispatch(setCurrentUser(tokenObject));
-             await navigation.push('Home', { accessToken : accessToken ,LoginAcessType : 'SOCIAL'});
  
         
           } else {
-            await navigation.push('CheckTerms', { accessToken : accessToken , authType : 'JOIN',LoginAcessType : 'SOCIAL',id:id});
+            await navigation.push('CheckTerms', { accessToken : accessToken ,refreshToken:refreshToken, authType : 'JOIN',LoginAcessType : 'SOCIAL',id:id});
             //약관확인 화면으로 이동 후 약관 동의 완료시 handleSignUp 진행
           }
         }

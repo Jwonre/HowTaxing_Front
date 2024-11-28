@@ -175,7 +175,7 @@ const Home = () => {
   }
 
   useEffect(() => {
-    BackHandler.addEventListener('hardwareBackPress', handleBackPress)
+    BackHandler.addEventListener('hardwareBackPress', handleBackPress);
     return () => {
       BackHandler.removeEventListener('hardwareBackPress', handleBackPress);
     }

@@ -239,8 +239,20 @@ const AddMembershipFinish = props => {
           onPress={async () => {
             
             if( props?.route?.params?.LoginAcessType === 'SOCIAL'){
-              await navigation.push('Home', { accessToken : props?.route?.params?.accessToken ,
-                LoginAcessType : props?.route?.params?.LoginAcessType});
+              console.log('loginAcessType:',props?.route?.params?.LoginAcessType);
+              console.log('loginAcessType:',props?.route?.params?.accessToken);
+              console.log('loginAcessType:',navigation);
+
+              // await navigation.push('Home', { accessToken : props?.route?.params?.accessToken ,
+              //   LoginAcessType : props?.route?.params?.LoginAcessType});
+
+                const tokens = temp(props?.route?.params?.accessToken, props?.route?.params?.refreshToken);
+                console.log('tokens', tokens);
+                //console.log('Login:', event.nativeEvent.data);
+                //console.log('Login token:', tokens[0]);
+                const tokenObject = { 'accessToken': tokens[0], 'refreshToken': tokens[1] };
+                //console.log('Login tokenObject:', tokenObject);
+                dispatch(setCurrentUser(tokenObject));
 
             }else{
               const state = await NetInfo.fetch();

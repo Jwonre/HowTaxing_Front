@@ -23,7 +23,7 @@ class NaverAuthManager {
     }catch(error){
         console.error('초기화 실패 : ',error);
     }
-  
+
     try {
       const response: NaverLoginResponse = await naverLogin.login();
       console.log('네이버 로그인 성공:', response);
@@ -37,10 +37,10 @@ class NaverAuthManager {
   async getProfile(successResponse: { accessToken: string }): Promise<String | null> {
     try {
       const profileResult = await naverLogin.getProfile(successResponse!.accessToken);
-      console.log('카카오 프로필 가져오기 성공:', profileResult);
+      console.log('네이버 프로필 가져오기 성공:', profileResult);
       return profileResult.response.id;
     } catch (error) {
-      console.error('카카오 프로필 가져오기 실패:', error);
+      console.error('네이버 프로필 가져오기 실패:', error);
       return null;
     }
   }

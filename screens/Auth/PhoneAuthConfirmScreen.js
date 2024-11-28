@@ -143,6 +143,8 @@ const PhoneAuthConfirmScreen = props => {
         });
         return false;
       } else {
+        setTimer(180); // 타이머를 3분으로 초기화
+    setIsTimerActive(false); // 타이머 활성화
         /* SheetManager.show('info', {
            payload: {
              type: 'info',
@@ -155,6 +157,7 @@ const PhoneAuthConfirmScreen = props => {
         navigation.navigate('AddMembershipFinish', { prevSheet: 'PhoneAuthConfirmScreen',
           LoginAcessType : props?.route?.params.LoginAcessType,
           accessToken : props?.route?.params?.accessToken ,
+          refreshToken : props?.route?.params?.refreshToken,
           id:  props?.route?.params?.id,
           password: props?.route?.params?.LoginAcessType === 'SOCIAL' ? null : props?.route?.params?.password, });
 
