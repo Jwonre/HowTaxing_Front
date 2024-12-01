@@ -174,10 +174,7 @@ const Login = () => {
     if (canProceed) {
       try {
 
-        const message = await kakaoAuthManager.unlink();
-        // setResult(message ? message : '로그아웃 실패');
-        console.log("message ", message ? message : '로그아웃 실패');
-
+        
         const token = await kakaoAuthManager.signIn();
         console.log("token ", token ? JSON.stringify(token) : '로그인 실패');
         const profile = await kakaoAuthManager.getProfile();
@@ -214,7 +211,6 @@ const Login = () => {
     const state = await NetInfo.fetch();
     const canProceed = await handleNetInfoChange(state);
     if (canProceed) {
-      await NaverAuthManager.signOut();
 
       const response = await NaverAuthManager.signIn();
 

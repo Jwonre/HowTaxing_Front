@@ -22,7 +22,108 @@ import DeleteIcon from '../../assets/icons/delete_circle.svg';
 import axios from 'axios';
 import { SheetManager } from 'react-native-actions-sheet';
 import NetInfo from '@react-native-community/netinfo';
-import Config from 'react-native-config'
+import Config from 'react-native-config';
+
+const Container = styled.View`
+  flex: 1;
+  background-color: #fff;
+`;
+
+const ProgressSection = styled.View`
+  flex-direction: row;
+  width: 100%;
+  height: 5px;
+  background-color: #2f87ff;
+`;
+
+const IntroSection = styled.View`
+
+  padding: 20px;
+  margin-top: 20px;
+`;
+
+const ModalText = styled.Text`
+  font-size: 17px;
+  font-family: Pretendard-Bold;
+  color: #000;
+  line-height: 20px;
+  letter-spacing: -0.3px;
+  margin-bottom: 5px;
+`;
+
+const MembershipText = styled.Text`
+  font-size: 13px;
+  font-family: Pretendard-regular;
+  text-align: center;
+  color: #2F87FF;
+  line-height: 20px;
+  letter-spacing: -0.3px;
+  text-decoration: underline;
+`;
+
+
+
+const ModalInputContainer = styled.View`
+  width: 100%;
+  flex-direction: row;
+  align-items: center;
+`;
+
+const ModalInput = styled.TextInput.attrs(props => ({
+  placeholderTextColor: '#C1C3C5',
+  autoCapitalize: 'none',
+  autoCorrect: false,
+}))`
+  width: 100%;
+  height: 56px;
+  border-radius: 10px;
+  background-color: #f0f3f8;
+  padding: 0 40px 0 15px; 
+  font-size: 13px;
+  font-family: Pretendard-Regular;
+  color: #1b1c1f;
+  line-height: 20px;
+  text-align: left;
+`;
+
+const ButtonSection = styled.View`
+  width: 100%;
+`;
+
+const Button = styled.TouchableOpacity.attrs(props => ({
+  activeOpacity: 0.6,
+}))`
+  width: ${props => props.width - 40}px;
+  height: 60px;
+  border-radius: 30px;
+  background-color: ${props => (props.active ? '#2F87FF' : '#e5e5e5')};
+  align-items: center;
+  justify-content: center;
+  align-self: center;
+  background-color: #2F87FF;
+`;
+
+const ButtonText = styled.Text`
+  font-size: 17px;
+  font-family: Pretendard-Bold;
+  color: ${props => (props.active ? '#fff' : '#a3a5a8')};
+  line-height: 20px;
+  color: #fff;
+`;
+
+const CircleButton = styled.TouchableOpacity.attrs(props => ({
+  activeOpacity: 0.8,
+  hitSlop: { top: 20, bottom: 20, left: 20, right: 20 },
+}))`
+  width: 13px;
+  height: 13px;
+  border-radius: 10px;
+  border: 1px solid #e8eaed;
+  align-items: center;
+  justify-content: center;
+  right: 10%;
+
+`;
 
 const PhoneAuthConfirmScreen = props => {
   const [phoneNumber, setPhoneNumber] = useState('');

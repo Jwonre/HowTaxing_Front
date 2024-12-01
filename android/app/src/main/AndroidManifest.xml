@@ -54,6 +54,16 @@
 
   </application>
   <queries>
+     <!-- KB 스타뱅킹 앱 패키지 -->
+    <package android:name="com.kbstar.kbbank" />
+
+    <!-- KB 스타뱅킹 앱 URL 스키마 -->
+    <intent>
+      <action android:name="android.intent.action.VIEW" />
+      <data android:scheme="kbbank" />
+    </intent>
+    <package android:name="com.nhn.android.search"/>
+    <package android:name="viva.republica.toss"/>
   <package android:name="com.kakao.talk"/>
   <!--  카카오톡  -->
   <package android:name="com.nhn.android.search"/>
