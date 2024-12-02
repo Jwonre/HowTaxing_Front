@@ -18,112 +18,15 @@ import styled from 'styled-components';
 import getFontSize from '../../utils/getFontSize';
 import CloseIcon from '../../assets/icons/close_button.svg';
 import DeleteIcon from '../../assets/icons/delete_circle.svg';
+import ConfirmIcon from '../../assets/icons/iucide_check.svg';
+import CheckIcon from '../../assets/icons/check_circle.svg';
+import ImpossibleIcon from '../../assets/icons/impossible_circle.svg';
 
 import axios from 'axios';
 import { SheetManager } from 'react-native-actions-sheet';
 import NetInfo from '@react-native-community/netinfo';
 import Config from 'react-native-config';
 
-const Container = styled.View`
-  flex: 1;
-  background-color: #fff;
-`;
-
-const ProgressSection = styled.View`
-  flex-direction: row;
-  width: 100%;
-  height: 5px;
-  background-color: #2f87ff;
-`;
-
-const IntroSection = styled.View`
-
-  padding: 20px;
-  margin-top: 20px;
-`;
-
-const ModalText = styled.Text`
-  font-size: 17px;
-  font-family: Pretendard-Bold;
-  color: #000;
-  line-height: 20px;
-  letter-spacing: -0.3px;
-  margin-bottom: 5px;
-`;
-
-const MembershipText = styled.Text`
-  font-size: 13px;
-  font-family: Pretendard-regular;
-  text-align: center;
-  color: #2F87FF;
-  line-height: 20px;
-  letter-spacing: -0.3px;
-  text-decoration: underline;
-`;
-
-
-
-const ModalInputContainer = styled.View`
-  width: 100%;
-  flex-direction: row;
-  align-items: center;
-`;
-
-const ModalInput = styled.TextInput.attrs(props => ({
-  placeholderTextColor: '#C1C3C5',
-  autoCapitalize: 'none',
-  autoCorrect: false,
-}))`
-  width: 100%;
-  height: 56px;
-  border-radius: 10px;
-  background-color: #f0f3f8;
-  padding: 0 40px 0 15px; 
-  font-size: 13px;
-  font-family: Pretendard-Regular;
-  color: #1b1c1f;
-  line-height: 20px;
-  text-align: left;
-`;
-
-const ButtonSection = styled.View`
-  width: 100%;
-`;
-
-const Button = styled.TouchableOpacity.attrs(props => ({
-  activeOpacity: 0.6,
-}))`
-  width: ${props => props.width - 40}px;
-  height: 60px;
-  border-radius: 30px;
-  background-color: ${props => (props.active ? '#2F87FF' : '#e5e5e5')};
-  align-items: center;
-  justify-content: center;
-  align-self: center;
-  background-color: #2F87FF;
-`;
-
-const ButtonText = styled.Text`
-  font-size: 17px;
-  font-family: Pretendard-Bold;
-  color: ${props => (props.active ? '#fff' : '#a3a5a8')};
-  line-height: 20px;
-  color: #fff;
-`;
-
-const CircleButton = styled.TouchableOpacity.attrs(props => ({
-  activeOpacity: 0.8,
-  hitSlop: { top: 20, bottom: 20, left: 20, right: 20 },
-}))`
-  width: 13px;
-  height: 13px;
-  border-radius: 10px;
-  border: 1px solid #e8eaed;
-  align-items: center;
-  justify-content: center;
-  right: 10%;
-
-`;
 
 const PhoneAuthConfirmScreen = props => {
   const [phoneNumber, setPhoneNumber] = useState('');
@@ -137,23 +40,31 @@ const PhoneAuthConfirmScreen = props => {
   const [isConnected, setIsConnected] = useState(true);
   const [hasNavigatedBack, setHasNavigatedBack] = useState(false);
   const hasNavigatedBackRef = useRef(hasNavigatedBack);
+  const rbSheetRef = useRef();
+  const inputRef = useRef();
+  const [phoneNumberOk, setPhoneNumberOk] = useState('1');
 
-  const handleNetInfoChange = (state) => {
-    return new Promise((resolve, reject) => {
-      if (!state.isConnected && isConnected) {
-        setIsConnected(false);
-        navigation.push('NetworkAlert', navigation);
-        resolve(false);
-      } else if (state.isConnected && !isConnected) {
-        setIsConnected(true);
-        if (!hasNavigatedBackRef.current) {
-          setHasNavigatedBack(true);
-        }
-        resolve(true);
-      } else {
-        resolve(true);
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (inputRef.current) {
+        inputRef.current.focus();
       }
-    });
+    }, 500); // 딜레이 추가
+    return () => clearTimeout(timer);
+  }, []);
+  const handleNetInfoChange = async (state) => {
+    if (!state.isConnected && isConnected) {
+      setIsConnected(false);
+      navigation.push('NetworkAlert', navigation);
+      return false;
+    } else if (state.isConnected && !isConnected) {
+      setIsConnected(true);
+      if (!hasNavigatedBackRef.current) {
+        setHasNavigatedBack(true);
+      }
+      return true;
+    }
+    return true;
   };
 
   useEffect(() => {
@@ -174,12 +85,16 @@ const PhoneAuthConfirmScreen = props => {
     console.log("남은시간 : ", `${minutes}:${seconds < 10 ? `0${seconds}` : seconds}`);
     return `${minutes}:${seconds < 10 ? `0${seconds}` : seconds}`; // "분:초" 형식
   };
-  const handleResendAuth = () => {
-    setStep(1);
+  const handleResendAuth = async () => {
     setTimer(180); // 타이머를 3분으로 초기화
     setIsTimerActive(false); // 타이머 활성화
     setAuthNumber('');
-    handleNextStep(1);
+    const state = await NetInfo.fetch();
+      const canProceed = await handleNetInfoChange(state);
+      if (canProceed) {
+        console.log("sendAuthMobile", `${props.route?.params?.authType}`);
+        sendAuthMobile(phoneNumber.replace(/-/g, ''), props.route?.params?.authType, props?.route?.params?.id);
+      }
     console.log('인증번호 재전송');
     // 인증번호 재전송 API 호출 로직 추가
   };
@@ -191,18 +106,18 @@ const PhoneAuthConfirmScreen = props => {
       const state = await NetInfo.fetch();
       const canProceed = await handleNetInfoChange(state);
       if (canProceed) {
-        console.log("sendAuthMobile",`${props.route?.params?.authType}`)
-        sendAuthMobile(phoneNumber.replace(/-/g, ''),props.route?.params?.authType,props?.route?.params?.id);
+        console.log("sendAuthMobile", `${props.route?.params?.authType}`);
+        sendAuthMobile(phoneNumber.replace(/-/g, ''), props.route?.params?.authType, props?.route?.params?.id);
       }
 
 
     } else {
-       // 첫 번째 단계에서 다음 단계로 이동
-       const state = await NetInfo.fetch();
-       const canProceed = await handleNetInfoChange(state);
-       if (canProceed) {
-         sendAuthMobileConfirm(phoneNumber.replace(/-/g, ''),props.route?.params?.authType,authNum);
-       }
+      // 첫 번째 단계에서 다음 단계로 이동
+      const state = await NetInfo.fetch();
+      const canProceed = await handleNetInfoChange(state);
+      if (canProceed) {
+        sendAuthMobileConfirm(phoneNumber.replace(/-/g, ''), props.route?.params?.authType, authNum);
+      }
 
       // 두 번째 단계에서 확인 버튼 클릭
       console.log('인증번호 확인:', authNum);
@@ -210,19 +125,19 @@ const PhoneAuthConfirmScreen = props => {
     }
   };
 
-  const handleSignUp = async (phoneNumber,authKey, agreeMarketing) => {
+  const handleSignUp = async (phoneNumber, authKey, agreeMarketing) => {
     // 요청 헤더
-   
+
 
     // 요청 바디
     const data = {
       joinType: props?.route?.params?.LoginAcessType === 'SOCIAL' ? 'SOCIAL' : 'IDPASS',
-      id:  props?.route?.params?.id,
+      id: props?.route?.params?.id,
       password: props?.route?.params?.LoginAcessType === 'SOCIAL' ? null : props?.route?.params?.password,
       mktAgr: agreeMarketing,
-      phoneNumber : phoneNumber,
-      authKey : authKey,
-      email : props?.route?.params?.email ? props?.route?.params?.email : null,
+      phoneNumber: phoneNumber,
+      authKey: authKey,
+      email: props?.route?.params?.email ? props?.route?.params?.email : null,
     };
     console.log('sendAuthMobile', data.joinType);
     console.log('sendAuthMobile', data.id);
@@ -245,7 +160,7 @@ const PhoneAuthConfirmScreen = props => {
         return false;
       } else {
         setTimer(180); // 타이머를 3분으로 초기화
-    setIsTimerActive(false); // 타이머 활성화
+        setIsTimerActive(false); // 타이머 활성화
         /* SheetManager.show('info', {
            payload: {
              type: 'info',
@@ -255,12 +170,14 @@ const PhoneAuthConfirmScreen = props => {
         // 성공적인 응답 처리
         // const { id } = response.data;
         //    ////console.log("1111111", response);
-        navigation.navigate('AddMembershipFinish', { prevSheet: 'PhoneAuthConfirmScreen',
-          LoginAcessType : props?.route?.params.LoginAcessType,
-          accessToken : props?.route?.params?.accessToken ,
-          refreshToken : props?.route?.params?.refreshToken,
-          id:  props?.route?.params?.id,
-          password: props?.route?.params?.LoginAcessType === 'SOCIAL' ? null : props?.route?.params?.password, });
+        navigation.navigate('AddMembershipFinish', {
+          prevSheet: 'PhoneAuthConfirmScreen',
+          LoginAcessType: props?.route?.params.LoginAcessType,
+          accessToken: props?.route?.params?.accessToken,
+          refreshToken: props?.route?.params?.refreshToken,
+          id: props?.route?.params?.id,
+          password: props?.route?.params?.LoginAcessType === 'SOCIAL' ? null : props?.route?.params?.password,
+        });
 
         return true;
       }
@@ -280,22 +197,22 @@ const PhoneAuthConfirmScreen = props => {
   };
 
 
-  const sendAuthMobile = async ( phoneNumber, authType, id = null) => {
+  const sendAuthMobile = async (phoneNumber, authType, id = null) => {
     const data = {
       phoneNumber,
       authType,
 
     };
 
-    console.log("sendAuthMobile",`data : ${data.joinType} ${data.phoneNumber} , ${data.authType}`);
+    console.log("sendAuthMobile", `data : ${data.joinType} ${data.phoneNumber} , ${data.authType}`);
     if (id) {
-      data.id =id;
+      data.id = id;
     }
 
     axios
       .post(`${Config.APP_API_URL}sms/sendAuthCode`, data)
       .then(async response => {
-        console.log("sendAuthMobile",`data : ${response.data.errYn} ${response.data.errMsg ? response.data.errMsg :''} , ${data.authType}`);
+        console.log("sendAuthMobile", `data : ${response.data.errYn} ${response.data.errMsg ? response.data.errMsg : ''} , ${data.authType}`);
 
         if (response.data.errYn === 'Y') {
           SheetManager.show('info', {
@@ -328,14 +245,14 @@ const PhoneAuthConfirmScreen = props => {
         console.error(error);
       });
   };
-  const sendAuthMobileConfirm = async ( phoneNumber, authType, authCode) => {
+  const sendAuthMobileConfirm = async (phoneNumber, authType, authCode) => {
     const data = {
       authCode,
       phoneNumber,
       authType,
     };
 
-    
+
 
     axios
       .post(`${Config.APP_API_URL}sms/checkAuthCode`, data)
@@ -414,14 +331,19 @@ const PhoneAuthConfirmScreen = props => {
 
     });
   }, []);
-
+  const validatePhoneNum = (phoneNumber) => {
+    const cleaned = phoneNumber.replace(/\D/g, '');
+    return /^(\d{3})(\d{3,4})(\d{4})$/.test(cleaned);
+  };
+  
   return (
     <View style={styles.rootContainer}>
       {/* 파란색 라인 */}
       <View style={styles.blueLine} />
 
       {/* 스크롤 뷰 */}
-      <ScrollView contentContainerStyle={styles.scrollContent}>
+      <ScrollView contentContainerStyle={styles.scrollContent}
+        keyboardShouldPersistTaps="handled">
         {/* Input Section */}
         <View style={styles.inputSection}>
           <Text style={styles.bigTitle}>휴대폰 인증을 진행해주세요.</Text>
@@ -435,22 +357,53 @@ const PhoneAuthConfirmScreen = props => {
           {/* Input Field */}
           <View style={styles.inputWrapper}>
             <TextInput
+              ref={inputRef} // ref 연결
               keyboardType="phone-pad" // 숫자 키보드 표시
               maxLength={13} // 최대 11자리 (01012345678)
               style={styles.input}
               placeholder="휴대폰 번호를 입력해주세요."
               placeholderTextColor="#A3A5A8"
               value={phoneNumber}
-              onChangeText={(text) => setPhoneNumber(formatPhoneNumber(text))} // 포맷팅 적용
+              onSubmitEditing={async () => {
+                const phoneCheck = await validatePhoneNum(phoneNumber);
+                console.log("sendAuthMobile:", phoneCheck);
+                setPhoneNumberOk(phoneCheck ? '2' : '3');
+
+              }
+
+              }
+              onChangeText={async (text) => { setPhoneNumber(formatPhoneNumber(text)); setPhoneNumberOk('1'); }}
+
             />
-            {phoneNumber !== '' && (
+            {phoneNumberOk === '1' &&
               <TouchableOpacity
                 style={styles.clearButton}
-                onPress={() => setPhoneNumber('')}
+                onPress={() => {
+                  setPhoneNumber('');
+                  setPhoneNumberOk('1');
+                }}
               >
+
                 <DeleteIcon />
               </TouchableOpacity>
-            )}
+            }
+            {phoneNumberOk === '2' && <TouchableOpacity
+              style={styles.clearButton}
+              onPress={() => setPhoneNumber('')}
+            >
+
+              <CheckIcon />
+            </TouchableOpacity>
+            }
+            {phoneNumberOk === '3' && <TouchableOpacity
+              style={styles.clearButton}
+              onPress={() => setPhoneNumber('')}
+            >
+
+              <ImpossibleIcon />
+            </TouchableOpacity>
+            }
+
           </View>
 
         </View>
@@ -607,7 +560,7 @@ const styles = StyleSheet.create({
     fontSize: 17,
     marginBottom: 30,
     color: '#A3A5A8',
-    fontFamily: 'Pretendard_Bold', // 원하는 폰트 패밀리
+    fontFamily: 'Pretendard-Bold', // 원하는 폰트 패밀리
     fontWeight: '700', // 폰트 두께 (400은 기본)
   },
   subTitleLabel: {
@@ -640,9 +593,9 @@ const styles = StyleSheet.create({
   input: {
     flex: 1, // TextInput이 남은 공간을 차지하도록 설정
     color: '#000',
-    fontSize: 17,
-    fontFamily: 'Pretendard-Bold',
-    fontWeight: '700',
+    fontSize: 13,
+    fontFamily: 'Pretendard-Regular',
+    fontWeight: '400',
   },
   clearButton: {
     justifyContent: 'center',

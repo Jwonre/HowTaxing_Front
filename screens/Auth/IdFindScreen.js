@@ -48,7 +48,16 @@ const IdFindScreen = props => {
   const hasNavigatedBackRef = useRef(hasNavigatedBack);
   const [isModalVisible, setIsModalVisible] = useState(false); // 팝업 상태 관리
   const [phoneNumberOk, setPhoneNumberOk] = useState('1');
+  const inputRef = useRef();
 
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (inputRef.current) {
+        inputRef.current.focus();
+      }
+    }, 500); // 딜레이 추가
+    return () => clearTimeout(timer);
+  }, []);
   const openModal = () => {
     setIsModalVisible(true); // 팝업 열기
   };
@@ -74,12 +83,16 @@ const IdFindScreen = props => {
     console.log("남은시간 : ", `${minutes}:${seconds < 10 ? `0${seconds}` : seconds}`);
     return `${minutes}:${seconds < 10 ? `0${seconds}` : seconds}`; // "분:초" 형식
   };
-  const handleResendAuth = () => {
-    setStep(1)
+  const handleResendAuth = async () => {
     setTimer(180); // 타이머를 3분으로 초기화
     setIsTimerActive(false); // 타이머 활성화
-    setPhoneNumberOk('1');
     setAuthNumber('');
+    const state = await NetInfo.fetch();
+      const canProceed = await handleNetInfoChange(state);
+      if (canProceed) {
+        console.log("sendAuthMobile", `${props.route?.params?.authType}`);
+        sendAuthMobile(phoneNumber.replace(/-/g, ''), props.route?.params?.authType, props?.route?.params?.id);
+      }
     console.log('인증번호 재전송');
     // 인증번호 재전송 API 호출 로직 추가
   };
@@ -292,14 +305,10 @@ const IdFindScreen = props => {
     });
   };
   const validatePhoneNum = (phoneNumber) => {
-    const cleaned = ('' + phoneNumber).replace(/\D/g, '');
-    const match = cleaned.match(/^(\d{3})(\d{3,4})(\d{4})$/);
-    console.log("sendAuthMobile: ", `${match}, ${cleaned}`);
-    if (match) {
-      return true;
-    }
-    return false;
+    const cleaned = phoneNumber.replace(/\D/g, '');
+    return /^(\d{3})(\d{3,4})(\d{4})$/.test(cleaned);
   };
+  
   const handleResetPassword = () => {
     console.log('비밀번호 재설정 로직 실행');
     navigation.push('PasswordReSettingScreen', { authType: 'RESET_PW', LoginAcessType: 'IDPASS' });
@@ -379,6 +388,7 @@ const IdFindScreen = props => {
           {/* Input Field */}
           <View style={styles.inputWrapper}>
             <TextInput
+              ref={inputRef}
               keyboardType="phone-pad" // 숫자 키보드 표시
               maxLength={13} // 최대 11자리 (01012345678)
               style={styles.input}
@@ -550,7 +560,8 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 20,
-    fontWeight: 'bold',
+   fontFamily: 'Pretendard-Bold', // 원하는 폰트 패밀리
+       fontWeight: '700', // 폰트 두께 (400은 기본)
     marginBottom: 30,
     textAlign: 'center',
   },

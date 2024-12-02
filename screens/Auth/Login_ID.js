@@ -10,7 +10,7 @@ import {
   StyleSheet,
   StatusBar,
 } from 'react-native';
-import React, { useLayoutEffect, useRef, useCallback, useState } from 'react';
+import React, { useLayoutEffect, useRef, useCallback, useState,useEffect } from 'react';
 import { SheetManager } from 'react-native-actions-sheet';
 import DeleteIcon from '../../assets/icons/delete_circle.svg';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
@@ -150,7 +150,14 @@ const Login_ID = props => {
   const [hasNavigatedBack, setHasNavigatedBack] = useState(false);
   const hasNavigatedBackRef = useRef(hasNavigatedBack);
 
-
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (input1.current) {
+        input1.current.focus();
+      }
+    }, 100); // 딜레이 추가
+    return () => clearTimeout(timer);
+  }, []);
 
   const getLogin = async () => {
     console.log('아이디 로그인');

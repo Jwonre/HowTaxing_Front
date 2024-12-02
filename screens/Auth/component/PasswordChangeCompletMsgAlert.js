@@ -4,7 +4,7 @@ import { Modal, View, Text, Pressable, StyleSheet, Dimensions } from 'react-nati
 import styled from 'styled-components';
 import InfoCircleIcon from '../../../assets/icons/info_circle.svg';
 
-InfoCircleIcon
+
 const ModalContainer = styled.View`
   background-color: #fff;
   border-radius: 12px;
@@ -25,7 +25,7 @@ const ModalTitle = styled.Text`
 const ModalDescription = styled.Text`
   font-size: 15px;
   font-family: Pretendard-Medium;
-  color: #717274;
+  color: #000;
   line-height: 20px;
   text-align: center;
 `;
@@ -44,32 +44,27 @@ const ButtonText = styled.Text`
   font-family: Pretendard-Medium;
 `;
 
-const PasswordChangeConfirmMsgAlert = ({ visible, onClose,  onChange }) => {
+const PasswordChangeCompletMsgAlert = ({ visible,   onLogin }) => {
   
   return (
     <Modal
       animationType="fade"
       transparent={true}
       visible={visible}
-      onRequestClose={onClose}
+      onRequestClose={onLogin}
     >
       <View style={styles.modalOverlay}>
         <ModalContainer>
           <InfoCircleIcon style={{ color: '#FF7401', marginBottom: 10 }} />
-          <ModalTitle>정말로 비밀번호를 변경하시겠어요?</ModalTitle>
-          <ModalDescription>모든 기기와 브라우저에서 로그아웃돼요.</ModalDescription>
+          <ModalTitle>비밀번호 재설정이 완료되었어요.</ModalTitle>
+          <ModalDescription>다시 로그인해주세요.</ModalDescription>
           <View style={styles.buttonContainer}>
-            <Button
-              style={[styles.button, styles.resetButton]}
-              onPress={onClose}
-            >
-              <ButtonText style={styles.resetButtonText}>취소하기</ButtonText>
-            </Button>
+            
             <Button
               style={[styles.button, styles.loginButton]}
-              onPress={onChange}
+              onPress={onLogin}
             >
-              <ButtonText style={styles.loginButtonText}>변경하기</ButtonText>
+              <ButtonText style={styles.loginButtonText}>로그인하기</ButtonText>
             </Button>
           </View>
         </ModalContainer>
@@ -78,7 +73,7 @@ const PasswordChangeConfirmMsgAlert = ({ visible, onClose,  onChange }) => {
   );
 };
 
-export default PasswordChangeConfirmMsgAlert;
+export default PasswordChangeCompletMsgAlert;
 
 const styles = StyleSheet.create({
   modalOverlay: {

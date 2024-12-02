@@ -19,6 +19,7 @@ import { setFixHouseList } from '../../redux/fixHouseListSlice';
 import axios from 'axios';
 import Config from 'react-native-config';
 // import CheckAppInstall from 'react-native-check-app-install';
+import DeviceInfo from 'react-native-device-info';
 
 
 const SheetContainer = styled.View`
@@ -147,12 +148,20 @@ const InfoCertification = props => {
   //   console.log(`${packageName} 설치 여부:`, isInstalled);
   //   return isInstalled;
   // };
+  const isPackageInstalled = (packageName) => {
+    try {
+      require.resolve(packageName);
+      return true; // 패키지가 설치되어 있음
+    } catch (error) {
+      return false; // 패키지가 설치되어 있지 않음
+    }
+  };
   const checkAppInstalled = async () => {
     try {
       // let isKBInstalled = checkAppPackageInstalled('kb-auth://');
       // let isTossInstalled = checkAppPackageInstalled('tossauth://');
       // let isNaverInstalled = checkAppPackageInstalled('naverlogin://');
-  
+
       // if (Platform.OS === 'android') {
       //   isKBInstalled = checkAppPackageInstalled('com.kbstar.kbbank'); // Android 패키지명 확인
       //   isTossInstalled = checkAppPackageInstalled('vn.toss');
@@ -162,53 +171,54 @@ const InfoCertification = props => {
       let isTossInstalled = false;
       let isNaverInstalled = false;
       // if (Platform.OS === 'ios') {
-        // iOS에서 URL 스키마 확인
-        isKBInstalled = await Linking.canOpenURL('kbbank://');
-        isTossInstalled = await Linking.canOpenURL('supertoss://');
-        isNaverInstalled = await Linking.canOpenURL('naversearchapp://');
+      // iOS에서 URL 스키마 확인
+      isKBInstalled = await Linking.canOpenURL('kbbank://');
+      isTossInstalled = await Linking.canOpenURL('supertoss://');
+      isNaverInstalled = await Linking.canOpenURL('naversearchapp://');
       // } else if (Platform.OS === 'android') {
       //   // Android에서 URL 스키마 확인
       //   isKBInstalled = await Linking.canOpenURL('com.kbstar.kbbank');
       //   isTossInstalled = await Linking.canOpenURL('vn.toss');
       //   isNaverInstalled = await Linking.canOpenURL('com.nhn.android.search');
       // }
-  
-      console.log("install_status : ", isKBInstalled);
+      const isInstalled = await DeviceInfo.hasApp('com.kbstar.kbbank'); // 앱 설치 여부 확인
+
+      console.log("install_status : ", `ddd ${isInstalled} ${isKBInstalled} ${isPackageInstalled('com.kbstar.kbbank')} `);
 
       console.log("install_status : ", isTossInstalled);
 
       console.log("install_status : ", isNaverInstalled);
       setAppStatus({
-        kb: isKBInstalled ,
-        toss: isTossInstalled ,
-        naver: isNaverInstalled ,
+        kb: isKBInstalled,
+        toss: isTossInstalled,
+        naver: isNaverInstalled,
       });
     } catch (error) {
       console.error('앱 확인 중 오류 발생:', error);
     }
   };
 
-  useEffect(() =>{
+  useEffect(() => {
     checkAppInstalled();
-  },[]);
+  }, []);
   const appUrls = {
     kb: {
       ios: 'https://apps.apple.com/kr/app/id372174644',
-      android: 'https://play.google.com/store/apps/details?id=com.kbstar.kbbank',
+      android: 'market://details?id=com.kbstar.kbbank',
     },
     naver: {
       ios: 'https://apps.apple.com/kr/app/id393499958',
-      android: 'https://play.google.com/store/apps/details?id=com.nhn.android.search',
+      android: 'market://details?id=com.nhn.android.search',
     },
     toss: {
       ios: 'https://apps.apple.com/kr/app/id839333328',
-      android: 'https://play.google.com/store/apps/details?id=viva.republica.toss&hl=ko&gl=US',
+      android: 'market://details?id=viva.republica.toss&hl=ko&gl=US',
     },
   };
-  
+
   const downloadApp = async (certType) => {
     const url = Platform.OS === 'ios' ? appUrls[certType].ios : appUrls[certType].android;
-  
+
     try {
       await Linking.openURL(url); // 스토어로 이동
     } catch (error) {
@@ -818,6 +828,7 @@ const InfoCertification = props => {
       const url = 'kbbank://';
       const supported = await Linking.canOpenURL(url);
 
+      console.log('install_status:',supported);
       if (appStatus.kb === true) {
         await Linking.openURL(url); // KB 인증서 앱 실행
       } else {
@@ -836,7 +847,7 @@ const InfoCertification = props => {
 
       const supported = await Linking.canOpenURL(url);
 
-      if (appStatus.toss === true ) {
+      if (appStatus.toss === true) {
         await Linking.openURL(url); // KB 인증서 앱 실행
       } else {
         console.log('KB 인증서 앱을 실행할 수 없습니다.');
@@ -851,8 +862,8 @@ const InfoCertification = props => {
     try {
       const callbackUrl = encodeURIComponent('howtaxingrelease://auth');
 
-      let url = `naversearchapp://default?version=${Platform.OS === 'android' ? '5':'1'}`;
-      
+      let url = `naversearchapp://default?version=${Platform.OS === 'android' ? '5' : '1'}`;
+
       // url = 'naversearchapp://default?version=1';
       console.log('Generated URL:', `appStatus.naver:${appStatus.naver} ${url}`);
 
@@ -945,7 +956,7 @@ const InfoCertification = props => {
 
           )}
           {certType === 'naver' && (
-            <ModalTitle >{appStatus.naver?
+            <ModalTitle >{appStatus.naver ?
               props?.payload?.message : '인증 앱을 해당 기기에서 찾을 수 없어요.\n먼저 인증하실 서비스를 설치해주세요.'}</ModalTitle>
 
           )}
@@ -1032,6 +1043,12 @@ const InfoCertification = props => {
               }}
             >
               <Button
+                 style={{
+                  backgroundColor: !ActiveYN ? '#2f87ff' : '#E8EAED',
+                  borderColor: !ActiveYN ? '#2f87ff' : '#E8EAED',
+                }}
+                active={ActiveYN}
+                disabled={!ActiveYN}
                 onPress={async () => {
                   const state = await NetInfo.fetch();
                   const canProceed = await handleNetInfoChange(state);
@@ -1041,18 +1058,18 @@ const InfoCertification = props => {
                     if (certType === 'KB') openKBAuthApp();
                     else if (certType === 'toss') opeToassAuthApp();
                     else if (certType === 'naver') openNaverAuthApp();
-                   
+
                   } else {
                     actionSheetRef.current?.hide();
                   }
                 }}
               >
-                
-                <ButtonText>
-          {certType === 'KB' && (appStatus.kb === true ? '앱으로 바로가기' : '설치하기')}
-          {certType === 'toss' && (appStatus.toss === true ? '앱으로 바로가기' : '설치하기')}
-          {certType === 'naver' && (appStatus.naver === true ? '앱으로 바로가기' : '설치하기')}
-        </ButtonText>
+
+                <ButtonText  style={{ color:!ActiveYN ? '#fff' : '#717274' }}>
+                  {certType === 'KB' && (appStatus.kb === true ? '앱으로 바로가기' : '설치하기')}
+                  {certType === 'toss' && (appStatus.toss === true ? '앱으로 바로가기' : '설치하기')}
+                  {certType === 'naver' && (appStatus.naver === true ? '앱으로 바로가기' : '설치하기')}
+                </ButtonText>
               </Button>
             </DropShadow>
           </View>

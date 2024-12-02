@@ -17,12 +17,16 @@ import CloseIcon from '../../assets/icons/close_button.svg';
 import DeleteIcon from '../../assets/icons/delete_circle.svg';
 import ConfirmIcon from '../../assets/icons/iucide_check.svg';
 import FailPwdIcon from '../../assets/icons/fail_pwd.svg';
+import CheckIcon from '../../assets/icons/check_circle.svg';
+import ImpossibleIcon from '../../assets/icons/impossible_circle.svg';
 
 import axios from 'axios';
 import { SheetManager } from 'react-native-actions-sheet';
 import NetInfo from '@react-native-community/netinfo';
-import Config from 'react-native-config'
+import Config from 'react-native-config';
 import PasswordChangeConfirmMsgAlert from './component/PasswordChangeConfirmMsgAlert';
+import styled from 'styled-components';
+import PasswordChangeCompletMsgAlert from './component/PasswordChangeCompletMsgAlert';
 
 const PasswordChangeScreen = props => {
   const [password, setPassword] = useState('');
@@ -39,12 +43,56 @@ const PasswordChangeScreen = props => {
   const [hasNavigatedBack, setHasNavigatedBack] = useState(false);
   const hasNavigatedBackRef = useRef(hasNavigatedBack);
   const [isModalVisible, setIsModalVisible] = useState(false); // 팝업 상태 관리
+  const [isModalCompletVisible, setIsModalCompletVisible] = useState(false); // 팝업 상태 관리
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (input1.current) {
+        input1.current.focus();
+      }
+    }, 500); // 딜레이 추가
+    return () => clearTimeout(timer);
+  }, []);
+
   const openModal = () => {
     setIsModalVisible(true); // 팝업 열기
   };
 
   const closeModal = () => {
     setIsModalVisible(false); // 팝업 닫기
+  };
+
+  const openCompletModal = () => {
+    setIsModalCompletVisible(true); // 팝업 열기
+  };
+
+  const closeCompletModal = () => {
+    setIsModalCompletVisible(false); // 팝업 닫기
+  };
+
+
+  const CircleButton = styled.TouchableOpacity.attrs(props => ({
+    activeOpacity: 0.8,
+    hitSlop: { top: 20, bottom: 20, left: 20, right: 20 },
+  }))`
+    width: 13px;
+    height: 13px;
+    border-radius: 10px;
+    border: 1px solid #e8eaed;
+    align-items: center;
+    justify-content: center;
+   
+  
+  `;
+  const handlerComplet = async () => {
+    console.log('로그인 로직 실행');
+    const state = await NetInfo.fetch();
+    const canProceed = await handleNetInfoChange(state);
+    if (canProceed) {
+      navigation.push('Login_ID');
+    }
+    closeModal();
+
   };
   const handlerChange = async () => {
     console.log('로그인 로직 실행');
@@ -122,8 +170,10 @@ const PasswordChangeScreen = props => {
           });
           return;
         } else {
+
+
           const userData = response.data.data;
-          navigation.push('Login_ID');
+          openCompletModal();
 
         }
         // 성공적인 응답 처리
@@ -229,15 +279,24 @@ const PasswordChangeScreen = props => {
                 if (validatePassword(password)) { input2.current.focus(); } else { input1.current.focus(); }
               }}
             />
-            {password !== '' && (
-              validatePassword(password) ?
-                <ConfirmIcon /> :
-                <FailPwdIcon />
-            )}
+            {PasswordOk === '1' && <CircleButton onPress={() => { setPassword(''); }}>
+              <DeleteIcon />
+            </CircleButton>
+            }
+            {PasswordOk === '2' && <CircleButton>
+              <CheckIcon />
+            </CircleButton>
+            }
+            {PasswordOk === '3' && <CircleButton onPress={() => { setPassword(''); setPasswordOk('1') }}>
+              <ImpossibleIcon />
+            </CircleButton>
+            }
           </View>
-          <Text style={styles.newpasswordLabel}>새 비밀번호</Text>
+          <Text style={styles.newpasswordLabel}>새 비밀번호 확인</Text>
           <View style={styles.inputWrapper}>
             <TextInput
+              ref={input2}
+
               autoCompleteType="pwd"
               maxLength={16}
               style={styles.input}
@@ -260,12 +319,20 @@ const PasswordChangeScreen = props => {
                 }
               }}
             />
-            {checkpassword !== '' && (
-             validatePassword(checkpassword) ?
-             <ConfirmIcon /> :
-             <FailPwdIcon />
-            )}
+            {PasswordCheckOk === '1' && <CircleButton onPress={() => { setCheckPassword(''); }}>
+              <DeleteIcon />
+            </CircleButton>
+            }
+            {PasswordCheckOk === '2' && <CircleButton>
+              <CheckIcon />
+            </CircleButton>
+            }
+            {PasswordCheckOk === '3' && <CircleButton onPress={() => { setCheckPassword(''); setPasswordCheckOk('1'); }}>
+              <ImpossibleIcon />
+            </CircleButton>
+            }
           </View>
+          <Text style={{ fontSize: 13, color: PasswordCheckOk === '2' ? '#a3a5a8' : '#FF7401', marginTop: 5, marginLeft: 5 }}>{PasswordCheckOk === '2' || PasswordCheckOk === '1' ? '' : '입력하신 비밀번호가 일치하지 않아요.'}</Text>
 
         </View>
 
@@ -282,6 +349,7 @@ const PasswordChangeScreen = props => {
         {/* 추가 콘텐츠를 여기에 배치 가능 */}
       </ScrollView>
       <PasswordChangeConfirmMsgAlert visible={isModalVisible} onClose={closeModal} onChange={handlerChange} />
+      <PasswordChangeCompletMsgAlert visible={isModalCompletVisible}  onLogin={handlerComplet} />
 
     </View>
 

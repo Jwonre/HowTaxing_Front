@@ -55,7 +55,16 @@ const PasswordReSettingScreen = props => {
   const [IdOk, setIdOk] = useState('1');
   const [IdCheckresult, setIdCheckresult] = useState('');
   const [phoneNumberOk, setPhoneNumberOk] = useState('1');
+  const inputRef = useRef();
 
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (input1.current) {
+        input1.current.focus();
+      }
+    }, 500); // 딜레이 추가
+    return () => clearTimeout(timer);
+  }, []);
   const handleNetInfoChange = (state) => {
     return new Promise((resolve, reject) => {
       if (!state.isConnected && isConnected) {
@@ -91,10 +100,16 @@ const PasswordReSettingScreen = props => {
     console.log("남은시간 : ", `${minutes}:${seconds < 10 ? `0${seconds}` : seconds}`);
     return `${minutes}:${seconds < 10 ? `0${seconds}` : seconds}`; // "분:초" 형식
   };
-  const handleResendAuth = () => {
+  const handleResendAuth = async () => {
     setTimer(180); // 타이머를 3분으로 초기화
-    setIsTimerActive(true); // 타이머 활성화
-    handleNextStep(1);
+    setIsTimerActive(false); // 타이머 활성화
+    setAuthNumber('');
+    const state = await NetInfo.fetch();
+      const canProceed = await handleNetInfoChange(state);
+      if (canProceed) {
+        console.log("sendAuthMobile", `${props.route?.params?.authType}`);
+        sendAuthMobile(phoneNumber.replace(/-/g, ''), props.route?.params?.authType, props?.route?.params?.id);
+      }
     console.log('인증번호 재전송');
     // 인증번호 재전송 API 호출 로직 추가
   };
@@ -200,7 +215,7 @@ const PasswordReSettingScreen = props => {
           const userData = response.data.data;
           console.log('sendAuthMobile', userData.authKey);
 
-          navigation.push('PasswordChangeScreen',{id:id, authKey:userData.authKey,phoneNumber:phoneNumber}); // 다음 화면으로 이동
+          navigation.replace('PasswordChangeScreen', { id: id, authKey: userData.authKey, phoneNumber: phoneNumber }); // 다음 화면으로 이동
 
         }
         // 성공적인 응답 처리
@@ -224,14 +239,16 @@ const PasswordReSettingScreen = props => {
       const url = `${Config.APP_API_URL}user/idCheck?id=${encodeURIComponent(id)}`;
       console.log('url', url);
       const response = await axios.get(url);
-      if (response.data.errYn == 'Y') {
-        setIdOk('3');
-        setIdCheckresult(response.data.errMsg ? response.data.errMsg : '로그인 중복체크 중 문제가 생겼어요.');
-        return false;
-      } else {
+      console.log(`response : ${response.data.errYn}`);
+      if (response.data.errYn === 'Y') {
         setIdOk('2');
         setIdCheckresult('');
         return true;
+       
+      } else {
+        setIdOk('3');
+        setIdCheckresult(response.data.errMsg ? response.data.errMsg : '로그인 중복체크 중 문제가 생겼어요.');
+        return false;
       }
 
     } catch (error) {
@@ -300,6 +317,7 @@ const PasswordReSettingScreen = props => {
           {/* Input Field */}
           <View style={styles.inputWrapper}>
             <TextInput
+              ref={input1}
               style={styles.input}
               placeholder="아이디를 입력해주세요."
               placeholderTextColor="#A3A5A8"
@@ -326,7 +344,7 @@ const PasswordReSettingScreen = props => {
               }
               }
             />
-             {IdOk === '1' &&
+            {IdOk === '1' &&
               <TouchableOpacity
                 style={styles.clearButton}
                 onPress={() => {
@@ -360,12 +378,12 @@ const PasswordReSettingScreen = props => {
               <ImpossibleIcon />
             </TouchableOpacity>
             }
-          
+
           </View>
-          {IdOk === '2'  && (
-                  <Text style={styles.idCheckMsg}>유효한 아이디에요.</Text>
-                )}
-          
+          {IdOk === '2' && (
+            <Text style={styles.idCheckMsg}>유효한 아이디에요.</Text>
+          )}
+
 
         </View>
 
@@ -377,6 +395,7 @@ const PasswordReSettingScreen = props => {
           {/* Input Field */}
           <View style={styles.inputWrapper}>
             <TextInput
+            ref={input2}
               keyboardType="phone-pad" // 숫자 키보드 표시
               maxLength={13} // 최대 11자리 (01012345678)
               style={styles.input}
@@ -385,8 +404,8 @@ const PasswordReSettingScreen = props => {
               value={phoneNumber}
               onSubmitEditing={async () => {
                 const phoneCheck = await validatePhoneNum(phoneNumber);
-                console.log("sendAuthMobile:",phoneCheck);
-                setPhoneNumberOk(phoneCheck ? '2' : '3')
+                console.log("sendAuthMobile:", phoneCheck);
+                setPhoneNumberOk(phoneCheck ? '2' : '3');
 
               }
               }
@@ -485,9 +504,10 @@ const PasswordReSettingScreen = props => {
             (!phoneNumber || timer === 0) && styles.disabledButton, // 조건부 스타일
           ]}
           onPress={handleNextStep}
-          disabled={!phoneNumber || timer === 0} // 비활성화 조건
+          disabled={!phoneNumber || timer === 0 || !IdOk} // 비활성화 조건
         >
-          <Text style={styles.loginButtonLabel}>
+          <Text style={styles.loginButtonLabel}
+           >
             {step === 1 ? '인증번호 전송하기' : '다음으로'}
           </Text>
         </TouchableOpacity>

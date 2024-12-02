@@ -74,6 +74,7 @@ const IconView = styled.View`
   justify-content: center;
   position: absolute;
   right: 25px;
+  margin-top: 20px;
    border: 1px solid #e8eaed;
 `;
 const ListItem = styled.View`
