@@ -19,7 +19,6 @@ import { setFixHouseList } from '../../redux/fixHouseListSlice';
 import axios from 'axios';
 import Config from 'react-native-config';
 // import CheckAppInstall from 'react-native-check-app-install';
-import DeviceInfo from 'react-native-device-info';
 
 
 const SheetContainer = styled.View`
@@ -181,9 +180,8 @@ const InfoCertification = props => {
       //   isTossInstalled = await Linking.canOpenURL('vn.toss');
       //   isNaverInstalled = await Linking.canOpenURL('com.nhn.android.search');
       // }
-      const isInstalled = await DeviceInfo.hasApp('com.kbstar.kbbank'); // 앱 설치 여부 확인
 
-      console.log("install_status : ", `ddd ${isInstalled} ${isKBInstalled} ${isPackageInstalled('com.kbstar.kbbank')} `);
+      console.log("install_status : ", `${isKBInstalled} `);
 
       console.log("install_status : ", isTossInstalled);
 
@@ -1047,8 +1045,6 @@ const InfoCertification = props => {
                   backgroundColor: !ActiveYN ? '#2f87ff' : '#E8EAED',
                   borderColor: !ActiveYN ? '#2f87ff' : '#E8EAED',
                 }}
-                active={ActiveYN}
-                disabled={!ActiveYN}
                 onPress={async () => {
                   const state = await NetInfo.fetch();
                   const canProceed = await handleNetInfoChange(state);
