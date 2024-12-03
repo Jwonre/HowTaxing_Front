@@ -576,8 +576,10 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: 17,
-    marginBottom: 10,
-    color: '#1b1C1F',
+    marginBottom: 5,
+    color: '#000',
+    lineHeight:'20px',
+    letterSpacing:'-0.3px',
     fontFamily: 'Pretendard-Bold', // 원하는 폰트 패밀리
     fontWeight: '700', // 폰트 두께 (400은 기본)
   },
@@ -651,8 +653,8 @@ const styles = StyleSheet.create({
   loginButtonLabel: {
     color: '#fff',
     fontSize: 17,
-    fontFamily: 'Pretendard-Medium', // 원하는 폰트 패밀리
-    fontWeight: 'medium',
+    fontFamily: 'Pretendard-Bold', // 원하는 폰트 패밀리
+    fontWeight: '700',
   },
   footer: {
     flexDirection: 'row',

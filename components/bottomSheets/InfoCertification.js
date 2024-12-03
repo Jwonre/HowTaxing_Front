@@ -826,7 +826,7 @@ const InfoCertification = props => {
       const url = 'kbbank://';
       const supported = await Linking.canOpenURL(url);
 
-      console.log('install_status:',supported);
+      console.log('install_status:', supported);
       if (appStatus.kb === true) {
         await Linking.openURL(url); // KB 인증서 앱 실행
       } else {
@@ -902,7 +902,7 @@ const InfoCertification = props => {
         backgroundColor: '#fff',
         borderTopLeftRadius: 20,
         borderTopRightRadius: 20,
-        height: ActiveYN === false ? 450 : 350,
+        height:certType ==='KB' ? 350 : ActiveYN === false  ? 450 : 350,
         width: width - 40,
       }}>
       <SheetContainer width={width}>
@@ -944,9 +944,9 @@ const InfoCertification = props => {
             })()}</View>
 
           {certType === 'KB' && (
-            <ModalTitle >{appStatus.kb === true ?
-              props?.payload?.message : '인증 앱을 해당 기기에서 찾을 수 없어요.\n먼저 인증하실 서비스를 설치해주세요.'}</ModalTitle>
-
+            // <ModalTitle >{appStatus.kb === true ?
+            //   props?.payload?.message : '인증 앱을 해당 기기에서 찾을 수 없어요.\n먼저 인증하실 서비스를 설치해주세요.'}</ModalTitle>
+            <ModalTitle >{props?.payload?.message}</ModalTitle>
           )}
           {certType === 'toss' && (
             <ModalTitle >{appStatus.kb.toss === true ?
@@ -959,7 +959,9 @@ const InfoCertification = props => {
 
           )}
 
-          {(ActiveYN === false) && <ModalContent >신속한 인증을 원하시면 인증 앱으로 바로가기를 누르신 후 직접 인증을 부탁드려요. </ModalContent>}
+
+
+          {(ActiveYN === false && certType !== 'KB') && <ModalContent >신속한 인증을 원하시면 인증 앱으로 바로가기를 누르신 후 직접 인증을 부탁드려요. </ModalContent>}
           {/* {(ActiveYN === true) && <ModalContent >다른 기기를 통해 인증할 예정이라면다른 기기로 인증하기를 눌러주세요. </ModalContent>} */}
 
 
@@ -990,7 +992,7 @@ const InfoCertification = props => {
                 shadowOpacity: 0.15,
                 shadowRadius: 2,
                 alignSelf: 'center',
-                width: '45%', // 버튼 너비를 부모 View의 45%로 설정
+                width: certType ==='KB' ?'100%' :'45%', // 버튼 너비를 부모 View의 45%로 설정
               }}
             >
               <Button
@@ -1027,47 +1029,44 @@ const InfoCertification = props => {
               </Button>
             </DropShadow>
 
-            <DropShadow
-              style={{
-                shadowColor: 'rgba(0,0,0,0.25)',
-                shadowOffset: {
-                  width: 0,
-                  height: 4,
-                },
-                shadowOpacity: 0.15,
-                shadowRadius: 2,
-                alignSelf: 'center',
-                width: '45%', // 버튼 너비를 부모 View의 45%로 설정
-              }}
-            >
-              <Button
-                 style={{
-                  backgroundColor: !ActiveYN ? '#2f87ff' : '#E8EAED',
-                  borderColor: !ActiveYN ? '#2f87ff' : '#E8EAED',
-                }}
-                onPress={async () => {
-                  const state = await NetInfo.fetch();
-                  const canProceed = await handleNetInfoChange(state);
-                  if (canProceed) {
-                    // dispatch(setResend(false));
-                    // setActiveYN(false);
-                    if (certType === 'KB') openKBAuthApp();
-                    else if (certType === 'toss') opeToassAuthApp();
-                    else if (certType === 'naver') openNaverAuthApp();
 
-                  } else {
-                    actionSheetRef.current?.hide();
-                  }
+            {certType !== 'KB' && (
+              <DropShadow
+                style={{
+                  shadowColor: 'rgba(0,0,0,0.25)',
+                  shadowOffset: {
+                    width: 0,
+                    height: 4,
+                  },
+                  shadowOpacity: 0.15,
+                  shadowRadius: 2,
+                  alignSelf: 'center',
+                  width: '45%', // 버튼 너비를 부모 View의 45%로 설정
                 }}
               >
-
-                <ButtonText  style={{ color:!ActiveYN ? '#fff' : '#717274' }}>
-                  {certType === 'KB' && (appStatus.kb === true ? '앱으로 바로가기' : '설치하기')}
-                  {certType === 'toss' && (appStatus.toss === true ? '앱으로 바로가기' : '설치하기')}
-                  {certType === 'naver' && (appStatus.naver === true ? '앱으로 바로가기' : '설치하기')}
-                </ButtonText>
-              </Button>
-            </DropShadow>
+                <Button
+                  style={{
+                    backgroundColor: !ActiveYN ? '#2f87ff' : '#E8EAED',
+                    borderColor: !ActiveYN ? '#2f87ff' : '#E8EAED',
+                  }}
+                  onPress={async () => {
+                    const state = await NetInfo.fetch();
+                    const canProceed = await handleNetInfoChange(state);
+                    if (canProceed) {
+                      if (certType === 'toss') opeToassAuthApp();
+                      else if (certType === 'naver') openNaverAuthApp();
+                    } else {
+                      actionSheetRef.current?.hide();
+                    }
+                  }}
+                >
+                  <ButtonText style={{ color: !ActiveYN ? '#fff' : '#717274' }}>
+                    {certType === 'toss' && (appStatus.toss === true ? '앱으로 바로가기' : '설치하기')}
+                    {certType === 'naver' && (appStatus.naver === true ? '앱으로 바로가기' : '설치하기')}
+                  </ButtonText>
+                </Button>
+              </DropShadow>
+            )}
           </View>
         </ButtonSection>
 
