@@ -25,6 +25,11 @@ import CheckTerms from '../screens/Main/CheckTerms';
 import GainsTax from '../screens/Main/GainsTax';
 import ConsultingReservation from '../screens/Main/ConsultingReservation';
 import ConsultingReservation2 from '../screens/Main/ConsultingReservation2';
+import Payment from '../screens/Main/Payment';
+import PaymentComplet from '../screens/Main/PaymentComplet';
+import ConsultingReservationHistory from '../screens/Main/ConsultingReservationHistory';
+import ConsultingReservationDetail from '../screens/Main/ConsultingReservationDetail';
+
 import FixedHouse from '../screens/Main/FixedHouse';
 import AddHouse from '../screens/Main/AddHouse';
 import FixedHouseList from '../screens/Main/FixedHouseList';
@@ -222,6 +227,12 @@ const AppNavigator = () => {
               <Stack.Screen name="GainsTax" component={GainsTax} />
               <Stack.Screen name="ConsultingReservation" component={ConsultingReservation} />
               <Stack.Screen name="ConsultingReservation2" component={ConsultingReservation2} />
+
+              <Stack.Screen name="Payment" component={Payment} />
+              <Stack.Screen name="PaymentComplet" component={PaymentComplet} />
+              <Stack.Screen name="ConsultingReservationDetail" component={ConsultingReservationDetail} />
+              <Stack.Screen name="ConsultingReservationHistory" component={ConsultingReservationHistory} />
+
               <Stack.Screen name="FamilyHouse" component={FamilyHouse} />
               <Stack.Screen
                 name="Information"

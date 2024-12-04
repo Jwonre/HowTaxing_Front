@@ -27,6 +27,7 @@
     "@react-navigation/native-stack": "^6.9.16",
     "@reduxjs/toolkit": "^1.9.7",
     "@shopify/flash-list": "^1.6.3",
+    "@tosspayments/tosspayments-sdk": "^2.3.2",
     "@types/styled-components": "^5.1.29",
     "axios": "^1.6.2",
     "dayjs": "^1.11.10",
