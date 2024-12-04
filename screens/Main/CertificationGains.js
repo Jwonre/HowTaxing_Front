@@ -995,7 +995,6 @@ const CertificationGains = props => {
                     }
                   }}
                   autoCompleteType="tel"
-                  secureTextEntry={true}
                   maxLength={11}
                   onSubmitEditing={async () => {
                     input3.current.focus();
