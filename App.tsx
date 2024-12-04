@@ -104,7 +104,7 @@ const App = () => {
     console.log('currentVersion', currentVersion);
     console.log('latestVersion', latestVersion);
     if (currentVersion !== latestVersion) {
-      setUpdateCheck(true);
+      setUpdateCheck(false);
     } else {
       setUpdateCheck(false);
     }
@@ -117,8 +117,8 @@ const App = () => {
 
 
   KeyHashModule.getKeyHash()
-  .then((hash) => console.log('Hash Key:', hash))
-  .catch((err) => console.error('Error fetching Key Hash:', err));
+  .then((hash: any) => console.log('Hash Key:', hash))
+  .catch((err: any) => console.error('Error fetching Key Hash:', err));
 
   useEffect(() => {
     naverLogin.initialize({
