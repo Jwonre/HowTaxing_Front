@@ -340,6 +340,7 @@ const GainsTaxChat = () => {
           SheetManager.show('info', {
             payload: {
               type: 'error',
+              errorType: response.data.type,
               message: response.data.errMsg ? response.data.errMsg : '추가질의를 가져오지 못했어요.',
               description: response.data.errMsgDtl ? response.data.errMsgDtl : '',
               buttontext: '확인하기',
@@ -374,6 +375,9 @@ const GainsTaxChat = () => {
       };
     }
   };
+
+
+
 
   const processItem = async (chatList, item, item2) => {
     if (item2?.select) {
@@ -461,7 +465,7 @@ const GainsTaxChat = () => {
           const chat9 = gainTax.find(el => el.id === 'ExpenseInquiry');
           const chat10 = gainTax.find(el => el.id === 'ExpenseAnswer');
           if (additionalQuestion.returndata) {
-            if (additionalQuestion.detaildata?.hasNextQuestion === true) {
+            if (additionalQuestion.detaildata?.hasNextQuestion ) {
               if (additionalQuestion.detaildata?.nextQuestionId === 'Q_0004') {
                 let chatIndex = gainTax.findIndex(el => el.id === 'additionalQuestion2');
                 if (chatIndex !== -1) {
@@ -476,7 +480,7 @@ const GainsTaxChat = () => {
                 const additionalQuestion2 = await getadditionalQuestion(additionalQuestion.detaildata?.nextQuestionId, '' ? additionalQuestion.detaildata?.selectSelectList.answerValue : '02', houseInfo?.houseId, houseInfo?.sellDate, houseInfo?.sellAmount);
                 //     console.log('additionalQuestion2', additionalQuestion2);
                 if (additionalQuestion2.returndata) {
-                  if (additionalQuestion2.detaildata?.hasNextQuestion === true) {
+                  if (additionalQuestion2.detaildata?.hasNextQuestion ) {
                     if (additionalQuestion2.detaildata?.nextQuestionId === 'Q_0005') {
                       let chatIndex = gainTax.findIndex(el => el.id === 'residenceperiod');
                       if (chatIndex !== -1) {
@@ -574,7 +578,7 @@ const GainsTaxChat = () => {
           const chat9 = gainTax.find(el => el.id === 'ExpenseInquiry');
           const chat10 = gainTax.find(el => el.id === 'ExpenseAnswer');
           if (additionalQuestion.returndata) {
-            if (additionalQuestion.detaildata?.hasNextQuestion === true) {
+            if (additionalQuestion.detaildata?.hasNextQuestion ) {
               if (additionalQuestion.detaildata?.nextQuestionId === 'Q_0008') {
                 let chatIndex = gainTax.findIndex(el => el.id === 'additionalQuestion');
                 //  let chatIndex2 = gainTax.findIndex(el => el.id === 'additionalQuestion2');
@@ -612,7 +616,7 @@ const GainsTaxChat = () => {
                 const additionalQuestion2 = await getadditionalQuestion(additionalQuestion.detaildata?.nextQuestionId, '' ? additionalQuestion.detaildata?.selectSelectList.answerValue : '02', houseInfo?.houseId, houseInfo?.sellDate, houseInfo?.sellAmount);
                 //     console.log('additionalQuestion2', additionalQuestion2);
                 if (additionalQuestion2.returndata) {
-                  if (additionalQuestion2.detaildata?.hasNextQuestion === true) {
+                  if (additionalQuestion2.detaildata?.hasNextQuestion ) {
                     if (additionalQuestion2.detaildata?.nextQuestionId === 'Q_0005') {
                       let chatIndex = gainTax.findIndex(el => el.id === 'residenceperiod');
                       if (chatIndex !== -1) {
@@ -696,6 +700,166 @@ const GainsTaxChat = () => {
     }
   }
 
+  const processItem0 = async (chatDataList, myChatItem) => {
+
+    const additionalQuestion = await getadditionalQuestion('', '', houseInfo?.houseId, houseInfo?.sellDate, houseInfo?.sellAmount);
+    //console.log('additionalQuestion', additionalQuestion);
+    //console.log('additionalQuestion?.detaildata?.answerSelectList[0]?.answerValue', additionalQuestion?.detaildata?.answerSelectList[0]?.answerValue);
+    //console.log('additionalQuestion?.detaildata?.answerSelectList[0]?.answerContent', additionalQuestion?.detaildata?.answerSelectList[0]?.answerContent);
+
+    let chat7;
+    let chat11;
+    const chat9 = gainTax.find(el => el.id === 'ExpenseInquiry');
+    const chat10 = gainTax.find(el => el.id === 'ExpenseAnswer');
+    if (additionalQuestion.returndata) {
+      if (additionalQuestion.detaildata?.hasNextQuestion ) {
+        if (additionalQuestion.detaildata?.nextQuestionId === 'Q_0001') {
+          let chatIndex = gainTax.findIndex(el => el.id === 'additionalQuestion');
+          if (chatIndex !== -1) {
+            chat7 = {
+              ...gainTax[chatIndex],
+              message: additionalQuestion.detaildata?.nextQuestionContent,
+              questionId: additionalQuestion.detaildata?.nextQuestionId,
+              select: gainTax[chatIndex].select.map(item => ({
+                ...item,
+                name: item.id === 'additionalQuestionY' ? additionalQuestion?.detaildata?.answerSelectList[0]?.answerContent : additionalQuestion?.detaildata?.answerSelectList[1]?.answerContent,
+                answer: item.id === 'additionalQuestionY' ? additionalQuestion?.detaildata?.answerSelectList[0]?.answerValue : additionalQuestion?.detaildata?.answerSelectList[1]?.answerValue,
+              }))
+            };
+
+          }
+          dispatch(
+            setChatDataList([
+              ...chatDataList,
+              myChatItem,
+              chat7
+            ])
+          );
+        } else if (additionalQuestion.detaildata?.nextQuestionId === 'Q_0004') {
+
+
+
+          let chatIndex = gainTax.findIndex(el => el.id === 'additionalQuestion2');
+          if (chatIndex !== -1) {
+            chat7 = {
+              ...gainTax[chatIndex],
+              message: additionalQuestion.detaildata?.nextQuestionContent,
+              questionId: additionalQuestion.detaildata?.nextQuestionId,
+              answer: additionalQuestion.detaildata?.selectSelectList ? additionalQuestion.detaildata?.selectSelectList.answerValue : null,
+            };
+          }
+
+          const additionalQuestion2 = await getadditionalQuestion(additionalQuestion.detaildata?.nextQuestionId, '' ? additionalQuestion.detaildata?.selectSelectList.answerValue : '02', houseInfo?.houseId, houseInfo?.sellDate, houseInfo?.sellAmount);
+          //console.log('additionalQuestion2', additionalQuestion2);
+          if (additionalQuestion2.returndata) {
+            if (additionalQuestion2.detaildata?.hasNextQuestion ) {
+              if (additionalQuestion2.detaildata?.nextQuestionId === 'Q_0005') {
+
+                let chatIndex = gainTax.findIndex(el => el.id === 'residenceperiod');
+                if (chatIndex !== -1) {
+                  chat11 = {
+                    ...gainTax[chatIndex],
+                    message: additionalQuestion2.detaildata?.nextQuestionContent,
+                    questionId: additionalQuestion2.detaildata?.nextQuestionId,
+                  };
+
+                } else {
+                  let chatIndex = gainTax.findIndex(el => el.id === 'residenceperiod2');
+                  chat11 = {
+                    ...gainTax[chatIndex],
+                  }
+
+                }
+              }
+            }
+          } else {
+            let tempadditionalAnswerList = houseInfo?.additionalAnswerList;
+            if (tempadditionalAnswerList) {
+              let foundIndex = tempadditionalAnswerList?.findIndex(item => 'Q_0005' in item);
+              if (foundIndex !== -1) {
+                // 불변성을 유지하면서 Q_0005 값을 삭제
+                tempadditionalAnswerList = tempadditionalAnswerList.filter((_, index) => index !== foundIndex);
+                dispatch(setHouseInfo({ ...houseInfo, additionalAnswerList: tempadditionalAnswerList }));
+              }
+            }
+            const newChatDataList = chatDataList.filter(item => item.id !== 'additionalQuestion2');
+            dispatch(setChatDataList(newChatDataList));
+          }
+          dispatch(
+            setChatDataList([
+              ...chatDataList,
+              myChatItem,
+              chat7,
+              chat11
+            ])
+          );
+        } else if (additionalQuestion.detaildata?.nextQuestionId === 'Q_0008') {
+          let chatIndex = gainTax.findIndex(el => el.id === 'additionalQuestion');
+          //  let chatIndex2 = gainTax.findIndex(el => el.id === 'additionalQuestion2');
+          if (chatIndex !== -1) {
+            chat7 = {
+              ...gainTax[chatIndex],
+              message: additionalQuestion.detaildata?.nextQuestionContent,
+              questionId: additionalQuestion.detaildata?.nextQuestionId,
+              select: gainTax[chatIndex].select.map(item => ({
+                ...item,
+                name: item.id === 'additionalQuestionY' ? additionalQuestion?.detaildata?.answerSelectList[0]?.answerContent : additionalQuestion?.detaildata?.answerSelectList[1]?.answerContent,
+                answer: item.id === 'additionalQuestionY' ? additionalQuestion?.detaildata?.answerSelectList[0]?.answerValue : additionalQuestion?.detaildata?.answerSelectList[1]?.answerValue,
+                //select: ['additionalQuestion'],
+              }))
+            };
+
+          }
+          dispatch(
+            setChatDataList([
+              ...chatDataList,
+              myChatItem,
+              chat7
+            ])
+          );
+
+        }
+
+      } else {
+        if (additionalQuestion.detaildata?.answerSelectList === null && additionalQuestion.detaildata?.nextQuestionContent === null) {
+          dispatch(
+            setHouseInfo({
+              ...houseInfo,
+              additionalAnswerList: []
+            })
+          );
+        }
+        dispatch(
+          setChatDataList([
+            ...chatDataList,
+            myChatItem,
+            chat9,
+            chat10
+          ])
+        );
+
+      }
+    } else {
+      dispatch(
+        setHouseInfo({
+          ...houseInfo,
+          additionalAnswerList: []
+        })
+      );
+    }
+
+
+
+
+
+    /*const chat2 = acquisitionTax.find(el => el.id === 'moreHouse');
+    dispatch(
+      setChatDataList([...chatDataList, chat1, chat2]),
+    );*/
+
+
+
+  }
 
   const handleNetInfoChange = (state) => {
     return new Promise((resolve, reject) => {
@@ -779,6 +943,8 @@ const GainsTaxChat = () => {
       sellPrice: houseInfo.sellAmount === undefined ? '' : houseInfo.sellAmount,
       necExpensePrice: houseInfo.necessaryExpense === undefined ? '' : houseInfo.necessaryExpense,
       isWWLandLord: houseInfo.isLandlord === undefined ? '' : houseInfo.isLandlord,
+      userProportion: houseInfo.userProportion === undefined ? '' : houseInfo.userProportion,
+      ownerCnt: houseInfo.ownerCnt === undefined ? '' : houseInfo.ownerCnt,
       //stayPeriodYear : houseInfo.livePeriodYear === undefined ? '' : houseInfo.livePeriodYear,
       //stayPeriodMonth : houseInfo.livePeriodMonth === undefined ? '' : houseInfo.livePeriodMonth,
       //additionalAnswer : null,
@@ -786,6 +952,7 @@ const GainsTaxChat = () => {
       //planAnswer : houseInfo.planAnswer === undefined ? '' : houseInfo.planAnswer
     };
 
+    console.log('양도소득세 파라미터 data:', data);
     const headers = {
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${currentUser.accessToken}`
@@ -794,13 +961,14 @@ const GainsTaxChat = () => {
       .post(`${Config.APP_API_URL}calculation/sellResult`, data, { headers: headers })
       .then(response => {
 
-        //console.log('양도소득세 계산 중:', response.data);
+        console.log('양도소득세 계산 중:', response.data);
         // 성공적인 응답 처리
 
         if (response.data.errYn === 'Y') {
           SheetManager.show('info', {
             payload: {
               type: 'error',
+              errorType: response.data.type,
               message: response.data.errMsg ? response.data.errMsg : '양도소득세 계산 중 오류가 발생했어요.',
               description: response.data.errMsgDtl ? response.data.errMsgDtl : null,
               closeSheet: true,
@@ -1048,7 +1216,7 @@ const GainsTaxChat = () => {
                         ?.name
                     }
                   </Text>
-                  {houseInfo?.houseType !== '3' && houseInfo?.isMoveInRight === true &&
+                  {houseInfo?.houseType !== '3' && houseInfo?.isMoveInRight  &&
                     <Text style={{
                       fontSize: 9,
                       fontFamily: 'Pretendard-Medium',
@@ -1065,7 +1233,7 @@ const GainsTaxChat = () => {
                     width: 'auto',
                     height: 22,
                     backgroundColor: HOUSE_TYPE.find(
-                      el => el.id === (houseInfo.isMoveInRight === true ? 'isMoveInRight' : ''),
+                      el => el.id === (houseInfo.isMoveInRight  ? 'isMoveInRight' : ''),
                     )?.color,
                     borderRadius: 11,
                     alignItems: 'center',
@@ -1082,7 +1250,7 @@ const GainsTaxChat = () => {
                       letterSpacing: -0.5,
                     }}>
                     {
-                      HOUSE_TYPE.find(el => el.id === (houseInfo.isMoveInRight === true ? 'isMoveInRight' : ''))
+                      HOUSE_TYPE.find(el => el.id === (houseInfo.isMoveInRight  ? 'isMoveInRight' : ''))
                         ?.name
                     }
                   </Text>
@@ -1360,9 +1528,9 @@ const GainsTaxChat = () => {
                           };
 
                           const chatList = [];
-                          //   console.log('item', item);
-                          //    console.log('item2', item2);
-                          //   console.log('item2.select', item2.select);
+                          console.log('item', item);
+                          console.log('item2', item2);
+                          console.log('item2.select', item2.select);
 
                           await processItem(chatList, item, item2);
                           await processItem2(chatList, index, item, item2);
@@ -1392,13 +1560,19 @@ const GainsTaxChat = () => {
                           if (
                             item.id === 'contractDateSystem' ||
                             item.id === 'sellDateSystem' ||
-                            item.id === 'sellAmountSystem'
+                            item.id === 'sellAmountSystem' ||
+                            item.id === 'ExpenseAnswer'
                           ) {
                             //     ////console.log('contractDateSystem');
-                          } else if (item.id === 'ExpenseAnswer') {
-                            //     ////console.log('ExpenseAnswer');
                           } else if ((item.id === 'residenceperiod' || item.id === 'residenceperiod2') && item2.id === 'directlivePeriod') {
                             //    ////console.log('directlivePeriod');
+                          } else if ((item.id === 'jointGain')) {
+                            dispatch(
+                              setChatDataList([
+                                ...chatDataList,
+                                myChatItem,
+                              ]),
+                            );
                           } else {
                             //    ////console.log('chatList', chatList);
                             dispatch(
@@ -1456,20 +1630,24 @@ const GainsTaxChat = () => {
                               navigation.push('CertificationGains', { data: item2.id, index, isGainsTax: true, currentPageIndex: 2 });
                             };
                           }
+
+                          if (item2.id === 'only' && item2.type === 'my') {
+                            console.log('only');
+                            dispatch(
+                              setHouseInfo({
+                                ...houseInfo,
+                                ownerCnt: 1,
+                                userProportion: 100,
+                              }),
+                            );
+
+                            await processItem0(chatDataList, myChatItem);
+                          }
+
+
                           //  ////console.log('item2?.openSheet : ', item2?.openSheet)
                           if (item2?.openSheet) {
-                            if (item2?.id === 'ok' && item2?.chungYackYn === true) {
-                              SheetManager.show(item2.openSheet, {
-                                payload: {
-                                  navigation: navigation,
-                                  data: item2.id,
-                                  isGainsTax: true,
-                                  currentPageIndex: item2?.currentPageIndex,
-                                  index,
-                                  chungYackYn: item2?.chungYackYn,
-                                },
-                              });
-                            } else if (item2?.id === 'ok' && item2?.chungYackYn === false) {
+                            if (item2?.id === 'ok' && item2?.chungYackYn) {
                               SheetManager.show(item2.openSheet, {
                                 payload: {
                                   navigation: navigation,

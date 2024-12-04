@@ -287,18 +287,18 @@ const ConfirmSheet = props => {
                   <HoustInfoBadgeText >
                     {HOUSE_TYPE.find(el => el.id === houseInfo?.houseType)?.name}
                   </HoustInfoBadgeText>
-                  {(houseInfo?.houseType !== '3' &&  houseInfo?.isMoveInRight === true) && <HoustInfoBadgeText  style={{fontSize: 8}}>
+                  {(houseInfo?.houseType !== '3' &&  houseInfo?.isMoveInRight) && <HoustInfoBadgeText  style={{fontSize: 8}}>
                     {'(입주권)'}
                   </HoustInfoBadgeText>}
                 </HoustInfoBadge>
                 {/*(houseInfo?.houseType !== '3' && houseInfo?.isMoveInRight) && <HoustInfoBadge
                   style={{
                     backgroundColor: HOUSE_TYPE.find(
-                      el => el.id === houseInfo?.isMoveInRight === true ? 'isMoveInRight' : '',
+                      el => el.id === houseInfo?.isMoveInRight ? 'isMoveInRight' : '',
                     )?.color,
                   }}>
                   <HoustInfoBadgeText>
-                    {HOUSE_TYPE.find(el => el.id === houseInfo?.isMoveInRight === true ? 'isMoveInRight' : '')?.name}
+                    {HOUSE_TYPE.find(el => el.id === houseInfo?.isMoveInRight ? 'isMoveInRight' : '')?.name}
                   </HoustInfoBadgeText>
                 </HoustInfoBadge>*/}
               </View>

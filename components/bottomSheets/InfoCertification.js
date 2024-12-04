@@ -264,6 +264,8 @@ const InfoCertification = props => {
                 await SheetManager.show('info', {
                   payload: {
                     type: 'error',
+                    errorType: response.data.type,
+                    navigation: navigation,
                     message: response.data.errMsg ? response.data.errMsg : '청약홈 인증 중\n오류가 발생했어요.\n입력하신 정보를 다시 확인해주세요.',
                     description: response.data?.errMsgDtl ? response.data?.errMsgDtl : '',
                     buttontext: '다시 확인하기',
@@ -277,6 +279,8 @@ const InfoCertification = props => {
                 await SheetManager.show('info', {
                   payload: {
                     type: 'error',
+                    errorType: response.data.type,
+                    navigation: navigation,
                     message: response.data.errMsg ? response.data.errMsg : '청약홈 인증 중\n오류가 발생했어요.\n입력하신 정보를 다시 확인해주세요.',
                     description: response.data?.errMsgDtl ? response.data?.errMsgDtl : '',
                     buttontext: '다시 확인하기',
@@ -290,6 +294,8 @@ const InfoCertification = props => {
                 await SheetManager.show('info', {
                   payload: {
                     type: 'error',
+                    errorType: response.data.type,
+                    navigation: navigation,
                     message: response.data.errMsg ? response.data.errMsg : '청약홈 인증 중\n오류가 발생했어요.\n입력하신 정보를 다시 확인해주세요.',
                     description: response.data?.errMsgDtl ? response.data?.errMsgDtl : '',
                     buttontext: '다시 확인하기',
@@ -302,6 +308,8 @@ const InfoCertification = props => {
                 await SheetManager.show('info', {
                   payload: {
                     type: 'error',
+                    errorType: response.data.type,
+                    navigation: navigation,
                     message: response.data.errMsg ? response.data.errMsg : '청약홈 정보를 불러오는 중\n오류가 발생했어요.\n인증을 다시 진행해주세요.',
                     description: response.data?.errMsgDtl ? response.data?.errMsgDtl : '',
                     buttontext: '인증하기',
@@ -315,6 +323,7 @@ const InfoCertification = props => {
                 await SheetManager.show('info', {
                   payload: {
                     type: 'error',
+                    errorType: response.data.type,
                     message: response.data.errMsg ? response.data.errMsg : '청약홈 인증 결과\n청약통장을 보유하고 있지 않으시군요.\n보유주택을 직접 등록해주세요.',
                     description: response.data?.errMsgDtl ? response.data?.errMsgDtl : '',
                     buttontext: '직접 등록하기',
@@ -326,7 +335,7 @@ const InfoCertification = props => {
                 // 네트워크가 연결되어 있을 때만 updateHouseDetailName() 함수를 실행합니다.
                 if (networkState.isConnected) {
                   navigation.push('DirectRegister', {
-                    prevChat: props?.payload?.isGainsTax ? props?.payload?.isGainsTax == true ? 'GainsTax' : 'AcquisitionChat' : '',
+                    prevChat: props?.payload?.isGainsTax ? props?.payload?.isGainsTax ? 'GainsTax' : 'AcquisitionChat' : '',
                     index: props?.payload?.index,
                     certError: true,
                   });
@@ -339,6 +348,8 @@ const InfoCertification = props => {
               await SheetManager.show('info', {
                 payload: {
                   type: 'error',
+                  errorType: response.data.type,
+                  navigation: navigation,
                   message: response.data.errMsg ? response.data.errMsg : '청약홈 정보를 불러오는 중\n오류가 발생했어요.\n인증을 다시 진행해주세요.',
                   description: response.data?.errMsgDtl ? response.data?.errMsgDtl : '',
                   buttontext: '인증하기',
@@ -353,6 +364,8 @@ const InfoCertification = props => {
             await SheetManager.show('info', {
               payload: {
                 type: 'error',
+                errorType: response.data.type,
+                navigation: navigation,
                 message: response.data.errMsg ? response.data.errMsg : '청약홈 인증 결과\n청약통장을 보유하고 있지 않으시군요.\n보유주택을 직접 등록해주세요.',
                 description: response.data?.errMsgDtl ? response.data?.errMsgDtl : '',
                 buttontext: '직접 등록하기',
@@ -364,7 +377,7 @@ const InfoCertification = props => {
             // 네트워크가 연결되어 있을 때만 updateHouseDetailName() 함수를 실행합니다.
             if (networkState.isConnected) {
               navigation.push('DirectRegister', {
-                prevChat: props?.payload?.isGainsTax ? props?.payload?.isGainsTax == true ? 'GainsTax' : 'AcquisitionChat' : '',
+                prevChat: props?.payload?.isGainsTax ? props?.payload?.isGainsTax ? 'GainsTax' : 'AcquisitionChat' : '',
                 index: props?.payload?.index,
                 certError: true,
               });
@@ -375,6 +388,8 @@ const InfoCertification = props => {
             await SheetManager.show('info', {
               payload: {
                 type: 'error',
+                errorType: response.data.type,
+                navigation: navigation,
                 message: response.data.errMsg ? response.data.errMsg : '청약홈 인증 중\n오류가 발생했어요.\n입력하신 정보를 다시 확인해주세요.',
                 description: response.data?.errMsgDtl ? response.data?.errMsgDtl : '',
                 buttontext: '다시 확인하기',
@@ -387,6 +402,8 @@ const InfoCertification = props => {
             await SheetManager.show('info', {
               payload: {
                 type: 'error',
+                errorType: response.data.type,
+                navigation: navigation,
                 message: '본인인증 중 오류가 발생했습니다.\n입력하신 정보를 다시 확인해주세요.',
                 description: response.data.errMsg ? response.data.errMsg : '',
                 buttontext: '다시 확인하기',
@@ -401,6 +418,8 @@ const InfoCertification = props => {
               await SheetManager.show('info', {
                 payload: {
                   type: 'error',
+                  errorType: response.data.type,
+                  navigation: navigation,
                   message: response.data.errMsg ? response.data.errMsg : '청약홈에서 정보를 불러오는 중\n오류가 발생했어요.\n인증을 다시 진행해주세요.',
                   description: response.data?.errMsgDtl ? response.data?.errMsgDtl : null,
                   buttontext: '확인하기',
@@ -420,6 +439,8 @@ const InfoCertification = props => {
                 await SheetManager.show('info', {
                   payload: {
                     type: 'error',
+                    errorType: response.data.type,
+                    navigation: navigation,
                     message: response.data.errMsg ? response.data.errMsg : '청약홈 인증 중\n오류가 발생했어요.\n입력하신 정보를 다시 확인해주세요.',
                     description: response.data?.errMsgDtl ? response.data?.errMsgDtl : '',
                     buttontext: '다시 확인하기',
@@ -433,6 +454,7 @@ const InfoCertification = props => {
                 await SheetManager.show('info', {
                   payload: {
                     type: 'error',
+                    errorType: response.data.type,
                     message: response.data.errMsg ? response.data.errMsg : '청약홈 인증 결과\n청약통장을 보유하고 있지 않으시군요.\n보유주택을 직접 등록해주세요.',
                     description: response.data?.errMsgDtl ? response.data?.errMsgDtl : '',
                     buttontext: '직접 등록하기',
@@ -444,7 +466,7 @@ const InfoCertification = props => {
                 // 네트워크가 연결되어 있을 때만 updateHouseDetailName() 함수를 실행합니다.
                 if (networkState.isConnected) {
                   navigation.push('DirectRegister', {
-                    prevChat: props?.payload?.isGainsTax ? props?.payload?.isGainsTax == true ? 'GainsTax' : 'AcquisitionChat' : '',
+                    prevChat: props?.payload?.isGainsTax ? props?.payload?.isGainsTax ? 'GainsTax' : 'AcquisitionChat' : '',
                     index: props?.payload?.index,
                     certError: true,
                   });
@@ -457,6 +479,8 @@ const InfoCertification = props => {
               await SheetManager.show('info', {
                 payload: {
                   type: 'error',
+                  errorType: response.data.type,
+                  navigation: navigation,
                   message: response.data.errMsg ? response.data.errMsg : '청약홈 정보를 불러오는 중\n오류가 발생했어요.\n인증을 다시 진행해주세요.',
                   description: response.data?.errMsgDtl ? response.data?.errMsgDtl : '',
                   buttontext: '인증하기',
@@ -471,6 +495,8 @@ const InfoCertification = props => {
             await SheetManager.show('info', {
               payload: {
                 type: 'error',
+                errorType: response.data.type,
+                navigation: navigation,
                 message: response.data.errMsg ? response.data.errMsg : '청약홈 인증 결과\n청약통장을 보유하고 있지 않으시군요.\n보유주택을 직접 등록해주세요.',
                 description: response.data?.errMsgDtl ? response.data?.errMsgDtl : '',
                 buttontext: '직접 등록하기',
@@ -483,7 +509,7 @@ const InfoCertification = props => {
             // 네트워크가 연결되어 있을 때만 updateHouseDetailName() 함수를 실행합니다.
             if (networkState.isConnected) {
               navigation.push('DirectRegister', {
-                prevChat: props?.payload?.isGainsTax ? props?.payload?.isGainsTax == true ? 'GainsTax' : 'AcquisitionChat' : '',
+                prevChat: props?.payload?.isGainsTax ? props?.payload?.isGainsTax ? 'GainsTax' : 'AcquisitionChat' : '',
                 index: props?.payload?.index,
                 certError: true,
               });
@@ -494,6 +520,8 @@ const InfoCertification = props => {
             await SheetManager.show('info', {
               payload: {
                 type: 'error',
+                errorType: response.data.type,
+                navigation: navigation,
                 message: '본인인증 중 오류가 발생했습니다.\n입력하신 정보를 다시 확인해주세요.',
                 description: response.data.errMsg ? response.data.errMsg : '',
                 buttontext: '다시 확인하기',
@@ -508,6 +536,8 @@ const InfoCertification = props => {
               await SheetManager.show('info', {
                 payload: {
                   type: 'error',
+                  errorType: response.data.type,
+                  navigation: navigation,
                   message: response.data.errMsg ? response.data.errMsg : '청약홈에서 정보를 불러오는 중\n오류가 발생했어요.\n인증을 다시 진행해주세요.',
                   description: response.data?.errMsgDtl ? response.data?.errMsgDtl : null,
                   buttontext: '확인하기',
@@ -542,7 +572,7 @@ const InfoCertification = props => {
                     list
                   ));
                 // console.log('[hypenHouseAPI] props.payload?.isGainsTax:', props.payload?.isGainsTax);
-                navigation.push('FixedHouseList', { isGainsTax: props.payload?.isGainsTax === true ? true : false, chatListindex: props?.payload?.index });
+                navigation.push('FixedHouseList', { isGainsTax: props.payload?.isGainsTax ? true : false, chatListindex: props?.payload?.index });
               }, 300);
               return false;
             } else {
@@ -566,16 +596,21 @@ const InfoCertification = props => {
             }
           } else {
             dispatch(setResend(false));
-            const getEtcHouseReturn = await getEtcHouse();
-            if (getEtcHouseReturn === 'getEtcHouseNull') {
-              dispatch(setOwnHouseList([]));
-              return true;
-            } else if (getEtcHouseReturn === 'getEtcHouse') {
-              navigation.navigate('AddHouseList', { chatListindex: props?.payload?.index });
-              return false;
-            } else if (getEtcHouseReturn === 'getEtcHouseFailed') {
-              return false;
-            }
+
+            const registerDirectHouseResult = await registerDirectHouse([]);
+            if (registerDirectHouseResult) {
+              const getEtcHouseReturn = await getEtcHouse();
+              if (getEtcHouseReturn === 'getEtcHouseNull') {
+                return true;
+              } else if (getEtcHouseReturn === 'getEtcHouse') {
+                navigation.navigate('AddHouseList', { chatListindex: props?.payload?.index });
+                return false;
+              } else if (getEtcHouseReturn === 'getEtcHouseFailed') {
+                return false;
+              }
+          } else {
+            return false;
+          }
 
           }
 
@@ -626,6 +661,7 @@ const InfoCertification = props => {
       userId: id,
       userPw: password,
       calcType: calcType,
+      isDummy: false
     };
     console.log('certdata : ', data);
     try {
@@ -684,6 +720,8 @@ const InfoCertification = props => {
             SheetManager.show('info', {
               payload: {
                 type: 'error',
+                errorType: response.data.type,
+                navigation: navigation,
                 message: response.data.errMsg ? response.data.errMsg : '보유주택 수정·등록 중 오류가 발생했습니다.',
                 description: response.data.errMsgDtl ? response.data.errMsgDtl : '',
                 buttontext: '확인하기',
@@ -730,6 +768,8 @@ const InfoCertification = props => {
         await SheetManager.show('info', {
           payload: {
             type: 'error',
+            errorType: response.data.type,
+            navigation: navigation,
             message: response.data.errMsg ? response.data.errMsg : '기타 재산세 보유주택을 불러오는데 문제가 발생했어요.',
             description: response.data.errMsgDtl ? response.data.errMsgDtl : '',
             buttontext: '확인하기',
@@ -888,7 +928,7 @@ const InfoCertification = props => {
               dispatch(setResend(false));
 
             }}>
-            {(ActiveYN === true) && <CloseIcon width={16} height={16} />}
+            {(ActiveYN) && <CloseIcon width={16} height={16} />}
           </Pressable>
         </ModalHeader>
       }

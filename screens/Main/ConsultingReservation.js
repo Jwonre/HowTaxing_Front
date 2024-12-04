@@ -466,7 +466,7 @@ const ConsultingReservation = () => {
   };
 
   useEffect(() => {
-    if (currentPageIndex === 2) {
+    if (currentPageIndex === 0) {
       getDateTimelist('1', '');
     }
 
@@ -496,7 +496,7 @@ const ConsultingReservation = () => {
     if (selectedDate && currentPageIndex === 3) {
       console.log('selectedDate', selectedDate);
       getDateTimelist('2', selectedDate);
-    }
+    } 
     //console.log('timeList', timeList);
   }, [selectedDate, currentPageIndex]);
 
@@ -520,12 +520,13 @@ const ConsultingReservation = () => {
       .get(url,
         { headers: headers }
       )
-      .then(response => {
+      .then(async response => {
         console.log('response.data.dateList', response.data.dateList ? response.data.dateList : []);
         if (response.data.errYn === 'Y') {
           SheetManager.show('info', {
             payload: {
               type: 'error',
+              errorType: response.data.type,
               message: response.data.errMsg ? response.data.errMsg : '상담 가능 일정을 불러오는데 문제가 발생했어요.',
               description: response.data.errMsgDtl ? response.data.errMsgDtl : '',
               buttontext: '확인하기',
@@ -545,14 +546,17 @@ const ConsultingReservation = () => {
               console.log('new Date(list[0]):', new Date(list[0]));
               setDataList([...list]);
             } else {
-              SheetManager.show('info', {
-                payload: {
-                  type: 'info',
-                  message: '앗, 현재 예약가능한 날짜가 없어요.\n나중에 다시 시도해주세요.',
-                  buttontext: '확인하기',
-                },
-              });
-              navigation.navigate('Home');
+              setTimeout(async () => {
+                await SheetManager.show('info', {
+                  payload: {
+                    type: 'info',
+                    errorType: 1,
+                    message: '앗, 현재 예약가능한 날짜가 없어요.\n나중에 다시 시도해주세요.',
+                    buttontext: '확인하기',
+                  },
+                });
+                navigation.goBack();
+              }, 300);
             }
 
           } else if (searchType === "2") {
@@ -632,11 +636,12 @@ const ConsultingReservation = () => {
               await SheetManager.show('info', {
                 payload: {
                   type: 'info',
+                  errorType: 1,
                   message: '앗, 현재 모든 예약이 완료되었어요.\n나중에 다시 시도해주세요.',
                   buttontext: '확인하기',
                 },
               });
-              navigation.navigate('Home');
+              navigation.goBack();
             } else {
               await getDateTimelist('2', selectedDate);
               setSelectedList([]);
@@ -646,6 +651,7 @@ const ConsultingReservation = () => {
           await SheetManager.show('info', {
             payload: {
               type: 'error',
+              errorType: response.data.type,
               message: response.data.errMsg ? response.data.errMsg : '상담 예약 중 오류가 발생했어요.',
               description: response.data.errMsgDtl ? response.data.errMsgDtl : '',
               buttontext: '확인하기',
@@ -654,7 +660,7 @@ const ConsultingReservation = () => {
         }
         return false;
       } else {
-        if (response.data.data && response.data.data.isApplyComplete === true) {
+        if (response.data.data && response.data.data.isApplyComplete ) {
           const result = response.data.data;
           await SheetManager.show('InfoConsulting', {
             payload: {

@@ -366,6 +366,7 @@ const OwnedHouseDetail = props => {
         SheetManager.show('info', {
           payload: {
             type: 'error',
+            errorType: response.data.type,
             message: response.data.errMsg ? response.data.errMsg : '보유주택 수정 중 오류가 발생했어요.',
             description: response.data.errMsgDtl ? response.data.errMsgDtl : null,
             buttontext: '확인하기',
@@ -420,6 +421,7 @@ const OwnedHouseDetail = props => {
         SheetManager.show('info', {
           payload: {
             type: 'error',
+            errorType: response.data.type,
             message: response.data.errMsg ? response.data.errMsg : '보유주택 상세조회 중 오류가 발생했어요.',
             description: response.data.errMsgDtl ? response.data.errMsgDtl : null,
             buttontext: '확인하기',
@@ -993,18 +995,18 @@ const OwnedHouseDetail = props => {
                   <HoustInfoBadgeText >
                     {HOUSE_TYPE.find(el => el.id === data?.houseType)?.name}
                   </HoustInfoBadgeText>
-                  {(data?.houseType !== '3' && data?.isMoveInRight === true) && <HoustInfoBadgeText style={{ fontSize: 8 }}>
+                  {(data?.houseType !== '3' && data?.isMoveInRight ) && <HoustInfoBadgeText style={{ fontSize: 8 }}>
                     {'(입주권)'}
                   </HoustInfoBadgeText>}
                 </HoustInfoBadge>
                 {/*(data?.houseType !== '3' && data?.isMoveInRight) && <HoustInfoBadge
                   style={{
                     backgroundColor: HOUSE_TYPE.find(
-                      el => el.id === (data?.isMoveInRight === true ? 'isMoveInRight' : ''),
+                      el => el.id === (data?.isMoveInRight  ? 'isMoveInRight' : ''),
                     )?.color,
                   }}>
                   <HoustInfoBadgeText>
-                    {HOUSE_TYPE.find(el => el.id === (data?.isMoveInRight === true ? 'isMoveInRight' : ''))?.name}
+                    {HOUSE_TYPE.find(el => el.id === (data?.isMoveInRight  ? 'isMoveInRight' : ''))?.name}
                   </HoustInfoBadgeText>
                 </HoustInfoBadge>*/}
               </View>
@@ -1146,7 +1148,7 @@ const OwnedHouseDetail = props => {
             {(prevSheet === 'own') && <InfoContentItem>
               <InfoContentLabel >공시가격</InfoContentLabel>
               <InfoContentText >
-                {data?.pubLandPrice ? numberToKorean(Number(data?.pubLandPrice)?.toString()) + '원' : (data?.isPubLandPriceOver100Mil === true ? '1억원 초과' : data?.isPubLandPriceOver100Mil === undefined ? '' : '1억원 이하')}
+                {data?.pubLandPrice ? numberToKorean(Number(data?.pubLandPrice)?.toString()) + '원' : (data?.isPubLandPriceOver100Mil  ? '1억원 초과' : data?.isPubLandPriceOver100Mil === undefined ? '' : '1억원 이하')}
               </InfoContentText>
               <TouchableOpacity activeOpacity={0.6}
                 hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
@@ -1197,7 +1199,7 @@ const OwnedHouseDetail = props => {
                   marginLeft: 'auto',
                 }}>
                 <InfoContentText >
-                  {data?.area ? data?.area + 'm²' : (data?.isAreaOver85 === true ? '국민평형(85m2) 초과' : data?.isAreaOver85 === undefined ? '' : '국민평형(85m2) 이하')}
+                  {data?.area ? data?.area + 'm²' : (data?.isAreaOver85  ? '국민평형(85m2) 초과' : data?.isAreaOver85 === undefined ? '' : '국민평형(85m2) 이하')}
                 </InfoContentText>
               </View>
               <TouchableOpacity activeOpacity={0.6}
@@ -1288,7 +1290,7 @@ const OwnedHouseDetail = props => {
             {(prevSheet === 'own2') && <InfoContentItem>
               <InfoContentLabel >공시가격</InfoContentLabel>
               <InfoContentText >
-                {data?.pubLandPrice ? numberToKorean(Number(data?.pubLandPrice)?.toString()) + '원' : (data?.isPubLandPriceOver100Mil === true ? '1억원 초과' : data?.isPubLandPriceOver100Mil === undefined ? '' : '1억원 이하')}
+                {data?.pubLandPrice ? numberToKorean(Number(data?.pubLandPrice)?.toString()) + '원' : (data?.isPubLandPriceOver100Mil  ? '1억원 초과' : data?.isPubLandPriceOver100Mil === undefined ? '' : '1억원 이하')}
               </InfoContentText>
               <TouchableOpacity activeOpacity={0.6}
                 hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
@@ -1314,7 +1316,7 @@ const OwnedHouseDetail = props => {
                   marginLeft: 'auto',
                 }}>
                 <InfoContentText >
-                  {data?.area ? data?.area + 'm²' : (data?.isAreaOver85 === true ? '국민평형(85m2) 초과' : data?.isAreaOver85 === undefined ? '' : '국민평형(85m2) 이하')}
+                  {data?.area ? data?.area + 'm²' : (data?.isAreaOver85  ? '국민평형(85m2) 초과' : data?.isAreaOver85 === undefined ? '' : '국민평형(85m2) 이하')}
                 </InfoContentText>
               </View>
               <TouchableOpacity activeOpacity={0.6}

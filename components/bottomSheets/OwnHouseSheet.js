@@ -287,7 +287,7 @@ const OwnHouseSheet = props => {
   const { agreePrivacy } = useSelector(
     state => state.cert.value,
   );
-
+  console.log('ownHouseList.length', ownHouseList.length);
   useEffect(() => {
     if (ownHouseList.length > 0 && props.payload.isGainsTax === false) {
       SheetManager.show('InfoOwnHouse', {
@@ -346,6 +346,7 @@ const OwnHouseSheet = props => {
           SheetManager.show('info', {
             payload: {
               type: 'error',
+              errorType: response.data.type,
               message: response.data.errMsg ? response.data.errMsg : '추가질의를 가져오지 못했어요.',
               description: response.data.errMsgDtl ? response.data.errMsgDtl : '',
               buttontext: '확인하기',
@@ -444,7 +445,7 @@ const OwnHouseSheet = props => {
         backgroundColor: '#fff',
         borderTopLeftRadius: 20,
         borderTopRightRadius: 20,
-        height: ownHouseList.length === 0 && ((props.payload?.data === 'ok' && props.payload?.chungYackYn === false) || (props.payload?.data === undefined)) ? 720 : 700,
+        height: ownHouseList.length === 0 && ((props.payload?.data === 'ok' && !props.payload?.chungYackYn) || (props.payload?.data === undefined)) ? 720 : 700,
         width: width,
       }}>
       <SheetContainer width={width}>
@@ -452,10 +453,10 @@ const OwnHouseSheet = props => {
           {ownHouseList.length !== 0 && (<Title >
             보유하신 주택을 모두 불러왔어요.
           </Title>)}
-          {ownHouseList.length === 0 && props.payload?.data === 'ok' && props.payload?.chungYackYn === true && (<Title >
+          {ownHouseList.length === 0 && props.payload?.data === 'ok' && props.payload?.chungYackYn && (<Title >
             청약통장을 가지고 있지 않다면{'\n'}보유주택을 직접 등록해주세요.
           </Title>)}
-          {ownHouseList.length === 0 && ((props.payload?.data === 'ok' && props.payload?.chungYackYn === false) || (props.payload?.data === undefined)) && (<Title >
+          {ownHouseList.length === 0 && ((props.payload?.data === 'ok' && !props.payload?.chungYackYn) || (props.payload?.data === undefined)) && (<Title >
             주택을 불러오지 못했어요.{'\n'}보유주택이 있다면 직접 등록해주세요.
           </Title>)}
 
@@ -528,18 +529,18 @@ const OwnHouseSheet = props => {
                       <TagText >
                         {HOUSE_TYPE.find(color => color.id === item.houseType).name}
                       </TagText>
-                      {(item?.houseType !== '3' && item?.isMoveInRight === true) && <TagText style={{ fontSize: 8 }}>
+                      {(item?.houseType !== '3' && item?.isMoveInRight) && <TagText style={{ fontSize: 8 }}>
                         {'(입주권)'}
                       </TagText>}
                     </Tag>
                     {/*(item.houseType !== '3' && item?.isMoveInRight) && <Tag
                       style={{
                         backgroundColor: HOUSE_TYPE.find(
-                          el => el.id === item.isMoveInRight === true ? 'isMoveInRight' : '',
+                          el => el.id === item.isMoveInRight ? 'isMoveInRight' : '',
                         ).color,
                       }}>
                       <TagText>
-                        {HOUSE_TYPE.find(color => color.id === item.isMoveInRight === true ? 'isMoveInRight' : '').name}
+                        {HOUSE_TYPE.find(color => color.id === item.isMoveInRight ? 'isMoveInRight' : '').name}
                       </TagText>
                     </Tag>*/}
                     <CardTitle >{item.houseName}</CardTitle>
@@ -838,7 +839,7 @@ const OwnHouseSheet = props => {
                 //console.log('additionalQuestion', additionalQuestion);
                 let chat3;
                 if (additionalQuestion.returndata) {
-                  if (additionalQuestion.detaildata?.hasNextQuestion === true) {
+                  if (additionalQuestion.detaildata?.hasNextQuestion) {
                     if (additionalQuestion.detaildata?.nextQuestionId === 'Q_0007') {
                       let chatIndex = acquisitionTax.findIndex(el => el.id === 'additionalQuestion');
                       if (chatIndex !== -1) {

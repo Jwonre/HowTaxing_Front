@@ -193,10 +193,17 @@ const AddMembership = props => {
       const url = `${Config.APP_API_URL}user/idCheck?id=${encodeURIComponent(id)}`;
       console.log('url', url);
       const response = await axios.get(url);
+
       if (response.data.errYn == 'Y') {
-        setIdOk('3');
-        setIdCheckresult(response.data.errMsg ? response.data.errMsg : '로그인 중복체크 중 문제가 생겼어요.');
-        return false;
+        if (input1.length > 0) {
+          setIdOk('3');
+          setIdCheckresult(response.data.errMsg ? response.data.errMsg : '로그인 중복체크 중 문제가 생겼어요.');
+          return false;
+        } else {
+          setIdOk('1');
+          setIdCheckresult('');
+          return false;
+        }
       } else {
         setIdOk('2');
         setIdCheckresult('');
@@ -252,7 +259,9 @@ const AddMembership = props => {
                 if (logincheck) {
                   input2.current.focus();
                 } else {
-                  input1.current.focus();
+                  if (input1.length > 0) {
+                    input1.current.focus();
+                  }
                 }
 
               }
@@ -262,7 +271,9 @@ const AddMembership = props => {
                 if (logincheck) {
                   input2.current.focus();
                 } else {
-                  input1.current.focus();
+                  if (input1.length > 0) {
+                    input1.current.focus();
+                  }
                 }
 
               }

@@ -14,6 +14,9 @@ import com.facebook.react.defaults.DefaultReactNativeHost
 import com.facebook.react.soloader.OpenSourceMergedSoMapping
 import com.facebook.react.uimanager.ViewManager
 import com.facebook.soloader.SoLoader
+import io.xogus.reactnative.versioncheck.RNVersionCheckPackage;
+
+
 class MainApplication : Application(), ReactApplication {
 
   override val reactNativeHost: ReactNativeHost =
@@ -32,6 +35,7 @@ class MainApplication : Application(), ReactApplication {
                 })
               // Packages that cannot be autolinked yet can be added manually here, for example:
               // add(MyReactNativePackage())
+              RNVersionCheckPackage()
             }
 
         override fun getJSMainModuleName(): String = "index"

@@ -286,11 +286,11 @@ const OwnHouseSheet2 = props => {
   const { agreePrivacy } = useSelector(
     state => state.cert.value,
   );
-  console.log('selectedList', selectedList);
-  console.log('props.route?.params?.selectedList', props.route?.params?.selectedList);
+
+
   useEffect(() => {
     console.log('agreePrivacy', agreePrivacy);
-    if (ownHouseList.length > 0 && props?.payload?.isGainsTax === true) {
+    if (ownHouseList.length > 0 && props?.payload?.isGainsTax) {
       SheetManager.show('InfoOwnHouse', {
         payload: {
           message: '주택을 불러오기 전 유의사항이 있어요.',
@@ -338,6 +338,7 @@ const OwnHouseSheet2 = props => {
         SheetManager.show('info', {
           payload: {
             type: 'error',
+            errorType: response.data.type,
             message: response.data.errMsg ? response.data.errMsg : '보유주택의 상세정보를 가져오는데 문제가 발생했어요.',
             description: response.data.errMsgDtl ? response.data.errMsgDtl : '',
             buttontext: '확인하기',
@@ -402,7 +403,7 @@ const OwnHouseSheet2 = props => {
         backgroundColor: '#fff',
         borderTopLeftRadius: 20,
         borderTopRightRadius: 20,
-        height: ownHouseList.length === 0 && ((props.payload?.data === 'ok' && props.payload?.chungYackYn === false) || (props.payload?.data === undefined)) ? 720 : 700,
+        height: ownHouseList.length === 0 && ((props.payload?.data === 'ok' && !props.payload?.chungYackYn) || (props.payload?.data === undefined)) ? 720 : 700,
         width: width,
       }}>
       <SheetContainer width={width}>
@@ -410,10 +411,10 @@ const OwnHouseSheet2 = props => {
           {ownHouseList.length !== 0 && (<Title >
             보유하신 주택을 모두 불러왔어요.{'\n'}매도할 주택을 선택해주세요.
           </Title>)}
-          {ownHouseList.length === 0 && props.payload?.data === 'ok' && props.payload?.chungYackYn === true && (<Title >
+          {ownHouseList.length === 0 && props.payload?.data === 'ok' && props.payload?.chungYackYn && (<Title >
             청약통장을 가지고 있지 않다면{'\n'}보유주택을 직접 등록해주세요.
           </Title>)}
-          {ownHouseList.length === 0 && ((props.payload?.data === 'ok' && props.payload?.chungYackYn === false) || (props.payload?.data === undefined)) && (<Title >
+          {ownHouseList.length === 0 && ((props.payload?.data === 'ok' && !props.payload?.chungYackYn) || (props.payload?.data === undefined)) && (<Title >
             주택을 불러오지 못했어요.{'\n'}보유주택이 있다면 직접 등록해주세요.
           </Title>)}
           <InfoMessage >
@@ -484,18 +485,18 @@ const OwnHouseSheet2 = props => {
                         <TagText >
                           {HOUSE_TYPE.find(color => color.id === item.houseType).name}
                         </TagText>
-                        {(item?.houseType !== '3' && item?.isMoveInRight === true) && <TagText style={{ fontSize: 8 }}>
+                        {(item?.houseType !== '3' && item?.isMoveInRight) && <TagText style={{ fontSize: 8 }}>
                           {'(입주권)'}
                         </TagText>}
                       </Tag>
                       {/*(item.houseType !== '3' &&item?.isMoveInRight) && <Tag
                       style={{
                         backgroundColor: HOUSE_TYPE.find(
-                          el => el.id === (item?.isMoveInRight === true ? 'isMoveInRight' : ''),
+                          el => el.id === (item?.isMoveInRight  ? 'isMoveInRight' : ''),
                         ).color,
                       }}>
                       <TagText>
-                        {HOUSE_TYPE.find(color => color.id === item.isMoveInRight === true ? 'isMoveInRight' : '').name}
+                        {HOUSE_TYPE.find(color => color.id === item.isMoveInRight  ? 'isMoveInRight' : '').name}
                       </TagText>
                     </Tag>*/}
                       <CardTitle >{item.houseName}</CardTitle>
@@ -746,7 +747,7 @@ const OwnHouseSheet2 = props => {
                 //</DropShadow>     item => item.houseId === selectedList[0].houseId,
                 //</SheetContainer>   ),
                 //  );
-                if (ownHouseList?.some(item => item.isRequiredDataMissing === true)) {
+                if (ownHouseList?.some(item => item.isRequiredDataMissing )) {
                   SheetManager.show('info', {
                     payload: {
                       type: 'info',

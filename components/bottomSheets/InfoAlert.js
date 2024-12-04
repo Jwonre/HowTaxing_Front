@@ -7,10 +7,11 @@ import styled from 'styled-components';
 import getFontSize from '../../utils/getFontSize';
 import CloseIcon from '../../assets/icons/close_button.svg';
 import DropShadow from 'react-native-drop-shadow';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { useDispatch, useSelector } from 'react-redux';
 import InfoCircleIcon from '../../assets/icons/info_circle.svg';
 import { setCurrentUser } from '../../redux/currentUserSlice';
+import NetInfo from '@react-native-community/netinfo';
 import { View } from 'react-native-animatable';
 
 
@@ -74,15 +75,36 @@ const KakaoButton = styled.TouchableOpacity.attrs(props => ({
   background-color: #fbe54d;
   align-items: center;
   justify-content: center;
-  margin-top: 20px;
+  margin-top: 15px;
 `;
 
 const KakaoButtonText = styled.Text`
   font-size: 15px;
-  font-family: Pretendard-Regular;
+  font-family: Pretendard-regular;
   color: #3b1f1e;
   line-height: 20px;
 `;
+
+const ConsultingButton = styled.TouchableOpacity.attrs(props => ({
+  activeOpacity: 0.8,
+}))`
+  flex-direction: row;
+  width: 100%;
+  height: 50px;
+  border-radius: 25px;
+  background-color: #2f87ff;
+  align-items: center;
+  justify-content: center;
+  margin-top: 15px;
+`;
+
+const ConsultingButtonText = styled.Text`
+  font-size: 16px;
+  font-family: Pretendard-Bold;
+  color: #fff;
+  line-height: 20px;
+`;
+
 
 const SocialButtonIcon = styled.Image.attrs(props => ({
   resizeMode: 'contain',
@@ -125,12 +147,34 @@ const ButtonText = styled.Text`
 
 
 const InfoAlert = props => {
-  const navigation = useNavigation();
+  const navigation = props.payload?.navigation ? props.payload?.navigation : useNavigation();
   const dispatch = useDispatch();
   const actionSheetRef = useRef(null);
   const { width, height } = useWindowDimensions();
   const [errorMessage, setErrorMessage] = useState('');
   const [buttonText, setButtonText] = useState('자세히');
+  const [isConnected, setIsConnected] = useState(true);
+  const [hasNavigatedBack, setHasNavigatedBack] = useState(false);
+  const hasNavigatedBackRef = useRef(hasNavigatedBack);
+
+
+  const handleNetInfoChange = (state) => {
+    return new Promise((resolve, reject) => {
+      if (!state.isConnected && isConnected) {
+        setIsConnected(false);
+        navigation.push('NetworkAlert', navigation);
+        resolve(false);
+      } else if (state.isConnected && !isConnected) {
+        setIsConnected(true);
+        if (!hasNavigatedBackRef.current) {
+          setHasNavigatedBack(true);
+        }
+        resolve(true);
+      } else {
+        resolve(true);
+      }
+    });
+  };
 
   //////console.log('[InfoAlert] props', props);
 
@@ -154,10 +198,10 @@ const InfoAlert = props => {
             hitSlop={20}
             onPress={() => {
               actionSheetRef.current?.hide();
-              if (props?.payload?.closemodal === true) {
+              if (props?.payload?.closemodal) {
                 props?.payload?.actionSheetRef.current?.hide();
-              } else if (props?.payload?.closeSheet === true) {
-                props?.payload?.navigation.goBack();
+              } else if (props?.payload?.closeSheet) {
+                navigation.goBack();
               }
 
 
@@ -176,7 +220,7 @@ const InfoAlert = props => {
         backgroundColor: '#fff',
         borderTopLeftRadius: 20,
         borderTopRightRadius: 20,
-        height: errorMessage ? props.payload?.prevSheet !== 'Login_ID' ? 490 : 420 : props?.payload?.type === 'error' ? props.payload?.prevSheet !== 'Login_ID' ? 370 : 300 : 300,
+        height: errorMessage ? props.payload?.errorType !== 1 && props.payload?.errorType !== undefined ? 490 : 420 : props?.payload?.type === 'error' ? props.payload?.errorType !== 1 && props.payload?.errorType !== undefined ? 350 : 320 : 280,
         width: width - 40
       }}>
       <SheetContainer width={width}>
@@ -200,16 +244,29 @@ const InfoAlert = props => {
               alignContent: 'center'
             }}
           >
-            {(props?.payload?.type == 'error' && props.payload?.prevSheet !== 'Login_ID') &&
-              <View style={{ justifyContent: 'center', alignItems: 'center' }}>
-                <KakaoButton
-                  onPress={() => Linking.openURL('http://pf.kakao.com/_sxdxdxgG')}>
-                  <SocialButtonIcon
-                    source={require('../../assets/images/socialIcon/kakao_ico.png')}
-                  />
-                  <KakaoButtonText >카카오톡으로 문의하기</KakaoButtonText>
-                </KakaoButton>
-              </View>}
+            {(props?.payload?.errorType === 2) && <View style={{ justifyContent: 'center', alignItems: 'center' }}>
+              <KakaoButton
+                onPress={() => Linking.openURL('http://pf.kakao.com/_sxdxdxgG')}>
+                <SocialButtonIcon
+                  source={require('../../assets/images/socialIcon/kakao_ico.png')}
+                />
+                <KakaoButtonText >카카오톡으로 문의하기</KakaoButtonText>
+              </KakaoButton>
+            </View>}
+            {(props?.payload?.errorType === 3) && <View style={{ justifyContent: 'center', alignItems: 'center' }}>
+              <ConsultingButton
+                onPress={async () => {
+                  const state = await NetInfo.fetch();
+                  const canProceed = await handleNetInfoChange(state);
+                  if (canProceed) {
+                    console.log('push');
+                    actionSheetRef.current?.hide();
+                    await navigation.push('ConsultingReservation');
+                  }
+                }}>
+                <ConsultingButtonText >상담 예약하기</ConsultingButtonText>
+              </ConsultingButton>
+            </View>}
             <View
               style={{
                 flexDirection: 'row',
@@ -259,10 +316,10 @@ const InfoAlert = props => {
                 <Button
                   onPress={() => {
                     actionSheetRef.current?.hide();
-                    if (props?.payload?.closemodal === true) {
+                    if (props?.payload?.closemodal) {
                       props?.payload?.actionSheetRef.current?.hide();
-                    } else if (props?.payload?.closeSheet === true) {
-                      props?.payload?.navigation.goBack();
+                    } else if (props?.payload?.closeSheet) {
+                      navigation.goBack();
                     }
                   }}>
                   <ButtonText >{props?.payload?.buttontext ? props?.payload?.buttontext : '확인하기'}</ButtonText>
@@ -316,7 +373,7 @@ const InfoAlert = props => {
                 <Button
                   onPress={() => {
                     actionSheetRef.current?.hide();
-                    props?.payload?.navigation.navigate('Home');
+                    navigation.navigate('Home');
                   }}>
                   <ButtonText >네</ButtonText>
                 </Button>

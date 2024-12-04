@@ -146,6 +146,7 @@ const Information = props => {
         SheetManager.show('info', {
           payload: {
             type: 'error',
+            errorType: response.data.type,
             message: response.data.errMsg ? response.data.errMsg : '로그아웃에 문제가 발생했어요.',
             description: response.data.errMsgDtl ? response.data.errMsgDtl : null,
             buttontext: '확인하기',

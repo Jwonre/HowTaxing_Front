@@ -224,6 +224,7 @@ const UpdateConsultingContentAlert = props => {
         await SheetManager.show('info', {
           payload: {
             type: 'error',
+            errorType: response.data.type,
             message: response.data.errMsg ? response.data.errMsg : '상담 내용 변경 중 오류가 발생했어요.',
             description: response.data.errMsgDtl ? response.data.errMsgDtl : '',
             buttontext: '확인하기',

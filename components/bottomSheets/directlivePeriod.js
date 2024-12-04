@@ -165,6 +165,7 @@ const directlivePeriod = props => {
           SheetManager.show('info', {
             payload: {
               type: 'error',
+              errorType: response.data.type,
               message: response.data.errMsg ? response.data.errMsg : '추가질의를 가져오지 못했어요.',
               description: response.data.errMsgDtl ? response.data.errMsgDtl : '',
               buttontext: '확인하기',
@@ -265,7 +266,7 @@ const directlivePeriod = props => {
     //console.log('PERIOD_DIAL additionalQuestion', additionalQuestion);
     let chat7;
     if (additionalQuestion.returndata) {
-      if (additionalQuestion.detaildata?.hasNextQuestion === true) {
+      if (additionalQuestion.detaildata?.hasNextQuestion) {
         if (additionalQuestion.detaildata?.nextQuestionId === 'Q_0006') {
           let chatIndex = gainTax.findIndex(el => el.id === 'additionalQuestion');
           if (chatIndex !== -1) {

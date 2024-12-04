@@ -421,6 +421,7 @@ const SearchHouseSheet = props => {
                SheetManager.show('info', {
                  payload: {
                    type: 'error',
+                   errorType: response.data.type,
                    message: parsedData.results.common.errorMessage,
                    description: parsedData.results.common.errorMessage,
                  },
@@ -434,6 +435,7 @@ const SearchHouseSheet = props => {
                SheetManager.show('info', {
                  payload: {
                    type: 'error',
+                   errorType: response.data.type,                   
                    message: '검색 결과가 없습니다.',
                    description: '검색 결과가 없습니다.',
                  },
@@ -477,6 +479,7 @@ const SearchHouseSheet = props => {
           SheetManager.show('info', {
             payload: {
               type: 'error',
+              errorType: response.data.type,
               message: response.data.errMsg ? response.data.errMsg : '주소 검색 중 오류가 발생했어요.',
               description: response.data.errMsgDtl ? response.data.errMsgDtl : '',
               closemodal: true,
@@ -496,6 +499,7 @@ const SearchHouseSheet = props => {
             if (list.length === 0) {
               SheetManager.show('info', {
                 payload: {
+                  errorType: response.data.type,
                   type: 'error',
                   message: '검색 결과가 없어요.',
                   buttontext: '확인하기',
@@ -508,6 +512,7 @@ const SearchHouseSheet = props => {
             SheetManager.show('info', {
               payload: {
                 type: 'error',
+                errorType: response.data.type,
                 message: response.data.errMsg ? response.data.errMsg : '주소 검색 중 오류가 발생했어요.',
                 description: response.data.errMsgDtl ? response.data.errMsgDtl : '',
                 closemodal: true,
@@ -569,6 +574,7 @@ const SearchHouseSheet = props => {
             SheetManager.show('info', {
               payload: {
                 type: 'error',
+                errorType: response.data.type,                
                 message: parsedData.results.common.errorMessage,
                 description: parsedData.results.common.errorMessage,
               },
@@ -582,6 +588,7 @@ const SearchHouseSheet = props => {
             SheetManager.show('info', {
               payload: {
                 type: 'error',
+                errorType: response.data.type,                
                 message: '검색 결과가 없습니다.',
                 description: '검색 결과가 없습니다.',
               },
@@ -624,6 +631,7 @@ const SearchHouseSheet = props => {
           SheetManager.show('info', {
             payload: {
               type: 'error',
+              errorType: response.data.type,
               message: response.data.errMsg ? response.data.errMsg : '주소 검색 중 오류가 발생했어요.',
               description: response.data.errMsgDtl ? response.data.errMsgDtl : '',
               closemodal: true,
@@ -644,6 +652,7 @@ const SearchHouseSheet = props => {
               SheetManager.show('info', {
                 payload: {
                   type: 'error',
+                  errorType: response.data.type,
                   message: '검색 결과가 없어요.',
                   buttontext: '확인하기',
                 },
@@ -655,6 +664,7 @@ const SearchHouseSheet = props => {
             SheetManager.show('info', {
               payload: {
                 type: 'error',
+                errorType: response.data.type,
                 message: response.data.errMsg ? response.data.errMsg : '주소 검색 중 오류가 발생했어요.',
                 description: response.data.errMsgDtl ? response.data.errMsgDtl : '',
                 closemodal: true,
@@ -711,6 +721,7 @@ const SearchHouseSheet = props => {
         SheetManager.show('info', {
           payload: {
             type: 'error',
+            errorType: response.data.type,
             message: response.data.errMsg ? response.data.errMsg : '주택의 호수를 불러오는데 문제가 발생했어요.',
             description: response.data.errMsgDtl ? response.data.errMsgDtl : null,
             closemodal: true,
@@ -772,6 +783,7 @@ const SearchHouseSheet = props => {
         SheetManager.show('info', {
           payload: {
             type: 'error',
+            errorType: response.data.type,
             message: response.data.errMsg ? response.data.errMsg : '주택의 동 목록을 불러오는데 문제가 발생했어요.',
             description: response.data.errMsgDtl ? response.data.errMsgDtl : null,
             closemodal: true,
@@ -852,6 +864,7 @@ const SearchHouseSheet = props => {
         /*SheetManager.show('info', {
           payload: {
             type: 'error',
+            errorType: response.data.type,
             message: response.data.errMsg ? response.data.errMsg : '공시가격과 전용면적을 불러오는데 문제가 발생했어요.',
             description: response.data.errMsgDtl ? response.data.errMsgDtl : '',
             buttontext: '확인하기',
@@ -886,6 +899,7 @@ const SearchHouseSheet = props => {
       /* SheetManager.show('info', {
          payload: {
            type: 'error',
+           errorType: response.data.type,
            message: '공시가격과 전용면적을 불러오는데 실패했어요. ',
            description: response.data.errMsg + ' ' + response.data.errMsgDtl,
            buttontext: '확인하기',
@@ -1127,7 +1141,7 @@ const SearchHouseSheet = props => {
         message:
           props.payload?.data !== 'villa' && props.payload?.data !== 'apartment'
             ? address + ' ' + detailAddress
-            : isDongHoYn === true
+            : isDongHoYn 
               ? (detailAddress2 == '' ? selectedItem?.bdNm + ' ' + (detailAddress2 ? detailAddress2 : detailAddress) : selectedItem?.bdNm)
               : address + ' ' + detailAddress
       };

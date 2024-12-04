@@ -23,7 +23,7 @@ const ModalTitle = styled.Text`
   color: #1b1c1f;
   line-height: 26px;
   text-align: center;
-  margin-top: 20px;
+  margin-top: 15px;
 `;
 
 const ModalDescription = styled.Text`
@@ -115,7 +115,7 @@ const LogOutSheet = props => {
         backgroundColor: '#fff',
         borderTopLeftRadius: 20,
         borderTopRightRadius: 20,
-        height: errorMessage ? 320 : 290,
+        height: errorMessage ? 320 : 280,
         width: width - 40,
       }}>
       <SheetContainer width={width}>

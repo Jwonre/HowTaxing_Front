@@ -202,6 +202,7 @@ const Login = () => {
           SheetManager.show('info', {
             payload: {
               type: 'error',
+              errorType: response.data.type,
               message: '로그인에 실패했습니다.',
               description: response.data.errMsg,
               buttontext: '확인하기',

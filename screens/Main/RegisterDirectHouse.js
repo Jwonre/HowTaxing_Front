@@ -453,6 +453,7 @@ const RegisterDirectHouse = props => {
             SheetManager.show('info', {
               payload: {
                 type: 'error',
+                errorType: response.data.type,
                 message: response.data.errMsg ? response.data.errMsg : '주택 등록 중 오류가 발생했습니다.',
                 description: response.data.errMsgDtl ? response.data.errMsgDtl : '',
                 buttontext: '확인하기',
