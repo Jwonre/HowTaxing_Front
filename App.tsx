@@ -93,7 +93,7 @@ const App = () => {
 
     console.log('currentVersion', currentVersion);
     console.log('latestVersion', latestVersion);
-    if (currentVersion !== latestVersion) {
+    if (currentVersion < latestVersion) {
       setUpdateCheck(true);
     } else {
       setUpdateCheck(false);
