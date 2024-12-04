@@ -232,6 +232,7 @@ const UpdateConsultingDateAndTimeAlert = props => {
           SheetManager.show('info', {
             payload: {
               type: 'error',
+              errorType: response.data.type,
               message: response.data.errMsg ? response.data.errMsg : '상담 가능 일정을 불러오는데 문제가 발생했어요.',
               description: response.data.errMsgDtl ? response.data.errMsgDtl : '',
               buttontext: '확인하기',
@@ -240,15 +241,27 @@ const UpdateConsultingDateAndTimeAlert = props => {
           return;
         } else {
           if (searchType === "1") {
-            //console.log('response.data', response.data.data);
-            //console.log('response.data.dateList', response.data.data.dateList);
-            const result = response === undefined ? [] : response.data.data.dateList;
-            const list = result
-              .filter(item => item.isReservationAvailable)
-              .map(item => item.consultingDate);
+            if (result.length > 0) {
+              const list = result
+                .filter(item => item.isReservationAvailable)
+                .map(item => item.consultingDate);
 
-            console.log('list:', list);
-            setDataList([...list]);
+              console.log('Datelist:', list);
+              console.log('new Date(list[0]):', new Date(list[0]));
+              setDataList([...list]);
+            } else {
+              setTimeout(async () => {
+                await SheetManager.show('info', {
+                  payload: {
+                    type: 'info',
+                    errorType: 1,
+                    message: '앗, 현재 예약가능한 날짜가 없어요.\n나중에 다시 시도해주세요.',
+                    buttontext: '확인하기',
+                  },
+                });
+                actionSheetRef.current?.hide();
+              }, 300);
+            }
           } else if (searchType === "2") {
             const result = response === undefined ? [] : response.data.data.timeList;
             const list = result
@@ -304,6 +317,7 @@ const UpdateConsultingDateAndTimeAlert = props => {
               await SheetManager.show('info', {
                 payload: {
                   type: 'info',
+                  errorType: response.data.type,
                   message: '앗, 현재 모든 예약이 완료되었어요.\n나중에 다시 시도해주세요.',
                   buttontext: '확인하기',
                 },
@@ -318,6 +332,7 @@ const UpdateConsultingDateAndTimeAlert = props => {
           await SheetManager.show('info', {
             payload: {
               type: 'error',
+              errorType: response.data.type,
               message: response.data.errMsg ? response.data.errMsg : '상담 예약 변경 중 오류가 발생했어요.',
               description: response.data.errMsgDtl ? response.data.errMsgDtl : '',
               buttontext: '확인하기',

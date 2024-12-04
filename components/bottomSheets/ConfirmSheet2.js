@@ -4,15 +4,12 @@ import { View, useWindowDimensions, Pressable } from 'react-native';
 import React, { useRef } from 'react';
 import ActionSheet from 'react-native-actions-sheet';
 import styled from 'styled-components';
-import getFontSize from '../../utils/getFontSize';
 import CloseIcon from '../../assets/icons/close_button.svg';
 import DropShadow from 'react-native-drop-shadow';
 import dayjs from 'dayjs';
 import { useDispatch, useSelector } from 'react-redux';
 import { setChatDataList } from '../../redux/chatDataListSlice';
 import { HOUSE_TYPE } from '../../constants/colors';
-import Config from 'react-native-config'
-
 import numberToKorean from '../../utils/numToKorean';
 
 const SheetContainer = styled.View`
@@ -283,18 +280,18 @@ const ConfirmSheet2 = props => {
                   <HoustInfoBadgeText >
                     {HOUSE_TYPE.find(el => el.id === houseInfo?.houseType)?.name}
                   </HoustInfoBadgeText>
-                  {(houseInfo?.houseType !== '3' && houseInfo?.isMoveInRight === true) && <HoustInfoBadgeText  style={{ fontSize: 8 }}>
+                  {(houseInfo?.houseType !== '3' && houseInfo?.isMoveInRight) && <HoustInfoBadgeText  style={{ fontSize: 8 }}>
                     {'(입주권)'}
                   </HoustInfoBadgeText>}
                 </HoustInfoBadge>
                 {/*(houseInfo?.houseType !== '3' && houseInfo?.isMoveInRight) && <HoustInfoBadge
                   style={{
                     backgroundColor: HOUSE_TYPE.find(
-                      el => el.id === (houseInfo?.isMoveInRight === true ? 'isMoveInRight' : ''),
+                      el => el.id === (houseInfo?.isMoveInRight ? 'isMoveInRight' : ''),
                     )?.color,
                   }}>
                   <HoustInfoBadgeText>
-                    {HOUSE_TYPE.find(el => el.id === (houseInfo?.isMoveInRight === true ? 'isMoveInRight' : ''))?.name}
+                    {HOUSE_TYPE.find(el => el.id === (houseInfo?.isMoveInRight ? 'isMoveInRight' : ''))?.name}
                   </HoustInfoBadgeText>
                 </HoustInfoBadge>*/}
               </View>

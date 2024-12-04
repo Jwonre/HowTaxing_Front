@@ -17,6 +17,7 @@ import axios from 'axios';
 import NetInfo from "@react-native-community/netinfo";
 import CloseIcon from '../../assets/icons/close_button.svg';
 import BackIcon from '../../assets/icons/back_button.svg';
+import XCircleIcon from '../../assets/icons/x_circle.svg';
 import { setChatDataList } from '../../redux/chatDataListSlice';
 import { setFixHouseList } from '../../redux/fixHouseListSlice';
 import { setAddHouseList } from '../../redux/addHouseListSlice';
@@ -208,7 +209,7 @@ const AddHouseList = props => {
   useEffect(() => {
     var cnt = 0;
     for (let i = 0; i < AddHouseList.length; i++) {
-      if (AddHouseList[i].complete === true) {
+      if (AddHouseList[i].complete ) {
         cnt++;
       }
     }
@@ -219,14 +220,14 @@ const AddHouseList = props => {
     }
   }, [AddHouseList])
 
- /* useEffect(() => {
-    _scrollViewRef.current?.scrollTo({
-      x: (width) * currentPageIndex,
-      y: 0,
-      animated: true,
-    });
-  }, [currentPageIndex]);
-*/
+  /* useEffect(() => {
+     _scrollViewRef.current?.scrollTo({
+       x: (width) * currentPageIndex,
+       y: 0,
+       animated: true,
+     });
+   }, [currentPageIndex]);
+ */
   const handleBackPress = () => {
     if (currentPageIndex === 0) {
 
@@ -294,10 +295,10 @@ const AddHouseList = props => {
 
       // 요청 바디
       //console.log('last AddHouseList', AddHouseList);
-      var loadHouseList = AddHouseList ? AddHouseList.filter(house => house.complete === true) : [];
+      var loadHouseList = AddHouseList ? AddHouseList.filter(house => house.complete ) : [];
       const data = {
-        calcType : '02',
-        houseSaveRequestList : loadHouseList.map(({ index, complete, createAt, houseId, isCurOwn, isDestruction, kbMktPrice, moveInDate, moveOutDate, ownerCnt, sellDate, sellPrice, sourceType, updateAt, userId, userProportion, ...rest }) => rest),
+        calcType: '02',
+        houseSaveRequestList: loadHouseList ? loadHouseList.map(({ index, complete, createAt, houseId, isCurOwn, isDestruction, kbMktPrice, moveInDate, moveOutDate, ownerCnt, sellDate, sellPrice, sourceType, updateAt, userId, userProportion, ...rest }) => rest) : [],
       }
       console.log('request : ', data);
 
@@ -308,6 +309,7 @@ const AddHouseList = props => {
             await SheetManager.show('info', {
               payload: {
                 type: 'error',
+                errorType: response.data.type,
                 message: response.data.errMsg ? response.data.errMsg : '보유주택 수정·등록 중 오류가 발생했습니다.',
                 description: response.data.errMsgDtl ? response.data.errMsgDtl : '',
                 buttontext: '확인하기',
@@ -323,7 +325,7 @@ const AddHouseList = props => {
               ...returndata,
             ]));
 
-           console.log('[hypenHouseAPI] home response.data : ', response.data.data);
+            console.log('[hypenHouseAPI] home response.data : ', response.data.data);
             console.log('[hypenHouseAPI] ownhouse : ', ownHouseList);
           }
         })
@@ -530,41 +532,53 @@ const AddHouseList = props => {
             {AddHouseList?.map((item, index) => (
               <HoustInfoSection2
                 style={{
-                  borderColor: item.complete === true ? '#CFD1D5' : '#FF7401',
+                  borderColor: item.complete  ? '#CFD1D5' : '#FF7401',
                 }}
                 key={index}>
                 <View
                   style={{
-                    width: '60%',
-                    marginRight: '10%',
+                    width: item.complete  ? '60%' : '55%',
+                    marginRight: item.complete  ? '10%' : '2%',
                   }}>
-                  <HoustInfoTitle style={{ color: item.complete === true ? '#CFD1D5' : '#000000', }}>
+                  <HoustInfoTitle style={{ color: item.complete  ? '#CFD1D5' : '#000000', }}>
                     {item.roadAddr !== null
                       ? item.roadAddr
                       : item.jibunAddr + ' ' + item.houseName}
                   </HoustInfoTitle>
                   {item.detailAdr !== null && (
-                    <HoustInfoText style={{ color: item.complete === true ? '#CFD1D5' : '#000000', }}>
+                    <HoustInfoText style={{ color: item.complete  ? '#CFD1D5' : '#000000', }}>
                       {item.detailAdr}
                     </HoustInfoText>
                   )}
                 </View>
                 <HoustInfoBadge
-                  disabled={item.complete === true}
+                  disabled={item.complete }
                   onPress={() => goAddHouse(item.index)}
                   style={{
+                    marginRight: item.complete  ? 0 : '3%',
                     height: 30,
                     width: '30%',
                     justifyContent: 'center',
                     alignItems: 'center',
                     alignContent: 'center',
                     flexDirection: 'row',
-                    backgroundColor: item.complete === true ? '#CFD1D5' : '#FF7401',
+                    backgroundColor: item.complete  ? '#CFD1D5' : '#FF7401',
                   }}>
                   <HoustInfoBadgeText style={{ fontSize: 13, lineHeight: 30 }}>
-                    {item.complete === true ? '완료' : '추가 입력'}
+                    {item.complete  ? '완료' : '추가 입력'}
                   </HoustInfoBadgeText>
                 </HoustInfoBadge>
+                
+                {(item.complete === false) && <TouchableOpacity activeOpacity={0.6}
+                  onPress={async () => {
+                    console.log('addHouseList', AddHouseList);
+                    SheetManager.show('InfoAddHouseDelete', {
+                      payload: {
+                        index: index,
+                      },
+                    });
+
+                  }}><XCircleIcon /></TouchableOpacity>}
               </HoustInfoSection2>
             ))}
           </InfoContentSection>

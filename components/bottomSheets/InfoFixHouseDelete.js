@@ -136,7 +136,7 @@ const InfoFixHouseDelete = props => {
         backgroundColor: '#fff',
         borderTopLeftRadius: 20,
         borderTopRightRadius: 20,
-        height: 260,
+        height: 280,
         width: width - 40,
       }}>
       <SheetContainer width={width}>
@@ -156,7 +156,8 @@ const InfoFixHouseDelete = props => {
           <View
             style={{
               flexDirection: 'row',
-              alignContent: 'center'
+              alignContent: 'center',
+              marginTop: 10,
             }}
           >
             <DropShadow

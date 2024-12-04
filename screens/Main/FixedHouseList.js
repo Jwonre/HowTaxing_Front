@@ -184,13 +184,13 @@ const FixedHouseList = props => {
   const fixHouseList = useSelector(state => state.fixHouseList.value);
   const [fixHouseFinish, setFixHouseFinish] = useState(false);
   const [fixHouseFinishAndWait, setFixHouseFinishAndWait] = useState(true);
-  
+
   //const Pdata = props?.Pdata;
   //console.log('ori fixHouseList', fixHouseList);
   useEffect(() => {
     var cnt = 0;
     for (let i = 0; i < fixHouseList.length; i++) {
-      if (fixHouseList[i].complete === true) {
+      if (fixHouseList[i].complete) {
         cnt++;
       }
     }
@@ -260,17 +260,18 @@ const FixedHouseList = props => {
       console.log('last fixHouseList', fixHouseList);
       var loadHouseList = fixHouseList ? fixHouseList : [];
       const data = {
-        calcType : '02',
-        houseSaveRequestList : loadHouseList.map(({ index, complete, createAt, houseId, isCurOwn, isDestruction, kbMktPrice, moveInDate, moveOutDate, ownerCnt, sellDate, sellPrice, sourceType, updateAt, userId, userProportion, ...rest }) => rest),
+        calcType: '02',
+        houseSaveRequestList: loadHouseList ? loadHouseList.map(({ index, complete, createAt, houseId, isCurOwn, isDestruction, kbMktPrice, moveInDate, moveOutDate, ownerCnt, sellDate, sellPrice, sourceType, updateAt, userId, userProportion, ...rest }) => rest) : [],
       }
-      console.log('[hypenHouseAPI] data : ',data);
+      console.log('[hypenHouseAPI] data : ', data);
       try {
         const response = await axios.post(`${Config.APP_API_URL}house/saveAllHouse`, data, { headers: headers });
         if (response.data.errYn === 'Y') {
-         // console.log('response.data', response.data);
+          // console.log('response.data', response.data);
           await SheetManager.show('info', {
             payload: {
               type: 'error',
+              errorType: response.data.type,
               message: response.data.errMsg ? response.data.errMsg : '보유주택 수정·등록 중 오류가 발생했습니다.',
               description: response.data.errMsgDtl ? response.data.errMsgDtl : '',
               buttontext: '확인하기',
@@ -310,6 +311,7 @@ const FixedHouseList = props => {
         await SheetManager.show('info', {
           payload: {
             type: 'error',
+            errorType: response.data.type,
             message: response.data.errMsg ? response.data.errMsg : '기타 재산세 보유주택을 불러오는데 문제가 발생했어요.',
             description: response.data.errMsgDtl ? response.data.errMsgDtl : '',
             buttontext: '확인하기',
@@ -392,50 +394,51 @@ const FixedHouseList = props => {
           {fixHouseFinishAndWait && fixHouseList?.map((item, index) => (
             <HoustInfoSection
               style={{
-                borderColor: item.complete === true ? '#CFD1D5' : '#FF7401',
+                borderColor: item.complete ? '#CFD1D5' : '#FF7401',
               }}
               key={index}>
               <View
                 style={{
-                  width: item.complete === true ? '60%' : '55%',
-                  marginRight: item.complete === true ? '10%' : '2%',
+                  width: item.complete ? '60%' : '55%',
+                  marginRight: item.complete ? '10%' : '2%',
                 }}>
-                <HoustInfoTitle style={{ color: item.complete === true ? '#CFD1D5' : '#000000', }}>
+                <HoustInfoTitle style={{ color: item.complete ? '#CFD1D5' : '#000000', }}>
                   {item.roadAddr !== null
                     ? item.roadAddr
                     : item.jibunAddr + ' ' + item.houseName}
                 </HoustInfoTitle>
                 {item.detailAdr !== null && (
-                  <HoustInfoText style={{ color: item.complete === true ? '#CFD1D5' : '#000000', }}>
+                  <HoustInfoText style={{ color: item.complete ? '#CFD1D5' : '#000000', }}>
                     {item.detailAdr}
                   </HoustInfoText>
                 )}
               </View>
               <HoustInfoBadge
-                disabled={item.complete === true}
+                disabled={item.complete}
                 onPress={() => goFixedHouse(item.index)}
                 style={{
-                  marginRight: item.complete === true ? 0 : '3%',
+                  marginRight: item.complete ? 0 : '3%',
                   height: 30,
                   width: '30%',
                   justifyContent: 'center',
                   alignItems: 'center',
                   alignContent: 'center',
                   flexDirection: 'row',
-                  backgroundColor: item.complete === true ? '#CFD1D5' : '#FF7401',
+                  backgroundColor: item.complete ? '#CFD1D5' : '#FF7401',
                 }}>
                 <HoustInfoBadgeText style={{ fontSize: 13, lineHeight: 30 }}>
-                  {item.complete === true ? '완료' : '추가 입력'}
+                  {item.complete ? '완료' : '추가 입력'}
                 </HoustInfoBadgeText>
               </HoustInfoBadge>
               {(item.complete === false) && <TouchableOpacity activeOpacity={0.6}
-                onPress={async () => {console.log('fixHouseList', fixHouseList);
+                onPress={async () => {
+                  console.log('fixHouseList', fixHouseList);
                   SheetManager.show('InfoFixHouseDelete', {
                     payload: {
                       index: index,
                     },
                   });
-                  
+
                 }}><XCircleIcon /></TouchableOpacity>}
             </HoustInfoSection>
           ))}
@@ -459,18 +462,35 @@ const FixedHouseList = props => {
                 const state = await NetInfo.fetch();
                 const canProceed = await handleNetInfoChange(state);
                 if (canProceed) {
-                  const registerDirectHouseResult = await registerDirectHouse();
-                  //console.log('registerDirectHouseResult : ', registerDirectHouseResult);
-                  if (registerDirectHouseResult) {
-                    const getEtcHouseReturn = await getEtcHouse();
-                    if (getEtcHouseReturn === 'getEtcHouseNull') {
-                      const chatItem = gainTax.find(el => el.id === 'allHouse1')
-                      dispatch(setChatDataList([...chatDataList, chatItem]), setFixHouseList([]));
-                      navigation.navigate('GainsTaxChat');
-                    } else if (getEtcHouseReturn === 'getEtcHouse') {
-                      navigation.navigate('AddHouseList', { chatListindex: props.route?.params.chatListindex });
+                  if (fixHouseList.length === 0) {
+                    const registerDirectHouseResult = await registerDirectHouse();
+                    //console.log('registerDirectHouseResult : ', registerDirectHouseResult);
+                    if (registerDirectHouseResult) {
+                      const getEtcHouseReturn = await getEtcHouse();
+                      if (getEtcHouseReturn === 'getEtcHouseNull') {
+                        const chatItem = gainTax.find(el => el.id === 'allHouse1')
+                        dispatch(setChatDataList([...chatDataList, chatItem]), setFixHouseList([]));
+                        navigation.navigate('GainsTaxChat');
+                      } else if (getEtcHouseReturn === 'getEtcHouse') {
+                        navigation.navigate('AddHouseList', { chatListindex: props.route?.params.chatListindex });
+                      }
+
+                    }
+                  } else {
+                    const registerDirectHouseResult = await registerDirectHouse();
+                    //console.log('registerDirectHouseResult : ', registerDirectHouseResult);
+                    if (registerDirectHouseResult) {
+                      const getEtcHouseReturn = await getEtcHouse();
+                      if (getEtcHouseReturn === 'getEtcHouseNull') {
+                        const chatItem = gainTax.find(el => el.id === 'allHouse1')
+                        dispatch(setChatDataList([...chatDataList, chatItem]), setFixHouseList([]));
+                        navigation.navigate('GainsTaxChat');
+                      } else if (getEtcHouseReturn === 'getEtcHouse') {
+                        navigation.navigate('AddHouseList', { chatListindex: props.route?.params.chatListindex });
+                      }
                     }
                   }
+
 
                 }
               }} style={{

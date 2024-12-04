@@ -18,7 +18,6 @@ import FastImage from 'react-native-fast-image';
 import * as Animatable from 'react-native-animatable';
 import { Modalize } from 'react-native-modalize';
 import DropShadow from 'react-native-drop-shadow';
-import getFontSize from '../../utils/getFontSize';
 import { acquisitionTax } from '../../data/chatData';
 import { HOUSE_TYPE } from '../../constants/colors';
 import { SheetManager } from 'react-native-actions-sheet';
@@ -391,6 +390,7 @@ const AcquisitionChat = () => {
           SheetManager.show('info', {
             payload: {
               type: 'error',
+              errorType: response.data.type,
               message: response.data.errMsg ? response.data.errMsg : '보유주택을 불러오는데 문제가 발생했어요.',
               description: response.data.errMsgDtl ? response.data.errMsgDtl : '',
               buttontext: '확인하기',
@@ -475,10 +475,15 @@ const AcquisitionChat = () => {
       const response = await axios.post(`${Config.APP_API_URL}calculation/buyResult`, params, { headers });
       console.log('taxCard params', params)
       console.log('response.data', response.data);
+      for(let i = 0; i < response.data.data.list.length; i++) {
+        console.log('response.data.list[i]', response.data.data.list[i]);
+      }
+
       if (response.data.errYn === 'Y') {
         SheetManager.show('info', {
           payload: {
             type: 'error',
+            errorType: response.data.type,
             message: response.data.errMsg ? response.data.errMsg : '취득세 계산 중 오류가 발생했어요.',
             description: response.data.errMsgDtl ? response.data.errMsgDtl : null,
             closeSheet: true,
@@ -495,7 +500,6 @@ const AcquisitionChat = () => {
         payload: {
           type: 'error',
           message: '취득세 계산 중 오류가 발생했습니다.',
-          description: '취득세 계산 중 오류가 발생했습니다. 원하시면 주택 전문 세무사와 상담을 연결시켜드릴게요. 아래 상담하기 버튼을 눌러보세요.',
           id: 'calculation',
           closeSheet: true,
           navigation: navigation,
@@ -547,6 +551,7 @@ const AcquisitionChat = () => {
           SheetManager.show('info', {
             payload: {
               type: 'error',
+              errorType: response.data.type,
               message: response.data.errMsg ? response.data.errMsg : '추가질의를 가져오지 못했어요.',
               description: response.data.errMsgDtl ? response.data.errMsgDtl : '',
               buttontext: '확인하기',
@@ -750,7 +755,7 @@ const AcquisitionChat = () => {
           const chat9 = acquisitionTax.find(el => el.id === 'getInfoDone');
           const chat10 = acquisitionTax.find(el => el.id === 'getInfoConfirm');
           if (additionalQuestion.returndata) {
-            if (additionalQuestion.detaildata?.hasNextQuestion === true) {
+            if (additionalQuestion.detaildata?.hasNextQuestion ) {
               if (additionalQuestion.detaildata?.nextQuestionId === 'Q_0009') {
 
                 let chatIndex = acquisitionTax.findIndex(el => el.id === 'additionalQuestion');
@@ -821,7 +826,7 @@ const AcquisitionChat = () => {
           const chat9 = acquisitionTax.find(el => el.id === 'getInfoDone');
           const chat10 = acquisitionTax.find(el => el.id === 'getInfoConfirm');
           if (additionalQuestion.returndata) {
-            if (additionalQuestion.detaildata?.hasNextQuestion === true) {
+            if (additionalQuestion.detaildata?.hasNextQuestion ) {
               if (additionalQuestion.detaildata?.nextQuestionId === 'Q_0012') {
                 let chatIndex = acquisitionTax.findIndex(el => el.id === 'additionalQuestion');
                 //  let chatIndex2 = gainTax.findIndex(el => el.id === 'additionalQuestion2');
@@ -879,6 +884,7 @@ const AcquisitionChat = () => {
   const handleBackPress = () => {
     SheetManager.show('info', {
       payload: {
+        errorType: 1,
         type: 'backHome',
         message: '첫 화면으로 돌아가시겠어요?',
         navigation: navigation,
@@ -1120,7 +1126,7 @@ const AcquisitionChat = () => {
                         ?.name
                     }
                   </Text>
-                  {houseInfo?.houseType !== '3' && houseInfo?.isMoveInRight === true &&
+                  {houseInfo?.houseType !== '3' && houseInfo?.isMoveInRight  &&
                     <Text style={{
                       fontSize: 9,
                       fontFamily: 'Pretendard-Medium',
@@ -1137,7 +1143,7 @@ const AcquisitionChat = () => {
                     width: 'auto',
                     height: 22,
                     backgroundColor: HOUSE_TYPE.find(
-                      el => el.id === (houseInfo.isMoveInRight === true ? 'isMoveInRight' : ''),
+                      el => el.id === (houseInfo.isMoveInRight  ? 'isMoveInRight' : ''),
                     )?.color,
                     borderRadius: 11,
                     alignItems: 'center',
@@ -1154,7 +1160,7 @@ const AcquisitionChat = () => {
                       letterSpacing: -0.5,
                     }}>
                     {
-                      HOUSE_TYPE.find(el => el.id === (houseInfo.isMoveInRight === true ? 'isMoveInRight' : ''))
+                      HOUSE_TYPE.find(el => el.id === (houseInfo.isMoveInRight  ? 'isMoveInRight' : ''))
                         ?.name
                     }
                   </Text>
@@ -1581,23 +1587,11 @@ const AcquisitionChat = () => {
                             }
 
                           }
-
+                          console.log('item2?.openSheet', item2?.openSheet);
                           if (item2?.openSheet) {
 
                             // ////console.log('openSheet');
-                            if (item2?.id === 'ok' && item2?.chungYackYn === true) {
-                              SheetManager.show(item2.openSheet, {
-                                payload: {
-                                  navigation: navigation,
-                                  data: item2.id,
-                                  data2: item.id,
-                                  index,
-                                  isGainsTax: false,
-                                  currentPageIndex: item2?.currentPageIndex,
-                                  chungYackYn: item2?.chungYackYn
-                                },
-                              });
-                            } else if (item2?.id === 'ok' && item2?.chungYackYn === false) {
+                            if (item2?.id === 'ok' && item2?.chungYackYn) {
                               SheetManager.show(item2.openSheet, {
                                 payload: {
                                   navigation: navigation,

@@ -296,6 +296,7 @@ const ReservationDetail = props => {
           SheetManager.show('info', {
             payload: {
               type: 'error',
+              errorType: response.data.type,
               message: response.data.errMsg ? response.data.errMsg : '상담 예약 상세 내역을 불러오는데 문제가 발생했어요.',
               description: response.data.errMsgDtl ? response.data.errMsgDtl : '',
               buttontext: '확인하기',

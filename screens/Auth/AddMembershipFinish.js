@@ -151,8 +151,8 @@ const AddMembershipFinish = props => {
       if (response.data.errYn == 'Y') {
         SheetManager.show('info', {
           payload: {
-            prevSheet: 'Login_ID',
             type: 'error',
+            errorType: response.data.type,
             message: response.data.errMsg ? response.data.errMsg : '로그인을 하는데 문제가 발생했어요.',
             description: response.data.errMsgDtl ? response.data.errMsgDtl : '',
           },
@@ -166,7 +166,6 @@ const AddMembershipFinish = props => {
       console.log('error', error);
       SheetManager.show('info', {
         payload: {
-          prevSheet: 'Login_ID',
           type: 'error',
           message: error?.errMsg ? error?.errMsg : '로그인을 하는데 문제가 발생했어요.',
           errorMessage: error?.errCode ? error?.errCode : 'error',

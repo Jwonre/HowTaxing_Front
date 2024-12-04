@@ -1,6 +1,6 @@
 // 홈 페이지
 
-import { useWindowDimensions, StatusBar, StyleSheet, BackHandler } from 'react-native';
+import { useWindowDimensions, StatusBar, StyleSheet, BackHandler, Linking } from 'react-native';
 import React, { useLayoutEffect, useEffect, useState, useCallback, useRef } from 'react';
 import styled from 'styled-components';
 import DropShadow from 'react-native-drop-shadow';
@@ -142,22 +142,32 @@ const AppInformationIconFloatButton = styled.TouchableOpacity.attrs(props => ({
   
 `;
 
+
+const ChanelTalkIconFloatContainer = styled.View`
+  position: absolute;
+  bottom: 25px;
+  right: 100px;
+
+`;
+
+const ChanelTalkIconFloatButton = styled.TouchableOpacity.attrs(props => ({
+  activeOpacity: 0.8,
+}))`
+  width: 55px;
+  height: 55px;
+  border-radius: 30px;
+  
+`;
+
+
+
+
 const ShadowContainer = styled(DropShadow)`
   shadow-color: #ececef;
   shadow-offset: 0px 9px;
   shadow-opacity: 1;
   shadow-radius: 6px;
 `;
-
-const style = StyleSheet.create({
-  LogOutIcon: {
-    marginRight: 85,
-  },
-  AppInformationIcon: {
-    marginRight: 55,
-  },
-
-});
 
 
 ////////////////////////////////////////////////////////////////////////////////////
@@ -189,7 +199,7 @@ const Home = () => {
       const checkModalStatus = async () => {
         const adBannerdata = await getAdBanner();
         console.log('adBannerdata', adBannerdata);
-        if(adBannerdata){
+        if (adBannerdata) {
           const lastClosed = await AsyncStorage.getItem('lastClosed');
           if (!lastClosed) {
             if (adBannerdata.isPost && adBannerdata.imageUrl !== null) {
@@ -212,7 +222,7 @@ const Home = () => {
               dispatch(setAdBanner(false));
             }
           }
-  
+
           SheetManager.show('AdBanner', {
             payload: {
               adBannerdata: adBannerdata,
@@ -277,18 +287,18 @@ const Home = () => {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${currentUser.accessToken}`,
       };
-  
+
       const response = await axios.get(url, { headers });
       const result = response.data;
       const data = result.data !== undefined ? result.data : null;
-  
+
       return data;
     } catch (error) {
       console.error(error);
       return null;
     }
   };
-  
+
 
   const handleWithLogout = async (accessToken) => {
     const headers = {
@@ -300,11 +310,12 @@ const Home = () => {
       const response = await axios.get(`${Config.APP_API_URL}user/logout`, { headers });
       console.log('accessToken', accessToken);
       console.log('response.data', response.data);
-  
+
       if (response.data.errYn === 'Y') {
         SheetManager.show('info', {
           payload: {
             type: 'error',
+            errorType: response.data.type,
             message: response.data.errMsg ? response.data.errMsg : '로그아웃에 문제가 발생했어요.',
             description: response.data.errMsgDtl ? response.data.errMsgDtl : null,
             buttontext: '확인하기',
@@ -327,7 +338,7 @@ const Home = () => {
       return false;
     }
   };
-  
+
 
   useFocusEffect(
     React.useCallback(() => {
@@ -444,7 +455,7 @@ const Home = () => {
     if (buttonIndex === 'YES') {
       const logout = await handleWithLogout(currentUser.accessToken);
       console.log('logout', logout);
-      if(logout){
+      if (logout) {
         dispatch(setCurrentUser(null));
       }
     }
@@ -513,7 +524,7 @@ const Home = () => {
       </ShadowContainer>
 
 
-      {/*<ChanelTalkIconFloatContainer>
+      <ChanelTalkIconFloatContainer>
         <DropShadow
           style={{
             shadowColor: '#2F87FF',
@@ -525,16 +536,11 @@ const Home = () => {
             shadowRadius: 10,
           }}>
           <ChanelTalkIconFloatButton
-            title={`Show Channel (${unreadCount})`}
-            onPress={async () => {
-              ChannelIO.showMessenger()
-              //ChannelIO.showChannelButton();
-              //console.log('currentUser',currentUser.accessToken);
-            }}>
-          <ChanelTalkIcon />
-        </ChanelTalkIconFloatButton>
-      </DropShadow>
-    </ChanelTalkIconFloatContainer>*/}
+            onPress={() => Linking.openURL('http://pf.kakao.com/_sxdxdxgG')}>
+            <ChanelTalkIcon/>
+          </ChanelTalkIconFloatButton>
+        </DropShadow>
+      </ChanelTalkIconFloatContainer>
 
       {/*<LogOutIconFloatContainer>
         <DropShadow
@@ -575,7 +581,7 @@ const Home = () => {
               ////console.log('AppInformation');
               goAppInformation();
             }}>
-            <AppInformationIcon style={style.AppInformationIcon} />
+            <AppInformationIcon/>
           </AppInformationIconFloatButton>
         </DropShadow>
       </AppInformationIconFloatContainer>

@@ -247,7 +247,7 @@ export const acquisitionTax = [
         select: ['moreHouse'],
       },
       {
-        id: 'joint',
+        id: 'cavity',
         type: 'my',
         name: '공동 소유',
         openSheet: 'joint',
@@ -369,7 +369,26 @@ export const gainTax = [
       },
     ],
   },
-
+  {
+    id: 'jointGain',
+    type: 'system',
+    message: '혹시 공동 소유 예정인가요?',
+    questionId: 'apartment',
+    progress: 3,
+    select: [
+      {
+        id: 'only',
+        type: 'my',
+        name: '단독 소유',
+      },
+      {
+        id: 'cavity',
+        type: 'my',
+        name: '공동 소유',
+        openSheet: 'JointGain',
+      },
+    ],
+  },
   {
     id: 'cta',
     type: 'system',

@@ -131,7 +131,7 @@ const TaxCard = props => {
             </TagText>
           </Tag>
           <TagText2 >
-            지분율 : {Number(listCnt === 1 ? 100 : 50)}%
+            지분율 : {Number(Pdata?.list[index]?.userProportion)}%
           </TagText2>
         </View>
         <InfoContentItem>

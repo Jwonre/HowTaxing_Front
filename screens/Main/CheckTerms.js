@@ -232,6 +232,7 @@ const CheckTerms = props => {
         SheetManager.show('info', {
           payload: {
             type: 'error',
+            errorType: response.data.type,
             message: response.data.errMsg ? response.data.errMsg : '회원가입 도중에 문제가 발생했어요.',
             description: response.data.errMsgDtl ? response.data.errMsgDtl : null,
             buttontext: '확인하기',
@@ -242,6 +243,7 @@ const CheckTerms = props => {
         /* SheetManager.show('info', {
            payload: {
              type: 'info',
+             errorType: 1,
              message: '회원가입에 성공했습니다.',
            },
          });*/

@@ -434,7 +434,7 @@ const FixedHouse = props => {
 
 
       } else {
-        if (directacquisitionDate === true) {
+        if (directacquisitionDate ) {
           if (foundItem.admCd) {
             if (foundItem.detailAdr) {
               if (selectedHo) {
@@ -564,6 +564,7 @@ const FixedHouse = props => {
           SheetManager.show('info', {
             payload: {
               type: 'error',
+              errorType: response.data.type,
               message: response.data.errMsg ? response.data.errMsg : '주소 검색 중 오류가 발생했어요.',
               description: response.data.errMsgDtl ? response.data.errMsgDtl : '',
               closemodal: true,
@@ -580,6 +581,7 @@ const FixedHouse = props => {
             SheetManager.show('info', {
               payload: {
                 type: 'error',
+                errorType: 1,
                 message: '검색 결과가 없어요.',
                 buttontext: '확인하기',
               },
@@ -634,6 +636,7 @@ const FixedHouse = props => {
           SheetManager.show('info', {
             payload: {
               type: 'error',
+              errorType: response.data.type,
               message: response.data.errMsg ? response.data.errMsg : '주소 검색 중 오류가 발생했어요.',
               description: response.data.errMsgDtl ? response.data.errMsgDtl : '',
               closemodal: true,
@@ -650,6 +653,7 @@ const FixedHouse = props => {
             SheetManager.show('info', {
               payload: {
                 type: 'error',
+                errorType: 1,
                 message: '검색 결과가 없어요.',
                 buttontext: '확인하기',
               },
@@ -721,6 +725,7 @@ const FixedHouse = props => {
       SheetManager.show('info', {
         payload: {
           type: 'error',
+          errorType: response.data.type,
           message: response.errMsg ?? '주택의 호수를 불러오는데 문제가 발생했어요.',
           description: response.errMsgDtl ?? null,
           closemodal: true,
@@ -745,6 +750,7 @@ const FixedHouse = props => {
       SheetManager.show('info', {
         payload: {
           type: 'error',
+          errorType: response.data.type,
           message: response.errMsg ?? '주택의 동 목록을 불러오는데 문제가 발생했어요.',
           description: response.errMsgDtl ?? null,
           closemodal: true,
@@ -782,6 +788,7 @@ const FixedHouse = props => {
         SheetManager.show('info', {
           payload: {
             type: 'error',
+            errorType: response.data.type,
             message: response.data.errMsg ? response.data.errMsg : '청약홈 주택데이터를 불러오는데 문제가 발생했어요.',
             description: response.data.errMsgDtl ? response.data.errMsgDtl : '',
             buttontext: '확인하기',
@@ -911,7 +918,7 @@ const FixedHouse = props => {
 
 
               } else {
-                if (directacquisitionDate === true) {
+                if (directacquisitionDate ) {
                   if (foundItem.admCd) {
                     if (foundItem.detailAdr) {
                       if (selectedHo) {
@@ -2004,7 +2011,7 @@ const FixedHouse = props => {
                   const canProceed = await handleNetInfoChange(state);
                   if (canProceed) {
                     var foundItem = fixHouseList?.find((el) => el.index === props?.route.params.index);
-                    if (directacquisitionDate === true) {
+                    if (directacquisitionDate ) {
                       if (foundItem.admCd) {
                         if (foundItem.detailAdr) {
                           if (selectedHo) {

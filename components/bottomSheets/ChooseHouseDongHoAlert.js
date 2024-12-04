@@ -266,6 +266,8 @@ const ChooseHouseDongHoAlert = props => {
         SheetManager.show('info', {
           payload: {
             type: 'error',
+            errorType: response.data.type,
+            navigation: navigation,
             message: response.data.errMsg ? response.data.errMsg : '상세주소를 가져오는데 문제가 발생했어요.',
             description: response.data.errMsgDtl ? response.data.errMsgDtl : null,
             closemodal: true,
@@ -340,6 +342,8 @@ const ChooseHouseDongHoAlert = props => {
        /* SheetManager.show('info', {
           payload: {
             type: 'error',
+            errorType: response.data.type,
+            navigation: navigation,
             message: response.data.errMsg ? response.data.errMsg : '공시가격과 전용면적을 가져오는데 문제가 발생했어요.',
             description: response.data.errMsgDtl ? response.data.errMsgDtl : null,
             buttontext: '확인하기',

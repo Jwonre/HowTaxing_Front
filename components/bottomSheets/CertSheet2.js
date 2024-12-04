@@ -377,6 +377,7 @@ const CertSheet2 = props => {
           SheetManager.show('info', {
             payload: {
               type: 'error',
+              errorType: response.data.type,
               message: response.data.errMsg ? response.data.errMsg : '추가질의를 가져오지 못했어요.',
               description: response.data.errMsgDtl ? response.data.errMsgDtl : '',
               buttontext: '확인하기',
@@ -433,7 +434,7 @@ const CertSheet2 = props => {
 
 
   useEffect(() => {
-    if (props?.payload?.isGainsTax === true) {
+    if (props?.payload?.isGainsTax) {
       setIsGainsTax('02');
     } else {
       setIsGainsTax('01');
@@ -511,6 +512,7 @@ const CertSheet2 = props => {
         await SheetManager.show('info', {
           payload: {
             type: 'error',
+            errorType: response.data.type,
             message: response.data.errMsg ? response.data.errMsg : '공공기관에서 보유주택 정보를 가져오는 중 오류가 발생했습니다.',
             description: response.data?.errMsgDtl ? response.data?.errMsgDtl : '',
             buttontext: '다시 확인하기',
@@ -546,6 +548,7 @@ const CertSheet2 = props => {
           await SheetManager.show('info', {
             payload: {
               type: 'error',
+              errorType: response.data.type,
               message: response.data.errMsg ? response.data.errMsg : '청약홈에서 정보를 불러오는 중\n오류가 발생했어요.\n인증을 다시 진행해주세요.',
               description: response.data?.errMsgDtl ? response.data?.errMsgDtl : null,
               buttontext: '확인하기',
@@ -662,7 +665,7 @@ const CertSheet2 = props => {
         ////console.log('additionalQuestion', additionalQuestion);
         let chat7;
         if (additionalQuestion.returndata) {
-          if (additionalQuestion.detaildata?.hasNextQuestion === true) {
+          if (additionalQuestion.detaildata?.hasNextQuestion) {
             if (additionalQuestion.detaildata?.nextQuestionId === 'Q_0006') {
               let chatIndex = gainTax.findIndex(el => el.id === 'additionalQuestion');
               if (chatIndex !== -1) {

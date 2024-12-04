@@ -81,7 +81,7 @@ const ButtonSection = styled.View`
   padding: 20px;
 `;
 
-const JointSheet = props => {
+const JointSheetGain = props => {
   const actionSheetRef = useRef(null);
   const dispatch = useDispatch();
   const { width, height } = useWindowDimensions();
@@ -262,7 +262,7 @@ const JointSheet = props => {
                   );
 
                   setTimeout(() => {
-                    SheetManager.show('Stake', {
+                    SheetManager.show('StakeGains', {
                       payload: {
                         questionId: props.payload?.questionId,
                         data: props.payload?.data,
@@ -295,4 +295,4 @@ const JointSheet = props => {
   );
 };
 
-export default JointSheet;
+export default JointSheetGain;

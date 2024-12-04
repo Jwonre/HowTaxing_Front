@@ -106,7 +106,7 @@ const NecessaryInfoBadgeText = styled.Text`
 const InputSection = styled.View`
   flex: 1;
   background-color: #f7f8fa;
-  padding: 20px;
+  padding: 0 20px;
 `;
 
 const Paper = styled.View`
@@ -138,7 +138,7 @@ const InfoContentSection = styled.View`
   width: 100%;
   height: auto;
   background-color: #f7f8fa;
-  padding: 10px 20px;
+  padding: 10px 20px 0;
 `;
 const InfoContentItem = styled.View`
   width: 100%;
@@ -307,18 +307,18 @@ const HouseDetail = props => {
                   <HoustInfoBadgeText >
                     {HOUSE_TYPE.find(el => el.id === item?.houseType)?.name}
                   </HoustInfoBadgeText>
-                  {(item?.houseType !== '3' && item?.isMoveInRight === true) && <HoustInfoBadgeText style={{ fontSize: 8 }}>
+                  {(item?.houseType !== '3' && item?.isMoveInRight ) && <HoustInfoBadgeText style={{ fontSize: 8 }}>
                     {'(입주권)'}
                   </HoustInfoBadgeText>}
                 </HoustInfoBadge>
                 {/*(item?.houseType !== '3' && item?.isMoveInRight) && <HoustInfoBadge
                   style={{
                     backgroundColor: HOUSE_TYPE.find(
-                      el => el.id === (item?.isMoveInRight === true ? 'isMoveInRight' : ''),
+                      el => el.id === (item?.isMoveInRight  ? 'isMoveInRight' : ''),
                     )?.color,
                   }}>
                   <HoustInfoBadgeText>
-                    {HOUSE_TYPE.find(el => el.id === (item?.isMoveInRight === true ? 'isMoveInRight' : ''))?.name}
+                    {HOUSE_TYPE.find(el => el.id === (item?.isMoveInRight  ? 'isMoveInRight' : ''))?.name}
                   </HoustInfoBadgeText>
                 </HoustInfoBadge>*/}
               </View>
@@ -483,7 +483,7 @@ const HouseDetail = props => {
             <InfoContentItem>
               <InfoContentLabel >공시가격</InfoContentLabel>
               <InfoContentText >
-                {item?.pubLandPrice ? numberToKorean(Number(item?.pubLandPrice)?.toString()) + '원' : (item?.isPubLandPriceOver100Mil === true ? '1억원 초과' : item?.isPubLandPriceOver100Mil === undefined ? '' : '1억원 이하')}
+                {item?.pubLandPrice ? numberToKorean(Number(item?.pubLandPrice)?.toString()) + '원' : (item?.isPubLandPriceOver100Mil  ? '1억원 초과' : item?.isPubLandPriceOver100Mil === undefined ? '' : '1억원 이하')}
               </InfoContentText>
             </InfoContentItem>
             {(prevSheet === 'confirm' || prevSheet === 'AcquisitionChat') && <InfoContentItem>
@@ -498,7 +498,7 @@ const HouseDetail = props => {
                 style={{
                   marginLeft: 'auto',
                 }}>
-                <InfoContentText >{item?.area ? item?.area + 'm²' : (item?.isAreaOver85 === true ? '국민평형(85m2) 초과' : item?.isAreaOver85 === undefined ? '' : '국민평형(85m2) 이하')}</InfoContentText>
+                <InfoContentText >{item?.area ? item?.area + 'm²' : (item?.isAreaOver85  ? '국민평형(85m2) 초과' : item?.isAreaOver85 === undefined ? '' : '국민평형(85m2) 이하')}</InfoContentText>
                 {item?.area !== 0 || undefined && <InfoContentText
 
                   style={{
@@ -523,7 +523,7 @@ const HouseDetail = props => {
             </InfoContentItem>}
           </InfoContentSection>
           <InputSection>
-            <Paper>
+            {/*<Paper>
               <View
                 style={{
                   flexDirection: 'row',
@@ -583,10 +583,10 @@ const HouseDetail = props => {
                       </InfoContentText>
                     </InfoContentItem>
                   ))}
-            </Paper>
+            </Paper>*/}
             <InfoContentItem>
               <InfoContentLabel >입주권 여부</InfoContentLabel>
-              <InfoContentText >{item?.isMoveInRight === true ? '여' : '부'}</InfoContentText>
+              <InfoContentText >{item?.isMoveInRight  ? '여' : '부'}</InfoContentText>
             </InfoContentItem>
           </InputSection>
         </>

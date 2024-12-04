@@ -153,7 +153,7 @@ const Login_ID = props => {
         if (response.data.errCode === 'LOGIN-003') {
           SheetManager.show('info', {
             payload: {
-              prevSheet: 'Login_ID',
+              errorType: response.data.type,
               type: 'error',
               message: '존재하지 않는 아이디에요.',
             },
@@ -161,7 +161,7 @@ const Login_ID = props => {
         } else if (response.data.errCode === 'LOGIN-002') {
           SheetManager.show('info', {
             payload: {
-              prevSheet: 'Login_ID',
+              errorType: response.data.type,
               type: 'error',
               message: '비밀번호가 정확하지 않아요.',
               description: '5회 잘못 입력 시 5분 후 재시도 할 수 있어요.\n(현재 ' + response.data.errMsgDtl.substring(0, 1) + '회 불일치)',
@@ -170,7 +170,7 @@ const Login_ID = props => {
         } else if (response.data.errCode === 'LOGIN-004') {
           SheetManager.show('info', {
             payload: {
-              prevSheet: 'Login_ID',
+              errorType: response.data.type,
               type: 'error',
               message: '잠시 후에 다시 시도해주세요.',
               description: '비밀번호를 반복하여 잘못 입력하셨어요.',
@@ -179,7 +179,7 @@ const Login_ID = props => {
         } else {
           SheetManager.show('info', {
             payload: {
-              prevSheet: 'Login_ID',
+              errorType: response.data.type,
               type: 'error',
               message: response.data.errMsg ? response.data.errMsg : '로그인을 하는데 문제가 발생했어요.',
               description: response.data.errMsgDtl ? response.data.errMsgDtl : '',
@@ -195,7 +195,7 @@ const Login_ID = props => {
       console.log('error', error);
       SheetManager.show('info', {
         payload: {
-          prevSheet: 'Login_ID',
+          errorType: response.data.type,
           type: 'error',
           message: error?.errMsg ? error?.errMsg : '로그인을 하는데 문제가 발생했어요.',
           errorMessage: error?.errCode ? error?.errCode : 'error',

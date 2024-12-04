@@ -319,7 +319,7 @@ const CertificationAcq = props => {
 
   useEffect(() => {
     console.log('props?.route?.params?.isGainsTax', props?.route?.params?.isGainsTax)
-    if (props?.route?.params?.isGainsTax === true) {
+    if (props?.route?.params?.isGainsTax ) {
       setIsGainsTax('02');
     } else {
       setIsGainsTax('01');
@@ -372,6 +372,8 @@ const CertificationAcq = props => {
               await SheetManager.show('info', {
                 payload: {
                   type: 'error',
+                  errorType: response.data.type,
+                  navigation: navigation,
                   message: response.data.errMsg ? response.data.errMsg : '청약홈 인증 중\n오류가 발생했어요.\n입력하신 정보를 다시 확인해주세요.',
                   description: response.data?.errMsgDtl ? response.data?.errMsgDtl : '',
                   buttontext: '다시 확인하기',
@@ -384,6 +386,8 @@ const CertificationAcq = props => {
               await SheetManager.show('info', {
                 payload: {
                   type: 'error',
+                  errorType: response.data.type,
+                  navigation: navigation,
                   message: response.data.errMsg ? response.data.errMsg : '청약홈 인증 중\n오류가 발생했어요.\n입력하신 정보를 다시 확인해주세요.',
                   description: response.data?.errMsgDtl ? response.data?.errMsgDtl : '',
                   buttontext: '다시 확인하기',
@@ -396,6 +400,8 @@ const CertificationAcq = props => {
               await SheetManager.show('info', {
                 payload: {
                   type: 'error',
+                  errorType: response.data.type,
+                  navigation: navigation,
                   message: response.data.errMsg ? response.data.errMsg : '청약홈 인증 중\n오류가 발생했어요.\n입력하신 정보를 다시 확인해주세요.',
                   description: response.data?.errMsgDtl ? response.data?.errMsgDtl : '',
                   buttontext: '다시 확인하기',
@@ -407,6 +413,8 @@ const CertificationAcq = props => {
               await SheetManager.show('info', {
                 payload: {
                   type: 'error',
+                  errorType: response.data.type,
+                  navigation: navigation,
                   message: response.data.errMsg ? response.data.errMsg : '청약홈 정보를 불러오는 중\n오류가 발생했어요.\n인증을 다시 진행해주세요.',
                   description: response.data?.errMsgDtl ? response.data?.errMsgDtl : '',
                   buttontext: '인증하기',
@@ -419,6 +427,7 @@ const CertificationAcq = props => {
               await SheetManager.show('info', {
                 payload: {
                   type: 'error',
+                  errorType: response.data.type,
                   message: response.data.errMsg ? response.data.errMsg : '청약홈 인증 결과\n청약통장을 보유하고 있지 않으시군요.\n보유주택을 직접 등록해주세요.',
                   description: response.data?.errMsgDtl ? response.data?.errMsgDtl : '',
                   buttontext: '직접 등록하기',
@@ -443,6 +452,8 @@ const CertificationAcq = props => {
             await SheetManager.show('info', {
               payload: {
                 type: 'error',
+                errorType: response.data.type,
+                navigation: navigation,
                 message: response.data.errMsg ? response.data.errMsg : '청약홈 정보를 불러오는 중\n오류가 발생했어요.\n인증을 다시 진행해주세요.',
                 description: response.data?.errMsgDtl ? response.data?.errMsgDtl : '',
                 buttontext: '인증하기',
@@ -456,6 +467,8 @@ const CertificationAcq = props => {
           await SheetManager.show('info', {
             payload: {
               type: 'error',
+              errorType: response.data.type,
+              navigation: navigation,
               message: response.data.errMsg ? response.data.errMsg : '청약홈 인증 결과\n청약통장을 보유하고 있지 않으시군요.\n보유주택을 직접 등록해주세요.',
               description: response.data?.errMsgDtl ? response.data?.errMsgDtl : '',
               buttontext: '직접 등록하기',
@@ -478,6 +491,8 @@ const CertificationAcq = props => {
           await SheetManager.show('info', {
             payload: {
               type: 'error',
+              errorType: response.data.type,
+              navigation: navigation,
               message: '본인인증 중 오류가 발생했습니다.\n입력하신 정보를 다시 확인해주세요.',
               description: response.data.errMsg ? response.data.errMsg : '',
               buttontext: '다시 확인하기',
@@ -491,6 +506,8 @@ const CertificationAcq = props => {
             await SheetManager.show('info', {
               payload: {
                 type: 'error',
+                errorType: response.data.type,
+                navigation: navigation,
                 message: response.data.errMsg ? response.data.errMsg : '청약홈에서 정보를 불러오는 중\n오류가 발생했어요.\n인증을 다시 진행해주세요.',
                 description: response.data?.errMsgDtl ? response.data?.errMsgDtl : null,
                 buttontext: '확인하기',
@@ -537,6 +554,7 @@ const CertificationAcq = props => {
       userId: id,
       userPw: password,
       calcType: isGainsTax,
+      isDummy: false
     };
     console.log('certdata : ', data);
     try {
@@ -577,6 +595,7 @@ const CertificationAcq = props => {
         if (name.trim() === '' || phone.trim() === '' || residentNumber.trim() === '') {
           SheetManager.show('info', {
             payload: {
+              errorType: 1,
               message: '정보를 모두 입력해주세요.',
               description: 'InputAlert',
               type: 'info',
@@ -588,6 +607,7 @@ const CertificationAcq = props => {
         if (id.trim() === '' || password.trim() === '' || residentNumber.trim() === '') {
           SheetManager.show('info', {
             payload: {
+              errorType: 1,
               message: '정보를 모두 입력해주세요.',
               description: 'InputAlert2',
               type: 'info',

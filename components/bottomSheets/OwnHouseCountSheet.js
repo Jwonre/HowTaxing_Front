@@ -145,6 +145,7 @@ const OwnHouseCountSheet = props => {
           SheetManager.show('info', {
             payload: {
               type: 'error',
+              errorType: response.data.type,
               message: response.data.errMsg ? response.data.errMsg : '추가질의를 가져오지 못했어요.',
               description: response.data.errMsgDtl ? response.data.errMsgDtl : '',
               buttontext: '확인하기',
@@ -362,7 +363,7 @@ const OwnHouseCountSheet = props => {
                   // console.log('additionalQuestion', additionalQuestion);
                   let chat3;
                   if (additionalQuestion.returndata) {
-                    if (additionalQuestion.detaildata?.hasNextQuestion === true) {
+                    if (additionalQuestion.detaildata?.hasNextQuestion) {
                       if (additionalQuestion.detaildata?.nextQuestionId === 'Q_0007') {
                         let chatIndex = acquisitionTax.findIndex(el => el.id === 'additionalQuestion');
                         if (chatIndex !== -1) {

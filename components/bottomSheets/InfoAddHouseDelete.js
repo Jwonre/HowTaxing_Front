@@ -8,10 +8,8 @@ import CloseIcon from '../../assets/icons/close_button.svg';
 import DropShadow from 'react-native-drop-shadow';
 import InfoCircleIcon from '../../assets/icons/info_circle.svg';
 import { useDispatch, useSelector } from 'react-redux';
-import { setCurrentUser } from '../../redux/currentUserSlice';
-import axios from 'axios';
+import { setAddHouseList } from '../../redux/addHouseListSlice';
 import NetInfo from "@react-native-community/netinfo"
-import Config from 'react-native-config'
 
 const SheetContainer = styled.View`
   background-color: #fff;
@@ -22,38 +20,15 @@ const SheetContainer = styled.View`
 const ModalTitle = styled.Text`
   width: 100%;
   font-size: 17px;
-  font-family: Pretendard-Bold;
+  font-family: Bold;
   color: #1b1c1f;
   line-height: 26px;
   text-align: center;
-  margin-top: 15px;
 `;
 
 
 const BoldText = styled.Text`
   font-family: Pretendard-Bold;
-`;
-
-const ModalDescription = styled.Text`
-  font-size: 14px;
-  font-family: Bold;
-  width:100%;
-  color: #1b1c1f;
-  line-height: 22px;
-  margin-top: 10px;
-  margin-bottom: 10px;
-  text-align: left;
-`;
-
-const Modaldetail = styled.Text`
-  width: 100%;
-  font-size: 12px;
-  font-family: Bold;
-  color: #1b1c1f;
-  line-height: 20px;
-  margin-top: 15px;
-  text-align: left;
-  margin-bottom: 10px;
 `;
 
 const ModalContentSection = styled.View`
@@ -104,11 +79,11 @@ const ButtonText = styled.Text`
   line-height: 20px;
 `;
 
-const InfoHandleWithDraw = props => {
+const InfoFixHouseDelete = props => {
   const actionSheetRef = useRef(null);
   const dispatch = useDispatch();
   const navigation = props.payload?.navigation;
-  const currentUser = useSelector(state => state.currentUser.value);
+  const AddHouseList = useSelector(state => state.addHouseList.value);
   const { width, height } = useWindowDimensions();
   // ////console.log('[InfoSimple] props', props);
 
@@ -135,68 +110,6 @@ const InfoHandleWithDraw = props => {
     });
   };
 
-  const handleWithDraw = (accessToken) => {
-    // 요청 헤더
-    const headers = {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${accessToken}`
-    };
-    console.log('headers', headers);
-    // 요청 바디
-
-    axios
-      .delete(`${Config.APP_API_URL}user/withdraw`, { headers: headers })
-      .then(async response => {
-        console.log('response', response);
-        if (response.data.errYn === 'Y') {
-          actionSheetRef.current?.hide();
-          setTimeout(async() => {
-            await SheetManager.show('info', {
-              payload: {
-                type: 'error',
-                errorType: response.data.type,
-                message: response.data.errMsg ? response.data.errMsg : '회원탈퇴에 문제가 발생했어요.',
-                description: response.data.errMsgDtl ? response.data.errMsgDtl : null,
-                buttontext: '확인하기',
-              },
-            });
-            return;
-          }, 300)
-        } else {
-          actionSheetRef.current?.hide();
-          setTimeout(async () => {
-            await SheetManager.show('info', {
-              payload: {
-                type: 'info',
-                errorType: response.data.type,
-                message: '회원탈퇴에 성공했어요.',
-                buttontext: '확인하기',
-              },
-            });
-            dispatch(setCurrentUser(null));
-          }, 300)
-
-          // 성공적인 응답 처리
-          // const { id } = response.data;
-          //    ////console.log("1111111", response);
-        }
-      })
-      .catch(error => {
-        actionSheetRef.current?.hide();
-        // 오류 처리
-        setTimeout(() => {
-          SheetManager.show('info', {
-            payload: {
-              message: '회원탈퇴에 실패했어요.',
-              description: error?.message,
-              type: 'error',
-              buttontext: '확인하기',
-            }
-          });
-          return;
-        }, 300)
-      });
-  };
 
 
   return (
@@ -231,10 +144,11 @@ const InfoHandleWithDraw = props => {
           <InfoCircleIcon
             style={{
               color: '#FF7401',
+              marginBottom: 20,
             }}
           />
           <ModalTitle >
-            <BoldText>회원탈퇴를 하시겠어요?</BoldText>
+            <BoldText>주택을 정말로 삭제하실건가요?</BoldText>
           </ModalTitle>
         </ModalContentSection>
 
@@ -242,20 +156,14 @@ const InfoHandleWithDraw = props => {
           <View
             style={{
               flexDirection: 'row',
-              alignContent: 'center'
+              alignContent: 'center',
+              marginTop: 10,
             }}
           >
             <DropShadow
               style={{
                 flexDirection: 'row',
                 alignContent: 'center',
-                shadowColor: 'rgba(0,0,0,0.25)',
-                shadowOffset: {
-                  width: 0,
-                  height: 0,
-                },
-                shadowOpacity: 0,
-                shadowRadius: 2,
                 alignSelf: 'center',
                 width: 130,
                 marginRight: 10,
@@ -286,10 +194,18 @@ const InfoHandleWithDraw = props => {
 
               }}>
               <Button
-                onPress={() => {
-                  handleWithDraw(currentUser.accessToken);
+                onPress={async () => {
+                  const state = await NetInfo.fetch();
+                  const canProceed = await handleNetInfoChange(state);
+                  if (canProceed) {
+                    actionSheetRef.current?.hide();
+                    var list = AddHouseList;
+                    const updatedList = list.filter((_, i) => i !== props?.payload?.index);
+                    console.log('updatedList', updatedList);
+                    dispatch(setAddHouseList(updatedList))
+                  }
                 }}>
-                <ButtonText >네</ButtonText>
+                <ButtonText>네</ButtonText>
               </Button>
             </DropShadow>
           </View>
@@ -299,4 +215,4 @@ const InfoHandleWithDraw = props => {
   );
 };
 
-export default InfoHandleWithDraw;
+export default InfoFixHouseDelete;

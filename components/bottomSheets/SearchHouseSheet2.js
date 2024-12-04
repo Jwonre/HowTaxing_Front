@@ -419,6 +419,7 @@ const SearchHouseSheet2 = props => {
                SheetManager.show('info', {
                  payload: {
                    type: 'error',
+                   errorType: result.data.type,
                    message: parsedData.resultssetListData.common.errorMessage,
                    description: parsedData.results.common.errorMessage,
                  },
@@ -432,6 +433,7 @@ const SearchHouseSheet2 = props => {
                SheetManager.show('info', {
                  payload: {
                    type: 'error',
+                   errorType: result.data.type,
                    message: '검색 결과가 없습니다.',
                    description: '검색 결과가 없습니다.',
                  },
@@ -476,6 +478,7 @@ const SearchHouseSheet2 = props => {
           SheetManager.show('info', {
             payload: {
               type: 'error',
+              errorType: response.data.type,
               message: response.data.errMsg ? response.data.errMsg : '주소 검색 중 오류가 발생했어요.',
               description: response.data.errMsgDtl ? response.data.errMsgDtl : '',
               closemodal: true,
@@ -493,6 +496,7 @@ const SearchHouseSheet2 = props => {
               SheetManager.show('info', {
                 payload: {
                   type: 'error',
+                  errorType: response.data.type,
                   message: '검색 결과가 없어요.',
                   buttontext: '확인하기',
                 },
@@ -504,6 +508,7 @@ const SearchHouseSheet2 = props => {
             SheetManager.show('info', {
               payload: {
                 type: 'error',
+                errorType: response.data.type,
                 message: response.data.errMsg ? response.data.errMsg : '주소 검색 중 오류가 발생했어요.',
                 description: response.data.errMsgDtl ? response.data.errMsgDtl : '',
                 closemodal: true,
@@ -561,6 +566,7 @@ const SearchHouseSheet2 = props => {
             SheetManager.show('info', {
               payload: {
                 type: 'error',
+                errorType: response.data.type,
                 message: parsedData.results.common.errorMessage,
                 description: parsedData.results.common.errorMessage,
               },
@@ -574,6 +580,7 @@ const SearchHouseSheet2 = props => {
             SheetManager.show('info', {
               payload: {
                 type: 'error',
+                errorType: response.data.type,
                 message: '검색 결과가 없습니다.',
                 description: '검색 결과가 없습니다.',
               },
@@ -616,6 +623,7 @@ const SearchHouseSheet2 = props => {
           SheetManager.show('info', {
             payload: {
               type: 'error',
+              errorType: response.data.type,
               message: response.data.errMsg ? response.data.errMsg : '주소 검색 중 오류가 발생했어요.',
               description: response.data.errMsgDtl ? response.data.errMsgDtl : '',
               closemodal: true,
@@ -633,6 +641,7 @@ const SearchHouseSheet2 = props => {
               SheetManager.show('info', {
                 payload: {
                   type: 'error',
+                  errorType: response.data.type,
                   message: '검색 결과가 없어요.',
                   buttontext: '확인하기',
                 },
@@ -644,6 +653,7 @@ const SearchHouseSheet2 = props => {
             SheetManager.show('info', {
               payload: {
                 type: 'error',
+                errorType: response.data.type,
                 message: response.data.errMsg ? response.data.errMsg : '주소 검색 중 오류가 발생했어요.',
                 description: response.data.errMsgDtl ? response.data.errMsgDtl : '',
                 closemodal: true,
@@ -695,6 +705,7 @@ const SearchHouseSheet2 = props => {
         SheetManager.show('info', {
           payload: {
             type: 'error',
+            errorType: response.data.type,
             message: response.data.errMsg ? response.data.errMsg : '주택의 호수를 불러오는데 문제가 발생했어요.',
             description: response.data.errMsgDtl ? response.data.errMsgDtl : null,
             closemodal: true,
@@ -759,6 +770,7 @@ const SearchHouseSheet2 = props => {
         SheetManager.show('info', {
           payload: {
             type: 'error',
+            errorType: response.data.type,
             message: response.data.errMsg ? response.data.errMsg : '주택의 동 목록을 불러오는데 문제가 발생했어요.',
             description: response.data.errMsgDtl ? response.data.errMsgDtl : null,
             closemodal: true,
