@@ -220,7 +220,7 @@ const InfoAlert = props => {
         backgroundColor: '#fff',
         borderTopLeftRadius: 20,
         borderTopRightRadius: 20,
-        height: errorMessage ? props.payload?.errorType !== 1 && props.payload?.errorType !== undefined ? 490 : 420 : props?.payload?.type === 'error' ? props.payload?.errorType !== 1 && props.payload?.errorType !== undefined ? 350 : 320 : 280,
+        height: errorMessage ? props.payload?.errorType !== 1 && props.payload?.errorType !== undefined ? 490 : 420 : props?.payload?.type === 'error' ? props.payload?.errorType !== 1 && props.payload?.errorType !== undefined ? 350 : 320 : 300,
         width: width - 40
       }}>
       <SheetContainer width={width}>
