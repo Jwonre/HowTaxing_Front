@@ -4,7 +4,7 @@ import { Modal, View, Text, Pressable, StyleSheet, Dimensions } from 'react-nati
 import styled from 'styled-components';
 import InfoCircleIcon from '../../../assets/icons/info_circle.svg';
 
-InfoCircleIcon
+
 const ModalContainer = styled.View`
   background-color: #fff;
   border-radius: 12px;

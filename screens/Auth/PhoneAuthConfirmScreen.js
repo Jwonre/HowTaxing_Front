@@ -543,25 +543,33 @@ const styles = StyleSheet.create({
   bigTitle: {
     fontSize: 25,
     marginTop: 15,
-    marginBottom: 20,
+    marginBottom: 10,
     color: '#1b1C1F',
     fontFamily: 'Pretendard-Bold', // 원하는 폰트 패밀리
     fontWeight: '700', // 폰트 두께 (400은 기본)
+
+    lineHeight: 30,
+    letterSpacing: -0.5,
   },
 
   label: {
     fontSize: 17,
     marginBottom: 5,
+    lineHeight:20,
+    letterSpacing:-0.3,
     color: '#1b1C1F',
     fontFamily: 'Pretendard-Bold', // 원하는 폰트 패밀리
     fontWeight: '700', // 폰트 두께 (400은 기본)
   },
   bigSubTitleLabel: {
-    fontSize: 17,
+    fontSize: 14,
     marginBottom: 30,
-    color: '#A3A5A8',
+    color: '#a3a5a8',
     fontFamily: 'Pretendard-Bold', // 원하는 폰트 패밀리
     fontWeight: '700', // 폰트 두께 (400은 기본)
+    lineHeight:20,
+    textAlign: 'left',
+
   },
   subTitleLabel: {
     fontSize: 13,
@@ -633,8 +641,8 @@ const styles = StyleSheet.create({
   loginButtonLabel: {
     color: '#fff',
     fontSize: 17,
-    fontFamily: 'Pretendard-Medium', // 원하는 폰트 패밀리
-    fontWeight: 'medium',
+    fontFamily: 'Pretendard-Bold', // 원하는 폰트 패밀리
+    fontWeight: '700',
   },
   footer: {
     flexDirection: 'row',

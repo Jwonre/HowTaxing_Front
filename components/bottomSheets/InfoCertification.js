@@ -949,7 +949,7 @@ const InfoCertification = props => {
             <ModalTitle >{props?.payload?.message}</ModalTitle>
           )}
           {certType === 'toss' && (
-            <ModalTitle >{appStatus.kb.toss === true ?
+            <ModalTitle >{appStatus.toss.toss === true ?
               props?.payload?.message : '인증 앱을 해당 기기에서 찾을 수 없어요.\n먼저 인증하실 서비스를 설치해주세요.'}</ModalTitle>
 
           )}
@@ -992,7 +992,7 @@ const InfoCertification = props => {
                 shadowOpacity: 0.15,
                 shadowRadius: 2,
                 alignSelf: 'center',
-                width: certType ==='KB' ?'100%' :'45%', // 버튼 너비를 부모 View의 45%로 설정
+                width: certType ==='KB' ?'100%' :'49%', // 버튼 너비를 부모 View의 45%로 설정
               }}
             >
               <Button
@@ -1041,7 +1041,7 @@ const InfoCertification = props => {
                   shadowOpacity: 0.15,
                   shadowRadius: 2,
                   alignSelf: 'center',
-                  width: '45%', // 버튼 너비를 부모 View의 45%로 설정
+                  width: '49%', // 버튼 너비를 부모 View의 45%로 설정
                 }}
               >
                 <Button
