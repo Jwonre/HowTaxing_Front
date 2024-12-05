@@ -1,6 +1,7 @@
 // 양도소득세 홈페이지
 
-import { TouchableOpacity, useWindowDimensions, BackHandler, View, ScrollView, Animated, Text, TextInput } from 'react-native';
+import { TouchableOpacity, useWindowDimensions, BackHandler, View, ScrollView, Animated, Text, TextInput,  StyleSheet,
+} from 'react-native';
 import { FlatList } from 'react-native-gesture-handler';
 import React, { useRef, useLayoutEffect, useState, useCallback, useEffect } from 'react';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
@@ -431,17 +432,8 @@ const Payment = props => {
   }
 
   const handleBackPress = () => {
-    if (currentPageIndex === 0) {
-      SheetManager.show('InfoConsultingCancel', {
-        payload: {
-          type: 'info',
-          message: '상담 예약을 다음에 하시겠어요?',
-          onPress: { handlePress },
-        },
-      });
-    } else {
-      setCurrentPageIndex(currentPageIndex - 1);
-    }
+    navigation.goBack();
+
     return true;
   }
   useFocusEffect(
@@ -455,26 +447,8 @@ const Payment = props => {
 
   const [isConnected, setIsConnected] = useState(true);
 
-  {/*useEffect(() => {
-    _scrollViewRef.current?.scrollTo({
-      x: (width) * currentPageIndex,
-      y: 0,
-      animated: true,
-    });
-    setTimeout(() => {
-      if (currentPageIndex !== 4) {
-        setIsExpanded(false);
-      }
-    }, 300)
+ 
 
-  }, [currentPageIndex]);*/}
-  useEffect(() => {
-    setTimeout(() => {
-      if (currentPageIndex !== 4) {
-        setIsExpanded(false);
-      }
-    }, 300)
-  }, [currentPageIndex]);
   const handleNetInfoChange = (state) => {
     return new Promise((resolve, reject) => {
       if (!state.isConnected && isConnected) {
@@ -493,23 +467,6 @@ const Payment = props => {
     });
   };
 
-  useEffect(() => {
-    if (props.route.params.IsGainTax !== undefined) {
-      if (props.route.params.IsGainTax) {
-        setTaxTypeList(['양도소득세']);
-      } else {
-        setTaxTypeList(['취득세']);
-      }
-    }
-    console.log('props.route.params.IsGainTax', props.route.params.IsGainTax);
-  }, []);
-
-  useEffect(() => {
-    if (currentPageIndex === 2) {
-      getDateTimelist('1', '');
-    }
-  }, [currentPageIndex]);
-
 
   useEffect(() => {
     const focusInput = () => {
@@ -526,181 +483,8 @@ const Payment = props => {
   }, [currentPageIndex]);
 
 
-  useEffect(() => {
-    if (selectedDate && currentPageIndex === 3) {
-      console.log('selectedDate', selectedDate);
-      getDateTimelist('2', selectedDate);
-    }
-    //console.log('timeList', timeList);
-  }, [selectedDate, currentPageIndex]);
 
-  const getDateTimelist = async (searchType, selectedDate) => {
-    var consultantId = 1;
-    const url = searchType === '1' ? `${Config.APP_API_URL}consulting/availableSchedule?consultantId=${consultantId}&searchType=${searchType}` : `${Config.APP_API_URL}consulting/availableSchedule?consultantId=${consultantId}&searchType=${searchType}&searchDate=${selectedDate.getFullYear()}-${(selectedDate.getMonth() + 1).toString().padStart(2, '0')}-${selectedDate.getDate().toString().padStart(2, '0')}`;
-    //const url = `https://devapp.how-taxing.com/consulting/availableSchedule?consultantId=${consultantId}&searchType="${searchType}"`;
-    const headers = {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${currentUser.accessToken}`
-    };
-    /*
-    const params = {
-      consultantId: consultantId,
-      searchType: searchType,
-    }*/
-    console.log('url', url);
-    // console.log('params', params);
-    console.log('headers', headers);
-    await axios
-      .get(url,
-        { headers: headers }
-      )
-      .then(response => {
-        console.log('response.data', response.data);
-        if (response.data.errYn === 'Y') {
-          SheetManager.show('info', {
-            payload: {
-              type: 'error',
-              message: response.data.errMsg ? response.data.errMsg : '상담 가능 일정을 불러오는데 문제가 발생했어요.',
-              description: response.data.errMsgDtl ? response.data.errMsgDtl : '',
-              buttontext: '확인하기',
-            },
-          });
-          return;
-        } else {
-          if (searchType === "1") {
-            //console.log('response.data', response.data.data);
-            //console.log('response.data.dateList', response.data.data.dateList);
-            const result = response === undefined ? [] : response.data.data.dateList;
-            const list = result
-              .filter(item => item.isReservationAvailable)
-              .map(item => item.consultingDate);
-
-            console.log('list:', list);
-            setDataList([...list]);
-          } else if (searchType === "2") {
-            const result = response === undefined ? [] : response.data.data.timeList;
-            const list = result
-              .filter(item => item.reservationStatus === "1")
-              .map(item => item.consultingTime);
-
-            console.log('list:', list);
-            setTimeList([...list]);
-          }
-        }
-
-      })
-      .catch(function (error) {
-        SheetManager.show('info', {
-          payload: {
-            message: '상담 가능 일정을 불러오는데 문제가 발생했어요.',
-            description: error?.message ? error?.message : '오류가 발생했습니다.',
-            type: 'error',
-            buttontext: '확인하기',
-          }
-        });
-        ////console.log(error ? error : 'error');
-      });
-  };
-
-  const requestReservation = async () => {
-    console.log('selectedDate', selectedDate);
-    var NumTaxTypeList = taxTypeList.map(taxType => {
-      switch (taxType) {
-        case "취득세":
-          return "01";
-        case "양도소득세":
-          return "02";
-        case "상속세":
-          return "03";
-        case "증여세":
-          return "04";
-        default:
-          return "";
-      }
-    });
-    const year = selectedDate.getFullYear();
-    const month = String(selectedDate.getMonth() + 1).padStart(2, '0'); // 월은 0부터 시작하므로 1을 더해줍니다.
-    const day = String(selectedDate.getDate()).padStart(2, '0');
-    const accessToken = currentUser.accessToken;
-    // 요청 헤더
-    const headers = {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${accessToken}`
-    };
-
-    // 요청 바디
-    const data = {
-      consultantId: '1',
-      customerName: name ? name : '',
-      customerPhone: phone ? phone : '',
-      reservationDate: selectedDate ? `${year}-${month}-${day}` : '',
-      reservationTime: selectedList ? selectedList[0] : '',
-      consultingType: NumTaxTypeList ? NumTaxTypeList.sort().join(",") : '',
-      consultingInflowPath: props?.route.params.IsGainTax ? '02' : '01',
-      calcHistoryId: Pdata.calcHistoryId ? Pdata.calcHistoryId : '',
-      consultingRequestContent: text ? text : '',
-    };
-    //console.log('Payment2 data', data);
-    //console.log('headers', headers);
-    try {
-      const response = await axios.post(`${Config.APP_API_URL}consulting/reservationApply`, data, { headers: headers });
-      if (response.data.errYn === 'Y') {
-
-        if (response.data.errCode === 'CONSULTING-013') {
-          setCurrentPageIndex(3);
-          setTimeout(async () => {
-            await getDateTimelist('1', '');
-            if (dataList.length === 0) {
-              await SheetManager.show('info', {
-                payload: {
-                  type: 'info',
-                  message: '앗, 현재 모든 예약이 완료되었어요.\n나중에 다시 시도해주세요.',
-                  buttontext: '확인하기',
-                },
-              });
-              navigation.goBack();
-            } else {
-              await getDateTimelist('2', selectedDate);
-              setSelectedList([]);
-            }
-          }, 300);
-        } else {
-          await SheetManager.show('info', {
-            payload: {
-              type: 'error',
-              message: response.data.errMsg ? response.data.errMsg : '상담 예약 중 오류가 발생했어요.',
-              description: response.data.errMsgDtl ? response.data.errMsgDtl : '',
-              buttontext: '확인하기',
-            },
-          });
-        }
-        return false;
-      } else {
-        if (response.data.data && response.data.data.isApplyComplete === true) {
-          const result = response.data.data;
-          await SheetManager.show('InfoConsulting', {
-            payload: {
-              message: '상담 예약이 확정되었어요.',
-              description: '요청하신 ' + result.reservationDate + ' 일자에\n주택세금 상담 예약이 확정되었어요.\n세무사님이 예약된 시간이 되면\n연락을 드릴 예정이에요.\n하우택싱을 이용해주셔서 감사해요.',
-              buttontext: '처음으로 돌아가기',
-            },
-          });
-          return true;
-        } else {
-          return false;
-        }
-      }
-    } catch (error) {
-      SheetManager.show('info', {
-        type: 'error',
-        message: error?.errMsg ? error?.errMsg : '상담 예약 중 오류가 발생했어요.',
-        errorMessage: error?.errCode ? error?.errCode : 'error',
-        buttontext: '확인하기',
-      });
-      console.error(error ? error : 'error');
-      return false;
-    }
-  };
+  
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -709,20 +493,20 @@ const Payment = props => {
           activeOpacity={0.6}
           hitSlop={{ top: 20, bottom: 20, left: 20, right: 20 }}
           onPress={() => {
-            console.log('currentPageIndex', currentPageIndex);
-            SheetManager.show('InfoConsultingCancel', {
-              payload: {
-                type: 'info',
-                message: '상담 예약을 다음에 하시겠어요?',
-                onPress: { handlePress },
-              },
-            });
+            // SheetManager.show('InfoConsultingCancel', {
+            //   payload: {
+            //     type: 'info',
+            //     message: '상담 예약을 다음에 하시겠어요?',
+            //     onPress: { handlePress },
+            //   },
+            // });
+            navigation.goBack();
           }}>
           <CloseIcon />
         </TouchableOpacity>
       ),
       headerTitleAlign: 'center',
-      title: '상담 예약하기',
+      title: '결제하기',
       headerShadowVisible: false,
       contentStyle: {
         borderTopColor: '#F7F7F7',
@@ -735,7 +519,7 @@ const Payment = props => {
         letterSpacing: -0.8,
       },
     });
-  }, [currentPageIndex]);
+  }, []);
 
   const handlePress = buttonIndex => {
     if (buttonIndex === 'YES') {
@@ -744,780 +528,1063 @@ const Payment = props => {
   };
 
   return (
-    <ScrollView
-      ref={_scrollViewRef}
-      pagingEnabled
-      style={{
-        width: width,
-      }}
-      horizontal
-      keyboardShouldPersistTaps='always'
-      showsHorizontalScrollIndicator={false}
-      scrollEnabled={false}
-      scrollEventThrottle={16}>
-      {currentPageIndex === 0 && <Container style={{ width: width }}>
-        <ProgressSection>
-        </ProgressSection>
+    <View style={styles.rootContainer}>
+      {/* 파란색 라인 */}
+      <ProgressSection>
+      </ProgressSection>
 
-        <><IntroSection>
-          <ProfileAvatar
-            source={require('../../assets/images/Minjungum_Lee_consulting.png')} />
-        </IntroSection>
-          <View style={{
-            marginLeft: '5%',
-            width: '90%',
-            borderBottomWidth: 1,
-            borderBottomColor: '#E8EAED', flexDirection: 'row', justifyContent: 'space-between'
-          }}>
-            <ProfileSection style={{
-              flexDirection: 'column', alignItems: 'flex-start',  // 변경 
-              justifyContent: 'flex-start',  // 변경
-              alignSelf: 'flex-start',  // 변경 
-              zIndex: 2,
-              width: '50%',
-              borderBottomWidth: 0,
-              marginLeft: 0
-            }}>
-              <ProfileTitle>이민정음 세무사</ProfileTitle>
-              <ProfileSubTitle>JS회계법인</ProfileSubTitle>
-              <ProfileSubTitle2>세무사, 공인중개사 전문가</ProfileSubTitle2>
-            </ProfileSection>
-            <ProfileSection style={{
-              flexDirection: 'column',
-              alignItems: 'flex-end',  // 변경 
-              justifyContent: 'flex-end',  // 변경
-              alignSelf: 'flex-end',
-              zIndex: 2,
-              width: '50%',
-              marginLeft: 0,
-              borderBottomWidth: 0,
-            }}>
-              <View style={{
-                flexDirection: 'row',
-                zIndex: 2,
-                marginBottom: -10
-              }}>
-                <Tag style={{ color: '#fff', borderColor: '#2F87FF', backgroundColor: '#2F87FF', marginRight: 5 }}><TagText style={{ color: '#FFFFFF' }}>양도소득세</TagText></Tag>
-                <Tag style={{ color: '#fff', borderColor: '#2F87FF', backgroundColor: '#2F87FF', width: 50 }}><TagText style={{ color: '#FFFFFF' }}>증여세</TagText></Tag>
-              </View>
-              <View style={{
-                flexDirection: 'row',
-                zIndex: 2,
-              }}>
-                <Tag style={{ color: '#fff', borderColor: '#2F87FF', backgroundColor: '#2F87FF', width: 50 }}><TagText style={{ color: '#FFFFFF' }}>상속세</TagText></Tag>
-              </View>
-            </ProfileSection>
-          </View>
-          <ProfileSection>
-            <ProfileSubTitle3>1,000건 이상의 재산제세 경험을 바탕으로 양도, 증여, 상속에 관한
-              전문적인 상담 및 컨설팅 진행 도와드리겠습니다.{'\n'}감사합니다.</ProfileSubTitle3>
-          </ProfileSection>
-          <ProfileSection style={{
-            borderBottomWidth: 0, marginTop: 10, flexDirection: 'row', justifyContent: 'space-between'
-          }}>
-            <View style={{
-              flexDirection: 'column',
-              alignItems: 'left',
-              justifyContent: 'left',
-              alignSelf: 'left',
-              zIndex: 2,
-              width: '50%',
-            }}>
-              <ProfileTitle style={{ marginBottom: 10 }}>전문분야</ProfileTitle>
-              <ProfileSubTitle2>• 양도/상속/증여세 신고{'\n'}
-                • 자금출처조사{'\n'}
-                • 부동산 관련 절세{'\n'}
-                • 상속 및 가업승계</ProfileSubTitle2>
-            </View>
-            <View style={{
-              flexDirection: 'column',
-              alignItems: 'left',
-              justifyContent: 'left',
-              alignSelf: 'left',
-              zIndex: 2,
-              width: '50%',
-            }}>
-              <ProfileTitle style={{ marginBottom: 10 }}>주요경력</ProfileTitle>
-              <ProfileSubTitle2>• 텍스온세무법인 2021{'\n'}
-                • 신승세무법인 2021{'\n'}
-                • JS세무회계 2023</ProfileSubTitle2>
-            </View>
-          </ProfileSection>
-          <ButtonSection>
-            <ShadowContainer>
-              <Button
-                width={width}
-                onPress={async () => {
-                  const state = await NetInfo.fetch();
-                  const canProceed = await handleNetInfoChange(state);
-                  if (canProceed) {
-                    setCurrentPageIndex(1);
-                  }
-                }}>
-                <ButtonText >다음으로</ButtonText>
-              </Button>
-            </ShadowContainer>
-            <View
-              style={{
-                marginTop: 5,
-                marginBottom: 5,
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'center',
-                alignSelf: 'center',
-                zIndex: 2,
-              }}>
-              {currentPageIndexList?.map((item, index) => (
-                <TouchableOpacity
-                  key={index}
-                  activeOpacity={0.6}
-                  hitSlop={{ top: 20, bottom: 20, left: 20, right: 20 }}
-                  style={{
-                    width: 0 === index ? 20 : 8, // Elongate the dot
-                    height: 8,
-                    borderRadius: 4,
-                    backgroundColor: 0 === index ? '#2F87FF' : '#1b1c1f',
-                    borderWidth: 1,
-                    borderColor: 0 === index ? '#2F87FF' : '#1b1c1f',
-                    marginRight: 4,
-                  }}
-                />
-              ))}
-            </View>
-          </ButtonSection></>
-      </Container>}
-
-      {currentPageIndex === 1 && <Container style={{ width: width }}>
-        <ProgressSection>
-        </ProgressSection>
+      {/* 스크롤 뷰 */}
+      <ScrollView contentContainerStyle={styles.scrollContent}
+        keyboardShouldPersistTaps="handled">
+        {/* Input Section */}
+        <View style={styles.baseContent}>
+          <Text style={styles.bigTitle}>입력 정보를 확인하신 후 결제해주세요.</Text>
+          <View style={styles.Line1} />
 
 
-        <><IntroSection2 style={{ width: width }}>
-          <Title>고객님의 이름을 알려주세요.</Title>
-          <SubTitle>이름을 밝히고 싶지않다면 닉네임도 괜찮아요.</SubTitle>
-        </IntroSection2>
-          <ModalInputSection>
-            <ModalInputContainer>
-              <ModalInput
-                ref={input1}
-                //  onSubmitEditing={() => input2.current.focus()}
-                autoFocus={currentPageIndex === 1}
-                placeholder="이름을 입력해주세요."
-                value={name}
-                onChangeText={setName}
-                maxLength={20}
-                autoCompleteType="name"
-                autoCapitalize="none"
-                onSubmitEditing={async () => {
-                  const state = await NetInfo.fetch();
-                  const canProceed = await handleNetInfoChange(state);
-                  if (canProceed) {
-                    if (name.length > 0) {
-                      setCurrentPageIndex(2);
-                    }
-                  }
+          {/* Label */}
+          <Text style={styles.label}>휴대폰 번호</Text>
+          <Text style={styles.subTitleLabel}>본인 인증을 위해 휴대폰 번호를 알려주세요.</Text>
+
+          {/* Input Field */}
+          {/* <View style={styles.inputWrapper}>
+            <TextInput
+              ref={inputRef} // ref 연결
+              keyboardType="phone-pad" // 숫자 키보드 표시
+              maxLength={13} // 최대 11자리 (01012345678)
+              style={styles.input}
+              placeholder="휴대폰 번호를 입력해주세요."
+              placeholderTextColor="#A3A5A8"
+              value={phoneNumber}
+              onSubmitEditing={async () => {
+                const phoneCheck = await validatePhoneNum(phoneNumber);
+                console.log("sendAuthMobile:", phoneCheck);
+                setPhoneNumberOk(phoneCheck ? '2' : '3');
+
+              }
+
+              }
+              onChangeText={async (text) => { setPhoneNumber(formatPhoneNumber(text)); setPhoneNumberOk('1'); }}
+
+            />
+            {phoneNumberOk === '1' &&
+              <TouchableOpacity
+                style={styles.clearButton}
+                onPress={() => {
+                  setPhoneNumber('');
+                  setPhoneNumberOk('1');
                 }}
-              />
-            </ModalInputContainer>
-          </ModalInputSection>
-          <ButtonSection>
-            <ShadowContainer>
-              <Button
-                style={{
-                  backgroundColor: name.length < 1 ? '#E8EAED' : '#2F87FF',
-                  color: name.length < 1 ? '#1b1c1f' : '#FFFFFF',
-                }}
-                disabled={name.length < 1}
-                active={name.length > 0}
-                width={width}
-                onPress={async () => {
-                  const state = await NetInfo.fetch();
-                  const canProceed = await handleNetInfoChange(state);
-                  if (canProceed) {
-                    setCurrentPageIndex(2);
-                  }
-                }}>
-                <ButtonText >다음으로</ButtonText>
-              </Button>
-            </ShadowContainer>
-            <View
-              style={{
-                marginTop: 5,
-                marginBottom: 5,
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'center',
-                alignSelf: 'center',
-                zIndex: 2,
-              }}>
-              {currentPageIndexList?.map((item, index) => (
-                <TouchableOpacity
-                  key={index}
-                  activeOpacity={0.6}
-                  hitSlop={{ top: 20, bottom: 20, left: 20, right: 20 }}
-                  style={{
-                    width: 1 === index ? 20 : 8, // Elongate the dot
-                    height: 8,
-                    borderRadius: 4,
-                    backgroundColor: 1 === index ? '#2F87FF' : '#1b1c1f',
-                    borderWidth: 1,
-                    borderColor: 1 === index ? '#2F87FF' : '#1b1c1f',
-                    marginRight: 4,
-                  }}
-                />
-              ))}
-            </View>
-          </ButtonSection></>
+              >
 
-      </Container>}
-      {currentPageIndex === 2 && <Container style={{ width: width }}>
-        <ProgressSection>
-        </ProgressSection>
-        <><IntroSection2 style={{ width: width }}>
-          <Title>고객님의 전화번호를 알려주세요.</Title>
-          <SubTitle>세무사님께서 고객님에게 직접 연락을 드릴 예정이예요.</SubTitle>
-        </IntroSection2>
-          <ModalInputSection>
-            <ModalInputContainer>
-              <ModalInput
-                ref={input2}
-                //  onSubmitEditing={() => input2.current.focus()}
-                autoFocus={currentPageIndex === 2}
-                placeholder="전화번호를 입력해주세요."
-                value={phone}
-                onChangeText={setPhone}
-                maxLength={11}
-                keyboardType="phone-pad"
-                autoCompleteType="tel"
-                onSubmitEditing={async () => {
-                  const state = await NetInfo.fetch();
-                  const canProceed = await handleNetInfoChange(state);
-                  if (canProceed) {
-                    if (phone.length > 10) {
-                      setCurrentPageIndex(3);
-                    }
+                <DeleteIcon />
+              </TouchableOpacity>
+            }
+            {phoneNumberOk === '2' && <TouchableOpacity
+              style={styles.clearButton}
+              onPress={() => setPhoneNumber('')}
+            >
 
-                  }
-                }}
-              />
-            </ModalInputContainer>
-          </ModalInputSection>
-          <ButtonSection>
-            <View
-              style={{
-                alignItems: 'center', // align-items를 camelCase로 변경
-                flexDirection: 'row', // flex-direction을 camelCase로 변경
-                justifyContent: 'space-between', // justify-content를 camelCase로 변경 
-              }}>
-              <View style={{ width: '49%', marginRight: '1%' }}>
-                <Button
-                  style={{
-                    backgroundColor: '#fff',
-                    color: '#1b1c1f',
-                    width: '100%',
-                    height: 50, // height 값을 숫자로 변경하고 단위 제거
-                    alignItems: 'center', // align-items를 camelCase로 변경
-                    justifyContent: 'center', // justify-content를 camelCase로 변경
-                    borderWidth: 1, // border-width를 camelCase로 변경하고 단위 제거
-                    borderColor: '#E8EAED',
-                  }}
-                  width={width}
-                  onPress={async () => {
-                    const state = await NetInfo.fetch();
-                    const canProceed = await handleNetInfoChange(state);
-                    if (canProceed) {
-                      setCurrentPageIndex(1);
-                    }
-                  }}>
-                  <ButtonText style={{ color: '#717274' }}>이전으로</ButtonText>
-                </Button>
-              </View>
-              <ShadowContainer style={{
-                width: '49%', marginLeft: '1%', shadowColor: 'rgba(0,0,0,0.25)',
-                shadowOffset: {
-                  width: 0,
-                  height: 4,
-                },
-                shadowOpacity: 0.15,
-                shadowRadius: 2,
-              }}>
-                <Button
-                  style={{
-                    backgroundColor: phone.length < 11 ? '#E8EAED' : '#2F87FF',
-                    color: phone.length < 11 ? '#1b1c1f' : '#FFFFFF',
-                    width: '100%',
-                    height: 50, // height 값을 숫자로 변경하고 단위 제거
-                    alignItems: 'center', // align-items를 camelCase로 변경
-                    justifyContent: 'center', // justify-content를 camelCase로 변경
-                    borderWidth: 1, // border-width를 camelCase로 변경하고 단위 제거
-                    borderColor: '#E8EAED',
-                  }}
-                  disabled={phone.length < 11}
-                  active={phone.length > 10}
-                  width={width}
-                  onPress={async () => {
-                    const state = await NetInfo.fetch();
-                    const canProceed = await handleNetInfoChange(state);
-                    if (canProceed) {
-                      setCurrentPageIndex(3);
-                    }
-                  }}>
-                  <ButtonText >다음으로</ButtonText>
-                </Button>
-              </ShadowContainer>
-            </View>
-            <View
-              style={{
-                marginTop: 5,
-                marginBottom: 5,
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'center',
-                alignSelf: 'center',
-                zIndex: 2,
-              }}>
-              {currentPageIndexList?.map((item, index) => (
-                <TouchableOpacity
-                  key={index}
-                  activeOpacity={0.6}
-                  hitSlop={{ top: 20, bottom: 20, left: 20, right: 20 }}
-                  style={{
-                    width: 2 === index ? 20 : 8, // Elongate the dot
-                    height: 8,
-                    borderRadius: 4,
-                    backgroundColor: 2 === index ? '#2F87FF' : '#1b1c1f',
-                    borderWidth: 1,
-                    borderColor: 2 === index ? '#2F87FF' : '#1b1c1f',
-                    marginRight: 4,
-                  }}
-                />
-              ))}
-            </View>
-          </ButtonSection></>
+              <CheckIcon />
+            </TouchableOpacity>
+            }
+            {phoneNumberOk === '3' && <TouchableOpacity
+              style={styles.clearButton}
+              onPress={() => setPhoneNumber('')}
+            >
 
-      </Container>}
-      {currentPageIndex === 3 && <Container style={{ width: width }}>
-        <ProgressSection>
-        </ProgressSection>
-        <><FlatList
-          ref={_scrollViewRef2}
-          scrollEnabled={true}
-          scrollEventThrottle={16}
-          data={[]}
-          renderItem={() => null} // 실제로 렌더링할 항목이 없으므로 null 반환
-          showsVerticalScrollIndicator={false}
-          overScrollMode="never" // 이 줄을 추가하세요
-          ListHeaderComponent={
-            <>
-              <IntroSection2>
-                <Title>예약일자와 시간을 선택해주세요.</Title>
-                <SubTitle3>예약과 동시에 일정이 확정되니, 신중하게 선택해 주세요.{'\n'}상담을 전화로 진행될 거예요.</SubTitle3>
-              </IntroSection2>
-              <View
-                style={{
-                  height: 350,
-                  borderBottomWidth: 1,
-                  borderBottomColor: '#E8EAED',
-                }}>
-                <Calendar
-                  setSelectedDate={setSelectedDate}
-                  selectedDate={dataList ? new Date(dataList[0]).setHours(0, 0, 0, 0) : new Date().setHours(0, 0, 0, 0)}
-                  currentDate={dataList ? new Date(dataList[0]).setHours(0, 0, 0, 0) : new Date().setHours(0, 0, 0, 0)}
-                  dateList={dataList}
-                />
-              </View>
-              <ReservationtimeSection>
-                <TimeTitle>오전</TimeTitle>
-                <TimeContainer style={{ marginBottom: 10 }}>
-                  <FlatList
-                    //contentContainerStyle={styles.container}
-                    data={morningTimes}
-                    renderItem={({ item }) => (
-                      <TimeBox
-                        disabled={timeList.indexOf(item) < 0}
-                        active={selectedList.indexOf(item) > -1}
-                        onPress={() => {
-                          if (selectedList.indexOf(item) > -1) {
-                            setSelectedList(
-                              selectedList.filter(selectedItem => selectedItem !== item),
-                            );
-                          } else {
-                            setSelectedList([item]);
-                          }
-                        }}>
-                        <TimeText style={{ color: timeList.indexOf(item) < 0 ? '#E8EAED' : '#1b1c1f' }}>{item}</TimeText>
-                      </TimeBox>
-                    )}
-                    keyExtractor={(item, index) => index.toString()}
-                    numColumns={4} // 한 줄에 4개의 
-                  ></FlatList>
-                </TimeContainer>
-                <TimeTitle>오후</TimeTitle>
-                <TimeContainer>
-                  <FlatList
-                    //contentContainerStyle={styles.container}
-                    data={afternoonTimes}
-                    renderItem={({ item }) => (
-                      <TimeBox
-                        disabled={timeList.indexOf(item) < 0}
-                        active={selectedList.indexOf(item) > -1}
-                        onPress={() => {
-                          if (selectedList.indexOf(item) > -1) {
-                            setSelectedList(
-                              selectedList.filter(selectedItem => selectedItem !== item),
-                            );
-                          } else {
-                            setSelectedList([item]);
-                          }
-                        }}>
-                        <TimeText style={{ color: timeList.indexOf(item) < 0 ? '#E8EAED' : '#1b1c1f' }}>{item}</TimeText>
-                      </TimeBox>
-                    )}
-                    keyExtractor={(item, index) => index.toString()}
-                    numColumns={4} // 한 줄에 4개의 
-                  ></FlatList>
-                </TimeContainer>
-                <View style={{
-                  marginBottom: 60
-                }}>
-                  <SubTitle3 style={{ textAlign: 'center' }}>{'상담시간은 15분이예요.'}</SubTitle3>
-                </View>
-              </ReservationtimeSection>
-            </>
-          }
-          ListFooterComponent={
-            <><ButtonSection>
-              <View
-                style={{
-                  alignItems: 'center', // align-items를 camelCase로 변경
-                  flexDirection: 'row', // flex-direction을 camelCase로 변경
-                  justifyContent: 'space-between', // justify-content를 camelCase로 변경 
-                }}>
-                <View style={{ width: '49%', marginRight: '1%' }}>
-                  <Button
-                    style={{
-                      backgroundColor: '#fff',
-                      color: '#1b1c1f',
-                      width: '100%',
-                      height: 50, // height 값을 숫자로 변경하고 단위 제거
-                      alignItems: 'center', // align-items를 camelCase로 변경
-                      justifyContent: 'center', // justify-content를 camelCase로 변경
-                      borderWidth: 1, // border-width를 camelCase로 변경하고 단위 제거
-                      borderColor: '#E8EAED',
-                    }}
-                    width={width}
-                    onPress={async () => {
-                      const state = await NetInfo.fetch();
-                      const canProceed = await handleNetInfoChange(state);
-                      if (canProceed) {
-                        setCurrentPageIndex(2);
-                      }
-                    }}>
-                    <ButtonText style={{ color: '#717274' }}>이전으로</ButtonText>
-                  </Button>
-                </View>
-                <ShadowContainer style={{
-                  width: '49%', marginLeft: '1%', shadowColor: 'rgba(0,0,0,0.25)',
-                  shadowOffset: {
-                    width: 0,
-                    height: 4,
-                  },
-                  shadowOpacity: 0.15,
-                  shadowRadius: 2,
-                }}>
-                  <Button
-                    style={{
-                      backgroundColor: selectedList.length < 1 ? '#E8EAED' : '#2F87FF',
-                      color: selectedList.length < 1 ? '#1b1c1f' : '#FFFFFF',
-                      width: '100%',
-                      height: 50, // height 값을 숫자로 변경하고 단위 제거
-                      alignItems: 'center', // align-items를 camelCase로 변경
-                      justifyContent: 'center', // justify-content를 camelCase로 변경
-                      borderWidth: 1, // border-width를 camelCase로 변경하고 단위 제거
-                      borderColor: '#E8EAED',
-                    }}
-                    disabled={selectedList.length < 1}
-                    active={selectedList.length > 0}
-                    width={width}
-                    onPress={async () => {
-                      const state = await NetInfo.fetch();
-                      const canProceed = await handleNetInfoChange(state);
-                      if (canProceed) {
-                        setCurrentPageIndex(4);
-                      }
-                    }}>
-                    <ButtonText>다음으로</ButtonText>
-                  </Button>
-                </ShadowContainer>
-              </View>
-              <View
-                style={{
-                  marginTop: 5,
-                  marginBottom: 5,
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  alignSelf: 'center',
-                  zIndex: 2,
-                }}>
-                {currentPageIndexList?.map((item, index) => (
-                  <TouchableOpacity
-                    key={index}
-                    activeOpacity={0.6}
-                    hitSlop={{ top: 20, bottom: 20, left: 20, right: 20 }}
-                    style={{
-                      width: 3 === index ? 20 : 8, // Elongate the dot
-                      height: 8,
-                      borderRadius: 4,
-                      backgroundColor: 3 === index ? '#2F87FF' : '#1b1c1f',
-                      borderWidth: 1,
-                      borderColor: 3 === index ? '#2F87FF' : '#1b1c1f',
-                      marginRight: 4,
-                    }}
-                  />
-                ))}
-              </View>
-            </ButtonSection></>
-          }
-        /></>
-      </Container>}
+              <ImpossibleIcon />
+            </TouchableOpacity>
+            }
 
-      {currentPageIndex === 4 && <Container style={{ width: width }}>
-        <ProgressSection>
-        </ProgressSection>
-        <><FlatList
-          ref={_scrollViewRef3}
-          scrollEnabled={true}
-          scrollEventThrottle={16}
-          data={[]}
-          renderItem={() => null} // 실제로 렌더링할 항목이 없으므로 null 반환
-          showsVerticalScrollIndicator={false}
-          overScrollMode="never" // 이 줄을 추가하세요
-          ListHeaderComponent={
-            <>
-              <IntroSection2 style={{ height: 'auto' }}>
-                <View style={{ flexDirection: 'row', alignItems: 'left', marginBottom: 10 }}>
-                  <ProfileAvatar2 source={require('../../assets/images/Minjungum_Lee_consulting.png')}></ProfileAvatar2>
-                  <ProfileName>이민정음 세무사</ProfileName>
-                  <ConsultingTime>{selectedDate.getFullYear() + '년 ' + (selectedDate.getMonth() + 1) + '월 ' + selectedDate.getDate() + '일 ' + selectedList}</ConsultingTime>
-                </View>
-                <View style={{
-                  flexDirection: 'column', alignItems: 'left', borderBottomWidth: 1,
-                  borderBottomColor: '#E8EAED', borderTopWidth: 1,
-                  borderTopColor: '#E8EAED',
-                }}>
-                  <Title style={{ marginBottom: 10, marginTop: 10 }}>상세 내용을 알려주세요.</Title>
-                  <SubTitle4>세금종류</SubTitle4>
-                  <View style={{ width: '100%', flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
-                    {ConsultingList.map((item, index) => (
-                      <Tag
-                        style={{
-                          borderColor: taxTypeList.indexOf(item) < 0 ? '#E8EAED'
-                            : item === '취득세'
-                              ? '#2F87FF'
-                              : item === '양도소득세'
-                                ? '#2F87FF'
-                                : item === '상속세'
-                                  ? '#2F87FF'
-                                  : item === '증여세'
-                                    ? '#2F87FF'
-                                    : '#E8EAED',
-                          margin: 5
-                        }}
-                        //disabled={taxTypeList.indexOf(item) < 0}
-                        active={taxTypeList.indexOf(item) > -1}
-                        onPress={() => {
-                          if (taxTypeList.indexOf(item) > -1) {
-                            setTaxTypeList(
-                              taxTypeList.filter(selectedItem => selectedItem !== item),
-                            );
-                          } else {
-                            setTaxTypeList([...taxTypeList, item]);
-                          }
-                        }}
-                        key={index}>
-                        <TagText style={{
-                          color: taxTypeList.indexOf(item) < 0 ? '#E8EAED'
-                            : item === '취득세'
-                              ? '#2F87FF'
-                              : item === '양도소득세'
-                                ? '#2F87FF'
-                                : item === '상속세'
-                                  ? '#2F87FF'
-                                  : item === '증여세'
-                                    ? '#2F87FF'
-                                    : '#E8EAED'
-                        }}>
-                          {item}
-                        </TagText>
-                      </Tag>
-                    ))}
-                  </View>
-                </View>
-                <View style={{
-                  borderBottomWidth: 1,
-                  borderBottomColor: '#E8EAED'
-                }}>
-                  <SubTitle4 style={{ marginTop: 20, marginBottom: 20 }}>상세 내용</SubTitle4>
-                  <ConsultingItem>
-                    <ScrollView keyboardShouldPersistTaps='always'>
-                      <ConsultingInput
-                        ref={input3}
-                        autoFocus={currentPageIndex === 4}
-                        multiline={true}
-                        width={width}
-                        placeholder="정확한 상담을 위해 사실 관계 및 문의사항을 자세하게 입력해주세요."
-                        onChangeText={(input) => {
-                          let byteCount = encodeURI(input).split(/%..|./).length - 1;
-                          if (byteCount <= 1000) {
-                            setText(input);
-                          }
-                        }}
-                        value={text.slice(0, 1000)}
-                        style={{ flexWrap: 'wrap' }}
-                        blurOnSubmit={false}
-                      />
-                    </ScrollView>
-                  </ConsultingItem>
-                </View>
+          </View> */}
 
-                <View style={{
-                  borderBottomWidth: 1,
-                  borderBottomColor: '#E8EAED',
-                  marginBottom: 10,
-                  flexDirection: 'row',
-                  flexWrap: 'wrap',
-                }}>
-                  <SubTitle4 style={{ marginTop: 20, marginBottom: 20 }}>세금 계산 결과</SubTitle4>
-                  <ButtonSection2 style={{
-                    flex: 1,
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    justifyContent: 'flex-end',
-                    width: '100%'
-                  }}>
-                    <Button2 onPress={toggleExpand} style={{
-                      borderWidth: 1, borderColor: '#E8EAED', backgroundColor: '#fff', width: 80, flexDirection: 'row',
-                      alignItems: 'center',
+        </View>
 
-                    }}>
-                      <ButtonText style={{ color: '#717274', fontSize: 12, fontFamily: 'Pretendard-regular' }}> {isExpanded ? '접기' : '펼치기'}</ButtonText>
-                      {!isExpanded ? <Bottompolygon style={{ marginLeft: 5, marginTop: 1 }} />
-                        : <Bottompolygon style={{
-                          marginLeft: 5,
-                          marginTop: 1,
-                          transform: [{ rotate: '180deg' }]
-                        }} />}
-                    </Button2>
-                  </ButtonSection2>
-                </View>
+        
+        {/* 만료 메시지 */}
+        {/* 만료 메시지와 재전송 버튼 */}
 
-                {isExpanded && (<>
-                  {!props?.route.params.IsGainTax ? <HouseInfo item={houseInfo} navigation={navigation} ChatType='AcquisitionChat' /> : <HouseInfo item={houseInfo} navigation={navigation} ChatType='GainsTaxChat' />}
-                  {!props?.route.params.IsGainTax ? <TaxCard navigation={navigation} Pdata={Pdata ? Pdata : null} /> : <TaxCard2 navigation={navigation} Pdata={Pdata ? Pdata : null} />}
-                  {!props?.route.params.IsGainTax ? <TaxInfoCard Pdata={Pdata ? Pdata : null} /> : <TaxInfoCard2 Pdata={Pdata ? Pdata : null} />}
-                </>)
-                }
-                <SubTitle3>고객님께서 본인 인증하여 로드하거나 직접 입력하신 주택정보와{'\n'}아래 세금 계산 결과를 활용하여 세금 상담을 진행할 예정이에요.{'\n'}이에 동의하시나요?{'\n'}{'\n'}{'\n'}{'\n'}{'\n'}{'\n'}</SubTitle3>
-              </IntroSection2>
-            </>
-          }
-          ListFooterComponent={
-            <>
-              <ButtonSection2>
-                <View
-                  style={{
-                    alignItems: 'center', // align-items를 camelCase로 변경
-                    flexDirection: 'row', // flex-direction을 camelCase로 변경
-                    justifyContent: 'space-between', // justify-content를 camelCase로 변경 
-                  }}>
-                  <View style={{ width: '49%', marginRight: '1%' }}>
-                    <Button
-                      style={{
-                        backgroundColor: '#fff',
-                        color: '#1b1c1f',
-                        width: '100%',
-                        height: 50, // height 값을 숫자로 변경하고 단위 제거
-                        alignItems: 'center', // align-items를 camelCase로 변경
-                        justifyContent: 'center', // justify-content를 camelCase로 변경
-                        borderWidth: 1, // border-width를 camelCase로 변경하고 단위 제거
-                        borderColor: '#E8EAED',
-                      }}
-                      width={width}
-                      onPress={async () => {
-                        const state = await NetInfo.fetch();
-                        const canProceed = await handleNetInfoChange(state);
-                        if (canProceed) {
-                          setCurrentPageIndex(3);
-                        }
-                      }}>
-                      <ButtonText style={{ color: '#717274' }}>이전으로</ButtonText>
-                    </Button>
-                  </View>
-                  <ShadowContainer style={{ width: '49%', marginLeft: '1%' }}>
-                    <Button
-                      style={{
-                        backgroundColor: text === '' ? '#E8EAED' : '#2F87FF',
-                        color: text === '' ? '#1b1c1f' : '#FFFFFF',
-                        width: '100%',
-                        height: 50, // height 값을 숫자로 변경하고 단위 제거
-                        alignItems: 'center', // align-items를 camelCase로 변경
-                        justifyContent: 'center', // justify-content를 camelCase로 변경
-                        borderWidth: 1, // border-width를 camelCase로 변경하고 단위 제거
-                        borderColor: '#E8EAED',
-                      }}
-                      disabled={!text}
-                      active={text}
-                      width={width}
-                      onPress={async () => {
-                        const state = await NetInfo.fetch();
-                        const canProceed = await handleNetInfoChange(state);
-                        if (canProceed) {
-                          const result = await requestReservation();
-                          if (result) {
-                            navigation.goBack();
-                          }
-                        }
-                      }}>
-                      <ButtonText>동의 후 상담 예약하기</ButtonText>
-                    </Button>
-                  </ShadowContainer>
-                </View>
-                <View
-                  style={{
-                    marginTop: 5,
-                    marginBottom: 15,
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    alignSelf: 'center',
-                    zIndex: 2,
-                  }}>
-                  {currentPageIndexList?.map((item, index) => (
-                    <TouchableOpacity
-                      key={index}
-                      activeOpacity={0.6}
-                      hitSlop={{ top: 20, bottom: 20, left: 20, right: 20 }}
-                      style={{
-                        width: 4 === index ? 20 : 8, // Elongate the dot
-                        height: 8,
-                        borderRadius: 4,
-                        backgroundColor: 4 === index ? '#2F87FF' : '#1b1c1f',
-                        borderWidth: 1,
-                        borderColor: 4 === index ? '#2F87FF' : '#1b1c1f',
-                        marginRight: 4,
-                      }}
-                    />
-                  ))}
-                </View>
-              </ButtonSection2></>}
-        /></>
-      </Container>}
+        {/* Login Button */}
+        {/* <TouchableOpacity
+          style={[
+            styles.loginButton,
+            (!phoneNumber || timer === 0) && styles.disabledButton, // 조건부 스타일
+          ]}
+          onPress={handleNextStep}
+          disabled={!phoneNumber || timer === 0} // 비활성화 조건
+        >
+          <Text style={styles.loginButtonLabel}>
+            {step === 1 ? '인증번호 전송하기' : '다음으로'}
+          </Text>
+        </TouchableOpacity> */}
 
 
 
-    </ScrollView>
-  )
+
+      </ScrollView>
+    </View>
+    // <ScrollView
+    //   ref={_scrollViewRef}
+    //   pagingEnabled
+    //   style={{
+    //     width: width,
+    //   }}
+    //   horizontal
+    //   keyboardShouldPersistTaps='always'
+    //   showsHorizontalScrollIndicator={false}
+    //   scrollEnabled={false}
+    //   scrollEventThrottle={16}>
+    //   {currentPageIndex === 0 && <Container style={{ width: width }}>
+    //     <ProgressSection>
+    //     </ProgressSection>
+
+    //     <><IntroSection>
+    //       <ProfileAvatar
+    //         source={require('../../assets/images/Minjungum_Lee_consulting.png')} />
+    //     </IntroSection>
+    //       <View style={{
+    //         marginLeft: '5%',
+    //         width: '90%',
+    //         borderBottomWidth: 1,
+    //         borderBottomColor: '#E8EAED', flexDirection: 'row', justifyContent: 'space-between'
+    //       }}>
+    //         <ProfileSection style={{
+    //           flexDirection: 'column', alignItems: 'flex-start',  // 변경 
+    //           justifyContent: 'flex-start',  // 변경
+    //           alignSelf: 'flex-start',  // 변경 
+    //           zIndex: 2,
+    //           width: '50%',
+    //           borderBottomWidth: 0,
+    //           marginLeft: 0
+    //         }}>
+    //           <ProfileTitle>이민정음 세무사</ProfileTitle>
+    //           <ProfileSubTitle>JS회계법인</ProfileSubTitle>
+    //           <ProfileSubTitle2>세무사, 공인중개사 전문가</ProfileSubTitle2>
+    //         </ProfileSection>
+    //         <ProfileSection style={{
+    //           flexDirection: 'column',
+    //           alignItems: 'flex-end',  // 변경 
+    //           justifyContent: 'flex-end',  // 변경
+    //           alignSelf: 'flex-end',
+    //           zIndex: 2,
+    //           width: '50%',
+    //           marginLeft: 0,
+    //           borderBottomWidth: 0,
+    //         }}>
+    //           <View style={{
+    //             flexDirection: 'row',
+    //             zIndex: 2,
+    //             marginBottom: -10
+    //           }}>
+    //             <Tag style={{ color: '#fff', borderColor: '#2F87FF', backgroundColor: '#2F87FF', marginRight: 5 }}><TagText style={{ color: '#FFFFFF' }}>양도소득세</TagText></Tag>
+    //             <Tag style={{ color: '#fff', borderColor: '#2F87FF', backgroundColor: '#2F87FF', width: 50 }}><TagText style={{ color: '#FFFFFF' }}>증여세</TagText></Tag>
+    //           </View>
+    //           <View style={{
+    //             flexDirection: 'row',
+    //             zIndex: 2,
+    //           }}>
+    //             <Tag style={{ color: '#fff', borderColor: '#2F87FF', backgroundColor: '#2F87FF', width: 50 }}><TagText style={{ color: '#FFFFFF' }}>상속세</TagText></Tag>
+    //           </View>
+    //         </ProfileSection>
+    //       </View>
+    //       <ProfileSection>
+    //         <ProfileSubTitle3>1,000건 이상의 재산제세 경험을 바탕으로 양도, 증여, 상속에 관한
+    //           전문적인 상담 및 컨설팅 진행 도와드리겠습니다.{'\n'}감사합니다.</ProfileSubTitle3>
+    //       </ProfileSection>
+    //       <ProfileSection style={{
+    //         borderBottomWidth: 0, marginTop: 10, flexDirection: 'row', justifyContent: 'space-between'
+    //       }}>
+    //         <View style={{
+    //           flexDirection: 'column',
+    //           alignItems: 'left',
+    //           justifyContent: 'left',
+    //           alignSelf: 'left',
+    //           zIndex: 2,
+    //           width: '50%',
+    //         }}>
+    //           <ProfileTitle style={{ marginBottom: 10 }}>전문분야</ProfileTitle>
+    //           <ProfileSubTitle2>• 양도/상속/증여세 신고{'\n'}
+    //             • 자금출처조사{'\n'}
+    //             • 부동산 관련 절세{'\n'}
+    //             • 상속 및 가업승계</ProfileSubTitle2>
+    //         </View>
+    //         <View style={{
+    //           flexDirection: 'column',
+    //           alignItems: 'left',
+    //           justifyContent: 'left',
+    //           alignSelf: 'left',
+    //           zIndex: 2,
+    //           width: '50%',
+    //         }}>
+    //           <ProfileTitle style={{ marginBottom: 10 }}>주요경력</ProfileTitle>
+    //           <ProfileSubTitle2>• 텍스온세무법인 2021{'\n'}
+    //             • 신승세무법인 2021{'\n'}
+    //             • JS세무회계 2023</ProfileSubTitle2>
+    //         </View>
+    //       </ProfileSection>
+    //       <ButtonSection>
+    //         <ShadowContainer>
+    //           <Button
+    //             width={width}
+    //             onPress={async () => {
+    //               const state = await NetInfo.fetch();
+    //               const canProceed = await handleNetInfoChange(state);
+    //               if (canProceed) {
+    //                 setCurrentPageIndex(1);
+    //               }
+    //             }}>
+    //             <ButtonText >다음으로</ButtonText>
+    //           </Button>
+    //         </ShadowContainer>
+    //         <View
+    //           style={{
+    //             marginTop: 5,
+    //             marginBottom: 5,
+    //             flexDirection: 'row',
+    //             alignItems: 'center',
+    //             justifyContent: 'center',
+    //             alignSelf: 'center',
+    //             zIndex: 2,
+    //           }}>
+    //           {currentPageIndexList?.map((item, index) => (
+    //             <TouchableOpacity
+    //               key={index}
+    //               activeOpacity={0.6}
+    //               hitSlop={{ top: 20, bottom: 20, left: 20, right: 20 }}
+    //               style={{
+    //                 width: 0 === index ? 20 : 8, // Elongate the dot
+    //                 height: 8,
+    //                 borderRadius: 4,
+    //                 backgroundColor: 0 === index ? '#2F87FF' : '#1b1c1f',
+    //                 borderWidth: 1,
+    //                 borderColor: 0 === index ? '#2F87FF' : '#1b1c1f',
+    //                 marginRight: 4,
+    //               }}
+    //             />
+    //           ))}
+    //         </View>
+    //       </ButtonSection></>
+    //   </Container>}
+
+    //   {currentPageIndex === 1 && <Container style={{ width: width }}>
+    //     <ProgressSection>
+    //     </ProgressSection>
+
+
+    //     <><IntroSection2 style={{ width: width }}>
+    //       <Title>고객님의 이름을 알려주세요.</Title>
+    //       <SubTitle>이름을 밝히고 싶지않다면 닉네임도 괜찮아요.</SubTitle>
+    //     </IntroSection2>
+    //       <ModalInputSection>
+    //         <ModalInputContainer>
+    //           <ModalInput
+    //             ref={input1}
+    //             //  onSubmitEditing={() => input2.current.focus()}
+    //             autoFocus={currentPageIndex === 1}
+    //             placeholder="이름을 입력해주세요."
+    //             value={name}
+    //             onChangeText={setName}
+    //             maxLength={20}
+    //             autoCompleteType="name"
+    //             autoCapitalize="none"
+    //             onSubmitEditing={async () => {
+    //               const state = await NetInfo.fetch();
+    //               const canProceed = await handleNetInfoChange(state);
+    //               if (canProceed) {
+    //                 if (name.length > 0) {
+    //                   setCurrentPageIndex(2);
+    //                 }
+    //               }
+    //             }}
+    //           />
+    //         </ModalInputContainer>
+    //       </ModalInputSection>
+    //       <ButtonSection>
+    //         <ShadowContainer>
+    //           <Button
+    //             style={{
+    //               backgroundColor: name.length < 1 ? '#E8EAED' : '#2F87FF',
+    //               color: name.length < 1 ? '#1b1c1f' : '#FFFFFF',
+    //             }}
+    //             disabled={name.length < 1}
+    //             active={name.length > 0}
+    //             width={width}
+    //             onPress={async () => {
+    //               const state = await NetInfo.fetch();
+    //               const canProceed = await handleNetInfoChange(state);
+    //               if (canProceed) {
+    //                 setCurrentPageIndex(2);
+    //               }
+    //             }}>
+    //             <ButtonText >다음으로</ButtonText>
+    //           </Button>
+    //         </ShadowContainer>
+    //         <View
+    //           style={{
+    //             marginTop: 5,
+    //             marginBottom: 5,
+    //             flexDirection: 'row',
+    //             alignItems: 'center',
+    //             justifyContent: 'center',
+    //             alignSelf: 'center',
+    //             zIndex: 2,
+    //           }}>
+    //           {currentPageIndexList?.map((item, index) => (
+    //             <TouchableOpacity
+    //               key={index}
+    //               activeOpacity={0.6}
+    //               hitSlop={{ top: 20, bottom: 20, left: 20, right: 20 }}
+    //               style={{
+    //                 width: 1 === index ? 20 : 8, // Elongate the dot
+    //                 height: 8,
+    //                 borderRadius: 4,
+    //                 backgroundColor: 1 === index ? '#2F87FF' : '#1b1c1f',
+    //                 borderWidth: 1,
+    //                 borderColor: 1 === index ? '#2F87FF' : '#1b1c1f',
+    //                 marginRight: 4,
+    //               }}
+    //             />
+    //           ))}
+    //         </View>
+    //       </ButtonSection></>
+
+    //   </Container>}
+    //   {currentPageIndex === 2 && <Container style={{ width: width }}>
+    //     <ProgressSection>
+    //     </ProgressSection>
+    //     <><IntroSection2 style={{ width: width }}>
+    //       <Title>고객님의 전화번호를 알려주세요.</Title>
+    //       <SubTitle>세무사님께서 고객님에게 직접 연락을 드릴 예정이예요.</SubTitle>
+    //     </IntroSection2>
+    //       <ModalInputSection>
+    //         <ModalInputContainer>
+    //           <ModalInput
+    //             ref={input2}
+    //             //  onSubmitEditing={() => input2.current.focus()}
+    //             autoFocus={currentPageIndex === 2}
+    //             placeholder="전화번호를 입력해주세요."
+    //             value={phone}
+    //             onChangeText={setPhone}
+    //             maxLength={11}
+    //             keyboardType="phone-pad"
+    //             autoCompleteType="tel"
+    //             onSubmitEditing={async () => {
+    //               const state = await NetInfo.fetch();
+    //               const canProceed = await handleNetInfoChange(state);
+    //               if (canProceed) {
+    //                 if (phone.length > 10) {
+    //                   setCurrentPageIndex(3);
+    //                 }
+
+    //               }
+    //             }}
+    //           />
+    //         </ModalInputContainer>
+    //       </ModalInputSection>
+    //       <ButtonSection>
+    //         <View
+    //           style={{
+    //             alignItems: 'center', // align-items를 camelCase로 변경
+    //             flexDirection: 'row', // flex-direction을 camelCase로 변경
+    //             justifyContent: 'space-between', // justify-content를 camelCase로 변경 
+    //           }}>
+    //           <View style={{ width: '49%', marginRight: '1%' }}>
+    //             <Button
+    //               style={{
+    //                 backgroundColor: '#fff',
+    //                 color: '#1b1c1f',
+    //                 width: '100%',
+    //                 height: 50, // height 값을 숫자로 변경하고 단위 제거
+    //                 alignItems: 'center', // align-items를 camelCase로 변경
+    //                 justifyContent: 'center', // justify-content를 camelCase로 변경
+    //                 borderWidth: 1, // border-width를 camelCase로 변경하고 단위 제거
+    //                 borderColor: '#E8EAED',
+    //               }}
+    //               width={width}
+    //               onPress={async () => {
+    //                 const state = await NetInfo.fetch();
+    //                 const canProceed = await handleNetInfoChange(state);
+    //                 if (canProceed) {
+    //                   setCurrentPageIndex(1);
+    //                 }
+    //               }}>
+    //               <ButtonText style={{ color: '#717274' }}>이전으로</ButtonText>
+    //             </Button>
+    //           </View>
+    //           <ShadowContainer style={{
+    //             width: '49%', marginLeft: '1%', shadowColor: 'rgba(0,0,0,0.25)',
+    //             shadowOffset: {
+    //               width: 0,
+    //               height: 4,
+    //             },
+    //             shadowOpacity: 0.15,
+    //             shadowRadius: 2,
+    //           }}>
+    //             <Button
+    //               style={{
+    //                 backgroundColor: phone.length < 11 ? '#E8EAED' : '#2F87FF',
+    //                 color: phone.length < 11 ? '#1b1c1f' : '#FFFFFF',
+    //                 width: '100%',
+    //                 height: 50, // height 값을 숫자로 변경하고 단위 제거
+    //                 alignItems: 'center', // align-items를 camelCase로 변경
+    //                 justifyContent: 'center', // justify-content를 camelCase로 변경
+    //                 borderWidth: 1, // border-width를 camelCase로 변경하고 단위 제거
+    //                 borderColor: '#E8EAED',
+    //               }}
+    //               disabled={phone.length < 11}
+    //               active={phone.length > 10}
+    //               width={width}
+    //               onPress={async () => {
+    //                 const state = await NetInfo.fetch();
+    //                 const canProceed = await handleNetInfoChange(state);
+    //                 if (canProceed) {
+    //                   setCurrentPageIndex(3);
+    //                 }
+    //               }}>
+    //               <ButtonText >다음으로</ButtonText>
+    //             </Button>
+    //           </ShadowContainer>
+    //         </View>
+    //         <View
+    //           style={{
+    //             marginTop: 5,
+    //             marginBottom: 5,
+    //             flexDirection: 'row',
+    //             alignItems: 'center',
+    //             justifyContent: 'center',
+    //             alignSelf: 'center',
+    //             zIndex: 2,
+    //           }}>
+    //           {currentPageIndexList?.map((item, index) => (
+    //             <TouchableOpacity
+    //               key={index}
+    //               activeOpacity={0.6}
+    //               hitSlop={{ top: 20, bottom: 20, left: 20, right: 20 }}
+    //               style={{
+    //                 width: 2 === index ? 20 : 8, // Elongate the dot
+    //                 height: 8,
+    //                 borderRadius: 4,
+    //                 backgroundColor: 2 === index ? '#2F87FF' : '#1b1c1f',
+    //                 borderWidth: 1,
+    //                 borderColor: 2 === index ? '#2F87FF' : '#1b1c1f',
+    //                 marginRight: 4,
+    //               }}
+    //             />
+    //           ))}
+    //         </View>
+    //       </ButtonSection></>
+
+    //   </Container>}
+    //   {currentPageIndex === 3 && <Container style={{ width: width }}>
+    //     <ProgressSection>
+    //     </ProgressSection>
+    //     <><FlatList
+    //       ref={_scrollViewRef2}
+    //       scrollEnabled={true}
+    //       scrollEventThrottle={16}
+    //       data={[]}
+    //       renderItem={() => null} // 실제로 렌더링할 항목이 없으므로 null 반환
+    //       showsVerticalScrollIndicator={false}
+    //       overScrollMode="never" // 이 줄을 추가하세요
+    //       ListHeaderComponent={
+    //         <>
+    //           <IntroSection2>
+    //             <Title>예약일자와 시간을 선택해주세요.</Title>
+    //             <SubTitle3>예약과 동시에 일정이 확정되니, 신중하게 선택해 주세요.{'\n'}상담을 전화로 진행될 거예요.</SubTitle3>
+    //           </IntroSection2>
+    //           <View
+    //             style={{
+    //               height: 350,
+    //               borderBottomWidth: 1,
+    //               borderBottomColor: '#E8EAED',
+    //             }}>
+    //             <Calendar
+    //               setSelectedDate={setSelectedDate}
+    //               selectedDate={dataList ? new Date(dataList[0]).setHours(0, 0, 0, 0) : new Date().setHours(0, 0, 0, 0)}
+    //               currentDate={dataList ? new Date(dataList[0]).setHours(0, 0, 0, 0) : new Date().setHours(0, 0, 0, 0)}
+    //               dateList={dataList}
+    //             />
+    //           </View>
+    //           <ReservationtimeSection>
+    //             <TimeTitle>오전</TimeTitle>
+    //             <TimeContainer style={{ marginBottom: 10 }}>
+    //               <FlatList
+    //                 //contentContainerStyle={styles.container}
+    //                 data={morningTimes}
+    //                 renderItem={({ item }) => (
+    //                   <TimeBox
+    //                     disabled={timeList.indexOf(item) < 0}
+    //                     active={selectedList.indexOf(item) > -1}
+    //                     onPress={() => {
+    //                       if (selectedList.indexOf(item) > -1) {
+    //                         setSelectedList(
+    //                           selectedList.filter(selectedItem => selectedItem !== item),
+    //                         );
+    //                       } else {
+    //                         setSelectedList([item]);
+    //                       }
+    //                     }}>
+    //                     <TimeText style={{ color: timeList.indexOf(item) < 0 ? '#E8EAED' : '#1b1c1f' }}>{item}</TimeText>
+    //                   </TimeBox>
+    //                 )}
+    //                 keyExtractor={(item, index) => index.toString()}
+    //                 numColumns={4} // 한 줄에 4개의 
+    //               ></FlatList>
+    //             </TimeContainer>
+    //             <TimeTitle>오후</TimeTitle>
+    //             <TimeContainer>
+    //               <FlatList
+    //                 //contentContainerStyle={styles.container}
+    //                 data={afternoonTimes}
+    //                 renderItem={({ item }) => (
+    //                   <TimeBox
+    //                     disabled={timeList.indexOf(item) < 0}
+    //                     active={selectedList.indexOf(item) > -1}
+    //                     onPress={() => {
+    //                       if (selectedList.indexOf(item) > -1) {
+    //                         setSelectedList(
+    //                           selectedList.filter(selectedItem => selectedItem !== item),
+    //                         );
+    //                       } else {
+    //                         setSelectedList([item]);
+    //                       }
+    //                     }}>
+    //                     <TimeText style={{ color: timeList.indexOf(item) < 0 ? '#E8EAED' : '#1b1c1f' }}>{item}</TimeText>
+    //                   </TimeBox>
+    //                 )}
+    //                 keyExtractor={(item, index) => index.toString()}
+    //                 numColumns={4} // 한 줄에 4개의 
+    //               ></FlatList>
+    //             </TimeContainer>
+    //             <View style={{
+    //               marginBottom: 60
+    //             }}>
+    //               <SubTitle3 style={{ textAlign: 'center' }}>{'상담시간은 15분이예요.'}</SubTitle3>
+    //             </View>
+    //           </ReservationtimeSection>
+    //         </>
+    //       }
+    //       ListFooterComponent={
+    //         <><ButtonSection>
+    //           <View
+    //             style={{
+    //               alignItems: 'center', // align-items를 camelCase로 변경
+    //               flexDirection: 'row', // flex-direction을 camelCase로 변경
+    //               justifyContent: 'space-between', // justify-content를 camelCase로 변경 
+    //             }}>
+    //             <View style={{ width: '49%', marginRight: '1%' }}>
+    //               <Button
+    //                 style={{
+    //                   backgroundColor: '#fff',
+    //                   color: '#1b1c1f',
+    //                   width: '100%',
+    //                   height: 50, // height 값을 숫자로 변경하고 단위 제거
+    //                   alignItems: 'center', // align-items를 camelCase로 변경
+    //                   justifyContent: 'center', // justify-content를 camelCase로 변경
+    //                   borderWidth: 1, // border-width를 camelCase로 변경하고 단위 제거
+    //                   borderColor: '#E8EAED',
+    //                 }}
+    //                 width={width}
+    //                 onPress={async () => {
+    //                   const state = await NetInfo.fetch();
+    //                   const canProceed = await handleNetInfoChange(state);
+    //                   if (canProceed) {
+    //                     setCurrentPageIndex(2);
+    //                   }
+    //                 }}>
+    //                 <ButtonText style={{ color: '#717274' }}>이전으로</ButtonText>
+    //               </Button>
+    //             </View>
+    //             <ShadowContainer style={{
+    //               width: '49%', marginLeft: '1%', shadowColor: 'rgba(0,0,0,0.25)',
+    //               shadowOffset: {
+    //                 width: 0,
+    //                 height: 4,
+    //               },
+    //               shadowOpacity: 0.15,
+    //               shadowRadius: 2,
+    //             }}>
+    //               <Button
+    //                 style={{
+    //                   backgroundColor: selectedList.length < 1 ? '#E8EAED' : '#2F87FF',
+    //                   color: selectedList.length < 1 ? '#1b1c1f' : '#FFFFFF',
+    //                   width: '100%',
+    //                   height: 50, // height 값을 숫자로 변경하고 단위 제거
+    //                   alignItems: 'center', // align-items를 camelCase로 변경
+    //                   justifyContent: 'center', // justify-content를 camelCase로 변경
+    //                   borderWidth: 1, // border-width를 camelCase로 변경하고 단위 제거
+    //                   borderColor: '#E8EAED',
+    //                 }}
+    //                 disabled={selectedList.length < 1}
+    //                 active={selectedList.length > 0}
+    //                 width={width}
+    //                 onPress={async () => {
+    //                   const state = await NetInfo.fetch();
+    //                   const canProceed = await handleNetInfoChange(state);
+    //                   if (canProceed) {
+    //                     setCurrentPageIndex(4);
+    //                   }
+    //                 }}>
+    //                 <ButtonText>다음으로</ButtonText>
+    //               </Button>
+    //             </ShadowContainer>
+    //           </View>
+    //           <View
+    //             style={{
+    //               marginTop: 5,
+    //               marginBottom: 5,
+    //               flexDirection: 'row',
+    //               alignItems: 'center',
+    //               justifyContent: 'center',
+    //               alignSelf: 'center',
+    //               zIndex: 2,
+    //             }}>
+    //             {currentPageIndexList?.map((item, index) => (
+    //               <TouchableOpacity
+    //                 key={index}
+    //                 activeOpacity={0.6}
+    //                 hitSlop={{ top: 20, bottom: 20, left: 20, right: 20 }}
+    //                 style={{
+    //                   width: 3 === index ? 20 : 8, // Elongate the dot
+    //                   height: 8,
+    //                   borderRadius: 4,
+    //                   backgroundColor: 3 === index ? '#2F87FF' : '#1b1c1f',
+    //                   borderWidth: 1,
+    //                   borderColor: 3 === index ? '#2F87FF' : '#1b1c1f',
+    //                   marginRight: 4,
+    //                 }}
+    //               />
+    //             ))}
+    //           </View>
+    //         </ButtonSection></>
+    //       }
+    //     /></>
+    //   </Container>}
+
+    //   {currentPageIndex === 4 && <Container style={{ width: width }}>
+    //     <ProgressSection>
+    //     </ProgressSection>
+    //     <><FlatList
+    //       ref={_scrollViewRef3}
+    //       scrollEnabled={true}
+    //       scrollEventThrottle={16}
+    //       data={[]}
+    //       renderItem={() => null} // 실제로 렌더링할 항목이 없으므로 null 반환
+    //       showsVerticalScrollIndicator={false}
+    //       overScrollMode="never" // 이 줄을 추가하세요
+    //       ListHeaderComponent={
+    //         <>
+    //           <IntroSection2 style={{ height: 'auto' }}>
+    //             <View style={{ flexDirection: 'row', alignItems: 'left', marginBottom: 10 }}>
+    //               <ProfileAvatar2 source={require('../../assets/images/Minjungum_Lee_consulting.png')}></ProfileAvatar2>
+    //               <ProfileName>이민정음 세무사</ProfileName>
+    //               <ConsultingTime>{selectedDate.getFullYear() + '년 ' + (selectedDate.getMonth() + 1) + '월 ' + selectedDate.getDate() + '일 ' + selectedList}</ConsultingTime>
+    //             </View>
+    //             <View style={{
+    //               flexDirection: 'column', alignItems: 'left', borderBottomWidth: 1,
+    //               borderBottomColor: '#E8EAED', borderTopWidth: 1,
+    //               borderTopColor: '#E8EAED',
+    //             }}>
+    //               <Title style={{ marginBottom: 10, marginTop: 10 }}>상세 내용을 알려주세요.</Title>
+    //               <SubTitle4>세금종류</SubTitle4>
+    //               <View style={{ width: '100%', flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
+    //                 {ConsultingList.map((item, index) => (
+    //                   <Tag
+    //                     style={{
+    //                       borderColor: taxTypeList.indexOf(item) < 0 ? '#E8EAED'
+    //                         : item === '취득세'
+    //                           ? '#2F87FF'
+    //                           : item === '양도소득세'
+    //                             ? '#2F87FF'
+    //                             : item === '상속세'
+    //                               ? '#2F87FF'
+    //                               : item === '증여세'
+    //                                 ? '#2F87FF'
+    //                                 : '#E8EAED',
+    //                       margin: 5
+    //                     }}
+    //                     //disabled={taxTypeList.indexOf(item) < 0}
+    //                     active={taxTypeList.indexOf(item) > -1}
+    //                     onPress={() => {
+    //                       if (taxTypeList.indexOf(item) > -1) {
+    //                         setTaxTypeList(
+    //                           taxTypeList.filter(selectedItem => selectedItem !== item),
+    //                         );
+    //                       } else {
+    //                         setTaxTypeList([...taxTypeList, item]);
+    //                       }
+    //                     }}
+    //                     key={index}>
+    //                     <TagText style={{
+    //                       color: taxTypeList.indexOf(item) < 0 ? '#E8EAED'
+    //                         : item === '취득세'
+    //                           ? '#2F87FF'
+    //                           : item === '양도소득세'
+    //                             ? '#2F87FF'
+    //                             : item === '상속세'
+    //                               ? '#2F87FF'
+    //                               : item === '증여세'
+    //                                 ? '#2F87FF'
+    //                                 : '#E8EAED'
+    //                     }}>
+    //                       {item}
+    //                     </TagText>
+    //                   </Tag>
+    //                 ))}
+    //               </View>
+    //             </View>
+    //             <View style={{
+    //               borderBottomWidth: 1,
+    //               borderBottomColor: '#E8EAED'
+    //             }}>
+    //               <SubTitle4 style={{ marginTop: 20, marginBottom: 20 }}>상세 내용</SubTitle4>
+    //               <ConsultingItem>
+    //                 <ScrollView keyboardShouldPersistTaps='always'>
+    //                   <ConsultingInput
+    //                     ref={input3}
+    //                     autoFocus={currentPageIndex === 4}
+    //                     multiline={true}
+    //                     width={width}
+    //                     placeholder="정확한 상담을 위해 사실 관계 및 문의사항을 자세하게 입력해주세요."
+    //                     onChangeText={(input) => {
+    //                       let byteCount = encodeURI(input).split(/%..|./).length - 1;
+    //                       if (byteCount <= 1000) {
+    //                         setText(input);
+    //                       }
+    //                     }}
+    //                     value={text.slice(0, 1000)}
+    //                     style={{ flexWrap: 'wrap' }}
+    //                     blurOnSubmit={false}
+    //                   />
+    //                 </ScrollView>
+    //               </ConsultingItem>
+    //             </View>
+
+    //             <View style={{
+    //               borderBottomWidth: 1,
+    //               borderBottomColor: '#E8EAED',
+    //               marginBottom: 10,
+    //               flexDirection: 'row',
+    //               flexWrap: 'wrap',
+    //             }}>
+    //               <SubTitle4 style={{ marginTop: 20, marginBottom: 20 }}>세금 계산 결과</SubTitle4>
+    //               <ButtonSection2 style={{
+    //                 flex: 1,
+    //                 flexDirection: 'row',
+    //                 alignItems: 'center',
+    //                 justifyContent: 'flex-end',
+    //                 width: '100%'
+    //               }}>
+    //                 <Button2 onPress={toggleExpand} style={{
+    //                   borderWidth: 1, borderColor: '#E8EAED', backgroundColor: '#fff', width: 80, flexDirection: 'row',
+    //                   alignItems: 'center',
+
+    //                 }}>
+    //                   <ButtonText style={{ color: '#717274', fontSize: 12, fontFamily: 'Pretendard-regular' }}> {isExpanded ? '접기' : '펼치기'}</ButtonText>
+    //                   {!isExpanded ? <Bottompolygon style={{ marginLeft: 5, marginTop: 1 }} />
+    //                     : <Bottompolygon style={{
+    //                       marginLeft: 5,
+    //                       marginTop: 1,
+    //                       transform: [{ rotate: '180deg' }]
+    //                     }} />}
+    //                 </Button2>
+    //               </ButtonSection2>
+    //             </View>
+
+    //             {isExpanded && (<>
+    //               {!props?.route.params.IsGainTax ? <HouseInfo item={houseInfo} navigation={navigation} ChatType='AcquisitionChat' /> : <HouseInfo item={houseInfo} navigation={navigation} ChatType='GainsTaxChat' />}
+    //               {!props?.route.params.IsGainTax ? <TaxCard navigation={navigation} Pdata={Pdata ? Pdata : null} /> : <TaxCard2 navigation={navigation} Pdata={Pdata ? Pdata : null} />}
+    //               {!props?.route.params.IsGainTax ? <TaxInfoCard Pdata={Pdata ? Pdata : null} /> : <TaxInfoCard2 Pdata={Pdata ? Pdata : null} />}
+    //             </>)
+    //             }
+    //             <SubTitle3>고객님께서 본인 인증하여 로드하거나 직접 입력하신 주택정보와{'\n'}아래 세금 계산 결과를 활용하여 세금 상담을 진행할 예정이에요.{'\n'}이에 동의하시나요?{'\n'}{'\n'}{'\n'}{'\n'}{'\n'}{'\n'}</SubTitle3>
+    //           </IntroSection2>
+    //         </>
+    //       }
+    //       ListFooterComponent={
+    //         <>
+    //           <ButtonSection2>
+    //             <View
+    //               style={{
+    //                 alignItems: 'center', // align-items를 camelCase로 변경
+    //                 flexDirection: 'row', // flex-direction을 camelCase로 변경
+    //                 justifyContent: 'space-between', // justify-content를 camelCase로 변경 
+    //               }}>
+    //               <View style={{ width: '49%', marginRight: '1%' }}>
+    //                 <Button
+    //                   style={{
+    //                     backgroundColor: '#fff',
+    //                     color: '#1b1c1f',
+    //                     width: '100%',
+    //                     height: 50, // height 값을 숫자로 변경하고 단위 제거
+    //                     alignItems: 'center', // align-items를 camelCase로 변경
+    //                     justifyContent: 'center', // justify-content를 camelCase로 변경
+    //                     borderWidth: 1, // border-width를 camelCase로 변경하고 단위 제거
+    //                     borderColor: '#E8EAED',
+    //                   }}
+    //                   width={width}
+    //                   onPress={async () => {
+    //                     const state = await NetInfo.fetch();
+    //                     const canProceed = await handleNetInfoChange(state);
+    //                     if (canProceed) {
+    //                       setCurrentPageIndex(3);
+    //                     }
+    //                   }}>
+    //                   <ButtonText style={{ color: '#717274' }}>이전으로</ButtonText>
+    //                 </Button>
+    //               </View>
+    //               <ShadowContainer style={{ width: '49%', marginLeft: '1%' }}>
+    //                 <Button
+    //                   style={{
+    //                     backgroundColor: text === '' ? '#E8EAED' : '#2F87FF',
+    //                     color: text === '' ? '#1b1c1f' : '#FFFFFF',
+    //                     width: '100%',
+    //                     height: 50, // height 값을 숫자로 변경하고 단위 제거
+    //                     alignItems: 'center', // align-items를 camelCase로 변경
+    //                     justifyContent: 'center', // justify-content를 camelCase로 변경
+    //                     borderWidth: 1, // border-width를 camelCase로 변경하고 단위 제거
+    //                     borderColor: '#E8EAED',
+    //                   }}
+    //                   disabled={!text}
+    //                   active={text}
+    //                   width={width}
+    //                   onPress={async () => {
+    //                     const state = await NetInfo.fetch();
+    //                     const canProceed = await handleNetInfoChange(state);
+    //                     if (canProceed) {
+    //                       const result = await requestReservation();
+    //                       if (result) {
+    //                         navigation.goBack();
+    //                       }
+    //                     }
+    //                   }}>
+    //                   <ButtonText>동의 후 상담 예약하기</ButtonText>
+    //                 </Button>
+    //               </ShadowContainer>
+    //             </View>
+    //             <View
+    //               style={{
+    //                 marginTop: 5,
+    //                 marginBottom: 15,
+    //                 flexDirection: 'row',
+    //                 alignItems: 'center',
+    //                 justifyContent: 'center',
+    //                 alignSelf: 'center',
+    //                 zIndex: 2,
+    //               }}>
+    //               {currentPageIndexList?.map((item, index) => (
+    //                 <TouchableOpacity
+    //                   key={index}
+    //                   activeOpacity={0.6}
+    //                   hitSlop={{ top: 20, bottom: 20, left: 20, right: 20 }}
+    //                   style={{
+    //                     width: 4 === index ? 20 : 8, // Elongate the dot
+    //                     height: 8,
+    //                     borderRadius: 4,
+    //                     backgroundColor: 4 === index ? '#2F87FF' : '#1b1c1f',
+    //                     borderWidth: 1,
+    //                     borderColor: 4 === index ? '#2F87FF' : '#1b1c1f',
+    //                     marginRight: 4,
+    //                   }}
+    //                 />
+    //               ))}
+    //             </View>
+    //           </ButtonSection2></>}
+    //     /></>
+    //   </Container>}
+
+
+
+    // </ScrollView>
+  );
 };
+const styles = StyleSheet.create({
+  timerText: {
+    fontSize: 13,
+    color: '#FF7401', // 빨간색 텍스트
+    marginRight: 10,
+    fontFamily: 'Pretendard-Bold', // 원하는 폰트 패밀리
+    fontWeight: '700', // 폰트 두께 (400은 기본)
+  },
+  rootContainer: {
+    flex: 1,
+    backgroundColor: '#fff',
+  },
+  Line1: {
+    height: 1, // 라인 두께
+    backgroundColor: '#E8EaEd', // 파란색
+  },
+  content: {
+    padding: 20,
+  },
+  container: {
+    flex: 1,
+    padding: 20,
+    backgroundColor: '#fff',
+  },
+  title: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginBottom: 30,
+    textAlign: 'center',
+  },
+  scrollContent: {
+    padding: 20,
+  },
+  secondContent: {
+    marginTop: 20,
+  },
+  baseContent: {
+    marginTop: 22,
+  },
+  bigTitle: {
+    fontSize: 20,
+    marginBottom: 20,
+    color: '#1b1C1F',
+    fontFamily: 'Pretendard-Bold', // 원하는 폰트 패밀리
+    lineHeight: 24,
+  },
+
+  label: {
+    fontSize: 17,
+    marginBottom: 5,
+    lineHeight:20,
+    letterSpacing:-0.3,
+    color: '#1b1C1F',
+    fontFamily: 'Pretendard-Bold', // 원하는 폰트 패밀리
+    fontWeight: '700', // 폰트 두께 (400은 기본)
+  },
+  bigSubTitleLabel: {
+    fontSize: 14,
+    marginBottom: 30,
+    color: '#a3a5a8',
+    fontFamily: 'Pretendard-Bold', // 원하는 폰트 패밀리
+    fontWeight: '700', // 폰트 두께 (400은 기본)
+    lineHeight:20,
+    textAlign: 'left',
+
+  },
+  subTitleLabel: {
+    fontSize: 13,
+    marginBottom: 10,
+    color: '#717274',
+    fontFamily: 'Pretendard-Medium', // 원하는 폰트 패밀리
+    fontWeight: '500', // 폰트 두께 (400은 기본)
+  },
+  inputWrapper: {
+    flexDirection: 'row', // TextInput과 Clear 버튼 가로 배치
+    alignItems: 'center', // 세로 가운데 정렬
+    borderRadius: 10,
+    backgroundColor: '#F5F7FA',
+    paddingHorizontal: 15,
+    height: 56,
+    marginBottom: 8, // TextInput과 "아이디 찾기" 버튼 사이 간격
+  },
+
+  inputAuthWrapper: {
+    flexDirection: 'row', // 가로 정렬
+    alignItems: 'center', // 세로 중앙 정렬
+    borderRadius: 10,
+    backgroundColor: '#F5F7FA',
+    paddingHorizontal: 15,
+    height: 56,
+    marginBottom: 8,
+  },
+
+  input: {
+    flex: 1, // TextInput이 남은 공간을 차지하도록 설정
+    color: '#000',
+    fontSize: 13,
+    fontFamily: 'Pretendard-Regular',
+    fontWeight: '400',
+  },
+  clearButton: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: 24,
+    height: 24,
+  },
+  clearIcon: {
+    width: 20,
+    height: 20,
+  },
+  authReSend: {
+    fontSize: 13, // 폰트 크기
+    fontFamily: 'Pretendard-Regular', // 원하는 폰트 패밀리
+    fontWeight: '400', // 폰트 두께 (400은 기본)
+    color: '#717274',
+    textDecorationLine: 'underline', // 밑줄 추가
+    textDecorationColor: '#717274', // 밑줄 색상 설정
+  },
+  disabledButton: {
+    backgroundColor: '#D9D9D9',
+    borderRadius: 50,
+    paddingVertical: 15,
+    alignItems: 'center',
+    marginVertical: 30,
+  },
+
+  loginButton: {
+    backgroundColor: '#2F87ff',
+    borderRadius: 50,
+    paddingVertical: 15,
+    alignItems: 'center',
+    marginVertical: 30,
+  },
+  loginButtonLabel: {
+    color: '#fff',
+    fontSize: 17,
+    fontFamily: 'Pretendard-Bold', // 원하는 폰트 패밀리
+    fontWeight: '700',
+  },
+  footer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  signUpFooter: {
+    marginTop: 10,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  footerText: {
+    fontSize: 17,
+    color: '#000',
+    fontFamily: 'Pretendard-Bold', // 원하는 폰트 패밀리
+    fontWeight: '700', // 폰트 두께 (400은 기본)
+
+  },
+
+  signUpText: {
+    fontSize: 13,
+    color: '#2F87FF',
+    fontFamily: 'Pretendard-Regular', // 원하는 폰트 패밀리
+    fontWeight: '400', // 폰트 두께 (400은 기본)
+    textDecorationLine: 'underline', // 밑줄 추가
+    textDecorationColor: '#2F87FF', // 밑줄 색상 설정
+  },
+  resendWrapper: {
+    flexDirection: 'row', // 가로 배치
+    justifyContent: 'space-between', // 양 끝 정렬
+    alignItems: 'center', // 세로 중앙 정렬
+    marginTop: 5,
+  },
+  spaceBetween: {
+    justifyContent: 'space-between', // 메시지와 버튼을 양 끝에 배치
+  },
+  flexEnd: {
+    justifyContent: 'flex-end', // 버튼만 오른쪽 정렬
+  },
+  expiredText: {
+    fontSize: 13,
+    color: '#FF7401', // 빨간색 텍스트
+    marginVertical: 5,
+    fontFamily: 'Pretendard-Regular',
+  },
+  findIdButton: {
+    alignSelf: 'flex-end', // 부모의 오른쪽 끝에 정렬
+  },
+});
 
 export default Payment;

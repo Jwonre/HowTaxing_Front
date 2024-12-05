@@ -354,6 +354,8 @@ const Login_ID = props => {
               // navigation.push('CheckTerms', { LoginAcessType: 'IDPASS', id: id, password: password })
               navigation.navigate('IdFindScreen', { id:id, authType : 'FIND_ID',LoginAcessType : 'IDPASS'});
               // dispatch(clearHouseInfo());
+              // navigation.navigate('PaymentScreen', { id:id, authType : 'FIND_ID',LoginAcessType : 'IDPASS'});
+
             }}>
             <UnserLineButtonText>아이디 찾기</UnserLineButtonText>
           </TouchableOpacity>
