@@ -16,6 +16,7 @@ import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import BackIcon from '../../assets/icons/back_button.svg';
 import styled from 'styled-components';
 import getFontSize from '../../utils/getFontSize';
+
 import CloseIcon from '../../assets/icons/close_button.svg';
 import DeleteIcon from '../../assets/icons/delete_circle.svg';
 import ConfirmIcon from '../../assets/icons/iucide_check.svg';
@@ -271,7 +272,7 @@ const PasswordReSettingScreen = props => {
             navigation.goBack();
             // dispatch(clearHouseInfo());
           }}>
-          <CloseIcon />
+          <BackIcon />
         </TouchableOpacity>
       ),
 

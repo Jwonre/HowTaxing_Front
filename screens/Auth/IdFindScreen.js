@@ -18,6 +18,7 @@ import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import BackIcon from '../../assets/icons/back_button.svg';
 import styled from 'styled-components';
 import getFontSize from '../../utils/getFontSize';
+
 import CloseIcon from '../../assets/icons/close_button.svg';
 import DeleteIcon from '../../assets/icons/delete_circle.svg';
 import NetInfo from '@react-native-community/netinfo';
@@ -351,7 +352,7 @@ const IdFindScreen = props => {
             navigation.goBack();
             // dispatch(clearHouseInfo());
           }}>
-          <CloseIcon />
+          <BackIcon />
         </TouchableOpacity>
       ),
 
@@ -391,7 +392,7 @@ const IdFindScreen = props => {
               ref={inputRef}
               keyboardType="phone-pad" // 숫자 키보드 표시
               maxLength={13} // 최대 11자리 (01012345678)
-              style={styles.input}
+              style={phoneNumber.length > 0 ? styles.input : styles.input_not_content}
               placeholder="휴대폰 번호를 입력해주세요."
               placeholderTextColor="#A3A5A8"
               value={phoneNumber}
@@ -450,7 +451,7 @@ const IdFindScreen = props => {
               <View style={styles.inputAuthWrapper}>
                 <TextInput
                   keyboardType="numeric"
-                  style={styles.input}
+                  style={authNum.length > 0 ? styles.input : styles.input_not_content}
                   placeholder="SMS로 도착한 인증번호를 알려주세요."
                   placeholderTextColor="#A3A5A8"
                   value={authNum}
@@ -540,7 +541,6 @@ const styles = StyleSheet.create({
     color: '#FF7401', // 빨간색 텍스트
     marginRight: 10,
     fontFamily: 'Pretendard-Bold', // 원하는 폰트 패밀리
-    fontWeight: '700', // 폰트 두께 (400은 기본)
   },
   rootContainer: {
     flex: 1,
@@ -609,13 +609,17 @@ const styles = StyleSheet.create({
     height: 56,
     marginBottom: 8,
   },
-
-  input: {
+  input_not_content: {
     flex: 1, // TextInput이 남은 공간을 차지하도록 설정
     color: '#000',
     fontSize: 13,
     fontFamily: 'Pretendard-Regular',
-    fontWeight: '400',
+  },
+  input: {
+    flex: 1, // TextInput이 남은 공간을 차지하도록 설정
+    color: '#000',
+    fontSize: 17,
+    fontFamily: 'Pretendard-Bold',
   },
   clearButton: {
     justifyContent: 'center',
@@ -630,9 +634,9 @@ const styles = StyleSheet.create({
   authReSend: {
     fontSize: 13, // 폰트 크기
     fontFamily: 'Pretendard-Regular', // 원하는 폰트 패밀리
-    fontWeight: '400', // 폰트 두께 (400은 기본)
     color: '#717274',
     textDecorationLine: 'underline', // 밑줄 추가
+    lineHeight : 15,
     textDecorationColor: '#717274', // 밑줄 색상 설정
   },
   disabledButton: {

@@ -310,7 +310,7 @@ const PhoneAuthConfirmScreen = props => {
             navigation.goBack();
             // dispatch(clearHouseInfo());
           }}>
-          <CloseIcon />
+          <BackIcon />
         </TouchableOpacity>
       ),
 
