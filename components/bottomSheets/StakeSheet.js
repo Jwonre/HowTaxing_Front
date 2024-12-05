@@ -343,7 +343,6 @@ const StakeSheet = props => {
                 minimumTrackTintColor="#2f87ff"
                 maximumTrackTintColor="#d0d3d8"
                 step={1}
-                thumbTintColor="#fff"
                 value={value}
                 onValueChange={(val) => setValue(val)}
                 thumbImage={require('../../assets/images/slider.png')}

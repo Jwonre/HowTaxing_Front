@@ -549,7 +549,7 @@ const CertificationAcq = props => {
     const data = {
       certOrg: props?.route?.params?.data === 'KB' ? 'kb' : props?.route?.params?.data === 'naver' ? 'naver' : 'toss',
       userNm: name,
-      mobileNo: phone,
+      mobileNo: phone ? phone.replace(/-/g, '') : '',
       rlno: residentNumber.replace(/-/g, ''),
       userId: id,
       userPw: password,
@@ -794,21 +794,26 @@ const CertificationAcq = props => {
                   placeholder="전화번호를 입력해주세요."
                   keyboardType="number-pad"
                   onChangeText={async (phone) => {
-                    if (phone.length === 0) {
-                      setPhoneOk('1');
-                      setPhone('');
-                    } else if (phone.length < 12 || phone.length > 0) {
-                      setPhone(phone);
-                      if (phone.length === 11) {
-                        setPhoneOk('2');
-                      } else {
-                        setPhoneOk('1');
-                      }
+                    const filteredPhone = phone.replace(/[^0-9]/g, '');
+                    let formattedPhone = filteredPhone;
+                    if (filteredPhone.length > 3 && filteredPhone.length <= 7) {
+                      formattedPhone = `${filteredPhone.slice(0, 3)}-${filteredPhone.slice(3)}`;
+                    } else if (filteredPhone.length > 7) {
+                      formattedPhone = `${filteredPhone.slice(0, 3)}-${filteredPhone.slice(3, 7)}-${filteredPhone.slice(7, 11)}`;
+                    }
 
+                    setPhone(formattedPhone);
+
+                    if (filteredPhone.length === 11) {
+                      setPhoneOk('2');
+                    } else {
+                      setPhoneOk('1');
                     }
                   }}
+
+                  
                   autoCompleteType="tel"
-                  maxLength={11}
+                  maxLength={13}
                   onSubmitEditing={async () => {
                     input3.current.focus();
                   }} />
@@ -1114,21 +1119,23 @@ const CertificationAcq = props => {
                   keyboardType="number-pad"
                   onChangeText={async (phone) => {
                     const filteredPhone = phone.replace(/[^0-9]/g, '');
-                    if (filteredPhone.length === 0) {
-                      setPhoneOk('1');
-                      setPhone('');
-                    } else if (filteredPhone.length < 12 || filteredPhone.length > 0) {
-                      setPhone(filteredPhone);
-                      if (filteredPhone.length === 11) {
-                        setPhoneOk('2');
-                      } else {
-                        setPhoneOk('1');
-                      }
+                    let formattedPhone = filteredPhone;
+                    if (filteredPhone.length > 3 && filteredPhone.length <= 7) {
+                      formattedPhone = `${filteredPhone.slice(0, 3)}-${filteredPhone.slice(3)}`;
+                    } else if (filteredPhone.length > 7) {
+                      formattedPhone = `${filteredPhone.slice(0, 3)}-${filteredPhone.slice(3, 7)}-${filteredPhone.slice(7, 11)}`;
+                    }
 
+                    setPhone(formattedPhone);
+
+                    if (filteredPhone.length === 11) {
+                      setPhoneOk('2');
+                    } else {
+                      setPhoneOk('1');
                     }
                   }}
                   autoCompleteType="tel"
-                  maxLength={11}
+                  maxLength={13}
                   onSubmitEditing={async () => {
                     input3.current.focus();
                   }} />
@@ -1278,21 +1285,23 @@ const CertificationAcq = props => {
                   keyboardType="number-pad"
                   onChangeText={async (phone) => {
                     const filteredPhone = phone.replace(/[^0-9]/g, '');
-                    if (filteredPhone.length === 0) {
-                      setPhoneOk('1');
-                      setPhone('');
-                    } else if (filteredPhone.length < 12 || filteredPhone.length > 0) {
-                      setPhone(filteredPhone);
-                      if (filteredPhone.length === 11) {
-                        setPhoneOk('2');
-                      } else {
-                        setPhoneOk('1');
-                      }
+                    let formattedPhone = filteredPhone;
+                    if (filteredPhone.length > 3 && filteredPhone.length <= 7) {
+                      formattedPhone = `${filteredPhone.slice(0, 3)}-${filteredPhone.slice(3)}`;
+                    } else if (filteredPhone.length > 7) {
+                      formattedPhone = `${filteredPhone.slice(0, 3)}-${filteredPhone.slice(3, 7)}-${filteredPhone.slice(7, 11)}`;
+                    }
 
+                    setPhone(formattedPhone);
+
+                    if (filteredPhone.length === 11) {
+                      setPhoneOk('2');
+                    } else {
+                      setPhoneOk('1');
                     }
                   }}
                   autoCompleteType="tel"
-                  maxLength={11}
+                  maxLength={13}
                   onSubmitEditing={async () => {
                     input3.current.focus();
                   }} />

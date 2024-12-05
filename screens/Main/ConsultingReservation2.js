@@ -645,7 +645,7 @@ const ConsultingReservation = props => {
     const data = {
       consultantId: '1',
       customerName: name ? name : '',
-      customerPhone: phone ? phone : '',
+      customerPhone: phone ? phone.replace(/-/g, "") : '',
       reservationDate: selectedDate ? `${year}-${month}-${day}` : '',
       reservationTime: selectedList ? selectedList[0] : '',
       consultingType: NumTaxTypeList ? NumTaxTypeList.sort().join(",") : '',
@@ -691,7 +691,7 @@ const ConsultingReservation = props => {
         }
         return false;
       } else {
-        if (response.data.data && response.data.data.isApplyComplete ) {
+        if (response.data.data && response.data.data.isApplyComplete) {
           const result = response.data.data;
           await SheetManager.show('InfoConsulting', {
             payload: {
@@ -1001,18 +1001,26 @@ const ConsultingReservation = props => {
                 autoFocus={currentPageIndex === 2}
                 placeholder="전화번호를 입력해주세요."
                 value={phone}
-                onChangeText={setPhone}
-                maxLength={11}
+                onChangeText={async (phone) => {
+                  const filteredPhone = phone.replace(/[^0-9]/g, '');
+                  let formattedPhone = filteredPhone;
+                  if (filteredPhone.length > 3 && filteredPhone.length <= 7) {
+                    formattedPhone = `${filteredPhone.slice(0, 3)}-${filteredPhone.slice(3)}`;
+                  } else if (filteredPhone.length > 7) {
+                    formattedPhone = `${filteredPhone.slice(0, 3)}-${filteredPhone.slice(3, 7)}-${filteredPhone.slice(7, 11)}`;
+                  }
+                  setPhone(formattedPhone);
+                }}
+                maxLength={13}
                 keyboardType="phone-pad"
                 autoCompleteType="tel"
                 onSubmitEditing={async () => {
                   const state = await NetInfo.fetch();
                   const canProceed = await handleNetInfoChange(state);
                   if (canProceed) {
-                    if (phone.length > 10) {
+                    if (phone.length === 13) {
                       setCurrentPageIndex(3);
                     }
-
                   }
                 }}
               />
@@ -1059,8 +1067,8 @@ const ConsultingReservation = props => {
               }}>
                 <Button
                   style={{
-                    backgroundColor: phone.length < 11 ? '#E8EAED' : '#2F87FF',
-                    color: phone.length < 11 ? '#1b1c1f' : '#FFFFFF',
+                    backgroundColor: phone.length < 13 ? '#E8EAED' : '#2F87FF',
+                    color: phone.length < 13 ? '#1b1c1f' : '#FFFFFF',
                     width: '100%',
                     height: 50, // height 값을 숫자로 변경하고 단위 제거
                     alignItems: 'center', // align-items를 camelCase로 변경
@@ -1068,14 +1076,16 @@ const ConsultingReservation = props => {
                     borderWidth: 1, // border-width를 camelCase로 변경하고 단위 제거
                     borderColor: '#E8EAED',
                   }}
-                  disabled={phone.length < 11}
-                  active={phone.length > 10}
+                  disabled={phone.length < 13}
+                  active={phone.length > 12}
                   width={width}
                   onPress={async () => {
                     const state = await NetInfo.fetch();
                     const canProceed = await handleNetInfoChange(state);
                     if (canProceed) {
-                      setCurrentPageIndex(3);
+                      if (phone.length > 12) {
+                        setCurrentPageIndex(3);
+                      }
                     }
                   }}>
                   <ButtonText >다음으로</ButtonText>
