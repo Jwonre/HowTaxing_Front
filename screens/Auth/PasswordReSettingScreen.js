@@ -57,6 +57,7 @@ const PasswordReSettingScreen = props => {
   const [IdCheckresult, setIdCheckresult] = useState('');
   const [phoneNumberOk, setPhoneNumberOk] = useState('1');
   const inputRef = useRef();
+  const [errMsg, setErrMsg] = useState('');
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -203,6 +204,8 @@ const PasswordReSettingScreen = props => {
         console.log('sendAuthMobile', response.data.errYn);
 
         if (response.data.errYn === 'Y') {
+
+          setErrMsg('인증번호 검증에 실패했습니다.');
           SheetManager.show('info', {
             payload: {
               type: 'error',
@@ -223,6 +226,8 @@ const PasswordReSettingScreen = props => {
 
       })
       .catch(error => {
+        setErrMsg('인증번호 검증에 실패했습니다.');
+
         // 오류 처리
         SheetManager.show('info', {
           payload: {
@@ -319,28 +324,34 @@ const PasswordReSettingScreen = props => {
           <View style={styles.inputWrapper}>
             <TextInput
               ref={input1}
-              style={styles.input}
+              style={id.length > 0 ? styles.input : styles.input_not_content}
               placeholder="아이디를 입력해주세요."
               placeholderTextColor="#A3A5A8"
               value={id}
               onChangeText={async (id) => { setId(id.replace(/[^a-zA-Z0-9!@#$%^&*(),.?":{}|<>]/g, '')); setIdOk('1'); setIdCheckresult(''); }}
               onSubmitEditing={async () => {
-                const logincheck = await getLoginYn();
-                if (logincheck) {
-                  input2.current.focus();
-                } else {
-                  input1.current.focus();
+                if(id.length >0) {
+                  const logincheck = await getLoginYn();
+                  if (logincheck) {
+                    input2.current.focus();
+                  } else {
+                    input1.current.focus();
+                  }
                 }
+
 
               }
               }
               onBlur={async () => {
-                const logincheck = await getLoginYn();
-                if (logincheck) {
-                  input2.current.focus();
-                } else {
-                  input1.current.focus();
+                if(id.length >0) {
+                  const logincheck = await getLoginYn();
+                  if (logincheck) {
+                    input2.current.focus();
+                  } else {
+                    input1.current.focus();
+                  }
                 }
+
 
               }
               }
@@ -388,7 +399,7 @@ const PasswordReSettingScreen = props => {
 
         </View>
 
-        <View style={styles.inputSection}>
+        <View style={styles.inputSection2}>
           {/* Label */}
           <Text style={styles.label}>휴대폰 번호</Text>
           <Text style={styles.subTitleLabel}>본인 인증을 위해 휴대폰 번호를 알려주세요.</Text>
@@ -397,9 +408,10 @@ const PasswordReSettingScreen = props => {
           <View style={styles.inputWrapper}>
             <TextInput
             ref={input2}
+
               keyboardType="phone-pad" // 숫자 키보드 표시
               maxLength={13} // 최대 11자리 (01012345678)
-              style={styles.input}
+              style={phoneNumber.length > 0 ? styles.input : styles.input_not_content}
               placeholder="휴대폰 번호를 입력해주세요."
               placeholderTextColor="#A3A5A8"
               value={phoneNumber}
@@ -485,6 +497,10 @@ const PasswordReSettingScreen = props => {
                 {timer === 0 && (
                   <Text style={styles.expiredText}>인증번호가 만료되었습니다.</Text>
                 )}
+                {timer > 0 && errMsg.length > 0  && (
+
+                  <Text style={styles.expiredText}>{`${errMsg}`}</Text>
+                )}
                 <TouchableOpacity style={styles.findIdButton} onPress={handleResendAuth}>
                   <Text style={styles.authReSend}>인증번호 재전송</Text>
                 </TouchableOpacity>
@@ -505,7 +521,7 @@ const PasswordReSettingScreen = props => {
             (!phoneNumber || timer === 0) && styles.disabledButton, // 조건부 스타일
           ]}
           onPress={handleNextStep}
-          disabled={!phoneNumber || timer === 0 || !IdOk} // 비활성화 조건
+          disabled={!phoneNumber || timer === 0 || !IdOk || !id} // 비활성화 조건
         >
           <Text style={styles.loginButtonLabel}
            >
@@ -537,7 +553,6 @@ const styles = StyleSheet.create({
     color: '#FF7401', // 빨간색 텍스트
     marginRight: 10,
     fontFamily: 'Pretendard-Bold', // 원하는 폰트 패밀리
-    fontWeight: '700', // 폰트 두께 (400은 기본)
   },
   rootContainer: {
     flex: 1,
@@ -580,28 +595,31 @@ const styles = StyleSheet.create({
   inputSection: {
     marginTop: 10,
   },
+
+  inputSection2: {
+    marginTop: 30,
+  },
   label: {
     fontSize: 17,
-    marginBottom: 5,
-    color: '#000',
+    marginBottom: 10,
+    color: '#1b1c1f',
     lineHeight:20,
-    letterSpacing:-0.3,
     fontFamily: 'Pretendard-Bold', // 원하는 폰트 패밀리
-    fontWeight: '700', // 폰트 두께 (400은 기본)
   },
   subTitleLabel: {
     fontSize: 13,
     marginBottom: 10,
     color: '#717274',
+    lineHeight:16,
+
     fontFamily: 'Pretendard-Medium', // 원하는 폰트 패밀리
-    fontWeight: '500', // 폰트 두께 (400은 기본)
   },
   idCheckMsg: {
     fontSize: 13,
     marginBottom: 10,
     color: '#2F87FF',
+    lineHeight:15,
     fontFamily: 'Pretendard-Regular', // 원하는 폰트 패밀리
-    fontWeight: '400', // 폰트 두께 (400은 기본)
   },
   inputWrapper: {
     flexDirection: 'row', // TextInput과 Clear 버튼 가로 배치
@@ -610,14 +628,19 @@ const styles = StyleSheet.create({
     backgroundColor: '#F5F7FA',
     paddingHorizontal: 15,
     height: 56,
-    marginBottom: 8, // TextInput과 "아이디 찾기" 버튼 사이 간격
+    marginBottom: 10, // TextInput과 "아이디 찾기" 버튼 사이 간격
+  },
+  input_not_content: {
+    flex: 1, // TextInput이 남은 공간을 차지하도록 설정
+    color: '#000',
+    fontSize: 13,
+    fontFamily: 'Pretendard-Regular',
   },
   input: {
-    flex: 1, // TextInput이 가로로 공간을 채움
-    color: '#000', // 글자 색상
-    fontSize: 13, // 폰트 크기
-    fontFamily: 'Pretendard-Regular', // 원하는 폰트 패밀리
-    fontWeight: '400', // 폰트 두께 (400은 기본)
+    flex: 1, // TextInput이 남은 공간을 차지하도록 설정
+    color: '#000',
+    fontSize: 17,
+    fontFamily: 'Pretendard-Bold',
   },
   clearButton: {
     justifyContent: 'center',
@@ -632,9 +655,9 @@ const styles = StyleSheet.create({
   authReSend: {
     fontSize: 13, // 폰트 크기
     fontFamily: 'Pretendard-Regular', // 원하는 폰트 패밀리
-    fontWeight: '400', // 폰트 두께 (400은 기본)
     color: '#717274',
     textDecorationLine: 'underline', // 밑줄 추가
+    lineHeight : 15,
     textDecorationColor: '#717274', // 밑줄 색상 설정
   },
   disabledButton: {
@@ -658,7 +681,6 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 17,
     fontFamily: 'Pretendard-Bold', // 원하는 폰트 패밀리
-    fontWeight: '700',
   },
   footer: {
     flexDirection: 'row',
@@ -675,7 +697,6 @@ const styles = StyleSheet.create({
     fontSize: 17,
     color: '#000',
     fontFamily: 'Pretendard-Bold', // 원하는 폰트 패밀리
-    fontWeight: '700', // 폰트 두께 (400은 기본)
 
   },
 
@@ -683,7 +704,6 @@ const styles = StyleSheet.create({
     fontSize: 13,
     color: '#2F87FF',
     fontFamily: 'Pretendard-Regular', // 원하는 폰트 패밀리
-    fontWeight: '400', // 폰트 두께 (400은 기본)
     textDecorationLine: 'underline', // 밑줄 추가
     textDecorationColor: '#2F87FF', // 밑줄 색상 설정
   },

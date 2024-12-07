@@ -1462,7 +1462,7 @@ const ConsultingReservation = () => {
 
 
     </ScrollView >
-  )
+  );
 };
 
 export default ConsultingReservation;

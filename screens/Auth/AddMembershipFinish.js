@@ -51,21 +51,21 @@ const ProfileAvatar = styled(FastImage).attrs(props => ({
 const ModalText = styled.Text`
   font-size: 25px;
   font-family: Pretendard-Bold;
-  color: #000;
+  color: #1b1c1f;
   line-height: 30px;
   letter-spacing: -0.3px;
   margin-bottom: 5px;
   text-align: center;
-  margin-bottom: 20px;
+  margin-bottom: 30px;
 `;
 
 const MembershipText = styled.Text`
   font-size: 17px;
-  font-family: Pretendard-regular;
+  font-family: Pretendard-medium;
   text-align: center;
   color: #A3A5A8;
   line-height: 20px;
-  letter-spacing: -0.3px;
+  //letter-spacing: -0.3px;
   //text-decoration: underline;
     margin-bottom: 10px;
 `;

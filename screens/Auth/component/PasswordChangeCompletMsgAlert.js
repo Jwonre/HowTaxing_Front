@@ -17,7 +17,7 @@ const ModalTitle = styled.Text`
   font-size: 17px;
   font-family: Pretendard-Bold;
   color: #000;
-  line-height: 26px;
+  line-height: 20px;
   text-align: center;
   margin-bottom: 10px;
 `;
@@ -35,12 +35,12 @@ const Button = styled.TouchableOpacity`
   border-radius: 25px;
   justify-content: center;
   align-items: center;
-  margin-top: 10px;
-  width: 48%;
+  margin-top: 20px;
+  width: 100%;
 `;
 
 const ButtonText = styled.Text`
-  font-size: 16px;
+  font-size: 17px;
   font-family: Pretendard-Medium;
 `;
 

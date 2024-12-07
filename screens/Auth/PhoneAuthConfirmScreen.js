@@ -360,7 +360,8 @@ const PhoneAuthConfirmScreen = props => {
               ref={inputRef} // ref 연결
               keyboardType="phone-pad" // 숫자 키보드 표시
               maxLength={13} // 최대 11자리 (01012345678)
-              style={styles.input}
+              style={phoneNumber.length > 0 ? styles.input : styles.input_not_content}
+
               placeholder="휴대폰 번호를 입력해주세요."
               placeholderTextColor="#A3A5A8"
               value={phoneNumber}
@@ -419,10 +420,11 @@ const PhoneAuthConfirmScreen = props => {
               <View style={styles.inputAuthWrapper}>
                 <TextInput
                   keyboardType="numeric"
-                  style={styles.input}
+                  style={authNum.length > 0 ? styles.input : styles.input_not_content}
                   placeholder="SMS로 도착한 인증번호를 알려주세요."
                   placeholderTextColor="#A3A5A8"
                   value={authNum}
+
                   onChangeText={setAuthNumber}
                 />
                 {isTimerActive && timer > 0 && (
@@ -507,7 +509,6 @@ const styles = StyleSheet.create({
     color: '#FF7401', // 빨간색 텍스트
     marginRight: 10,
     fontFamily: 'Pretendard-Bold', // 원하는 폰트 패밀리
-    fontWeight: '700', // 폰트 두께 (400은 기본)
   },
   rootContainer: {
     flex: 1,
@@ -543,30 +544,25 @@ const styles = StyleSheet.create({
   bigTitle: {
     fontSize: 25,
     marginTop: 15,
-    marginBottom: 10,
+    marginBottom: 15,
     color: '#1b1C1F',
     fontFamily: 'Pretendard-Bold', // 원하는 폰트 패밀리
-    fontWeight: '700', // 폰트 두께 (400은 기본)
 
     lineHeight: 30,
-    letterSpacing: -0.5,
   },
 
   label: {
     fontSize: 17,
-    marginBottom: 5,
+    marginBottom: 10,
     lineHeight:20,
-    letterSpacing:-0.3,
     color: '#1b1C1F',
     fontFamily: 'Pretendard-Bold', // 원하는 폰트 패밀리
-    fontWeight: '700', // 폰트 두께 (400은 기본)
   },
   bigSubTitleLabel: {
-    fontSize: 14,
+    fontSize: 17,
     marginBottom: 30,
     color: '#a3a5a8',
     fontFamily: 'Pretendard-Bold', // 원하는 폰트 패밀리
-    fontWeight: '700', // 폰트 두께 (400은 기본)
     lineHeight:20,
     textAlign: 'left',
 
@@ -576,7 +572,6 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     color: '#717274',
     fontFamily: 'Pretendard-Medium', // 원하는 폰트 패밀리
-    fontWeight: '500', // 폰트 두께 (400은 기본)
   },
   inputWrapper: {
     flexDirection: 'row', // TextInput과 Clear 버튼 가로 배치
@@ -585,7 +580,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#F5F7FA',
     paddingHorizontal: 15,
     height: 56,
-    marginBottom: 8, // TextInput과 "아이디 찾기" 버튼 사이 간격
   },
 
   inputAuthWrapper: {
@@ -598,13 +592,20 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
 
-  input: {
+  input_not_content: {
     flex: 1, // TextInput이 남은 공간을 차지하도록 설정
     color: '#000',
     fontSize: 13,
     fontFamily: 'Pretendard-Regular',
-    fontWeight: '400',
   },
+  input: {
+    flex: 1, // TextInput이 남은 공간을 차지하도록 설정
+    color: '#000',
+    fontSize: 17,
+    fontFamily: 'Pretendard-Bold',
+  },
+
+
   clearButton: {
     justifyContent: 'center',
     alignItems: 'center',
@@ -618,7 +619,6 @@ const styles = StyleSheet.create({
   authReSend: {
     fontSize: 13, // 폰트 크기
     fontFamily: 'Pretendard-Regular', // 원하는 폰트 패밀리
-    fontWeight: '400', // 폰트 두께 (400은 기본)
     color: '#717274',
     textDecorationLine: 'underline', // 밑줄 추가
     textDecorationColor: '#717274', // 밑줄 색상 설정
@@ -686,7 +686,7 @@ const styles = StyleSheet.create({
   expiredText: {
     fontSize: 13,
     color: '#FF7401', // 빨간색 텍스트
-    marginVertical: 5,
+    marginTop: 10,
     fontFamily: 'Pretendard-Regular',
   },
   findIdButton: {

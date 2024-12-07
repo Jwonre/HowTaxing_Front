@@ -6,6 +6,8 @@ import {
   TouchableOpacity,
   useWindowDimensions,
   ScrollView,
+  StyleSheet,
+
 } from 'react-native';
 import React, { useLayoutEffect, useRef, useState } from 'react';
 import { WebView } from 'react-native-webview';
@@ -45,10 +47,10 @@ const IntroSection = styled.View`
 const ModalText = styled.Text`
   font-size: 17px;
   font-family: Pretendard-Bold;
-  color: #000;
+  color: #1b1c1f;
   line-height: 20px;
   letter-spacing: -0.3px;
-  margin-bottom: 5px;
+  margin-bottom: 10px;
 `;
 
 const MembershipText = styled.Text`
@@ -206,7 +208,7 @@ const AddMembership = props => {
         }
       } else {
         setIdOk('2');
-        setIdCheckresult('');
+        setIdCheckresult('입력하신 아이디를 사용할 수 있어요.');
         return true;
       }
 
@@ -230,7 +232,7 @@ const AddMembership = props => {
         </TouchableOpacity>
       ),
       headerTitleAlign: 'center',
-      title: '회원가입',
+      title: '필수정보 입력하기',
       headerShadowVisible: false,
       contentStyle: {
         borderTopWidth: 0,
@@ -238,7 +240,7 @@ const AddMembership = props => {
       headerTitleStyle: {
         fontFamily: 'Pretendard-Bold',
         fontSize: 17,
-        color: '#333',
+        color: '#1b1c1f',
         letterSpacing: -0.8,
       },
     });
@@ -259,31 +261,34 @@ const AddMembership = props => {
                 if (logincheck) {
                   input2.current.focus();
                 } else {
-                  if (input1.length > 0) {
+                  if (id.length > 0) {
                     input1.current.focus();
                   }
                 }
-
-              }
-              }
+              }}
               onBlur={async () => {
                 const logincheck = await getLoginYn();
                 if (logincheck) {
                   input2.current.focus();
                 } else {
-                  if (input1.length > 0) {
+                  if (id.length > 0) {
                     input1.current.focus();
                   }
                 }
-
-              }
-              }
+              }}
               placeholder="아이디를 입력해주세요."
-              //  autoFocus={currentPageIndex === 2}
               value={id}
-              onChangeText={async (id) => { setId(id.replace(/[^a-zA-Z0-9!@#$%^&*(),.?":{}|<>]/g, '')); setIdOk('1'); setIdCheckresult(''); }}
+              onChangeText={async (id) => {
+                setId(id.replace(/[^a-zA-Z0-9!@#$%^&*(),.?":{}|<>]/g, ''));
+                setIdOk('1');
+                setIdCheckresult('');
+              }}
               autoCompleteType="id"
               autoCapitalize="none"
+              style={[
+                styles.input_not_content,
+                id.length > 0 && styles.input, // id 값이 있을 때 굵은 스타일 적용
+              ]}
             />
             {IdOk === '1' && <CircleButton onPress={() => { setId(''); }}>
               <DeleteIcon />
@@ -306,6 +311,8 @@ const AddMembership = props => {
             <ModalInput
               ref={input2}
               //  onSubmitEditing={() => input2.current.focus()}
+              style={password.length > 0 ? styles.input : styles.input_not_content}
+
               value={password}
               placeholder="비밀번호를 입력해주세요."
               onChangeText={async (password) => {
@@ -348,7 +355,7 @@ const AddMembership = props => {
             </CircleButton>
             }
           </ModalInputContainer>
-          <Text style={{ fontSize: 13, color: '#2F87FF', marginTop: 5, marginLeft: 5 }}>{PasswordOk === '2' || password === '' ? '' : '8~16자, 영문 대소문/숫자/특수문자 2종류 이상 조합해주세요.'}</Text>
+          <Text style={styles.expiredText2}>{PasswordOk === '2' || password === '' ? '' : '8~16자, 영문 대소문/숫자/특수문자 2종류 이상 조합해주세요.'}</Text>
         </View>
         <View>
           <ModalText>비밀번호 확인</ModalText>
@@ -356,6 +363,8 @@ const AddMembership = props => {
             <ModalInput
               ref={input3}
               //  onSubmitEditing={() => input2.current.focus()}
+              style={checkpassword.length > 0 ? styles.input : styles.input_not_content}
+
               placeholder="비밀번호를 다시 입력해주세요."
               value={checkpassword}
               secureTextEntry={true}
@@ -386,7 +395,8 @@ const AddMembership = props => {
             </CircleButton>
             }
           </ModalInputContainer>
-          <Text style={{ fontSize: 13, color: PasswordCheckOk === '2' ? '#a3a5a8' : '#FF7401', marginTop: 5, marginLeft: 5 }}>{PasswordCheckOk === '2' || PasswordCheckOk === '1' ? '' : '입력하신 비밀번호가 일치하지 않아요.'}</Text>
+          <Text style={{    fontFamily: 'Pretendard-Regular',
+ fontSize: 13, color: PasswordCheckOk === '2' ? '#a3a5a8' : '#FF7401', marginTop: 10, marginLeft: 5 }}>{PasswordCheckOk === '2' || PasswordCheckOk === '1' ? '' : '입력하신 비밀번호가 일치하지 않아요.'}</Text>
         </View>
 
       </IntroSection>
@@ -411,5 +421,34 @@ const AddMembership = props => {
     </Container>
   );
 };
+
+
+const styles = StyleSheet.create({
+
+  input_not_content: {
+    flex: 1, // TextInput이 남은 공간을 차지하도록 설정
+    color: '#000',
+    fontSize: 13,
+    fontFamily: 'Pretendard-Regular',
+  },
+  input: {
+    flex: 1, // TextInput이 남은 공간을 차지하도록 설정
+    color: '#000',
+    fontSize: 17,
+    fontFamily: 'Pretendard-Bold',
+  },
+  expiredText2: {
+    fontSize: 13,
+    color: '#2F87FF', // 빨간색 텍스트
+    marginTop : 10,
+    fontFamily: 'Pretendard-Regular',
+  },
+  expiredText: {
+    fontSize: 13,
+    marginTop : 10,
+    color: '#FF7401', // 빨간색 텍스트
+    fontFamily: 'Pretendard-Regular',
+  },
+});
 
 export default AddMembership;

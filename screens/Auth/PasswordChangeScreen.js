@@ -248,7 +248,7 @@ const PasswordChangeScreen = props => {
               ref={input1}
               autoCompleteType="pwd"
               maxLength={16}
-              style={styles.input}
+              style={password.length > 0 ? styles.input : styles.input_not_content}
               placeholder="새로운 비밀번호를 입력해주세요."
               placeholderTextColor="#A3A5A8"
               secureTextEntry={true} // 비밀번호 마스킹 처리
@@ -300,7 +300,7 @@ const PasswordChangeScreen = props => {
 
               autoCompleteType="pwd"
               maxLength={16}
-              style={styles.input}
+              style={checkpassword.length > 0 ? styles.input : styles.input_not_content}
               placeholder="설정하신 비밀번호를 다시 입력해주세요."
               placeholderTextColor="#A3A5A8"
               secureTextEntry={true} // 비밀번호 마스킹 처리
@@ -341,12 +341,18 @@ const PasswordChangeScreen = props => {
         {/* Login Button */}
         <TouchableOpacity
           style={[
-            styles.loginButton, // 조건부 스타일
+            styles.loginButton,
+            (!password.length === 0 || checkpassword.length === 0 || checkpassword !== password) && styles.disabledButton, // 조건부 스타일
           ]}
           onPress={openModal}
+          disabled={!password || !checkpassword ||  checkpassword !== password} // 비활성화 조건
         >
-          <Text style={styles.loginButtonLabel}>변경하기</Text>
+          <Text style={styles.loginButtonLabel}
+           >
+           변경하기
+          </Text>
         </TouchableOpacity>
+
         {/* 추가 콘텐츠를 여기에 배치 가능 */}
       </ScrollView>
       <PasswordChangeConfirmMsgAlert visible={isModalVisible} onClose={closeModal} onChange={handlerChange} />
@@ -413,13 +419,14 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     color: '#1b1C1F',
     fontFamily: 'Pretendard-Bold', // 원하는 폰트 패밀리
-    fontWeight: '700', // 폰트 두께 (400은 기본)
   },
 
   label: {
     fontSize: 17,
     marginTop: 15,
 
+    height: 20,
+    lineHeight: 20,
     marginBottom: 10,
     color: '#1b1C1F',
     fontFamily: 'Pretendard-Bold', // 원하는 폰트 패밀리
@@ -427,6 +434,7 @@ const styles = StyleSheet.create({
   subTitleLabel: {
     fontSize: 13,
     marginBottom: 10,
+    height: 15,
     color: '#717274',
     fontFamily: 'Pretendard-Medium', // 원하는 폰트 패밀리
   },
@@ -441,12 +449,17 @@ const styles = StyleSheet.create({
     height: 56,
     marginBottom: 8, // TextInput과 "아이디 찾기" 버튼 사이 간격
   },
+  input_not_content: {
+    flex: 1, // TextInput이 남은 공간을 차지하도록 설정
+    color: '#000',
+    fontSize: 13,
+    fontFamily: 'Pretendard-Regular',
+  },
   input: {
-    flex: 1, // TextInput이 가로로 공간을 채움
-    color: '#000', // 글자 색상
-    fontSize: 13, // 폰트 크기
-    fontFamily: 'Pretendard-Regular', // 원하는 폰트 패밀리
-    fontWeight: '400', // 폰트 두께 (400은 기본)
+    flex: 1, // TextInput이 남은 공간을 차지하도록 설정
+    color: '#000',
+    fontSize: 17,
+    fontFamily: 'Pretendard-Bold',
   },
   clearButton: {
     justifyContent: 'center',
@@ -461,7 +474,6 @@ const styles = StyleSheet.create({
   authReSend: {
     fontSize: 13, // 폰트 크기
     fontFamily: 'Pretendard-Regular', // 원하는 폰트 패밀리
-    fontWeight: '400', // 폰트 두께 (400은 기본)
     color: '#717274',
     textDecorationLine: 'underline', // 밑줄 추가
     textDecorationColor: '#717274', // 밑줄 색상 설정

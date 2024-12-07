@@ -474,6 +474,8 @@ const CertificationGains = props => {
               dispatch(setResend(false));
               input1.current.focus();
             } else {
+              await SheetManager.hide('infoCertification');
+
               await SheetManager.show('info', {
                 payload: {
                   type: 'error',
@@ -513,6 +515,8 @@ const CertificationGains = props => {
               //    dispatch(setChatDataList(newChatDataList));
             }*/
           } else {
+            await SheetManager.hide('infoCertification');
+
             await SheetManager.show('info', {
               payload: {
                 type: 'error',
@@ -579,6 +583,7 @@ const CertificationGains = props => {
           dispatch(setResend(false));
           input1.current.focus();
         } else {
+          await SheetManager.hide('infoCertification');
 
           setTimeout(async () => {
             await SheetManager.show('info', {
@@ -659,6 +664,7 @@ const CertificationGains = props => {
 
       }
     } catch (error) {
+      await SheetManager.hide('infoCertification');
 
       //console.error('[hypenHouseAPI] An error occurred:', error ? error : '');
       SheetManager.show('info', {
@@ -706,6 +712,7 @@ const CertificationGains = props => {
         return false;
       }
     } catch (error) {
+      await SheetManager.hide('infoCertification');
 
       setTimeout(async () => {
         await SheetManager.show('info', {
@@ -804,7 +811,7 @@ const CertificationGains = props => {
       setTimeout(() => {
         SheetManager.show('infoCertification', {
           payload: {
-            message: '인증 알림을 보냈어요.\n인증이 완료되면 다음화면으로 넘어가요.',
+            message: '인증 알림을 보냈어요.\n인증이 완료되면 다음으로 넘어가요.',
             certType: props?.route?.params?.data,
             index: props?.route?.params?.index,
             isGainsTax: props?.route?.params?.isGainsTax,

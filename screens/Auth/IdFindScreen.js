@@ -479,6 +479,7 @@ const IdFindScreen = props => {
                 {timer === 0 && (
                   <Text style={styles.expiredText}>인증번호가 만료되었습니다.</Text>
                 )}
+
                 <TouchableOpacity style={styles.findIdButton} onPress={handleResendAuth}>
                   <Text style={styles.authReSend}>인증번호 재전송</Text>
                 </TouchableOpacity>
@@ -561,7 +562,6 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 20,
    fontFamily: 'Pretendard-Bold', // 원하는 폰트 패밀리
-       fontWeight: '700', // 폰트 두께 (400은 기본)
     marginBottom: 30,
     textAlign: 'center',
   },
@@ -581,14 +581,12 @@ const styles = StyleSheet.create({
     lineHeight:20,
     letterSpacing:-0.3,
     fontFamily: 'Pretendard-Bold', // 원하는 폰트 패밀리
-    fontWeight: '700', // 폰트 두께 (400은 기본)
   },
   subTitleLabel: {
     fontSize: 13,
     marginBottom: 10,
     color: '#717274',
     fontFamily: 'Pretendard-Medium', // 원하는 폰트 패밀리
-    fontWeight: '500', // 폰트 두께 (400은 기본)
   },
   inputWrapper: {
     flexDirection: 'row', // TextInput과 Clear 버튼 가로 배치

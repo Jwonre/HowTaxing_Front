@@ -655,7 +655,7 @@ const ConsultingReservation2 = props => {
       calcHistoryId: Pdata.calcHistoryId ? Pdata.calcHistoryId : '',
       consultingRequestContent: text ? text : '',
     };
-    //console.log('ConsultingReservation2 data', data);
+    //console.log('ConsultingReservation22 data', data);
     //console.log('headers', headers);
     try {
       const response = await axios.post(`${Config.APP_API_URL}consulting/reservationApply`, data, { headers: headers });
