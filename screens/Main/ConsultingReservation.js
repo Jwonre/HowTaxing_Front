@@ -1,6 +1,6 @@
 // 양도소득세 홈페이지
 
-import { TouchableOpacity, TouchableWithoutFeedback, useWindowDimensions, BackHandler, View, ScrollView, Animated, Text, TextInput, Dimensions, Keyboard } from 'react-native';
+import { TouchableOpacity, TouchableWithoutFeedback, useWindowDimensions, BackHandler, View, ScrollView, Keyboard, Dimensions } from 'react-native';
 import { FlatList } from 'react-native-gesture-handler';
 import React, { useRef, useLayoutEffect, useState, useCallback, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -377,11 +377,11 @@ const ConsultingReservation = () => {
   const [currentPageIndex, setCurrentPageIndex] = useState(0);
   const currentPageIndexList = [0, 1, 2, 3, 4];
   const currentUser = useSelector(state => state.currentUser.value);
-
+  const [isKeyboardVisible, setKeyboardVisible] = useState(false);
 
   const navigation = useNavigation();
-  const { width, height } = Dimensions.get('window');
-  console.log('width', width);
+  const width = Dimensions.get('window').width;
+  const height = Dimensions.get('window').height;
   const input1 = useRef(null);
   const input2 = useRef(null);
   const dispatch = useDispatch();
@@ -439,14 +439,6 @@ const ConsultingReservation = () => {
 
   const [isConnected, setIsConnected] = useState(true);
 
-  /* useEffect(() => {
-     _scrollViewRef.current?.scrollTo({
-       x: Math.round(width * currentPageIndex),
-       y: 0, animated: true,
-     });
-   }, [currentPageIndex]);
- */
-
   const handleNetInfoChange = (state) => {
     return new Promise((resolve, reject) => {
       if (!state.isConnected && isConnected) {
@@ -465,6 +457,7 @@ const ConsultingReservation = () => {
     });
   };
 
+
   useEffect(() => {
     if (currentPageIndex === 0) {
       getDateTimelist('1', '');
@@ -477,19 +470,6 @@ const ConsultingReservation = () => {
   }, []);
 
 
-  useEffect(() => {
-    const focusInput = () => {
-      if (currentPageIndex === 1 && input1.current) {
-        input1.current.focus();
-      } else if (currentPageIndex === 2 && input2.current) {
-        input2.current.focus();
-      } else if (currentPageIndex === 4 && input3.current) {
-        input3.current.focus();
-      }
-    };
-
-    focusInput();
-  }, [currentPageIndex]);
 
 
   useEffect(() => {
@@ -546,17 +526,17 @@ const ConsultingReservation = () => {
               console.log('new Date(list[0]):', new Date(list[0]));
               setDataList([...list]);
             } else {
-                setTimeout(async () => {
-                  await SheetManager.show('info', {
-                    payload: {
-                      type: 'info',
-                      errorType: 1,
-                      message: '앗, 현재 예약가능한 날짜가 없어요.\n나중에 다시 시도해주세요.',
-                      buttontext: '확인하기',
-                    },
-                  });
-                  navigation.goBack();
-                }, 300);
+              setTimeout(async () => {
+                await SheetManager.show('info', {
+                  payload: {
+                    type: 'info',
+                    errorType: 1,
+                    message: '앗, 현재 예약가능한 날짜가 없어요.\n나중에 다시 시도해주세요.',
+                    buttontext: '확인하기',
+                  },
+                });
+                navigation.goBack();
+              }, 300);
             }
 
           } else if (searchType === "2") {
@@ -693,8 +673,30 @@ const ConsultingReservation = () => {
   };
 
 
+  useEffect(() => {
+    const focusInput = () => {
+      if (currentPageIndex === 1 && input1.current) {
+        input1.current.focus();
+      } else if (currentPageIndex === 2 && input2.current) {
+        input2.current.focus();
+      } else if (currentPageIndex === 4 && input3.current) {
+        input3.current.focus();
+      };
+    }
+    _scrollViewRef.current?.scrollTo({
+      x: width * currentPageIndex,
+      y: 0, animated: true,
+    });
+
+    setTimeout(() => {
+      focusInput();
+    }, 200)
+  }, [currentPageIndex]);
+
+
   useLayoutEffect(() => {
     navigation.setOptions({
+
       headerLeft: () => (
         <TouchableOpacity
           activeOpacity={0.6}
@@ -740,7 +742,7 @@ const ConsultingReservation = () => {
       showsHorizontalScrollIndicator={false}
       scrollEnabled={false}
       scrollEventThrottle={16}>
-      {currentPageIndex === 0 && <Container style={{ width: width }}>
+      <Container style={{ width: width }}>
         <ProgressSection>
         </ProgressSection>
 
@@ -838,6 +840,7 @@ const ConsultingReservation = () => {
                   const canProceed = await handleNetInfoChange(state);
                   if (canProceed) {
                     setCurrentPageIndex(1);
+
                   }
                 }}>
                 <ButtonText >다음으로</ButtonText>
@@ -871,9 +874,9 @@ const ConsultingReservation = () => {
               ))}
             </View>
           </ButtonSection></>
-      </Container>}
+      </Container>
 
-      {currentPageIndex === 1 && <Container style={{ width: width }}>
+      <Container style={{ width: width }}>
         <ProgressSection>
         </ProgressSection>
         <><IntroSection2 style={{ width: width }}>
@@ -953,8 +956,8 @@ const ConsultingReservation = () => {
             </View>
           </ButtonSection></>
 
-      </Container>}
-      {currentPageIndex === 2 && <Container style={{ width: width }}>
+      </Container>
+      <Container style={{ width: width }}>
         <ProgressSection>
         </ProgressSection>
         <><IntroSection2 style={{ width: width }}>
@@ -970,7 +973,8 @@ const ConsultingReservation = () => {
                 autoFocus={currentPageIndex === 2}
                 value={phone}
                 maxLength={13}
-                keyboardType="phone-pad"
+                keyboardType="pho
+                ne-pad"
                 onChangeText={async (phone) => {
                   const filteredPhone = phone.replace(/[^0-9]/g, '');
                   let formattedPhone = filteredPhone;
@@ -1053,6 +1057,7 @@ const ConsultingReservation = () => {
                     if (canProceed) {
                       if (phone.length > 12) {
                         setCurrentPageIndex(3);
+                        Keyboard.dismiss();
                       }
                     }
                   }}>
@@ -1089,8 +1094,8 @@ const ConsultingReservation = () => {
             </View>
           </ButtonSection></>
 
-      </Container>}
-      {currentPageIndex === 3 && <Container style={{ width: width }}>
+      </Container>
+      <Container style={{ width: width }}>
         <ProgressSection>
         </ProgressSection>
         <><FlatList
@@ -1269,8 +1274,8 @@ const ConsultingReservation = () => {
             </ButtonSection></>
           }
         /></>
-      </Container>}
-      {currentPageIndex === 4 && <ScrollView scrollEnabled={false} overScrollMode="never"><TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+      </Container>
+      <ScrollView scrollEnabled={false} overScrollMode="never"><TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <Container style={{ width: width, height: height * 0.89 }}>
 
           <ProgressSection>
@@ -1452,7 +1457,7 @@ const ConsultingReservation = () => {
 
       </TouchableWithoutFeedback>
       </ScrollView>
-      }
+
 
 
 

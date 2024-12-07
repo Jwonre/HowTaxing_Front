@@ -1,6 +1,6 @@
 // 양도소득세 홈페이지
 
-import { TouchableOpacity, useWindowDimensions, BackHandler, View, ScrollView, Animated, Text, TextInput } from 'react-native';
+import { TouchableOpacity, useWindowDimensions, Dimensions, BackHandler, View, ScrollView, Keyboard } from 'react-native';
 import { FlatList } from 'react-native-gesture-handler';
 import React, { useRef, useLayoutEffect, useState, useCallback, useEffect } from 'react';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
@@ -382,7 +382,7 @@ const ButtonText = styled.Text`
 `;
 
 
-const ConsultingReservation = props => {
+const ConsultingReservation2 = props => {
   const _scrollViewRef = useRef(null);
   const _scrollViewRef2 = useRef(null);
   const _scrollViewRef3 = useRef(null);
@@ -393,7 +393,8 @@ const ConsultingReservation = props => {
   const Pdata = props?.route.params?.Pdata;
   const navigation = useNavigation();
   const houseInfo = props?.route.params?.houseInfo;
-  const { width, height } = useWindowDimensions();
+  const width = Dimensions.get('window').width;
+  const height = Dimensions.get('window').height;
   const input1 = useRef(null);
   const input2 = useRef(null);
   const input3 = useRef(null);
@@ -455,19 +456,34 @@ const ConsultingReservation = props => {
 
   const [isConnected, setIsConnected] = useState(true);
 
-  {/*useEffect(() => {
+
+  useEffect(() => {
+    const focusInput = () => {
+      if (currentPageIndex === 1 && input1.current) {
+        input1.current.focus();
+      } else if (currentPageIndex === 2 && input2.current) {
+        input2.current.focus();
+      } else if (currentPageIndex === 4 && input3.current) {
+        input3.current.focus();
+      };
+    }
+
+
     _scrollViewRef.current?.scrollTo({
-      x: (width) * currentPageIndex,
-      y: 0,
-      animated: true,
+      x: width * currentPageIndex,
+      y: 0, animated: true,
     });
     setTimeout(() => {
       if (currentPageIndex !== 4) {
         setIsExpanded(false);
       }
-    }, 300)
+      focusInput();
+    }, 200)
 
-  }, [currentPageIndex]);*/}
+  }, [currentPageIndex]);
+
+
+
   useEffect(() => {
     setTimeout(() => {
       if (currentPageIndex !== 4) {
@@ -510,20 +526,6 @@ const ConsultingReservation = props => {
     }
   }, [currentPageIndex]);
 
-
-  useEffect(() => {
-    const focusInput = () => {
-      if (currentPageIndex === 1 && input1.current) {
-        input1.current.focus();
-      } else if (currentPageIndex === 2 && input2.current) {
-        input2.current.focus();
-      } else if (currentPageIndex === 4 && input3.current) {
-        input3.current.focus();
-      }
-    };
-
-    focusInput();
-  }, [currentPageIndex]);
 
 
   useEffect(() => {
@@ -770,7 +772,7 @@ const ConsultingReservation = props => {
       showsHorizontalScrollIndicator={false}
       scrollEnabled={false}
       scrollEventThrottle={16}>
-      {currentPageIndex === 0 && <Container style={{ width: width }}>
+      <Container style={{ width: width }}>
         <ProgressSection>
         </ProgressSection>
 
@@ -901,9 +903,9 @@ const ConsultingReservation = props => {
               ))}
             </View>
           </ButtonSection></>
-      </Container>}
+      </Container>
 
-      {currentPageIndex === 1 && <Container style={{ width: width }}>
+      <Container style={{ width: width }}>
         <ProgressSection>
         </ProgressSection>
 
@@ -985,8 +987,8 @@ const ConsultingReservation = props => {
             </View>
           </ButtonSection></>
 
-      </Container>}
-      {currentPageIndex === 2 && <Container style={{ width: width }}>
+      </Container>
+      <Container style={{ width: width }}>
         <ProgressSection>
         </ProgressSection>
         <><IntroSection2 style={{ width: width }}>
@@ -1085,6 +1087,7 @@ const ConsultingReservation = props => {
                     if (canProceed) {
                       if (phone.length > 12) {
                         setCurrentPageIndex(3);
+                        Keyboard.dismiss();
                       }
                     }
                   }}>
@@ -1121,8 +1124,8 @@ const ConsultingReservation = props => {
             </View>
           </ButtonSection></>
 
-      </Container>}
-      {currentPageIndex === 3 && <Container style={{ width: width }}>
+      </Container>
+      <Container style={{ width: width }}>
         <ProgressSection>
         </ProgressSection>
         <><FlatList
@@ -1306,9 +1309,9 @@ const ConsultingReservation = props => {
             </ButtonSection></>
           }
         /></>
-      </Container>}
+      </Container>
 
-      {currentPageIndex === 4 && <Container style={{ width: width }}>
+      <Container style={{ width: width }}>
         <ProgressSection>
         </ProgressSection>
         <><FlatList
@@ -1538,7 +1541,7 @@ const ConsultingReservation = props => {
                 </View>
               </ButtonSection2></>}
         /></>
-      </Container>}
+      </Container>
 
 
 
@@ -1546,4 +1549,4 @@ const ConsultingReservation = props => {
   )
 };
 
-export default ConsultingReservation;
+export default ConsultingReservation2;

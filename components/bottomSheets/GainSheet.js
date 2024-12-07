@@ -7,6 +7,7 @@ import {
   Pressable,
   ScrollView,
   Keyboard,
+  Dimensions,
 } from 'react-native';
 import React, { useRef, useState, useEffect } from 'react';
 import ActionSheet, { SheetManager } from 'react-native-actions-sheet';
@@ -185,11 +186,13 @@ const ButtonText = styled.Text`
 const GainSheet = props => {
   LogBox.ignoreLogs(['to contain units']);
   const actionSheetRef = useRef(null);
+  const _scrollViewRef = useRef(null);
   const dispatch = useDispatch();
-  const { width, height } = useWindowDimensions();
-  const [currentPageIndex, setCurrentPageIndex] = useState(0);
+  const { width, height } = Dimensions.get('window');
+  const [currentPageIndex, setCurrentPageIndex] = useState(props.payload.currentPageIndex ? props.payload.currentPageIndex : 0);
   // 계약일자
-  const [selectedDate, setSelectedDate] = useState(new Date(),
+  const [isActionSheetActive, setIsActionSheetActive] = useState(false);
+  const [selectedDate, setSelectedDate] = useState(props.payload.selectedDate ? new Date(props.payload.selectedDate) : new Date(),
   );
 
   // 양도일자
@@ -214,26 +217,26 @@ const GainSheet = props => {
   // 추가 질의 함수
 
 
-  /* useEffect(() => {
-     const id = setTimeout(() => {
-       _scrollViewRef.current?.scrollTo({
-         x: (width - 40) * currentPageIndex,
-         y: 0, animated: true,
-       });
-     }, 50);
-     return () => clearTimeout(id);
-   }, [currentPageIndex]);
- */
-
   useEffect(() => {
-    console.log('props', props);
-    console.log('props.payload?.currentPageIndex', props.payload?.currentPageIndex);
-    if (props.payload?.currentPageIndex !== undefined) {
-      setCurrentPageIndex(props.payload.currentPageIndex);
-      setSelectedDate(props.payload.selectedDate);
+    console.log('isActionSheetActive', isActionSheetActive);
+    if (!isActionSheetActive) {
+      setTimeout(() => {
+        _scrollViewRef.current?.scrollTo({
+          x: (width - 40) * currentPageIndex,
+          y: 0,
+          animated: true,
+        });
+      }, 600)
+      setIsActionSheetActive(true);
+    } else {
+      _scrollViewRef.current?.scrollTo({
+        x: (width - 40) * currentPageIndex,
+        y: 0,
+        animated: true,
+      });
     }
-  }, [props.payload]);
-  // 키보드 이벤트
+  }, [currentPageIndex]);
+
 
   useEffect(() => {
     // 키보드가 보여질 때 높이를 설정
@@ -313,323 +316,334 @@ const GainSheet = props => {
         height: currentPageIndex === 2 ? (isKeyboardVisible ? 620 : 420) : 620,
         width: width - 40,
       }}>
-
-      {currentPageIndex === 0 && <SheetContainer width={width}>
-        <ModalInputSection>
-          <ModalTitle >양도계약일자를 선택해주세요.</ModalTitle>
-          <InfoMessage >
-            양도하실 주택의 매매 계약일자에요.{'\n'}아직 계약 전이라면, 예정일로 선택해주세요.
-          </InfoMessage>
-          <View
-            style={{
-              width: '100%',
-              height: 350,
-              marginTop: 20,
-            }}>
-            <Calendar
-              setSelectedDate={setSelectedDate}
-              minDate={new Date(new Date(houseInfo?.buyDate ? houseInfo?.buyDate : '').setHours(0, 0, 0, 0))}
-              currentDate={new Date(new Date((new Date(houseInfo?.buyDate) <= currentDate) ? currentDate : houseInfo?.buyDate).setHours(0, 0, 0, 0))}
-              selectedDate={new Date(new Date((new Date(houseInfo?.buyDate) <= currentDate) ? currentDate : houseInfo?.buyDate).setHours(0, 0, 0, 0))}
-            />
-          </View>
-        </ModalInputSection>
-        <ButtonSection
-          style={{
-            justifyContent: 'center',
-          }}>
-          <DropShadow
-            style={{
-              shadowColor: 'rgba(0,0,0,0.25)',
-              shadowOffset: {
-                width: 0,
-                height: 4,
-              },
-              shadowOpacity: 0.25,
-              shadowRadius: 4,
-              alignSelf: 'center',
-            }}>
-            <ModalButton
-              active={selectedDate}
-              disabled={!(selectedDate)}
-              onPress={async () => {
-                setCurrentPageIndex(1);
-                setCurrentDate(selectedDate);
-                dispatch(
-                  setHouseInfo({
-                    ...houseInfo,
-                    sellContractDate: selectedDate,
-                  }),
-                );
-                const chat2 = {
-                  id: 'contractDateMy',
-                  type: 'my',
-                  message: dayjs(selectedDate).format(
-                    'YYYY년 MM월 DD일 (ddd)',
-                  ),
-                };
-
-                const chat3 = {
-                  id: 'sellDateSystem',
-                  type: 'system',
-                  message: '양도일자를 선택해주세요.',
-                  select: [
-                    {
-                      id: 'sellDate',
-                      name: '양도일자 선택하기',
-                      openSheet: 'gain',
-                      currentPageIndex: 1,
-                    },
-                  ],
-                  progress: 4,
-                };
-
-                dispatch(setChatDataList([...chatDataList, chat2, chat3]));
-                //('selectedDate', selectedDate);
-              }}
-              style={{
-                width: width - 80,
-                alignSelf: 'center',
-                marginBottom: 50,
-                backgroundColor: selectedDate ? '#2f87ff' : '#E8EAED',
-                borderColor: selectedDate ? '#2f87ff' : '#E8EAED',
-              }}>
-              <ModalButtonText active={selectedDate} style={{ color: selectedDate ? '#fff' : '#717274' }}>다음으로</ModalButtonText>
-            </ModalButton>
-          </DropShadow>
-        </ButtonSection>
-      </SheetContainer>}
-
-      {currentPageIndex === 1 && <SheetContainer width={width}>
-        <ModalInputSection>
-          <ModalTitle >양도일자를 선택해주세요.</ModalTitle>
-          <InfoMessage >
-            양도하실 주택의 양도예정일자에요.{'\n'}아직 계약 전이라면, 예정일로 선택해주세요.
-          </InfoMessage>
-          <View
-            style={{
-              width: '100%',
-              height: 350,
-              marginTop: 20,
-            }}>
-
-            {currentPageIndex === 1 && (<Calendar
-              minDate={new Date(new Date(houseInfo?.sellContractDate).setHours(0, 0, 0, 0))}
-              currentDate={new Date(new Date(houseInfo?.sellContractDate ? houseInfo?.sellContractDate : currentDate).setHours(0, 0, 0, 0))}
-              setSelectedDate={setSelectedDate2}
-              selectedDate={new Date(new Date(houseInfo?.sellContractDate ? houseInfo?.sellContractDate : currentDate).setHours(0, 0, 0, 0))}
-            />)}
-          </View>
-        </ModalInputSection>
-
-        <ButtonSection>
-          <ButtonShadow
-            style={{
-              shadowColor: '#fff',
-            }}>
-            <Button
-              onPress={() => {
-                setCurrentPageIndex(0);
-                setSelectedDate2();
-                const newChatDataList = chatDataList.filter(item => item.id !== 'sellDateSystem').filter(item => item.id !== 'contractDateMy');
-                dispatch(setChatDataList(newChatDataList));
-              }}
-              style={{
-                backgroundColor: '#fff',
-                borderColor: '#E8EAED',
-              }}>
-              <ButtonText
-                style={{
-                  color: '#717274',
-                }} >
-                이전으로
-              </ButtonText>
-            </Button>
-          </ButtonShadow>
-          <ButtonShadow>
-            <Button
-              active={selectedDate2}
-              disabled={!(selectedDate2)}
-              onPress={async () => {
-                setCurrentPageIndex(2);
-
-                dispatch(
-                  setHouseInfo({
-                    ...houseInfo,
-                    sellDate: selectedDate2,
-                  }),
-                );
-                const chat4 = {
-                  id: 'sellDateMy',
-                  type: 'my',
-                  message: dayjs(selectedDate2).format(
-                    'YYYY년 MM월 DD일 (ddd)',
-                  ),
-                };
-
-                const chat5 = {
-                  id: 'sellAmountSystem',
-                  type: 'system',
-                  message: '양도금액을 입력해주세요.',
-                  select: [
-                    {
-                      id: 'sellAmount',
-                      name: '양도금액 입력하기',
-                      openSheet: 'gain',
-                      currentPageIndex: 2,
-                    },
-                  ],
-                  progress: 4,
-                };
-                if (chatDataList.find(el => el.id === 'sellDateSystem')) {
-                  dispatch(setChatDataList([...chatDataList, chat4, chat5]));
-                }
-              }}
-
-              style={{
-                backgroundColor: selectedDate2 ? '#2f87ff' : '#E8EAED',
-                borderColor: selectedDate2 ? '#2f87ff' : '#E8EAED',
-              }}>
-              <ButtonText active={selectedDate2} style={{ color: selectedDate2 ? '#fff' : '#717274' }}>다음으로</ButtonText>
-            </Button>
-          </ButtonShadow>
-        </ButtonSection>
-      </SheetContainer>}
-
-      {currentPageIndex === 2 && <SheetContainer width={width}>
-        <ModalInputSection>
-          <ModalTitle >양도금액을 입력해주세요.</ModalTitle>
-          <ModalSubtitle >{numberToKorean(sellAmount)}{(sellAmount !== null && sellAmount !== 0) ? '원' : ' '}</ModalSubtitle>
-          <View
-            style={{
-              paddingHorizontal: 20,
-              paddingBottom: 20,
-            }}>
+      <ScrollView
+        ref={_scrollViewRef}
+        pagingEnabled
+        style={{
+          width: width - 40,
+        }}
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        scrollEnabled={false}
+        scrollEventThrottle={16}>
+        <SheetContainer width={width}>
+          <ModalInputSection>
+            <ModalTitle >양도계약일자를 선택해주세요.</ModalTitle>
+            <InfoMessage >
+              양도하실 주택의 매매 계약일자에요.{'\n'}아직 계약 전이라면, 예정일로 선택해주세요.
+            </InfoMessage>
             <View
               style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'flex-start',
+                width: '100%',
+                height: 350,
+                marginTop: 20,
               }}>
-              <ModalLabel >양도금액</ModalLabel>
+              <Calendar
+                setSelectedDate={setSelectedDate}
+                minDate={new Date(new Date(houseInfo?.buyDate ? houseInfo?.buyDate : '').setHours(0, 0, 0, 0))}
+                currentDate={new Date(new Date((new Date(houseInfo?.buyDate) <= currentDate) ? currentDate : houseInfo?.buyDate).setHours(0, 0, 0, 0))}
+                selectedDate={new Date(new Date((new Date(houseInfo?.buyDate) <= currentDate) ? currentDate : houseInfo?.buyDate).setHours(0, 0, 0, 0))}
+              />
             </View>
-            <ModalInputContainer>
-              <StyledInput
+          </ModalInputSection>
+          <ButtonSection
+            style={{
+              justifyContent: 'center',
+            }}>
+            <DropShadow
+              style={{
+                shadowColor: 'rgba(0,0,0,0.25)',
+                shadowOffset: {
+                  width: 0,
+                  height: 4,
+                },
+                shadowOpacity: 0.25,
+                shadowRadius: 4,
+                alignSelf: 'center',
+              }}>
+              <ModalButton
+                active={selectedDate}
+                disabled={!(selectedDate)}
+                onPress={async () => {
+                  setCurrentPageIndex(1);
+                  setCurrentDate(selectedDate);
+                  dispatch(
+                    setHouseInfo({
+                      ...houseInfo,
+                      sellContractDate: selectedDate,
+                    }),
+                  );
+                  const chat2 = {
+                    id: 'contractDateMy',
+                    type: 'my',
+                    message: dayjs(selectedDate).format(
+                      'YYYY년 MM월 DD일 (ddd)',
+                    ),
+                  };
 
-                placeholder="양도금액을 입력해주세요."
-                keyboardType="number-pad"
-                value={sellAmount ? sellAmount.toLocaleString() : null}
-                onChangeText={text => {
-                  const numericValue = Number(text.replace(/[^0-9]/g, ''));
-                  if (numericValue <= 1000000000000000) {
-                    setAcAmount(numericValue);
-                  } else {
-                    setAcAmount(1000000000000000)
+                  const chat3 = {
+                    id: 'sellDateSystem',
+                    type: 'system',
+                    message: '양도일자를 선택해주세요.',
+                    select: [
+                      {
+                        id: 'sellDate',
+                        name: '양도일자 선택하기',
+                        openSheet: 'gain',
+                        currentPageIndex: 1,
+                        selectedDate: selectedDate,
+                      },
+                    ],
+                    progress: 4,
+                  };
+
+                  dispatch(setChatDataList([...chatDataList, chat2, chat3]));
+                  ('selectedDate', selectedDate);
+                }}
+                style={{
+                  width: width - 80,
+                  alignSelf: 'center',
+                  marginBottom: 50,
+                  backgroundColor: selectedDate ? '#2f87ff' : '#E8EAED',
+                  borderColor: selectedDate ? '#2f87ff' : '#E8EAED',
+                }}>
+                <ModalButtonText active={selectedDate} style={{ color: selectedDate ? '#fff' : '#717274' }}>다음으로</ModalButtonText>
+              </ModalButton>
+            </DropShadow>
+          </ButtonSection>
+        </SheetContainer>
+
+        <SheetContainer width={width}>
+          <ModalInputSection>
+            <ModalTitle >양도일자를 선택해주세요.</ModalTitle>
+            <InfoMessage >
+              양도하실 주택의 양도예정일자에요.{'\n'}아직 계약 전이라면, 예정일로 선택해주세요.
+            </InfoMessage>
+            <View
+              style={{
+                width: '100%',
+                height: 350,
+                marginTop: 20,
+              }}>
+
+              {currentPageIndex === 1 && (<Calendar
+                minDate={new Date(new Date(houseInfo?.sellContractDate).setHours(0, 0, 0, 0))}
+                currentDate={new Date(new Date(houseInfo?.sellContractDate ? houseInfo?.sellContractDate : currentDate).setHours(0, 0, 0, 0))}
+                setSelectedDate={setSelectedDate2}
+                selectedDate={new Date(new Date(houseInfo?.sellContractDate ? houseInfo?.sellContractDate : currentDate).setHours(0, 0, 0, 0))}
+              />)}
+            </View>
+          </ModalInputSection>
+
+          <ButtonSection>
+            <ButtonShadow
+              style={{
+                shadowColor: '#fff',
+              }}>
+              <Button
+                onPress={() => {
+                  setCurrentPageIndex(0);
+                  setSelectedDate2();
+                  const newChatDataList = chatDataList.filter(item => item.id !== 'sellDateSystem').filter(item => item.id !== 'contractDateMy');
+                  dispatch(setChatDataList(newChatDataList));
+                }}
+                style={{
+                  backgroundColor: '#fff',
+                  borderColor: '#E8EAED',
+                }}>
+                <ButtonText
+                  style={{
+                    color: '#717274',
+                  }} >
+                  이전으로
+                </ButtonText>
+              </Button>
+            </ButtonShadow>
+            <ButtonShadow>
+              <Button
+                active={selectedDate2}
+                disabled={!(selectedDate2)}
+                onPress={async () => {
+                  setCurrentPageIndex(2);
+
+                  dispatch(
+                    setHouseInfo({
+                      ...houseInfo,
+                      sellDate: selectedDate2,
+                    }),
+                  );
+                  const chat4 = {
+                    id: 'sellDateMy',
+                    type: 'my',
+                    message: dayjs(selectedDate2).format(
+                      'YYYY년 MM월 DD일 (ddd)',
+                    ),
+                  };
+
+                  const chat5 = {
+                    id: 'sellAmountSystem',
+                    type: 'system',
+                    message: '양도금액을 입력해주세요.',
+                    select: [
+                      {
+                        id: 'sellAmount',
+                        name: '양도금액 입력하기',
+                        openSheet: 'gain',
+                        currentPageIndex: 2,
+                      },
+                    ],
+                    progress: 4,
+                  };
+                  if (chatDataList.find(el => el.id === 'sellDateSystem')) {
+                    dispatch(setChatDataList([...chatDataList, chat4, chat5]));
                   }
                 }}
-              />
-              {(sellAmount !== null && sellAmount !== 0) && (
-                <TouchableOpacity onPress={() => setAcAmount(null)}>
-                  <CancelCircle style={{ marginRight: 10 }} width={20} height={20} />
-                </TouchableOpacity>
-              )}
-            </ModalInputContainer>
+
+                style={{
+                  backgroundColor: selectedDate2 ? '#2f87ff' : '#E8EAED',
+                  borderColor: selectedDate2 ? '#2f87ff' : '#E8EAED',
+                }}>
+                <ButtonText active={selectedDate2} style={{ color: selectedDate2 ? '#fff' : '#717274' }}>다음으로</ButtonText>
+              </Button>
+            </ButtonShadow>
+          </ButtonSection>
+        </SheetContainer>
+
+        <SheetContainer width={width}>
+          <ModalInputSection>
+            <ModalTitle >양도금액을 입력해주세요.</ModalTitle>
+            <ModalSubtitle >{numberToKorean(sellAmount)}{(sellAmount !== null && sellAmount !== 0) ? '원' : ' '}</ModalSubtitle>
             <View
               style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                marginTop: 10,
+                paddingHorizontal: 20,
+                paddingBottom: 20,
               }}>
-              {AC_AMOUNT_LIST.map((item, index) => (
-                <ModalSelectButton
-                  key={index}
-                  onPress={() => {
-                    setAcAmount(prev => prev + item);
-                  }}>
-                  <ModalSelectButtonText >
-                    {item === 10000000 ? '1천만' : item === 1000000 ? '1백만' : numberToKorean(item)}
-                  </ModalSelectButtonText>
-                </ModalSelectButton>
-              ))}
-            </View>
-          </View>
-        </ModalInputSection>
-        <ButtonSection
-          style={{
-            borderTopWidth: 0,
-          }}>
-          <ButtonShadow
-            style={{
-              shadowColor: '#fff',
-            }}>
-            <Button
-              onPress={() => {
-                const newChatDataList = chatDataList.filter(item => item.id !== 'sellAmountSystem').filter(item => item.id !== 'sellDateMy');
-                dispatch(setChatDataList(newChatDataList));
-                setCurrentPageIndex(1);
-              }}
-              style={{
-                backgroundColor: '#fff',
-                borderColor: '#E8EAED',
-              }}>
-              <ButtonText
+              <View
                 style={{
-                  color: '#717274',
-                }} >
-                이전으로
-              </ButtonText>
-            </Button>
-          </ButtonShadow>
-          <ButtonShadow>
-            <Button
-              onPress={async () => {
-                actionSheetRef.current?.hide();
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  justifyContent: 'flex-start',
+                }}>
+                <ModalLabel >양도금액</ModalLabel>
+              </View>
+              <ModalInputContainer>
+                <StyledInput
 
-                //////console.log('houseInfo', houseInfo);
+                  placeholder="양도금액을 입력해주세요."
+                  keyboardType="number-pad"
+                  value={sellAmount ? sellAmount.toLocaleString() : null}
+                  onChangeText={text => {
+                    const numericValue = Number(text.replace(/[^0-9]/g, ''));
+                    if (numericValue <= 1000000000000000) {
+                      setAcAmount(numericValue);
+                    } else {
+                      setAcAmount(1000000000000000)
+                    }
+                  }}
+                />
+                {(sellAmount !== null && sellAmount !== 0) && (
+                  <TouchableOpacity onPress={() => setAcAmount(null)}>
+                    <CancelCircle style={{ marginRight: 10 }} width={20} height={20} />
+                  </TouchableOpacity>
+                )}
+              </ModalInputContainer>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  marginTop: 10,
+                }}>
+                {AC_AMOUNT_LIST.map((item, index) => (
+                  <ModalSelectButton
+                    key={index}
+                    onPress={() => {
+                      setAcAmount(prev => prev + item);
+                    }}>
+                    <ModalSelectButtonText >
+                      {item === 10000000 ? '1천만' : item === 1000000 ? '1백만' : numberToKorean(item)}
+                    </ModalSelectButtonText>
+                  </ModalSelectButton>
+                ))}
+              </View>
+            </View>
+          </ModalInputSection>
+          <ButtonSection
+            style={{
+              borderTopWidth: 0,
+            }}>
+            <ButtonShadow
+              style={{
+                shadowColor: '#fff',
+              }}>
+              <Button
+                onPress={() => {
+                  const newChatDataList = chatDataList.filter(item => item.id !== 'sellAmountSystem').filter(item => item.id !== 'sellDateMy');
+                  dispatch(setChatDataList(newChatDataList));
+                  setCurrentPageIndex(1);
+                }}
+                style={{
+                  backgroundColor: '#fff',
+                  borderColor: '#E8EAED',
+                }}>
+                <ButtonText
+                  style={{
+                    color: '#717274',
+                  }} >
+                  이전으로
+                </ButtonText>
+              </Button>
+            </ButtonShadow>
+            <ButtonShadow>
+              <Button
+                onPress={async () => {
+                  actionSheetRef.current?.hide();
 
-                dispatch(
-                  setHouseInfo({
-                    ...houseInfo,
-                    sellAmount: sellAmount,
-                  })
-                );
+                  //////console.log('houseInfo', houseInfo);
 
-                const chat6 = {
-                  id: 'sellAmount',
-                  type: 'my',
-                  message: `${sellAmount?.toLocaleString()}원`,
-                  data: {
-                    sellAmount,
-                    sellContractDate: selectedDate,
-                    sellDate: selectedDate2,
-                  },
-                };
+                  dispatch(
+                    setHouseInfo({
+                      ...houseInfo,
+                      sellAmount: sellAmount,
+                    })
+                  );
 
-                const chat7 = gainTax.find(el => el.id === 'jointGain');
-                dispatch(
-                  setChatDataList([
-                    ...chatDataList,
-                    chat6,
-                    chat7
-                  ])
-                );
+                  const chat6 = {
+                    id: 'sellAmount',
+                    type: 'my',
+                    message: `${sellAmount?.toLocaleString()}원`,
+                    data: {
+                      sellAmount,
+                      sellContractDate: selectedDate,
+                      sellDate: selectedDate2,
+                    },
+                  };
+
+                  const chat7 = gainTax.find(el => el.id === 'jointGain');
+                  dispatch(
+                    setChatDataList([
+                      ...chatDataList,
+                      chat6,
+                      chat7
+                    ])
+                  );
 
 
 
-                //console.log('additionalAnswerList', houseInfo?.additionalAnswerList);
-              }
-              } style={{
-                backgroundColor: sellAmount ? '#2f87ff' : '#E8EAED',
-                borderColor: sellAmount ? '#2f87ff' : '#E8EAED',
-              }}
-              active={sellAmount}
-              disabled={!(sellAmount)}>
-              <ButtonText active={sellAmount} style={{ color: sellAmount ? '#fff' : '#717274' }}>다음으로</ButtonText>
-            </Button>
-          </ButtonShadow>
-        </ButtonSection>
-      </SheetContainer>}
+                  //console.log('additionalAnswerList', houseInfo?.additionalAnswerList);
+                }
+                } style={{
+                  backgroundColor: sellAmount ? '#2f87ff' : '#E8EAED',
+                  borderColor: sellAmount ? '#2f87ff' : '#E8EAED',
+                }}
+                active={sellAmount}
+                disabled={!(sellAmount)}>
+                <ButtonText active={sellAmount} style={{ color: sellAmount ? '#fff' : '#717274' }}>다음으로</ButtonText>
+              </Button>
+            </ButtonShadow>
+          </ButtonSection>
+        </SheetContainer>
+      </ScrollView>
     </ActionSheet >
   );
 };

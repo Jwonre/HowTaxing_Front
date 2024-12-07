@@ -193,14 +193,16 @@ const AcquisitionSheet = props => {
 
   LogBox.ignoreLogs(['to contain units']);
   const actionSheetRef = useRef(null);
+  const _scrollViewRef = useRef(null);
   const dispatch = useDispatch();
   const { width, height } = useWindowDimensions();
-  const [currentPageIndex, setCurrentPageIndex] = useState(0);
+  const [currentPageIndex, setCurrentPageIndex] = useState(props.payload?.currentPageIndex ? props.payload?.currentPageIndex : 0);
   // 계약일자
   const [selectedDate, setSelectedDate] = useState(new Date());
   // 취득일자
   const [selectedDate2, setSelectedDate2] = useState(new Date());
   // 취득금액
+  const [isActionSheetActive, setIsActionSheetActive] = useState(false);
   const [currentDate, setCurrentDate] = useState();
   const [acAmount, setAcAmount] = useState(
     houseInfo?.acAmount ? houseInfo?.acAmount : null,
@@ -212,33 +214,26 @@ const AcquisitionSheet = props => {
   // 취득금액 선택 리스트
   const AC_AMOUNT_LIST = [500000000, 100000000, 10000000, 1000000];
 
-  // 수정하기로 들어온 페이지 이동
   useEffect(() => {
-    //////console.log('acAmount:', acAmount);
-    if (props.payload?.currentPageIndex) {
-      setCurrentPageIndex(props.payload?.currentPageIndex);
-      /*  ////console.log('currentPageIndex', props.payload?.currentPageIndex);
-        if (props.payload?.currentPageIndex === 1) {
-          houseInfo?.contractDate ? setSelectedDate(houseInfo?.contractDate) : setSelectedDate(new Date());
-          houseInfo?.contractDate ? setSelectedDate2(houseInfo?.buyDate) : setSelectedDate2(new Date());
-  
-        } else if (props.payload?.currentPageIndex === 2) {
-          houseInfo?.contractDate ? setSelectedDate(houseInfo?.contractDate) : setSelectedDate(new Date());
-          houseInfo?.contractDate ? setSelectedDate2(houseInfo?.buyDate) : setSelectedDate2(new Date());
-  
-        }*/
+    console.log('isActionSheetActive', isActionSheetActive);
+    if (!isActionSheetActive) {
+      setTimeout(() => {
+        _scrollViewRef.current?.scrollTo({
+          x: (width - 40) * currentPageIndex,
+          y: 0,
+          animated: true,
+        });
+      }, 600)
+      setIsActionSheetActive(true);
+    } else {
+      _scrollViewRef.current?.scrollTo({
+        x: (width - 40) * currentPageIndex,
+        y: 0,
+        animated: true,
+      });
     }
-  }, []);
+  }, [currentPageIndex]);
 
-  // 스크롤 이동
-  /* useEffect(() => {
-     _scrollViewRef.current?.scrollTo({
-       x: (width - 40) * currentPageIndex,
-       y: 0,
-       animated: true,
-     });
-   }, [currentPageIndex]);
- */
   // 키보드 이벤트
   useEffect(() => {
     // 키보드가 보여질 때 높이를 설정
@@ -315,8 +310,17 @@ const AcquisitionSheet = props => {
         height: currentPageIndex === 2 ? (isKeyboardVisible ? 400 : 420) : 620,
         width: width - 40,
       }}>
-     
-        {currentPageIndex === 0 && <SheetContainer width={width}>
+      <ScrollView
+        ref={_scrollViewRef}
+        pagingEnabled
+        style={{
+          width: width - 40,
+        }}
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        scrollEnabled={false}
+        scrollEventThrottle={16}>
+        <SheetContainer width={width}>
           <ModalInputSection>
             <ModalTitle >계약일자를 선택해주세요.</ModalTitle>
             <InfoMessage >
@@ -380,6 +384,7 @@ const AcquisitionSheet = props => {
                         name: '취득일자 선택하기',
                         openSheet: 'acquisition',
                         currentPageIndex: 1,
+                        selectedDate: selectedDate,
 
                       },
                     ],
@@ -400,9 +405,8 @@ const AcquisitionSheet = props => {
               </ModalButton>
             </DropShadow>
           </ButtonSection>
-        </SheetContainer>}
-
-        {currentPageIndex === 1 && <SheetContainer width={width}>
+        </SheetContainer>
+        <SheetContainer width={width}>
           <ModalInputSection>
             <ModalTitle >취득일자를 선택해주세요.</ModalTitle>
             <InfoMessage >
@@ -498,134 +502,134 @@ const AcquisitionSheet = props => {
               </Button>
             </ButtonShadow>
           </ButtonSection>
-        </SheetContainer>}
-
-        {currentPageIndex === 2 && <SheetContainer width={width}>
-            <ModalInputSection>
-              <ModalTitle >취득금액을 입력해주세요.</ModalTitle>
-              <ModalSubtitle >{numberToKorean(acAmount)}{(acAmount !== null && acAmount !== 0) ? '원' : ' '}</ModalSubtitle>
+        </SheetContainer>
+        <SheetContainer width={width}>
+          <ModalInputSection>
+            <ModalTitle >취득금액을 입력해주세요.</ModalTitle>
+            <ModalSubtitle >{numberToKorean(acAmount)}{(acAmount !== null && acAmount !== 0) ? '원' : ' '}</ModalSubtitle>
+            <View
+              style={{
+                paddingHorizontal: 20,
+                paddingBottom: 20,
+              }}>
               <View
                 style={{
-                  paddingHorizontal: 20,
-                  paddingBottom: 20,
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  justifyContent: 'flex-start',
                 }}>
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    justifyContent: 'flex-start',
-                  }}>
-                  <ModalLabel >취득금액</ModalLabel>
-                </View>
-                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                  <ModalInputContainer>
-                    <StyledInput
-                      placeholder="취득금액을 입력해주세요."
-                      keyboardType="number-pad"
-                      value={acAmount ? acAmount.toLocaleString() : null}
-                      onChangeText={text => {
-                        const numericValue = Number(text.replace(/[^0-9]/g, ''));
-                        if (numericValue <= 1000000000000000) {
-                          setAcAmount(numericValue);
-                        } else {
-                          setAcAmount(1000000000000000)
-                        }
-                      }}
-                    />
-                    {(acAmount !== null && acAmount !== 0) && (
-                      <TouchableOpacity onPress={() => setAcAmount(null)}>
-                        <CancelCircle style={{ marginRight: 10 }} width={20} height={20} />
-                      </TouchableOpacity>
-                    )}
-                  </ModalInputContainer>
-                </View>
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    marginTop: 10,
-                  }}>
-                  {AC_AMOUNT_LIST.map((item, index) => (
-                    <ModalSelectButton
-                      key={index}
-                      onPress={() => {
-                        setAcAmount(prev => prev + item);
-                      }}>
-                      <ModalSelectButtonText >
-                        {item === 10000000 ? '1천만' : item === 1000000 ? '1백만' : numberToKorean(item)}
-                      </ModalSelectButtonText>
-                    </ModalSelectButton>
-                  ))}
-                </View>
+                <ModalLabel >취득금액</ModalLabel>
               </View>
-            </ModalInputSection>
-            <ButtonSection
-              style={{
-                borderTopWidth: 0,
-              }}>
-              <ButtonShadow
+              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <ModalInputContainer>
+                  <StyledInput
+                    placeholder="취득금액을 입력해주세요."
+                    keyboardType="number-pad"
+                    value={acAmount ? acAmount.toLocaleString() : null}
+                    onChangeText={text => {
+                      const numericValue = Number(text.replace(/[^0-9]/g, ''));
+                      if (numericValue <= 1000000000000000) {
+                        setAcAmount(numericValue);
+                      } else {
+                        setAcAmount(1000000000000000)
+                      }
+                    }}
+                  />
+                  {(acAmount !== null && acAmount !== 0) && (
+                    <TouchableOpacity onPress={() => setAcAmount(null)}>
+                      <CancelCircle style={{ marginRight: 10 }} width={20} height={20} />
+                    </TouchableOpacity>
+                  )}
+                </ModalInputContainer>
+              </View>
+              <View
                 style={{
-                  shadowColor: '#fff',
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  marginTop: 10,
                 }}>
-                <Button
-                  onPress={() => {
-                    const newChatDataList = chatDataList.filter(item => item.id !== 'aquiAmountSystem').filter(item => item.id !== 'acquisitionDateMy');
-                    dispatch(setChatDataList(newChatDataList));
-                    setCurrentPageIndex(1);
-                  }}
-                  style={{
-                    backgroundColor: '#fff',
-                    borderColor: '#E8EAED',
-                  }}>
-                  <ButtonText
-
-                    style={{
-                      color: '#717274',
+                {AC_AMOUNT_LIST.map((item, index) => (
+                  <ModalSelectButton
+                    key={index}
+                    onPress={() => {
+                      setAcAmount(prev => prev + item);
                     }}>
-                    이전으로
-                  </ButtonText>
-                </Button>
-              </ButtonShadow>
-              <ButtonShadow>
-                <Button
-                  onPress={() => {
-                    // 취득세 계산 할 주택 정보 업데이트
-                    dispatch(
-                      setHouseInfo({
-                        ...houseInfo,
-                        acAmount,
-                      }),
-                    );
+                    <ModalSelectButtonText >
+                      {item === 10000000 ? '1천만' : item === 1000000 ? '1백만' : numberToKorean(item)}
+                    </ModalSelectButtonText>
+                  </ModalSelectButton>
+                ))}
+              </View>
+            </View>
+          </ModalInputSection>
+          <ButtonSection
+            style={{
+              borderTopWidth: 0,
+            }}>
+            <ButtonShadow
+              style={{
+                shadowColor: '#fff',
+              }}>
+              <Button
+                onPress={() => {
+                  const newChatDataList = chatDataList.filter(item => item.id !== 'aquiAmountSystem').filter(item => item.id !== 'acquisitionDateMy');
+                  dispatch(setChatDataList(newChatDataList));
+                  setCurrentPageIndex(1);
+                }}
+                style={{
+                  backgroundColor: '#fff',
+                  borderColor: '#E8EAED',
+                }}>
+                <ButtonText
 
-                    actionSheetRef.current?.hide();
+                  style={{
+                    color: '#717274',
+                  }}>
+                  이전으로
+                </ButtonText>
+              </Button>
+            </ButtonShadow>
+            <ButtonShadow>
+              <Button
+                onPress={() => {
+                  // 취득세 계산 할 주택 정보 업데이트
+                  dispatch(
+                    setHouseInfo({
+                      ...houseInfo,
+                      acAmount,
+                    }),
+                  );
 
-                    const chat2 = {
-                      id: 'auiAmont',
-                      type: 'my',
-                      message: `${acAmount.toLocaleString()}원`,
-                      questionId: 'apartment',
-                      data: {
-                        acAmount,
-                        contractDate: selectedDate,
-                        buyDate: selectedDate2,
-                      },
-                    };
-                    const chat3 = acquisitionTax.find(el => el.id === 'joint');
-                    dispatch(setChatDataList([...chatDataList, chat2, chat3]));
+                  actionSheetRef.current?.hide();
 
-                    //  setTimeout(() => { ////console.log('aquiAmountDate', houseInfo) }, 500);
-                  }} style={{
-                    backgroundColor: acAmount ? '#2f87ff' : '#E8EAED',
-                    borderColor: acAmount ? '#2f87ff' : '#E8EAED',
-                  }}
-                  active={acAmount}
-                  disabled={!(acAmount)}>
-                  <ButtonText active={acAmount} style={{ color: acAmount ? '#fff' : '#717274' }}>다음으로</ButtonText>
-                </Button>
-              </ButtonShadow>
-            </ButtonSection>
-        </SheetContainer>}
+                  const chat2 = {
+                    id: 'auiAmont',
+                    type: 'my',
+                    message: `${acAmount.toLocaleString()}원`,
+                    questionId: 'apartment',
+                    data: {
+                      acAmount,
+                      contractDate: selectedDate,
+                      buyDate: selectedDate2,
+                    },
+                  };
+                  const chat3 = acquisitionTax.find(el => el.id === 'joint');
+                  dispatch(setChatDataList([...chatDataList, chat2, chat3]));
+
+                  //  setTimeout(() => { ////console.log('aquiAmountDate', houseInfo) }, 500);
+                }} style={{
+                  backgroundColor: acAmount ? '#2f87ff' : '#E8EAED',
+                  borderColor: acAmount ? '#2f87ff' : '#E8EAED',
+                }}
+                active={acAmount}
+                disabled={!(acAmount)}>
+                <ButtonText active={acAmount} style={{ color: acAmount ? '#fff' : '#717274' }}>다음으로</ButtonText>
+              </Button>
+            </ButtonShadow>
+          </ButtonSection>
+        </SheetContainer>
+      </ScrollView>
     </ActionSheet >
   );
 };
