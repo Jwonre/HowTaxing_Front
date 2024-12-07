@@ -27,6 +27,7 @@ import Config from 'react-native-config';
 import PasswordChangeConfirmMsgAlert from './component/PasswordChangeConfirmMsgAlert';
 import styled from 'styled-components';
 import PasswordChangeCompletMsgAlert from './component/PasswordChangeCompletMsgAlert';
+import BackIcon from '../../assets/icons/back_button.svg';
 
 const PasswordChangeScreen = props => {
   const [password, setPassword] = useState('');
@@ -206,7 +207,7 @@ const PasswordChangeScreen = props => {
             navigation.goBack();
             // dispatch(clearHouseInfo());
           }}>
-          <CloseIcon />
+          <BackIcon />
         </TouchableOpacity>
       ),
 
@@ -422,14 +423,12 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     color: '#1b1C1F',
     fontFamily: 'Pretendard-Bold', // 원하는 폰트 패밀리
-    fontWeight: '700', // 폰트 두께 (400은 기본)
   },
   subTitleLabel: {
     fontSize: 13,
     marginBottom: 10,
     color: '#717274',
-    fontFamily: 'Pretendard-medium', // 원하는 폰트 패밀리
-    fontWeight: '500', // 폰트 두께 (400은 기본)
+    fontFamily: 'Pretendard-Medium', // 원하는 폰트 패밀리
   },
 
 
