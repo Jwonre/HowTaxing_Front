@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { View, TouchableOpacity, StatusBar, Alert, Linking, Platform } from 'react-native';
+import { View, TouchableOpacity, StatusBar, Alert, Linking, Platform ,StyleSheet } from 'react-native';
 import AppNavigator from './navigator/AppNavigator';
 import { Provider } from 'react-redux';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
@@ -132,7 +132,7 @@ const App = () => {
 
   return (
     <><Provider store={store}>
-      <GestureHandlerRootView style={{ flex: 1 }}>
+      <GestureHandlerRootView style={{ flex: 1 , backgroundColor :'#fff'}}>
         <StatusBar
           animated={true}
           backgroundColor="transparent"
@@ -181,5 +181,10 @@ const App = () => {
     </>
   );
 };
-
+const styles = StyleSheet.create({
+  container: {
+      flex: 1,
+      backgroundColor: '#FFFFFF', // 원하는 색상
+  },
+});
 export default App;

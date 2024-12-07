@@ -1272,7 +1272,15 @@ const ConsultingReservation2 = props => {
                       const state = await NetInfo.fetch();
                       const canProceed = await handleNetInfoChange(state);
                       if (canProceed) {
-                        setCurrentPageIndex(4);
+                        setTimeout(() => {
+                          navigation.navigate('PaymentScreen', {
+                            onPaymentComplete: () => {
+                              setCurrentPageIndex(4);
+                            },
+                          });
+                        }, 100); // 100ms 딜레이 추가
+                        console.log('PaymentScreen', 'PaymentScreen');
+
                       }
                     }}>
                     <ButtonText>다음으로</ButtonText>

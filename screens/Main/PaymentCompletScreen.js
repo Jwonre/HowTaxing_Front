@@ -58,7 +58,10 @@ const PaymentCompletScreen = props =>  {
       return () => clearInterval(interval);
     } else if (timer === 0) {
       // 타이머가 0이 되었을 때 네비게이션 실행
-      navigation.navigate('ConsultingReservation', {});
+      if (props.route.params?.onPaymentComplete) {
+        props.route.params.onPaymentComplete(); // 콜백 호출
+      }
+      navigation.goBack(); // 이전 화면으로 이동
     }
   }, [timer,navigation]);
 

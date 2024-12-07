@@ -575,7 +575,16 @@ const PaymentScreen = props => {
             const canProceed = await handleNetInfoChange(state);
             if (canProceed) {
                 console.log('결제하기');
-                navigation.push('PaymentCompletScreen');
+                navigation.push('PaymentCompletScreen',);
+                navigation.navigate('PaymentCompletScreen', {
+                  onPaymentComplete: () => {
+                    if (props.route.params?.onPaymentComplete) {
+                      props.route.params.onPaymentComplete(); // 콜백 호출
+                    }
+                    navigation.goBack(); // 이전 화면으로 이동
+                  },
+                });
+               
             }
           }
             // 동의하기 버튼 클릭 시 redux에 저장
