@@ -305,6 +305,8 @@ const InfoCertification = props => {
                 setActiveYN(false);
                 props.payload?.input1.current.focus();
               } else {
+                await SheetManager.hide('infoCertification');
+
                 await SheetManager.show('info', {
                   payload: {
                     type: 'error',
@@ -608,9 +610,9 @@ const InfoCertification = props => {
               } else if (getEtcHouseReturn === 'getEtcHouseFailed') {
                 return false;
               }
-          } else {
-            return false;
-          }
+            } else {
+              return false;
+            }
 
           }
 
@@ -864,9 +866,7 @@ const InfoCertification = props => {
   const openKBAuthApp = async () => {
     try {
       const url = 'kbbank://';
-      const supported = await Linking.canOpenURL(url);
 
-      console.log('install_status:', supported);
       if (appStatus.kb === true) {
         await Linking.openURL(url); // KB 인증서 앱 실행
       } else {
@@ -928,7 +928,8 @@ const InfoCertification = props => {
               dispatch(setResend(false));
 
             }}>
-            {(ActiveYN) && <CloseIcon width={16} height={16} />}
+            {/* {(ActiveYN) && <CloseIcon width={16} height={16} />} */}
+            <CloseIcon width={16} height={16} />
           </Pressable>
         </ModalHeader>
       }
@@ -942,7 +943,7 @@ const InfoCertification = props => {
         backgroundColor: '#fff',
         borderTopLeftRadius: 20,
         borderTopRightRadius: 20,
-        height:certType ==='KB' ? 350 : ActiveYN === false  ? 450 : 350,
+        height: certType === 'KB' ? 350 : ActiveYN === false ? 450 : 350,
         width: width - 40,
       }}>
       <SheetContainer width={width}>
@@ -1022,52 +1023,39 @@ const InfoCertification = props => {
               paddingHorizontal: 20, // 양쪽에 여백 추가
             }}
           >
-            <DropShadow
-              style={{
-                shadowColor: 'rgba(0,0,0,0.25)',
-                shadowOffset: {
-                  width: 0,
-                  height: 4,
-                },
-                shadowOpacity: 0.15,
-                shadowRadius: 2,
-                alignSelf: 'center',
-                width: certType ==='KB' ?'100%' :'49%', // 버튼 너비를 부모 View의 45%로 설정
-              }}
-            >
-              <Button
-                onPress={async () => {
-                  const state = await NetInfo.fetch();
-                  const canProceed = await handleNetInfoChange(state);
-                  if (canProceed) {
-                    dispatch(setResend(false));
-                    setActiveYN(false);
-                    const certresult = await postOwnHouse();
-                    if (certresult) {
-                      SheetManager.hide('infoCertification');
-                      const { isGainsTax } = props.payload.isGainsTax;
-                      const chatItem = isGainsTax
-                        ? gainTax.find(el => el.id === 'allHouse1')
-                        : acquisitionTax.find(el => el.id === 'moment1');
-                      dispatch(setChatDataList([...chatDataList, chatItem]));
-                      setTimeout(() => navigation.goBack(), 300);
-                    }
-                  } else {
-                    actionSheetRef.current?.hide();
+            <Button
+              onPress={async () => {
+                const state = await NetInfo.fetch();
+                const canProceed = await handleNetInfoChange(state);
+                if (canProceed) {
+                  dispatch(setResend(false));
+                  setActiveYN(false);
+                  const certresult = await postOwnHouse();
+                  if (certresult) {
+                    SheetManager.hide('infoCertification');
+                    const { isGainsTax } = props.payload.isGainsTax;
+                    const chatItem = isGainsTax
+                      ? gainTax.find(el => el.id === 'allHouse1')
+                      : acquisitionTax.find(el => el.id === 'moment1');
+                    dispatch(setChatDataList([...chatDataList, chatItem]));
+                    setTimeout(() => navigation.goBack(), 300);
                   }
-                }}
-                style={{
-                  backgroundColor: ActiveYN ? '#2f87ff' : '#E8EAED',
-                  borderColor: ActiveYN ? '#2f87ff' : '#E8EAED',
-                }}
-                active={ActiveYN}
-                disabled={!ActiveYN}
-              >
-                <ButtonText active={ActiveYN} style={{ color: ActiveYN ? '#fff' : '#717274' }}>
-                  다시 보내기
-                </ButtonText>
-              </Button>
-            </DropShadow>
+                } else {
+                  actionSheetRef.current?.hide();
+                }
+              }}
+              style={{
+                width: certType ==='KB' ?'100%' :'49%', // 버튼 너비를 부모 View의 45%로 설정
+                backgroundColor: ActiveYN ? '#2f87ff' : '#FFF',
+                borderColor: ActiveYN ? '#2f87ff' : '#E8EAED',
+              }}
+              active={ActiveYN}
+              disabled={!ActiveYN}
+            >
+              <ButtonText active={ActiveYN} style={{ color: ActiveYN ? '#fff' : '#717274' }}>
+                다시 보내기
+              </ButtonText>
+            </Button>
 
 
             {certType !== 'KB' && (
@@ -1101,8 +1089,7 @@ const InfoCertification = props => {
                   }}
                 >
                   <ButtonText style={{ color: !ActiveYN ? '#fff' : '#717274' }}>
-                    {certType === 'toss' && (appStatus.toss === true ? '앱으로 바로가기' : '설치하기')}
-                    {certType === 'naver' && (appStatus.naver === true ? '앱으로 바로가기' : '설치하기')}
+                    앱 바로가기
                   </ButtonText>
                 </Button>
               </DropShadow>
