@@ -115,7 +115,7 @@ const LogOutSheet = props => {
         backgroundColor: '#fff',
         borderTopLeftRadius: 20,
         borderTopRightRadius: 20,
-        height: errorMessage ? 320 : 280,
+        height: errorMessage ? 320 : 300,
         width: width - 40,
       }}>
       <SheetContainer width={width}>

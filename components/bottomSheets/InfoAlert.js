@@ -333,7 +333,8 @@ const InfoAlert = props => {
             <View
               style={{
                 flexDirection: 'row',
-                alignContent: 'center'
+                alignContent: 'center',
+                marginTop: 10,
               }}
             >
               <DropShadow

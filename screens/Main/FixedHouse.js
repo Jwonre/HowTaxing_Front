@@ -218,12 +218,13 @@ const ListFooterButton = styled.TouchableOpacity.attrs(props => ({
   activeOpacity: 0.6,
 }))`
   width: 100%;
-  height: 60px;
+  height: auto;
   align-items: center;
   justify-content: center;
 `;
 
 const ListFooterButtonText = styled.Text`
+  padding: 20px 0;
   font-size: 13px;
   font-family: Pretendard-Bold;
   color: #a3a5a8;
