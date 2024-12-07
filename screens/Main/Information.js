@@ -34,6 +34,7 @@ const ListItem = styled.View`
   align-items: left;
   justify-content: flex-start;
   padding: 0 25px;
+  margin-top: 40px;
 `;
 const IntroSection = styled.View`
   flex: 0.6;
@@ -53,6 +54,12 @@ const Title = styled.Text`
 `;
 
 
+const ProgressSection = styled.View`
+  flex-direction: row;
+  width: 100%;
+  height: 5px;
+  background-color: #2f87ff;
+`;
 
 
 
@@ -66,9 +73,16 @@ const Option = styled.TouchableOpacity.attrs(props => ({
 `;
 
 const OptionText = styled.Text`
-    font-size: 16px;
+    font-size: 17px;
+    font-family: Pretendard-Bold;
+    color: #A3A5A8;
+    line-height: 20px;
+`;
+
+const OptionDetailText = styled.Text`
+    font-size: 17px;
     font-family: Pretendard-Regular;
-    color: #1b1c1f;
+    color: #A3A5A8;
     line-height: 20px;
 `;
 
@@ -78,6 +92,34 @@ const Divider = styled.View`
   background-color: #e8eaed;
   margin-top: 12px;
   margin-bottom:12px;
+`;
+
+const BottomSection = styled.View` 
+  bottom: 0px;
+  position: absolute;
+  width: 100%; 
+  height: 93px; 
+  background-color: #D9D9D9; 
+
+`;
+
+const Bottom = styled.View` 
+  padding: 15px 20px 15px 20px;
+`;
+
+const BottomIcon = styled.Image.attrs(props => ({
+  resizeMode: 'contain',
+}))`
+  width: 67px;
+  height: 15px;
+`;
+
+const BottomText = styled.Text`
+  font-size: 11px;
+  font-family: Pretendard-Regular;
+  color: #fff;
+  line-height: 12px;
+  margin-top: 7px;
 `;
 
 
@@ -115,10 +157,12 @@ const Information = props => {
           <BackIcon />
         </TouchableOpacity>
       ),
-      title: '',
+      headerTitleAlign: 'center',
+      title: '앱 정보',
       headerShadowVisible: false,
       contentStyle: {
-        borderTopWidth: 0,
+        borderTopColor: '#F7F7F7',
+        borderTopWidth: 1,
       },
       headerTitleStyle: {
         fontFamily: 'Pretendard-Bold',
@@ -135,12 +179,12 @@ const Information = props => {
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${accessToken}`
     };
-  
+
     try {
       const response = await axios.get(`${Config.APP_API_URL}user/logout`, { headers });
       console.log('accessToken', accessToken);
       console.log('response.data', response.data);
-  
+
       if (response.data.errYn === 'Y') {
         console.log('response.data.errMsgDtl', response.data.errMsgDtl);
         SheetManager.show('info', {
@@ -220,13 +264,8 @@ const Information = props => {
 
   return (
     <Container>
-      <IntroSection>
-        <IconView>
-          <InformationIcon />
-        </IconView>
-
-        <Title >앱 정보</Title>
-      </IntroSection>
+      <ProgressSection>
+      </ProgressSection>
       <ListItem>
         <Option>
           <OptionText>공지사항</OptionText>
@@ -242,17 +281,17 @@ const Information = props => {
         <Divider />
         <Option style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
           <OptionText >버전정보</OptionText>
-          <OptionText >v1.0.0</OptionText>
+          <OptionDetailText >v1.0.0</OptionDetailText>
         </Option>
         <Divider />
-        <Option style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+        {/*<Option style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
           <OptionText >법인명(단체명)</OptionText>
           <OptionText >JS 세무회계</OptionText>
         </Option>
-        <Divider />
+        <Divider />*/}
         <Option style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
           <OptionText >사업자등록번호</OptionText>
-          <OptionText >416-18-30801</OptionText>
+          <OptionDetailText >416-18-30801</OptionDetailText>
         </Option>
         <Divider />
         <Option onPress={async () => {
@@ -268,15 +307,23 @@ const Information = props => {
           const canProceed = await handleNetInfoChange(state);
           if (canProceed) { navigation.navigate('InfoPrivacy') }
         }}>
-          <OptionText >개인정보 처리방침</OptionText>
+          <OptionText >개인정보처리방침</OptionText>
         </Option>
         <Divider />
-        <Option onPress={async () => {
+        {/*<Option onPress={async () => {
           const state = await NetInfo.fetch();
           const canProceed = await handleNetInfoChange(state);
           if (canProceed) { navigation.navigate('InfoLocation') }
         }}>
           <OptionText >마케팅정보 이용약관</OptionText>
+        </Option>
+        <Divider />*/}
+        <Option onPress={async () => {
+          const state = await NetInfo.fetch();
+          const canProceed = await handleNetInfoChange(state);
+          if (canProceed) { }
+        }}>
+          <OptionText >비밀번호 변경</OptionText>
         </Option>
         <Divider />
         <Option onPress={goLogout}>
@@ -298,6 +345,16 @@ const Information = props => {
           <OptionText >회원탈퇴</OptionText>
         </Option>
       </ListItem>
+      <BottomSection>
+        <Bottom>
+          <BottomIcon
+            source={require('../../assets/images/informationlogo.png')}
+          />
+          <BottomText>JS세무회계 | 서울특별시 송파구 올림픽로35길 112, 2동 2층 249호</BottomText>
+          <BottomText>사업자등록번호 : 416-18-30801</BottomText>
+          <BottomText>대표자명 : 윤준수 | 대표번호 : 010-8478-1689</BottomText>
+        </Bottom>
+      </BottomSection>
     </Container>
   );
 };

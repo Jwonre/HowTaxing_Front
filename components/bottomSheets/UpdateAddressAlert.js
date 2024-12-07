@@ -172,7 +172,7 @@ const MapSearchResultItemTitle = styled.Text`
 `;
 
 const MapSearchResultItemAddress = styled.Text`
-  width: 58%;
+  width: 59%;
   font-size: 12px;
   font-family: Pretendard-Regular;
   color: #a3a5a8;
@@ -243,12 +243,13 @@ const ListFooterButton = styled.TouchableOpacity.attrs(props => ({
   activeOpacity: 0.6,
 }))`
   width: 100%;
-  height: 60px;
+  height: auto;
   align-items: center;
   justify-content: center;
 `;
 
 const ListFooterButtonText = styled.Text`
+  padding: 20px 0;
   font-size: 13px;
   font-family: Pretendard-Bold;
   color: #a3a5a8;
@@ -820,7 +821,7 @@ const UpdateAddressAlert = props => {
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{
             flexGrow: 1,
-            paddingBottom: 10,
+            paddingBottom: 80,
           }}
           ListHeaderComponent={
             <View
@@ -1138,7 +1139,7 @@ const UpdateAddressAlert = props => {
                         <AddressDetailText>상세주소</AddressDetailText>
                       </AddressDetailBadge>
                       {!expandedItems[index] ? (
-                        <MapSearchResultItemAddress style={{ width: sortedList.length > 5 ? '58%' : '70%' }} numberOfLines={1} ellipsizeMode='tail' >
+                        <MapSearchResultItemAddress style={{ width: sortedList.length > 5 ? '59%' : '70%' }} numberOfLines={1} ellipsizeMode='tail' >
                           {sortedList.join(',')}
                         </MapSearchResultItemAddress>
                       ) : (

@@ -143,7 +143,6 @@ const ButtonText = styled.Text`
 
 
 const Card = styled.View`
-  width: 125px;
   height: 125px;
   border-radius: 5px;
   background-color: #fff;
@@ -263,7 +262,7 @@ const StakeSheetGains = props => {
 
 
   // 공시가격 선택 리스트
-  const AC_STAKE_LIST = [25, 33, 55, 75];
+  const AC_STAKE_LIST = [25, 33, 50, 75];
   const [isConnected, setIsConnected] = useState(true);
 
   const handleNetInfoChange = (state) => {
@@ -537,7 +536,7 @@ const StakeSheetGains = props => {
                   shadowOpacity: 0.1,
                   shadowRadius: 10,
                 }}>
-                <Card>
+                <Card style={{ width: width * 0.37 }}>
                   <CardTitle >본인 소유 지분율</CardTitle>
                   <View style={{ width: 50, height: 50, backgroundColor: '#d0d3d8', borderRadius: 25, alignItems: 'center', justifyContent: 'center' }}>
                     <MemberIcon source={require('../../assets/images/member.png')} />
@@ -556,7 +555,7 @@ const StakeSheetGains = props => {
                   shadowOpacity: 0.1,
                   shadowRadius: 10,
                 }}>
-                <Card style={{ borderColor: '#FFF' }}>
+              <Card style={{ width: width * 0.37, borderColor: '#FFF' }}>
                   <CardTitle >공동 소유자 지분율</CardTitle>
                   <View style={{ width: 50, height: 50, backgroundColor: '#d0d3d8', borderRadius: 25, alignItems: 'center', justifyContent: 'center' }}>
                     <MemberIcon source={require('../../assets/images/member.png')} />
