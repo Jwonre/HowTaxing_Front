@@ -610,9 +610,9 @@ const InfoCertification = props => {
               } else if (getEtcHouseReturn === 'getEtcHouseFailed') {
                 return false;
               }
-            } else {
-              return false;
-            }
+          } else {
+            return false;
+          }
 
           }
 
@@ -990,14 +990,14 @@ const InfoCertification = props => {
             <ModalTitle >{props?.payload?.message}</ModalTitle>
           )}
           {certType === 'toss' && (
-            <ModalTitle >{appStatus.toss.toss === true ?
-              props?.payload?.message : '인증 앱을 해당 기기에서 찾을 수 없어요.\n먼저 인증하실 서비스를 설치해주세요.'}</ModalTitle>
-
+            // <ModalTitle >{appStatus.toss.toss === true ?
+            //   props?.payload?.message : '인증 앱을 해당 기기에서 찾을 수 없어요.\n먼저 인증하실 서비스를 설치해주세요.'}</ModalTitle>
+            <ModalTitle >{props?.payload?.message}</ModalTitle>
           )}
           {certType === 'naver' && (
-            <ModalTitle >{appStatus.naver ?
-              props?.payload?.message : '인증 앱을 해당 기기에서 찾을 수 없어요.\n먼저 인증하실 서비스를 설치해주세요.'}</ModalTitle>
-
+            // <ModalTitle >{appStatus.naver ?
+            //   props?.payload?.message : '인증 앱을 해당 기기에서 찾을 수 없어요.\n먼저 인증하실 서비스를 설치해주세요.'}</ModalTitle>
+            <ModalTitle >{props?.payload?.message}</ModalTitle>
           )}
 
 
@@ -1006,7 +1006,8 @@ const InfoCertification = props => {
           {/* {(ActiveYN === true) && <ModalContent >다른 기기를 통해 인증할 예정이라면다른 기기로 인증하기를 눌러주세요. </ModalContent>} */}
 
 
-          {(ActiveYN === false) && <CircularProgress size={50} strokeWidth={5} progress={30} />}
+          {/* {(ActiveYN === false) && <CircularProgress size={50} strokeWidth={5} progress={30} />} */}
+          <CircularProgress size={50} strokeWidth={5} progress={30} />
         </ModalContentSection>
 
 
@@ -1046,13 +1047,18 @@ const InfoCertification = props => {
               }}
               style={{
                 width: certType ==='KB' ?'100%' :'49%', // 버튼 너비를 부모 View의 45%로 설정
-                backgroundColor: ActiveYN ? '#2f87ff' : '#FFF',
-                borderColor: ActiveYN ? '#2f87ff' : '#E8EAED',
+                // backgroundColor: ActiveYN ? '#2f87ff' : '#FFF',
+                // borderColor: ActiveYN ? '#2f87ff' : '#E8EAED',
+                backgroundColor: '#FFF',
+                borderColor:'#E8EAED',
               }}
-              active={ActiveYN}
-              disabled={!ActiveYN}
+              // active={ActiveYN}
+              // disabled={!ActiveYN}
             >
-              <ButtonText active={ActiveYN} style={{ color: ActiveYN ? '#fff' : '#717274' }}>
+              {/* <ButtonText active={ActiveYN} style={{ color: ActiveYN ? '#fff' : '#717274' }}>
+                다시 보내기
+              </ButtonText> */}
+               <ButtonText active={ActiveYN} style={{ color: '#717274' }}>
                 다시 보내기
               </ButtonText>
             </Button>
@@ -1074,8 +1080,10 @@ const InfoCertification = props => {
               >
                 <Button
                   style={{
-                    backgroundColor: !ActiveYN ? '#2f87ff' : '#E8EAED',
-                    borderColor: !ActiveYN ? '#2f87ff' : '#E8EAED',
+                    // backgroundColor: !ActiveYN ? '#2f87ff' : '#E8EAED',
+                    // borderColor: !ActiveYN ? '#2f87ff' : '#E8EAED',
+                    backgroundColor:'#2f87ff',
+                    borderColor: '#2f87ff',
                   }}
                   onPress={async () => {
                     const state = await NetInfo.fetch();
@@ -1088,7 +1096,10 @@ const InfoCertification = props => {
                     }
                   }}
                 >
-                  <ButtonText style={{ color: !ActiveYN ? '#fff' : '#717274' }}>
+                  {/* <ButtonText style={{ color: !ActiveYN ? '#fff' : '#717274' }}>
+                    앱 바로가기
+                  </ButtonText> */}
+                   <ButtonText style={{ color: '#fff' }}>
                     앱 바로가기
                   </ButtonText>
                 </Button>
