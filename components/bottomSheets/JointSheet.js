@@ -37,17 +37,24 @@ const ModalTitle = styled.Text`
   text-align: center;
 `;
 
+const ModalSubTitle = styled.Text`
+  font-size: 13px;
+  font-family: Pretendard-Bold;
+  color: #FF7401;
+  line-height: 15px;
+  text-align: center;
+`;
+
 const ModalInputSection = styled.View`
   width: 100%;
   height: auto;
-  margin-top: 10px;
   background-color: #fff;
 `;
 
 const ModalButton = styled.TouchableOpacity.attrs(props => ({
   activeOpacity: 0.8,
 }))`
-  width: 48%;
+  width: 49%;
   height: 50px;
   border-radius: 25px;
   background-color: #2f87ff;
@@ -73,7 +80,6 @@ const ModalHeader = styled.View`
 
 const ButtonSection = styled.View`
   width: 100%;
-  height: auto;
   background-color: #fff;
   align-items: center;
   flex-direction: row;
@@ -145,7 +151,8 @@ const JointSheet = props => {
       }}>
       <SheetContainer width={width}>
         <ModalInputSection>
-          <ModalTitle >공동 소유자가 몇 명인가요?</ModalTitle>
+          <ModalTitle style={{ marginBottom: 15 }}>공동 소유자가 몇 명인가요?</ModalTitle>
+          <ModalSubTitle>아직 최대 2명까지만 선택할 수 있어요.</ModalSubTitle>
           <View
             style={{
               flexDirection: 'row',
@@ -215,10 +222,20 @@ const JointSheet = props => {
         </ModalInputSection>
         <ButtonSection
           style={{
-            justifyContent: 'center',
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            alignItems: 'center',
           }}>
+          <ModalButton onPress={() => {
+            const newChatDataList = chatDataList.slice(0, props.payload?.index + 1);
+            dispatch(setChatDataList(newChatDataList));
+            actionSheetRef.current?.hide();
+          }} style={{ borderColor: '#E8EAED', borderWidth: 1, marginRight: '2%', backgroundColor: '#fff', borderColor: '#E8EAED' }}>
+            <ModalButtonText style={{ color: '#717274' }}>이전으로</ModalButtonText>
+          </ModalButton>
           <DropShadow
             style={{
+              width: '100%',
               shadowColor: 'rgba(0,0,0,0.25)',
               shadowOffset: {
                 width: 0,
@@ -279,12 +296,6 @@ const JointSheet = props => {
                   dispatch(setChatDataList(newChatDataList));
                   actionSheetRef.current?.hide();
                 }
-              }}
-              style={{
-                width: width - 120,
-                alignSelf: 'center',
-                marginTop: 20,
-                marginBottom: 50,
               }}>
               <ModalButtonText >다음으로</ModalButtonText>
             </ModalButton>

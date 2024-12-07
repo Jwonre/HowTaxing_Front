@@ -36,22 +36,7 @@ const ListItem = styled.View`
   padding: 0 25px;
   margin-top: 40px;
 `;
-const IntroSection = styled.View`
-  flex: 0.6;
-  width: 100%;
-  padding: 25px;
-  margin-top: 20px;
-`;
 
-const Title = styled.Text`
-  font-size: 25px;
-  font-family: Pretendard-Bold;
-  color: #1b1c1f;
-  line-height: 30px;
-  margin-bottom: 10px;
-  margin-top: 20px;
-  letter-spacing: -0.5px;
-`;
 
 
 const ProgressSection = styled.View`
@@ -342,7 +327,7 @@ const Information = props => {
           }
         }
         }>
-          <OptionText >회원탈퇴</OptionText>
+          <OptionText >회원 탈퇴</OptionText>
         </Option>
       </ListItem>
       <BottomSection>
