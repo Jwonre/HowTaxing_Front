@@ -943,7 +943,7 @@ const InfoCertification = props => {
         backgroundColor: '#fff',
         borderTopLeftRadius: 20,
         borderTopRightRadius: 20,
-        height: certType === 'KB' ? 350 : ActiveYN === false ? 450 : 350,
+        height: certType === 'KB' ? 350 : 450,
         width: width - 40,
       }}>
       <SheetContainer width={width}>
@@ -1002,7 +1002,7 @@ const InfoCertification = props => {
 
 
 
-          {(ActiveYN === false && certType !== 'KB') && <ModalContent >신속한 인증을 원하시면 인증 앱으로 바로가기를 누르신 후 직접 인증을 부탁드려요. </ModalContent>}
+          {(certType !== 'KB') && <ModalContent >신속한 인증을 원하시면 인증 앱으로 바로가기를 누르신 후 직접 인증을 부탁드려요. </ModalContent>}
           {/* {(ActiveYN === true) && <ModalContent >다른 기기를 통해 인증할 예정이라면다른 기기로 인증하기를 눌러주세요. </ModalContent>} */}
 
 
