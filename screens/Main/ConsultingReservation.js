@@ -680,26 +680,10 @@ const ConsultingReservation = () => {
         input1.current.focus();
       } else if (currentPageIndex === 2 && input2.current) {
         input2.current.focus();
-      } else if (currentPageIndex === 5 && input3.current) {
+      } else if (currentPageIndex === 4 && input3.current) {
         input3.current.focus();
       };
     }
-    // if(currentPageIndex === 4){
-    //   navigation.navigate('PaymentScreen', {
-    //     onPaymentComplete: () => {
-    //       setCurrentPageIndex(5);
-    //     },
-    //   });
-    // }else{
-    //   _scrollViewRef.current?.scrollTo({
-    //     x: width * (currentPageIndex === 5 ? currentPageIndex -1 : currentPageIndex),
-    //     y: 0, animated: true,
-    //   });
-  
-    //   setTimeout(() => {
-    //     focusInput();
-    //   }, 200)
-    // }
     _scrollViewRef.current?.scrollTo({
       x: width * currentPageIndex,
       y: 0, animated: true,
@@ -708,7 +692,6 @@ const ConsultingReservation = () => {
     setTimeout(() => {
       focusInput();
     }, 200)
-   
   }, [currentPageIndex]);
 
 
@@ -939,6 +922,8 @@ const ConsultingReservation = () => {
                   const state = await NetInfo.fetch();
                   const canProceed = await handleNetInfoChange(state);
                   if (canProceed) {
+                    Keyboard.dismiss;
+                    input2.current.focus;
                     setCurrentPageIndex(2);
                   }
                 }}>
@@ -991,8 +976,8 @@ const ConsultingReservation = () => {
                 autoFocus={currentPageIndex === 2}
                 value={phone}
                 maxLength={13}
-                keyboardType="pho
-                ne-pad"
+                keyboardType="phone-pad" // 숫자 키보드 표시
+                autoCompleteType="tel"
                 onChangeText={async (phone) => {
                   const filteredPhone = phone.replace(/[^0-9]/g, '');
                   let formattedPhone = filteredPhone;
@@ -1255,18 +1240,8 @@ const ConsultingReservation = () => {
                       const state = await NetInfo.fetch();
                       const canProceed = await handleNetInfoChange(state);
                       if (canProceed) {
-                        setTimeout(() => {
-                          navigation.navigate('PaymentScreen', {
-                            onPaymentComplete: () => {
-                              setCurrentPageIndex(4);
-                            },
-                          });
-                        }, 100); // 100ms 딜레이 추가
-                        console.log('PaymentScreen', 'PaymentScreen');
-
+                        setCurrentPageIndex(4);
                       }
-                     
-                     
                     }}>
                     <ButtonText>다음으로</ButtonText>
                   </Button>
