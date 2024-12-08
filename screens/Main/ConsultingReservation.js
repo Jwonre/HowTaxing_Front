@@ -988,7 +988,6 @@ const ConsultingReservation = () => {
                   }
                   setPhone(formattedPhone);
                 }}
-                autoCompleteType="tel"
                 onSubmitEditing={async () => {
                   const state = await NetInfo.fetch();
                   const canProceed = await handleNetInfoChange(state);
