@@ -472,7 +472,6 @@ const ConsultingReservation = () => {
 
 
 
-
   useEffect(() => {
     if (selectedDate && currentPageIndex === 3) {
       console.log('selectedDate', selectedDate);
@@ -922,8 +921,6 @@ const ConsultingReservation = () => {
                   const state = await NetInfo.fetch();
                   const canProceed = await handleNetInfoChange(state);
                   if (canProceed) {
-                    Keyboard.dismiss;
-                    input2.current.focus;
                     setCurrentPageIndex(2);
                   }
                 }}>
@@ -988,6 +985,7 @@ const ConsultingReservation = () => {
                   }
                   setPhone(formattedPhone);
                 }}
+                autoCompleteType="tel"
                 onSubmitEditing={async () => {
                   const state = await NetInfo.fetch();
                   const canProceed = await handleNetInfoChange(state);
