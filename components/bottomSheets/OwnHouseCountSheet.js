@@ -1,4 +1,3 @@
-// 공동 소유자가 몇 명인가요? 질문에 대한 답변을 선택하는 bottom sheet
 
 import {
   View,

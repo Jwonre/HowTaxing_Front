@@ -93,7 +93,7 @@ const ModalAddressInputContainer = styled.View`
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
-  padding: 0 20px;
+  padding: 0 10px;
   border-bottom-width: 1px;
   border-bottom-color: #2f87ff;
 `;
@@ -106,7 +106,7 @@ const ModalAddressInput = styled.TextInput.attrs(props => ({
   font-size: 19px;
   font-family: Pretendard-bold;
   color: #1b1c1f;
-  line-height: 19px;
+  line-height: 23px;
 `;
 
 const ModalInputButton = styled.TouchableOpacity.attrs(props => ({
@@ -120,8 +120,8 @@ const ModalInputButton = styled.TouchableOpacity.attrs(props => ({
 const ModalInputSection2 = styled.View`
   width: 100%;
   height: auto;
-  margin-top: 0px;
   background-color: #fff;
+  padding: 0 20px;
 `;
 
 const MapSearchResultItem = styled.TouchableOpacity.attrs(props => ({
@@ -245,7 +245,7 @@ const HoustInfoSection = styled.View`
   width: 100%;
   height: auto;
   background-color: #fff;
-  padding: 15px 20px;
+  padding: 20px;
   border-radius: 10px;
   flex-direction: row;
   align-items: center;
@@ -342,6 +342,7 @@ const AddHouse = props => {
   const input1 = useRef(null);
   const input2 = useRef(0);
   const [address, setAddress] = useState('');
+  const [falutaddress, setfalutAddress] = useState('');
   const [detailAddress, setDetailAddress] = useState('');
   const [detailAddress3, setDetailAddress3] = useState('');
   const [dongList, setDongList] = useState([]);
@@ -444,7 +445,7 @@ const AddHouse = props => {
 
 
       } else {
-        if (directacquisitionDate ) {
+        if (directacquisitionDate) {
           if (foundItem.admCd) {
             if (foundItem.detailAdr) {
               if (selectedHo) {
@@ -491,14 +492,14 @@ const AddHouse = props => {
 
   const [isConnected, setIsConnected] = useState(true);
 
- /* useEffect(() => {
-    _scrollViewRef.current?.scrollTo({
-      x: (width) * currentPageIndex,
-      y: 0,
-      animated: true,
-    });
-  }, [currentPageIndex]);
-*/
+  /* useEffect(() => {
+     _scrollViewRef.current?.scrollTo({
+       x: (width) * currentPageIndex,
+       y: 0,
+       animated: true,
+     });
+   }, [currentPageIndex]);
+ */
   /*useEffect(() => {
     _scrollViewRef2.current?.scrollTo({
       x: (width) * currentPageIndex2,
@@ -512,6 +513,7 @@ const AddHouse = props => {
     console.log('foundItem 데이터 확인', foundItem);
     setInitItem(foundItem);
     setAddress(foundItem.roadAddr ? foundItem.roadAddr + '\n' + (foundItem.houseName ? foundItem.houseName : '') : foundItem.jibunAddr ? foundItem.jibunAddr + '\n' + (foundItem.houseName ? foundItem.houseName : '') : '');
+    setfalutAddress(foundItem.roadAddr ? foundItem.roadAddr + '\n' + (foundItem.houseName ? foundItem.houseName : '') : foundItem.jibunAddr ? foundItem.jibunAddr + '\n' + (foundItem.houseName ? foundItem.houseName : '') : '');
     if (!(foundItem.admCd)) {
       setCurrentPageIndex(0);
     } else if (!foundItem.buyDate) {
@@ -927,7 +929,7 @@ const AddHouse = props => {
 
 
               } else {
-                if (directacquisitionDate ) {
+                if (directacquisitionDate) {
                   if (foundItem.admCd) {
                     if (foundItem.detailAdr) {
                       if (selectedHo) {
@@ -1001,7 +1003,17 @@ const AddHouse = props => {
 
         <><IntroSection2 style={{ width: width }}>
           <Title>주택 거래내역의 주소가 정확하지 않아요.</Title>
-          <SubTitle2>보유한 주택의 주소를 정확히 입력하여 조회해주세요.</SubTitle2>
+          <SubTitle2>해당 주택의 주소를 정확히 입력하여 조회해주세요.</SubTitle2>
+          <HoustInfoSection
+            style={{ borderColor: '#FF7401' }}>
+            <View
+              style={{
+                width: '100%',
+              }}>
+              <HoustInfoTitle>{/*selectedItem.houseName*/falutaddress.replace(/\n/g, " ")}</HoustInfoTitle>
+              {detailAddress && (<HoustInfoText >{/*selectedItem.houseDetailName*/detailAddress}</HoustInfoText>)}
+            </View>
+          </HoustInfoSection>
         </IntroSection2>
           <ScrollView
             keyboardShouldPersistTaps='always'
@@ -1173,7 +1185,7 @@ const AddHouse = props => {
                                   transform: [{ rotate: '180deg' }],
                                   color: '#2F87FF',
                                 }} />
-                                
+
                               )}
                               <MapSearchResultButtonText>{expandedItems[index] ? '접기' : '펼치기'}</MapSearchResultButtonText>
                             </View>
@@ -1198,13 +1210,13 @@ const AddHouse = props => {
         </ProgressSection>
         <><IntroSection2 style={{ width: width }}>
           <Title>상세 주소를 입력해주세요.</Title>
-          <SubTitle2>보유한 주택의 상세 주소를 정확히 입력해주세요.</SubTitle2>
+          <SubTitle2>해당 주택의 상세 주소를 정확히 입력해주세요.</SubTitle2>
           <HoustInfoSection>
             <View
               style={{
                 width: '100%',
               }}>
-              <HoustInfoTitle>{/*selectedItem.houseName*/address}</HoustInfoTitle>
+              <HoustInfoTitle>{/*selectedItem.houseName*/address.replace(/\n/g, " ")}</HoustInfoTitle>
               {detailAddress && (<HoustInfoText >{/*selectedItem.houseDetailName*/detailAddress}</HoustInfoText>)}
             </View>
           </HoustInfoSection>
@@ -1466,7 +1478,7 @@ const AddHouse = props => {
         </ProgressSection>
         <><IntroSection2 style={{ width: width }}>
           <Title>상세 주소를 입력해주세요.</Title>
-          <SubTitle2>보유한 주택의 상세 주소를 정확히 입력해주세요.</SubTitle2>
+          <SubTitle2>해당 주택의 상세 주소를 정확히 입력해주세요.</SubTitle2>
           <ModalInputSection3 style={{ marginBottom: 20 }}>
             <ModalInputContainer style={{
               flexDirection: 'row', // flex-direction을 camelCase로 변경
@@ -1566,7 +1578,7 @@ const AddHouse = props => {
               style={{
                 width: '100%',
               }}>
-              <HoustInfoTitle>{/*selectedItem.houseName*/address}</HoustInfoTitle>
+              <HoustInfoTitle>{/*selectedItem.houseName*/address.replace(/\n/g, " ")}</HoustInfoTitle>
               {detailAddress && (<HoustInfoText >{/*selectedItem.houseDetailName*/detailAddress}</HoustInfoText>)}
             </View>
           </HoustInfoSection>
@@ -1772,13 +1784,13 @@ const AddHouse = props => {
               />
             </TouchableOpacity>
           </View>
-          <SubTitle2>보유한 주택의 취득일자를 정확히 입력해주세요.</SubTitle2>
+          <SubTitle2>해당 주택의 취득일자를 정확히 입력해주세요.</SubTitle2>
           <HoustInfoSection>
             <View
               style={{
                 width: '100%',
               }}>
-              <HoustInfoTitle>{/*selectedItem.houseName*/address}</HoustInfoTitle>
+              <HoustInfoTitle>{/*selectedItem.houseName*/address.replace(/\n/g, " ")}</HoustInfoTitle>
               {detailAddress && (<HoustInfoText >{/*selectedItem.houseDetailName*/detailAddress}</HoustInfoText>)}
             </View>
           </HoustInfoSection>
@@ -1969,7 +1981,7 @@ const AddHouse = props => {
               />
             </TouchableOpacity>
           </View>
-          <SubTitle2>보유한 주택의 취득할 당시의 취득금액을 정확히 입력해주세요.</SubTitle2>
+          <SubTitle2>해당 주택의 취득할 당시의 취득금액을 정확히 입력해주세요.</SubTitle2>
         </IntroSection2>
 
           <ModalInputSection1>
@@ -2035,7 +2047,7 @@ const AddHouse = props => {
                   const state = await NetInfo.fetch();
                   const canProceed = await handleNetInfoChange(state);
                   if (canProceed) {
-                    if (directacquisitionDate ) {
+                    if (directacquisitionDate) {
                       if (foundItem.admCd) {
                         if (foundItem.detailAdr) {
                           if (selectedHo) {

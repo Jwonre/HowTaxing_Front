@@ -341,7 +341,7 @@ const CertificationGains = props => {
       'keyboardDidShow',
       (e) => {
         setKeyboardHeight(e.endCoordinates.height);
-        scrollViewRef.current?.scrollTo({ y: 100, animated: true });
+       // scrollViewRef.current?.scrollTo({ y: 100, animated: true });
       }
     );
 

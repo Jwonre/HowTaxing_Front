@@ -85,7 +85,7 @@ const ModalAddressInputContainer = styled.View`
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
-  padding: 0 20px;
+  padding: 0 10px;
   border-bottom-width: 1px;
   border-bottom-color: #2f87ff;
 `;
@@ -98,7 +98,7 @@ const ModalAddressInput = styled.TextInput.attrs(props => ({
   font-size: 19px;
   font-family: Pretendard-bold;
   color: #1b1c1f;
-  line-height: 19px;
+  line-height: 23px;
 `;
 
 const ModalInputButton = styled.TouchableOpacity.attrs(props => ({
@@ -112,8 +112,8 @@ const ModalInputButton = styled.TouchableOpacity.attrs(props => ({
 const ModalInputSection2 = styled.View`
   width: 100%;
   height: auto;
-  margin-top: 0px;
   background-color: #fff;
+  padding: 0 20px;
 `;
 
 const MapSearchResultItem = styled.TouchableOpacity.attrs(props => ({
@@ -236,7 +236,7 @@ const HoustInfoSection = styled.View`
   width: 100%;
   height: auto;
   background-color: #fff;
-  padding: 15px 20px;
+  padding: 20px;
   border-radius: 10px;
   flex-direction: row;
   align-items: center;
@@ -330,6 +330,7 @@ const FixedHouse = props => {
   const { width, height } = useWindowDimensions();
   const input1 = useRef(null);
   const input2 = useRef(0);
+  const [falutaddress, setfalutAddress] = useState('');
   const [address, setAddress] = useState('');
   const [detailAddress, setDetailAddress] = useState('');
   const [detailAddress3, setDetailAddress3] = useState('');
@@ -435,7 +436,7 @@ const FixedHouse = props => {
 
 
       } else {
-        if (directacquisitionDate ) {
+        if (directacquisitionDate) {
           if (foundItem.admCd) {
             if (foundItem.detailAdr) {
               if (selectedHo) {
@@ -501,6 +502,7 @@ const FixedHouse = props => {
     var foundItem = fixHouseList?.find((el) => el.index === props?.route.params.index);
     setInitItem(foundItem);
     setAddress(foundItem.roadAddr ? foundItem.roadAddr + '\n' + (foundItem.houseName ? foundItem.houseName : '') : foundItem.jibunAddr ? foundItem.jibunAddr + '\n' + (foundItem.houseName ? foundItem.houseName : '') : '');
+    setfalutAddress(foundItem.roadAddr ? foundItem.roadAddr + '\n' + (foundItem.houseName ? foundItem.houseName : '') : foundItem.jibunAddr ? foundItem.jibunAddr + '\n' + (foundItem.houseName ? foundItem.houseName : '') : '');
     if (!(foundItem.admCd)) {
       setCurrentPageIndex(0);
     } else if (!foundItem.buyDate) {
@@ -919,7 +921,7 @@ const FixedHouse = props => {
 
 
               } else {
-                if (directacquisitionDate ) {
+                if (directacquisitionDate) {
                   if (foundItem.admCd) {
                     if (foundItem.detailAdr) {
                       if (selectedHo) {
@@ -993,214 +995,226 @@ const FixedHouse = props => {
 
         <><IntroSection2 style={{ width: width }}>
           <Title>주택 거래내역의 주소가 정확하지 않아요.</Title>
-          <SubTitle2>보유한 주택의 주소를 정확히 입력하여 조회해주세요.</SubTitle2>
-        </IntroSection2>
-          <ScrollView
-            keyboardShouldPersistTaps='always'
-            overScrollMode="never"
-            ref={_scrollViewRef2}
-            pagingEnabled
-            style={{
-              width: width,
-            }}
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            scrollEnabled={false}
-            scrollEventThrottle={16}>
-
-            <Container width={width}>
-              <FlatList
-                stickyHeaderIndices={[0]}
-                data={listData}
-                ref={scrollViewRef}
+          <SubTitle2>해당 주택의 주소를 정확히 입력하여 조회해주세요.</SubTitle2>
+          <HoustInfoSection
+            style={{ borderColor: '#FF7401' }}>
+              <View
                 style={{
-                  zIndex: 1,
-                }}
-                {...scrollHandlers}
-                scrollEnabled
-                nestedScrollEnabled={true}
-                showsVerticalScrollIndicator={false}
-                contentContainerStyle={{
-                  flexGrow: 1,
-                  paddingBottom: 10,
-                }}
-                overScrollMode="never" // 이 줄을 추가하세요
-                ListHeaderComponent={
-                  <View
-                    style={{
-                      zIndex: 10,
-                    }}>
-                    <ModalInputSection2>
-                      <ModalAddressInputContainer>
-                        <ModalAddressInput
-                          placeholder="주소를 검색해주세요."
-                          value={searchText}
-                          onChangeText={(text) => { setSearchText(text.replace(/\n/g, '')); }}
-                          onSubmitEditing={async () => {
-                            const state = await NetInfo.fetch();
-                            const canProceed = await handleNetInfoChange(state);
-                            if (canProceed) {
-                              if (searchText === '') {
-                              } else {
-                                getAddress(searchText);
-                              }
+                  width: '100%',
+                }}>
+                <HoustInfoTitle>{/*selectedItem.houseName*/falutaddress.replace(/\n/g, " ")}</HoustInfoTitle>
+                {detailAddress && (<HoustInfoText >{/*selectedItem.houseDetailName*/detailAddress}</HoustInfoText>)}
+              </View>
+          </HoustInfoSection>
+        </IntroSection2>
+
+        <ScrollView
+          keyboardShouldPersistTaps='always'
+          overScrollMode="never"
+          ref={_scrollViewRef2}
+          pagingEnabled
+          style={{
+            width: width,
+          }}
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          scrollEnabled={false}
+          scrollEventThrottle={16}>
+
+          <Container width={width}>
+            <FlatList
+              stickyHeaderIndices={[0]}
+              data={listData}
+              ref={scrollViewRef}
+              style={{
+                zIndex: 1,
+              }}
+              {...scrollHandlers}
+              scrollEnabled
+              nestedScrollEnabled={true}
+              showsVerticalScrollIndicator={false}
+              contentContainerStyle={{
+                flexGrow: 1,
+                paddingBottom: 10,
+              }}
+              overScrollMode="never" // 이 줄을 추가하세요
+              ListHeaderComponent={
+                <View
+                  style={{
+                    zIndex: 10,
+                  }}>
+                  <ModalInputSection2>
+                    <ModalAddressInputContainer>
+                      <ModalAddressInput
+                        placeholder="주소를 검색해주세요."
+                        value={searchText}
+                        onChangeText={(text) => { setSearchText(text.replace(/\n/g, '')); }}
+                        onSubmitEditing={async () => {
+                          const state = await NetInfo.fetch();
+                          const canProceed = await handleNetInfoChange(state);
+                          if (canProceed) {
+                            if (searchText === '') {
+                            } else {
+                              getAddress(searchText);
                             }
-                          }
-                          }
-                        />
-                        <ModalInputButton
-                          onPress={async () => {
-                            const state = await NetInfo.fetch();
-                            const canProceed = await handleNetInfoChange(state);
-                            if (canProceed) {
-                              if (searchText === '') {
-                              } else {
-                                getAddress(searchText);
-                              }
-                            }
-                          }}>
-                          <SerchIcon />
-                        </ModalInputButton>
-                      </ModalAddressInputContainer>
-                    </ModalInputSection2>
-                  </View>
-                }
-                ListFooterComponent={
-                  listData.length > 0 &&
-                  !isLastPage && (
-                    <ListFooterButton
-                      onPress={async () => {
-                        const state = await NetInfo.fetch();
-                        const canProceed = await handleNetInfoChange(state);
-                        if (canProceed) {
-                          if (searchText === '') {
-                          } else {
-                            getMoreAddress(searchText);
                           }
                         }
-                      }}>
-                      <ListFooterButtonText >더 보기</ListFooterButtonText>
-                    </ListFooterButton>
-                  )
-                }
-                renderItem={({ item, index }) => {
-                  const sortedList = item?.detBdNmList ? item.detBdNmList.split(",").map(name => name.trim()).sort((a, b) => a.localeCompare(b)) : [];
-                  return (
-                    <MapSearchResultItem
-                      onPress={async () => {
-                        //console.log('item', item);
-                        const state = await NetInfo.fetch();
-                        const canProceed = await handleNetInfoChange(state);
-                        if (canProceed) {
-                          setAddress(item.roadAddr);
-                          setSelectedItem(item);
-                          var foundItem = fixHouseList?.find((el) => el.index === props?.route.params.index);
-                          dispatch(editFixHouseList({
-                            ...foundItem,
-                            houseId: foundItem.houseId,
-                            jibunAddr: item.jibunAddr,
-                            roadAddr: item.roadAddr,
-                            bdMgtSn: item.bdMgtSn,
-                            admCd: item.admCd,
-                            rnMgtSn: item.rnMgtSn,
-                            buyDate: foundItem.buyDate,
-                            buyPrice: foundItem.buyPrice,
-                            complete: false,
-                            detailAdr: foundItem.detailAdr,
-                            houseName: item.bdNm
-                          }));
-                          const firstDong = await getDongData(item);
-                          if (firstDong !== 'dongerror') {
-                            const Hodata = await getHoData(item, firstDong, 'init');
-                            if (Hodata > 0) {
-                              setCurrentPageIndex(1);
+                        }
+                      />
+                      <ModalInputButton
+                        onPress={async () => {
+                          const state = await NetInfo.fetch();
+                          const canProceed = await handleNetInfoChange(state);
+                          if (canProceed) {
+                            if (searchText === '') {
                             } else {
-                              setCurrentPageIndex(2);
+                              getAddress(searchText);
                             }
+                          }
+                        }}>
+                        <SerchIcon />
+                      </ModalInputButton>
+                    </ModalAddressInputContainer>
+                  </ModalInputSection2>
+                </View>
+              }
+              ListFooterComponent={
+                listData.length > 0 &&
+                !isLastPage && (
+                  <ListFooterButton
+                    onPress={async () => {
+                      const state = await NetInfo.fetch();
+                      const canProceed = await handleNetInfoChange(state);
+                      if (canProceed) {
+                        if (searchText === '') {
+                        } else {
+                          getMoreAddress(searchText);
+                        }
+                      }
+                    }}>
+                    <ListFooterButtonText >더 보기</ListFooterButtonText>
+                  </ListFooterButton>
+                )
+              }
+              renderItem={({ item, index }) => {
+                const sortedList = item?.detBdNmList ? item.detBdNmList.split(",").map(name => name.trim()).sort((a, b) => a.localeCompare(b)) : [];
+                return (
+                  <MapSearchResultItem
+                    onPress={async () => {
+                      //console.log('item', item);
+                      const state = await NetInfo.fetch();
+                      const canProceed = await handleNetInfoChange(state);
+                      if (canProceed) {
+                        setAddress(item.roadAddr);
+                        setSelectedItem(item);
+                        var foundItem = fixHouseList?.find((el) => el.index === props?.route.params.index);
+                        dispatch(editFixHouseList({
+                          ...foundItem,
+                          houseId: foundItem.houseId,
+                          jibunAddr: item.jibunAddr,
+                          roadAddr: item.roadAddr,
+                          bdMgtSn: item.bdMgtSn,
+                          admCd: item.admCd,
+                          rnMgtSn: item.rnMgtSn,
+                          buyDate: foundItem.buyDate,
+                          buyPrice: foundItem.buyPrice,
+                          complete: false,
+                          detailAdr: foundItem.detailAdr,
+                          houseName: item.bdNm
+                        }));
+                        const firstDong = await getDongData(item);
+                        if (firstDong !== 'dongerror') {
+                          const Hodata = await getHoData(item, firstDong, 'init');
+                          if (Hodata > 0) {
+                            setCurrentPageIndex(1);
                           } else {
-                            setSelectedItem(item);
                             setCurrentPageIndex(2);
                           }
+                        } else {
+                          setSelectedItem(item);
+                          setCurrentPageIndex(2);
                         }
+                      }
+                    }}>
+                    <View
+                      style={{
+                        width: '100%',
                       }}>
-                      <View
+                      <MapSearchResultItemTitle>
+                        {item?.roadAddr}
+                      </MapSearchResultItemTitle>
+                      {sortedList.length > 0 && <View
                         style={{
                           width: '100%',
+                          flexDirection: 'row',
+                          alignItems: 'center',
+                          marginTop: 6,
                         }}>
-                        <MapSearchResultItemTitle>
-                          {item?.roadAddr}
-                        </MapSearchResultItemTitle>
-                        {sortedList.length > 0 && <View
-                          style={{
-                            width: '100%',
-                            flexDirection: 'row',
-                            alignItems: 'center',
-                            marginTop: 6,
-                          }}>
-                          <AddressDetailBadge>
-                            <AddressDetailText>상세주소</AddressDetailText>
-                          </AddressDetailBadge>
-                          {!expandedItems[index] ? (
-                            <MapSearchResultItemAddress style={{ width: sortedList.length > 6 ? '64%' : '76%' }} ellipsizeMode='tail' numberOfLines={1}>
-                              {sortedList.join(',')}
-                            </MapSearchResultItemAddress>
-                          ) : (
-                            <MapSearchResultItemAddress>
-                              {sortedList.join(',')}
-                            </MapSearchResultItemAddress>
-                          )}
-                          {sortedList.length > 6 && <MepSearchResultButton onPress={() => { toggleExpand(index) }}>
-                            <View
-                              style={{
-                                flexDirection: 'row',
-                                alignItems: 'center',
-                              }}>
-                              {!expandedItems[index] ? (
-                                <Bottompolygon style={{ marginTop: 1, color: '#2F87FF' }} />
-                              ) : (
-                                <Bottompolygon style={{
-                                  marginTop: 1,
-                                  transform: [{ rotate: '180deg' }],
-                                  color: '#2F87FF',
-                                }} />
-                              )}
-                              <MapSearchResultButtonText>{expandedItems[index] ? '접기' : '펼치기'}</MapSearchResultButtonText>
-                            </View>
-                          </MepSearchResultButton>}
-                        </View>}
-                      </View>
-                    </MapSearchResultItem>
-                  )
-                }}
-                keyExtractor={(item, index) => index.toString()}
-              />
-            </Container>
+                        <AddressDetailBadge>
+                          <AddressDetailText>상세주소</AddressDetailText>
+                        </AddressDetailBadge>
+                        {!expandedItems[index] ? (
+                          <MapSearchResultItemAddress style={{ width: sortedList.length > 6 ? '64%' : '76%' }} ellipsizeMode='tail' numberOfLines={1}>
+                            {sortedList.join(',')}
+                          </MapSearchResultItemAddress>
+                        ) : (
+                          <MapSearchResultItemAddress>
+                            {sortedList.join(',')}
+                          </MapSearchResultItemAddress>
+                        )}
+                        {sortedList.length > 6 && <MepSearchResultButton onPress={() => { toggleExpand(index) }}>
+                          <View
+                            style={{
+                              flexDirection: 'row',
+                              alignItems: 'center',
+                            }}>
+                            {!expandedItems[index] ? (
+                              <Bottompolygon style={{ marginTop: 1, color: '#2F87FF' }} />
+                            ) : (
+                              <Bottompolygon style={{
+                                marginTop: 1,
+                                transform: [{ rotate: '180deg' }],
+                                color: '#2F87FF',
+                              }} />
+                            )}
+                            <MapSearchResultButtonText>{expandedItems[index] ? '접기' : '펼치기'}</MapSearchResultButtonText>
+                          </View>
+                        </MepSearchResultButton>}
+                      </View>}
+                    </View>
+                  </MapSearchResultItem>
+                )
+              }}
+              keyExtractor={(item, index) => index.toString()}
+            />
+          </Container>
 
-          </ScrollView></>
+        </ScrollView></>
       </Container>}
 
-      {currentPageIndex === 1 && <Container style={{ width: width }}>
-        <ProgressSection>
-        </ProgressSection>
-        <><IntroSection2 style={{ width: width }}>
-          <Title>상세 주소를 입력해주세요.</Title>
-          <SubTitle2>보유한 주택의 상세 주소를 정확히 입력해주세요.</SubTitle2>
-          <HoustInfoSection>
-            <View
-              style={{
-                width: '100%',
-              }}>
-              <HoustInfoTitle>{/*selectedItem.houseName*/address}</HoustInfoTitle>
-              {detailAddress && (<HoustInfoText >{/*selectedItem.houseDetailName*/detailAddress}</HoustInfoText>)}
-            </View>
-          </HoustInfoSection>
-        </IntroSection2>
-          <View style={{
-            marginTop: 20
-          }}></View>
+{
+  currentPageIndex === 1 && <Container style={{ width: width }}>
+    <ProgressSection>
+    </ProgressSection>
+    <><IntroSection2 style={{ width: width }}>
+      <Title>상세 주소를 입력해주세요.</Title>
+      <SubTitle2>해당 주택의 상세 주소를 정확히 입력해주세요.</SubTitle2>
+      <HoustInfoSection>
+        <View
+          style={{
+            width: '100%',
+          }}>
+          <HoustInfoTitle>{/*selectedItem.houseName*/address.replace(/\n/g, " ")}</HoustInfoTitle>
+          {detailAddress && (<HoustInfoText >{/*selectedItem.houseDetailName*/detailAddress}</HoustInfoText>)}
+        </View>
+      </HoustInfoSection>
+    </IntroSection2>
+      <View style={{
+        marginTop: 20
+      }}></View>
 
 
-          {/*<Button
+      {/*<Button
             onPress={() => {
               setCurrentPageIndex(2);
             }}
@@ -1218,353 +1232,355 @@ const FixedHouse = props => {
               직접 입력하기
             </ButtonText>
           </Button> 직접입력하기 삭제*/}
-          <View>
-            <SelectGroup>
-              <View style={{ width: '48%' }}>
-                <SelectLabel >동 선택</SelectLabel>
-                <PickerContainer>
-                  {dongList[0] && (
-                    <WheelPicker
-                      key={dongList}
-                      selectedIndex={
-                        selectedDong ? dongList.indexOf(selectedDong) : 0
-                      }
-                      containerStyle={{
-                        width: 120,
-                        height: 180,
-                        borderRadius: 10,
-                      }}
-                      itemTextStyle={{
-                        fontFamily: 'Pretendard-Regular',
-                        fontSize: 18,
-                        color: '#1B1C1F',
-                      }}
-                      allowFontScaling={false}
-                      selectedIndicatorStyle={{
-                        backgroundColor: 'transparent',
-                      }}
-                      itemHeight={40}
-                      options={dongList}
-                      onChange={index => {
-                        setSelectedDong(dongList[index]);
-                        setHoList([]);
-                        getHoData(selectedItem, dongList[index], 'change');
-                      }}
-                    />
-                  )}
-                </PickerContainer>
-              </View>
-              <View style={{ width: '48%' }}>
-                <SelectLabel >호 선택</SelectLabel>
-
-                <PickerContainer>
-                  {hoList?.length > 0 && (
-                    <WheelPicker
-                      key={hoList}
-                      selectedIndex={
-                        hoList.indexOf(selectedHo) >= 0
-                          ? hoList.indexOf(selectedHo)
-                          : 0
-                      }
-                      containerStyle={{
-                        width: 120,
-                        height: 180,
-                        borderRadius: 10,
-                      }}
-                      itemTextStyle={{
-                        fontFamily: 'Pretendard-Regular',
-                        fontSize: 18,
-                        color: '#1B1C1F',
-
-                      }}
-                      selectedIndicatorStyle={{
-                        backgroundColor: 'transparent',
-                      }}
-                      itemHeight={40}
-                      options={hoList}
-                      onChange={index => {
-                        setSelectedHo(hoList[index]);
-
-                      }}
-                    />
-                  )}
-                </PickerContainer>
-              </View>
-            </SelectGroup>
-
+      <View>
+        <SelectGroup>
+          <View style={{ width: '48%' }}>
+            <SelectLabel >동 선택</SelectLabel>
+            <PickerContainer>
+              {dongList[0] && (
+                <WheelPicker
+                  key={dongList}
+                  selectedIndex={
+                    selectedDong ? dongList.indexOf(selectedDong) : 0
+                  }
+                  containerStyle={{
+                    width: 120,
+                    height: 180,
+                    borderRadius: 10,
+                  }}
+                  itemTextStyle={{
+                    fontFamily: 'Pretendard-Regular',
+                    fontSize: 18,
+                    color: '#1B1C1F',
+                  }}
+                  allowFontScaling={false}
+                  selectedIndicatorStyle={{
+                    backgroundColor: 'transparent',
+                  }}
+                  itemHeight={40}
+                  options={dongList}
+                  onChange={index => {
+                    setSelectedDong(dongList[index]);
+                    setHoList([]);
+                    getHoData(selectedItem, dongList[index], 'change');
+                  }}
+                />
+              )}
+            </PickerContainer>
           </View>
+          <View style={{ width: '48%' }}>
+            <SelectLabel >호 선택</SelectLabel>
 
-          <ButtonSection width={width} style={{
-            marginTop: 10,
-            height: 'auto', // height 값을 문자열로 변경
-            backgroundColor: '#fff', // background-color를 camelCase로 변경
-            alignItems: 'center', // align-items를 camelCase로 변경
-            flexDirection: 'row', // flex-direction을 camelCase로 변경
-            justifyContent: 'space-between', // justify-content를 camelCase로 변경
-            padding: 20,
+            <PickerContainer>
+              {hoList?.length > 0 && (
+                <WheelPicker
+                  key={hoList}
+                  selectedIndex={
+                    hoList.indexOf(selectedHo) >= 0
+                      ? hoList.indexOf(selectedHo)
+                      : 0
+                  }
+                  containerStyle={{
+                    width: 120,
+                    height: 180,
+                    borderRadius: 10,
+                  }}
+                  itemTextStyle={{
+                    fontFamily: 'Pretendard-Regular',
+                    fontSize: 18,
+                    color: '#1B1C1F',
+
+                  }}
+                  selectedIndicatorStyle={{
+                    backgroundColor: 'transparent',
+                  }}
+                  itemHeight={40}
+                  options={hoList}
+                  onChange={index => {
+                    setSelectedHo(hoList[index]);
+
+                  }}
+                />
+              )}
+            </PickerContainer>
+          </View>
+        </SelectGroup>
+
+      </View>
+
+      <ButtonSection width={width} style={{
+        marginTop: 10,
+        height: 'auto', // height 값을 문자열로 변경
+        backgroundColor: '#fff', // background-color를 camelCase로 변경
+        alignItems: 'center', // align-items를 camelCase로 변경
+        flexDirection: 'row', // flex-direction을 camelCase로 변경
+        justifyContent: 'space-between', // justify-content를 camelCase로 변경
+        padding: 20,
+      }}>
+
+
+        <DropShadow
+          style={{
+            width: '48%',
+            shadowColor: '#fff',
           }}>
-
-
-            <DropShadow
-              style={{
-                width: '48%',
-                shadowColor: '#fff',
-              }}>
-              <Button
-                onPress={async () => {
-                  const state = await NetInfo.fetch();
-                  const canProceed = await handleNetInfoChange(state);
-                  if (canProceed) {
-                    setCurrentPageIndex(0);
-                    setSelectedDong('');
-                    setSelectedHo('');
-                    setDongList([]);
-                    setHoList([]);
-                    setDetailAddress3('');
-                  }
-                }}
-                style={{
-                  width: '100%',
-                  height: 50, // height 값을 숫자로 변경하고 단위 제거
-                  borderRadius: 25, // border-radius를 camelCase로 변경하고 단위 제거
-                  backgroundColor: '#fff',
-                  alignItems: 'center', // align-items를 camelCase로 변경
-                  justifyContent: 'center', // justify-content를 camelCase로 변경
-                  borderWidth: 1, // border-width를 camelCase로 변경하고 단위 제거
-                  borderColor: '#E8EAED',
-                }}>
-                <ButtonText
-
-                  style={{
-                    color: '#717274',
-                    fontSize: 16, // font-size를 camelCase로 변경하고 단위 제거
-                    fontFamily: 'Pretendard-Bold', // font-family를 camelCase로 변경
-                    color: '#717274', // color 값을 중복 제거
-                    lineHeight: 20, // line-height를 camelCase로 변경하고 단위 제거
-                  }}>
-                  이전으로
-                </ButtonText>
-              </Button>
-            </DropShadow>
-            <DropShadow style={styles.dropshadow}>
-              <Button active={selectedHo}
-                disabled={selectedHo === ''}
-                onPress={async () => {
-                  const state = await NetInfo.fetch();
-                  const canProceed = await handleNetInfoChange(state);
-                  if (canProceed) {
-                    var detailAddress2 = (selectedDong ? selectedDong + '동 ' : dongList[0] ? dongList[0] + '동 ' : '') + (selectedHo ? selectedHo + '호' : hoList[0] ? hoList[0] + '호' : '');;
-                    //console.log('detailAddress2', detailAddress2);
-                    const fixHouseInfo = await getHouseInfo();
-
-                    var foundItem = fixHouseList?.find((el) => el.index === props?.route.params.index);
-                    if (!fixHouseInfo.acquisitionDate && foundItem.buyPrice === null) {
-                      dispatch(editFixHouseList({
-                        ...foundItem,
-                        houseId: foundItem.houseId,
-                        jibunAddr: selectedItem.jibunAddr,
-                        roadAddr: selectedItem.roadAddr,
-                        bdMgtSn: selectedItem.bdMgtSn,
-                        admCd: selectedItem.admCd,
-                        rnMgtSn: selectedItem.rnMgtSn,
-                        buyDate: fixHouseInfo.acquisitionDate ? fixHouseInfo.acquisitionDate : foundItem.buyDate,
-                        buyPrice: foundItem.buyPrice,
-                        complete: false,
-                        detailAdr: detailAddress2,
-                        houseName: foundItem.houseName
-                      }));
-                      setCurrentPageIndex(3);
-                    } else if (!fixHouseInfo.acquisitionDate && foundItem.buyPrice !== null) {
-                      dispatch(editFixHouseList({
-                        ...foundItem,
-                        houseId: foundItem.houseId,
-                        jibunAddr: selectedItem.jibunAddr,
-                        roadAddr: selectedItem.roadAddr,
-                        bdMgtSn: selectedItem.bdMgtSn,
-                        admCd: selectedItem.admCd,
-                        rnMgtSn: selectedItem.rnMgtSn,
-                        buyDate: fixHouseInfo.acquisitionDate ? fixHouseInfo.acquisitionDate : foundItem.buyDate,
-                        buyPrice: foundItem.buyPrice,
-                        complete: false,
-                        detailAdr: detailAddress2,
-                        houseName: foundItem.houseName
-                      }));
-                      setCurrentPageIndex(3);
-                    } else if (fixHouseInfo.acquisitionDate && foundItem.buyPrice === null) {
-                      dispatch(editFixHouseList({
-                        ...foundItem,
-                        houseId: foundItem.houseId,
-                        jibunAddr: selectedItem.jibunAddr,
-                        roadAddr: selectedItem.roadAddr,
-                        bdMgtSn: selectedItem.bdMgtSn,
-                        admCd: selectedItem.admCd,
-                        rnMgtSn: selectedItem.rnMgtSn,
-                        buyDate: fixHouseInfo.acquisitionDate ? fixHouseInfo.acquisitionDate : foundItem.buyDate,
-                        buyPrice: foundItem.buyPrice,
-                        complete: false,
-                        detailAdr: detailAddress2,
-                        houseName: foundItem.houseName
-                      }));
-                      setCurrentPageIndex(4);
-                    } else if (fixHouseInfo.acquisitionDate && foundItem.buyPrice !== null) {
-                      dispatch(editFixHouseList({
-                        ...foundItem,
-                        houseId: foundItem.houseId,
-                        jibunAddr: selectedItem.jibunAddr,
-                        roadAddr: selectedItem.roadAddr,
-                        bdMgtSn: selectedItem.bdMgtSn,
-                        admCd: selectedItem.admCd,
-                        rnMgtSn: selectedItem.rnMgtSn,
-                        buyDate: fixHouseInfo.acquisitionDate ? fixHouseInfo.acquisitionDate : foundItem.buyDate,
-                        buyPrice: foundItem.buyPrice,
-                        complete: true,
-                        detailAdr: detailAddress2,
-                        houseName: foundItem.houseName
-                      }));
-                      navigation.navigate('FixedHouseList', { chatListindex: props.route.params.chatListindex });
-                    }
-
-
-                  }
-                }} style={{
-                  width: '100%',
-                  height: 50, // height 값을 숫자로 변경하고 단위 제거
-                  borderRadius: 25, // border-radius를 camelCase로 변경하고 단위 제거
-                  alignItems: 'center', // align-items를 camelCase로 변경
-                  justifyContent: 'center', // justify-content를 camelCase로 변경
-                  borderWidth: 1, // border-width를 camelCase로 변경하고 단위 제거
-                  backgroundColor: selectedHo ? '#2f87ff' : '#E8EAED',
-                  borderColor: selectedHo ? '#2f87ff' : '#E8EAED',
-                }}>
-                <ButtonText active={selectedHo} style={{
-                  color: '#717274',
-                  fontSize: 16, // font-size를 camelCase로 변경하고 단위 제거
-                  fontFamily: 'Pretendard-Bold', // font-family를 camelCase로 변경
-                  lineHeight: 20, // line-height를 camelCase로 변경하고 단위 제거
-                  color: selectedHo ? '#fff' : '#717274'
-                }}
-                >다음으로</ButtonText>
-              </Button>
-            </DropShadow>
-          </ButtonSection></>
-      </Container>}
-      {currentPageIndex === 2 && <Container style={{ width: width }}>
-        <ProgressSection>
-        </ProgressSection>
-        <><IntroSection2 style={{ width: width }}>
-          <Title>상세 주소를 입력해주세요.</Title>
-          <SubTitle2>보유한 주택의 상세 주소를 정확히 입력해주세요.</SubTitle2>
-          <ModalInputSection3 style={{ marginBottom: 20 }}>
-            <ModalInputContainer style={{
-              flexDirection: 'row', // flex-direction을 camelCase로 변경
-              justifyContent: 'space-between', // justify-content를 camelCase로 변경 
-              padding: 0,
+          <Button
+            onPress={async () => {
+              const state = await NetInfo.fetch();
+              const canProceed = await handleNetInfoChange(state);
+              if (canProceed) {
+                setCurrentPageIndex(0);
+                setSelectedDong('');
+                setSelectedHo('');
+                setDongList([]);
+                setHoList([]);
+                setDetailAddress3('');
+              }
+            }}
+            style={{
+              width: '100%',
+              height: 50, // height 값을 숫자로 변경하고 단위 제거
+              borderRadius: 25, // border-radius를 camelCase로 변경하고 단위 제거
+              backgroundColor: '#fff',
+              alignItems: 'center', // align-items를 camelCase로 변경
+              justifyContent: 'center', // justify-content를 camelCase로 변경
+              borderWidth: 1, // border-width를 camelCase로 변경하고 단위 제거
+              borderColor: '#E8EAED',
             }}>
-              <ModalInput
-                ref={input1}
-                //  onSubmitEditing={() => input2.current.focus()}
-                style={{ width: width, height: 50, fontSize: 19 }}
-                value={detailAddress3 ? detailAddress3 : ''}
-                onChangeText={(text) => setDetailAddress3(text)}
-                maxLength={17}
-                onSubmitEditing={async () => {
-                  const state = await NetInfo.fetch();
-                  const canProceed = await handleNetInfoChange(state);
-                  if (canProceed) {
-                    //console.log('detailAddress2', detailAddress2);
-                    const fixHouseInfo = await getHouseInfo();
-                    console.log('fixHouseInfo', fixHouseInfo);
-                    console.log('fixHouseInfo.acquisitionDate', fixHouseInfo.acquisitionDate);
-                    var foundItem = fixHouseList?.find((el) => el.index === props?.route.params.index);
-                    if (!fixHouseInfo.acquisitionDate && foundItem.buyPrice === null) {
-                      dispatch(editFixHouseList({
-                        ...foundItem,
-                        houseId: foundItem.houseId,
-                        jibunAddr: selectedItem.jibunAddr,
-                        roadAddr: selectedItem.roadAddr,
-                        bdMgtSn: selectedItem.bdMgtSn,
-                        admCd: selectedItem.admCd,
-                        rnMgtSn: selectedItem.rnMgtSn,
-                        buyDate: fixHouseInfo.acquisitionDate ? fixHouseInfo.acquisitionDate : foundItem.buyDate,
-                        buyPrice: foundItem.buyPrice,
-                        complete: false,
-                        detailAdr: detailAddress3,
-                        houseName: selectedItem.bdNm
-                      }));
-                      setCurrentPageIndex(3);
-                    } else if (!fixHouseInfo.acquisitionDate && foundItem.buyPrice !== null) {
-                      dispatch(editFixHouseList({
-                        ...foundItem,
-                        houseId: foundItem.houseId,
-                        jibunAddr: selectedItem.jibunAddr,
-                        roadAddr: selectedItem.roadAddr,
-                        bdMgtSn: selectedItem.bdMgtSn,
-                        admCd: selectedItem.admCd,
-                        rnMgtSn: selectedItem.rnMgtSn,
-                        buyDate: fixHouseInfo.acquisitionDate ? fixHouseInfo.acquisitionDate : foundItem.buyDate,
-                        buyPrice: foundItem.buyPrice,
-                        complete: false,
-                        detailAdr: detailAddress3,
-                        houseName: selectedItem.bdNm
-                      }));
-                      setCurrentPageIndex(3);
-                    } else if (fixHouseInfo.acquisitionDate && foundItem.buyPrice === null) {
-                      dispatch(editFixHouseList({
-                        ...foundItem,
-                        houseId: foundItem.houseId,
-                        jibunAddr: selectedItem.jibunAddr,
-                        roadAddr: selectedItem.roadAddr,
-                        bdMgtSn: selectedItem.bdMgtSn,
-                        admCd: selectedItem.admCd,
-                        rnMgtSn: selectedItem.rnMgtSn,
-                        buyDate: fixHouseInfo.acquisitionDate ? fixHouseInfo.acquisitionDate : foundItem.buyDate,
-                        buyPrice: foundItem.buyPrice,
-                        complete: false,
-                        detailAdr: detailAddress3,
-                        houseName: selectedItem.bdNm
-                      }));
-                      setCurrentPageIndex(4);
-                    } else if (fixHouseInfo.acquisitionDate && foundItem.buyPrice !== null) {
-                      dispatch(editFixHouseList({
-                        ...foundItem,
-                        houseId: foundItem.houseId,
-                        jibunAddr: selectedItem.jibunAddr,
-                        roadAddr: selectedItem.roadAddr,
-                        bdMgtSn: selectedItem.bdMgtSn,
-                        admCd: selectedItem.admCd,
-                        rnMgtSn: selectedItem.rnMgtSn,
-                        buyDate: fixHouseInfo.acquisitionDate ? fixHouseInfo.acquisitionDate : foundItem.buyDate,
-                        buyPrice: foundItem.buyPrice,
-                        complete: true,
-                        detailAdr: detailAddress3,
-                        houseName: selectedItem.bdNm
-                      }));
-                      navigation.navigate('FixedHouseList', { chatListindex: props.route.params.chatListindex });
-                    }
-                  }
-                }}
-                placeholderTextColor="black"
-                textAlignVertical="left"
-                textAlign="left"
-              />
-            </ModalInputContainer>
-          </ModalInputSection3>
-          <HoustInfoSection>
-            <View
+            <ButtonText
+
               style={{
-                width: '100%',
+                color: '#717274',
+                fontSize: 16, // font-size를 camelCase로 변경하고 단위 제거
+                fontFamily: 'Pretendard-Bold', // font-family를 camelCase로 변경
+                color: '#717274', // color 값을 중복 제거
+                lineHeight: 20, // line-height를 camelCase로 변경하고 단위 제거
               }}>
-              <HoustInfoTitle>{/*selectedItem.houseName*/address}</HoustInfoTitle>
-              {detailAddress && (<HoustInfoText >{/*selectedItem.houseDetailName*/detailAddress}</HoustInfoText>)}
-            </View>
-          </HoustInfoSection>
-        </IntroSection2>
-          <View style={{
-            marginTop: 20
-          }}></View>
+              이전으로
+            </ButtonText>
+          </Button>
+        </DropShadow>
+        <DropShadow style={styles.dropshadow}>
+          <Button active={selectedHo}
+            disabled={selectedHo === ''}
+            onPress={async () => {
+              const state = await NetInfo.fetch();
+              const canProceed = await handleNetInfoChange(state);
+              if (canProceed) {
+                var detailAddress2 = (selectedDong ? selectedDong + '동 ' : dongList[0] ? dongList[0] + '동 ' : '') + (selectedHo ? selectedHo + '호' : hoList[0] ? hoList[0] + '호' : '');;
+                //console.log('detailAddress2', detailAddress2);
+                const fixHouseInfo = await getHouseInfo();
+
+                var foundItem = fixHouseList?.find((el) => el.index === props?.route.params.index);
+                if (!fixHouseInfo.acquisitionDate && foundItem.buyPrice === null) {
+                  dispatch(editFixHouseList({
+                    ...foundItem,
+                    houseId: foundItem.houseId,
+                    jibunAddr: selectedItem.jibunAddr,
+                    roadAddr: selectedItem.roadAddr,
+                    bdMgtSn: selectedItem.bdMgtSn,
+                    admCd: selectedItem.admCd,
+                    rnMgtSn: selectedItem.rnMgtSn,
+                    buyDate: fixHouseInfo.acquisitionDate ? fixHouseInfo.acquisitionDate : foundItem.buyDate,
+                    buyPrice: foundItem.buyPrice,
+                    complete: false,
+                    detailAdr: detailAddress2,
+                    houseName: foundItem.houseName
+                  }));
+                  setCurrentPageIndex(3);
+                } else if (!fixHouseInfo.acquisitionDate && foundItem.buyPrice !== null) {
+                  dispatch(editFixHouseList({
+                    ...foundItem,
+                    houseId: foundItem.houseId,
+                    jibunAddr: selectedItem.jibunAddr,
+                    roadAddr: selectedItem.roadAddr,
+                    bdMgtSn: selectedItem.bdMgtSn,
+                    admCd: selectedItem.admCd,
+                    rnMgtSn: selectedItem.rnMgtSn,
+                    buyDate: fixHouseInfo.acquisitionDate ? fixHouseInfo.acquisitionDate : foundItem.buyDate,
+                    buyPrice: foundItem.buyPrice,
+                    complete: false,
+                    detailAdr: detailAddress2,
+                    houseName: foundItem.houseName
+                  }));
+                  setCurrentPageIndex(3);
+                } else if (fixHouseInfo.acquisitionDate && foundItem.buyPrice === null) {
+                  dispatch(editFixHouseList({
+                    ...foundItem,
+                    houseId: foundItem.houseId,
+                    jibunAddr: selectedItem.jibunAddr,
+                    roadAddr: selectedItem.roadAddr,
+                    bdMgtSn: selectedItem.bdMgtSn,
+                    admCd: selectedItem.admCd,
+                    rnMgtSn: selectedItem.rnMgtSn,
+                    buyDate: fixHouseInfo.acquisitionDate ? fixHouseInfo.acquisitionDate : foundItem.buyDate,
+                    buyPrice: foundItem.buyPrice,
+                    complete: false,
+                    detailAdr: detailAddress2,
+                    houseName: foundItem.houseName
+                  }));
+                  setCurrentPageIndex(4);
+                } else if (fixHouseInfo.acquisitionDate && foundItem.buyPrice !== null) {
+                  dispatch(editFixHouseList({
+                    ...foundItem,
+                    houseId: foundItem.houseId,
+                    jibunAddr: selectedItem.jibunAddr,
+                    roadAddr: selectedItem.roadAddr,
+                    bdMgtSn: selectedItem.bdMgtSn,
+                    admCd: selectedItem.admCd,
+                    rnMgtSn: selectedItem.rnMgtSn,
+                    buyDate: fixHouseInfo.acquisitionDate ? fixHouseInfo.acquisitionDate : foundItem.buyDate,
+                    buyPrice: foundItem.buyPrice,
+                    complete: true,
+                    detailAdr: detailAddress2,
+                    houseName: foundItem.houseName
+                  }));
+                  navigation.navigate('FixedHouseList', { chatListindex: props.route.params.chatListindex });
+                }
 
 
-          {/*<Button
+              }
+            }} style={{
+              width: '100%',
+              height: 50, // height 값을 숫자로 변경하고 단위 제거
+              borderRadius: 25, // border-radius를 camelCase로 변경하고 단위 제거
+              alignItems: 'center', // align-items를 camelCase로 변경
+              justifyContent: 'center', // justify-content를 camelCase로 변경
+              borderWidth: 1, // border-width를 camelCase로 변경하고 단위 제거
+              backgroundColor: selectedHo ? '#2f87ff' : '#E8EAED',
+              borderColor: selectedHo ? '#2f87ff' : '#E8EAED',
+            }}>
+            <ButtonText active={selectedHo} style={{
+              color: '#717274',
+              fontSize: 16, // font-size를 camelCase로 변경하고 단위 제거
+              fontFamily: 'Pretendard-Bold', // font-family를 camelCase로 변경
+              lineHeight: 20, // line-height를 camelCase로 변경하고 단위 제거
+              color: selectedHo ? '#fff' : '#717274'
+            }}
+            >다음으로</ButtonText>
+          </Button>
+        </DropShadow>
+      </ButtonSection></>
+  </Container>
+}
+{
+  currentPageIndex === 2 && <Container style={{ width: width }}>
+    <ProgressSection>
+    </ProgressSection>
+    <><IntroSection2 style={{ width: width }}>
+      <Title>상세 주소를 입력해주세요.</Title>
+      <SubTitle2>해당 주택의 상세 주소를 정확히 입력해주세요.</SubTitle2>
+      <ModalInputSection3 style={{ marginBottom: 20 }}>
+        <ModalInputContainer style={{
+          flexDirection: 'row', // flex-direction을 camelCase로 변경
+          justifyContent: 'space-between', // justify-content를 camelCase로 변경 
+          padding: 0,
+        }}>
+          <ModalInput
+            ref={input1}
+            //  onSubmitEditing={() => input2.current.focus()}
+            style={{ width: width, height: 50, fontSize: 19 }}
+            value={detailAddress3 ? detailAddress3 : ''}
+            onChangeText={(text) => setDetailAddress3(text)}
+            maxLength={17}
+            onSubmitEditing={async () => {
+              const state = await NetInfo.fetch();
+              const canProceed = await handleNetInfoChange(state);
+              if (canProceed) {
+                //console.log('detailAddress2', detailAddress2);
+                const fixHouseInfo = await getHouseInfo();
+                console.log('fixHouseInfo', fixHouseInfo);
+                console.log('fixHouseInfo.acquisitionDate', fixHouseInfo.acquisitionDate);
+                var foundItem = fixHouseList?.find((el) => el.index === props?.route.params.index);
+                if (!fixHouseInfo.acquisitionDate && foundItem.buyPrice === null) {
+                  dispatch(editFixHouseList({
+                    ...foundItem,
+                    houseId: foundItem.houseId,
+                    jibunAddr: selectedItem.jibunAddr,
+                    roadAddr: selectedItem.roadAddr,
+                    bdMgtSn: selectedItem.bdMgtSn,
+                    admCd: selectedItem.admCd,
+                    rnMgtSn: selectedItem.rnMgtSn,
+                    buyDate: fixHouseInfo.acquisitionDate ? fixHouseInfo.acquisitionDate : foundItem.buyDate,
+                    buyPrice: foundItem.buyPrice,
+                    complete: false,
+                    detailAdr: detailAddress3,
+                    houseName: selectedItem.bdNm
+                  }));
+                  setCurrentPageIndex(3);
+                } else if (!fixHouseInfo.acquisitionDate && foundItem.buyPrice !== null) {
+                  dispatch(editFixHouseList({
+                    ...foundItem,
+                    houseId: foundItem.houseId,
+                    jibunAddr: selectedItem.jibunAddr,
+                    roadAddr: selectedItem.roadAddr,
+                    bdMgtSn: selectedItem.bdMgtSn,
+                    admCd: selectedItem.admCd,
+                    rnMgtSn: selectedItem.rnMgtSn,
+                    buyDate: fixHouseInfo.acquisitionDate ? fixHouseInfo.acquisitionDate : foundItem.buyDate,
+                    buyPrice: foundItem.buyPrice,
+                    complete: false,
+                    detailAdr: detailAddress3,
+                    houseName: selectedItem.bdNm
+                  }));
+                  setCurrentPageIndex(3);
+                } else if (fixHouseInfo.acquisitionDate && foundItem.buyPrice === null) {
+                  dispatch(editFixHouseList({
+                    ...foundItem,
+                    houseId: foundItem.houseId,
+                    jibunAddr: selectedItem.jibunAddr,
+                    roadAddr: selectedItem.roadAddr,
+                    bdMgtSn: selectedItem.bdMgtSn,
+                    admCd: selectedItem.admCd,
+                    rnMgtSn: selectedItem.rnMgtSn,
+                    buyDate: fixHouseInfo.acquisitionDate ? fixHouseInfo.acquisitionDate : foundItem.buyDate,
+                    buyPrice: foundItem.buyPrice,
+                    complete: false,
+                    detailAdr: detailAddress3,
+                    houseName: selectedItem.bdNm
+                  }));
+                  setCurrentPageIndex(4);
+                } else if (fixHouseInfo.acquisitionDate && foundItem.buyPrice !== null) {
+                  dispatch(editFixHouseList({
+                    ...foundItem,
+                    houseId: foundItem.houseId,
+                    jibunAddr: selectedItem.jibunAddr,
+                    roadAddr: selectedItem.roadAddr,
+                    bdMgtSn: selectedItem.bdMgtSn,
+                    admCd: selectedItem.admCd,
+                    rnMgtSn: selectedItem.rnMgtSn,
+                    buyDate: fixHouseInfo.acquisitionDate ? fixHouseInfo.acquisitionDate : foundItem.buyDate,
+                    buyPrice: foundItem.buyPrice,
+                    complete: true,
+                    detailAdr: detailAddress3,
+                    houseName: selectedItem.bdNm
+                  }));
+                  navigation.navigate('FixedHouseList', { chatListindex: props.route.params.chatListindex });
+                }
+              }
+            }}
+            placeholderTextColor="black"
+            textAlignVertical="left"
+            textAlign="left"
+          />
+        </ModalInputContainer>
+      </ModalInputSection3>
+      <HoustInfoSection>
+        <View
+          style={{
+            width: '100%',
+          }}>
+          <HoustInfoTitle>{/*selectedItem.houseName*/address.replace(/\n/g, " ")}</HoustInfoTitle>
+          {detailAddress && (<HoustInfoText >{/*selectedItem.houseDetailName*/detailAddress}</HoustInfoText>)}
+        </View>
+      </HoustInfoSection>
+    </IntroSection2>
+      <View style={{
+        marginTop: 20
+      }}></View>
+
+
+      {/*<Button
             onPress={() => {
               setCurrentPageIndex(2);
             }}
@@ -1585,170 +1601,172 @@ const FixedHouse = props => {
 
 
 
-          <ButtonSection width={width} style={{
-            marginTop: 10,
-            height: 'auto', // height 값을 문자열로 변경
-            backgroundColor: '#fff', // background-color를 camelCase로 변경
-            alignItems: 'center', // align-items를 camelCase로 변경
-            flexDirection: 'row', // flex-direction을 camelCase로 변경
-            justifyContent: 'space-between', // justify-content를 camelCase로 변경
-            padding: 20,
+      <ButtonSection width={width} style={{
+        marginTop: 10,
+        height: 'auto', // height 값을 문자열로 변경
+        backgroundColor: '#fff', // background-color를 camelCase로 변경
+        alignItems: 'center', // align-items를 camelCase로 변경
+        flexDirection: 'row', // flex-direction을 camelCase로 변경
+        justifyContent: 'space-between', // justify-content를 camelCase로 변경
+        padding: 20,
+      }}>
+
+
+        <DropShadow
+          style={{
+            width: '48%',
+            shadowColor: '#fff',
           }}>
+          <Button
+            onPress={async () => {
+              const state = await NetInfo.fetch();
+              const canProceed = await handleNetInfoChange(state);
+              if (canProceed) {
+                setCurrentPageIndex(0);
+                setSelectedDong('');
+                setSelectedHo('');
+                setDongList([]);
+                setHoList([]);
+                setDetailAddress3('');
+              }
+            }}
+            style={{
+              width: '100%',
+              height: 50, // height 값을 숫자로 변경하고 단위 제거
+              borderRadius: 25, // border-radius를 camelCase로 변경하고 단위 제거
+              backgroundColor: '#fff',
+              alignItems: 'center', // align-items를 camelCase로 변경
+              justifyContent: 'center', // justify-content를 camelCase로 변경
+              borderWidth: 1, // border-width를 camelCase로 변경하고 단위 제거
+              borderColor: '#E8EAED',
+            }}>
+            <ButtonText
 
-
-            <DropShadow
               style={{
-                width: '48%',
-                shadowColor: '#fff',
+                color: '#717274',
+                fontSize: 16, // font-size를 camelCase로 변경하고 단위 제거
+                fontFamily: 'Pretendard-Bold', // font-family를 camelCase로 변경
+                color: '#717274', // color 값을 중복 제거
+                lineHeight: 20, // line-height를 camelCase로 변경하고 단위 제거
               }}>
-              <Button
-                onPress={async () => {
-                  const state = await NetInfo.fetch();
-                  const canProceed = await handleNetInfoChange(state);
-                  if (canProceed) {
-                    setCurrentPageIndex(0);
-                    setSelectedDong('');
-                    setSelectedHo('');
-                    setDongList([]);
-                    setHoList([]);
-                    setDetailAddress3('');
-                  }
-                }}
-                style={{
-                  width: '100%',
-                  height: 50, // height 값을 숫자로 변경하고 단위 제거
-                  borderRadius: 25, // border-radius를 camelCase로 변경하고 단위 제거
-                  backgroundColor: '#fff',
-                  alignItems: 'center', // align-items를 camelCase로 변경
-                  justifyContent: 'center', // justify-content를 camelCase로 변경
-                  borderWidth: 1, // border-width를 camelCase로 변경하고 단위 제거
-                  borderColor: '#E8EAED',
-                }}>
-                <ButtonText
-
-                  style={{
-                    color: '#717274',
-                    fontSize: 16, // font-size를 camelCase로 변경하고 단위 제거
-                    fontFamily: 'Pretendard-Bold', // font-family를 camelCase로 변경
-                    color: '#717274', // color 값을 중복 제거
-                    lineHeight: 20, // line-height를 camelCase로 변경하고 단위 제거
-                  }}>
-                  이전으로
-                </ButtonText>
-              </Button>
-            </DropShadow>
-            <DropShadow style={styles.dropshadow}>
-              <Button active={selectedDate}
-                disabled={!(selectedDate)}
-                onPress={async () => {
-                  const state = await NetInfo.fetch();
-                  const canProceed = await handleNetInfoChange(state);
-                  if (canProceed) {
-                    var detailAddress2 = (selectedDong ? selectedDong + '동 ' : dongList[0] ? dongList[0] + '동 ' : '') + (selectedHo ? selectedHo + '호' : hoList[0] ? hoList[0] + '호' : '');;
-                    //console.log('detailAddress2', detailAddress2);
-                    const fixHouseInfo = await getHouseInfo();
-                    console.log('fixHouseInfo', fixHouseInfo);
-                    console.log('fixHouseInfo.acquisitionDate', fixHouseInfo.acquisitionDate);
-                    var foundItem = fixHouseList?.find((el) => el.index === props?.route.params.index);
-                    if (!fixHouseInfo.acquisitionDate && foundItem.buyPrice === null) {
-                      dispatch(editFixHouseList({
-                        ...foundItem,
-                        houseId: foundItem.houseId,
-                        jibunAddr: selectedItem.jibunAddr,
-                        roadAddr: selectedItem.roadAddr,
-                        bdMgtSn: selectedItem.bdMgtSn,
-                        admCd: selectedItem.admCd,
-                        rnMgtSn: selectedItem.rnMgtSn,
-                        buyDate: fixHouseInfo.acquisitionDate ? fixHouseInfo.acquisitionDate : foundItem.buyDate,
-                        buyPrice: foundItem.buyPrice,
-                        complete: false,
-                        detailAdr: detailAddress2,
-                        houseName: selectedItem.bdNm
-                      }));
-                      setCurrentPageIndex(3);
-                    } else if (!fixHouseInfo.acquisitionDate && foundItem.buyPrice !== null) {
-                      dispatch(editFixHouseList({
-                        ...foundItem,
-                        houseId: foundItem.houseId,
-                        jibunAddr: selectedItem.jibunAddr,
-                        roadAddr: selectedItem.roadAddr,
-                        bdMgtSn: selectedItem.bdMgtSn,
-                        admCd: selectedItem.admCd,
-                        rnMgtSn: selectedItem.rnMgtSn,
-                        buyDate: fixHouseInfo.acquisitionDate ? fixHouseInfo.acquisitionDate : foundItem.buyDate,
-                        buyPrice: foundItem.buyPrice,
-                        complete: false,
-                        detailAdr: detailAddress2,
-                        houseName: selectedItem.bdNm
-                      }));
-                      setCurrentPageIndex(3);
-                    } else if (fixHouseInfo.acquisitionDate && foundItem.buyPrice === null) {
-                      dispatch(editFixHouseList({
-                        ...foundItem,
-                        houseId: foundItem.houseId,
-                        jibunAddr: selectedItem.jibunAddr,
-                        roadAddr: selectedItem.roadAddr,
-                        bdMgtSn: selectedItem.bdMgtSn,
-                        admCd: selectedItem.admCd,
-                        rnMgtSn: selectedItem.rnMgtSn,
-                        buyDate: fixHouseInfo.acquisitionDate ? fixHouseInfo.acquisitionDate : foundItem.buyDate,
-                        buyPrice: foundItem.buyPrice,
-                        complete: false,
-                        detailAdr: detailAddress2,
-                        houseName: selectedItem.bdNm
-                      }));
-                      setCurrentPageIndex(4);
-                    } else if (fixHouseInfo.acquisitionDate && foundItem.buyPrice !== null) {
-                      dispatch(editFixHouseList({
-                        ...foundItem,
-                        houseId: foundItem.houseId,
-                        jibunAddr: selectedItem.jibunAddr,
-                        roadAddr: selectedItem.roadAddr,
-                        bdMgtSn: selectedItem.bdMgtSn,
-                        admCd: selectedItem.admCd,
-                        rnMgtSn: selectedItem.rnMgtSn,
-                        buyDate: fixHouseInfo.acquisitionDate ? fixHouseInfo.acquisitionDate : foundItem.buyDate,
-                        buyPrice: foundItem.buyPrice,
-                        complete: true,
-                        detailAdr: detailAddress2,
-                        houseName: selectedItem.bdNm
-                      }));
-                      navigation.navigate('FixedHouseList', { chatListindex: props.route.params.chatListindex });
-                    }
-                  }
-                }} style={{
-                  width: '100%',
-                  height: 50, // height 값을 숫자로 변경하고 단위 제거
-                  borderRadius: 25, // border-radius를 camelCase로 변경하고 단위 제거
-                  alignItems: 'center', // align-items를 camelCase로 변경
-                  justifyContent: 'center', // justify-content를 camelCase로 변경
-                  borderWidth: 1, // border-width를 camelCase로 변경하고 단위 제거
-                  backgroundColor: selectedDate ? '#2f87ff' : '#E8EAED',
-                  borderColor: selectedDate ? '#2f87ff' : '#E8EAED',
-                }}>
-                <ButtonText active={selectedDate} style={{
-                  color: '#717274',
-                  fontSize: 16, // font-size를 camelCase로 변경하고 단위 제거
-                  fontFamily: 'Pretendard-Bold', // font-family를 camelCase로 변경
-                  lineHeight: 20, // line-height를 camelCase로 변경하고 단위 제거
-                  color: selectedDate ? '#fff' : '#717274'
-                }}
-                >다음으로</ButtonText>
-              </Button>
-            </DropShadow>
-          </ButtonSection></>
-      </Container>}
-      {currentPageIndex === 3 && <Container style={{ width: width }}>
-        <ProgressSection>
-        </ProgressSection>
-        <><IntroSection2 style={{ width: width }}>
-          <View style={{
-            flexDirection: 'row',
-            alignItems: 'center',
-            justifyContent: 'flex-start',
-          }}>
-            <Title>취득일자를 입력해주세요.</Title>
-            {/*<TouchableOpacity
+              이전으로
+            </ButtonText>
+          </Button>
+        </DropShadow>
+        <DropShadow style={styles.dropshadow}>
+          <Button active={selectedDate}
+            disabled={!(selectedDate)}
+            onPress={async () => {
+              const state = await NetInfo.fetch();
+              const canProceed = await handleNetInfoChange(state);
+              if (canProceed) {
+                var detailAddress2 = (selectedDong ? selectedDong + '동 ' : dongList[0] ? dongList[0] + '동 ' : '') + (selectedHo ? selectedHo + '호' : hoList[0] ? hoList[0] + '호' : '');;
+                //console.log('detailAddress2', detailAddress2);
+                const fixHouseInfo = await getHouseInfo();
+                console.log('fixHouseInfo', fixHouseInfo);
+                console.log('fixHouseInfo.acquisitionDate', fixHouseInfo.acquisitionDate);
+                var foundItem = fixHouseList?.find((el) => el.index === props?.route.params.index);
+                if (!fixHouseInfo.acquisitionDate && foundItem.buyPrice === null) {
+                  dispatch(editFixHouseList({
+                    ...foundItem,
+                    houseId: foundItem.houseId,
+                    jibunAddr: selectedItem.jibunAddr,
+                    roadAddr: selectedItem.roadAddr,
+                    bdMgtSn: selectedItem.bdMgtSn,
+                    admCd: selectedItem.admCd,
+                    rnMgtSn: selectedItem.rnMgtSn,
+                    buyDate: fixHouseInfo.acquisitionDate ? fixHouseInfo.acquisitionDate : foundItem.buyDate,
+                    buyPrice: foundItem.buyPrice,
+                    complete: false,
+                    detailAdr: detailAddress2,
+                    houseName: selectedItem.bdNm
+                  }));
+                  setCurrentPageIndex(3);
+                } else if (!fixHouseInfo.acquisitionDate && foundItem.buyPrice !== null) {
+                  dispatch(editFixHouseList({
+                    ...foundItem,
+                    houseId: foundItem.houseId,
+                    jibunAddr: selectedItem.jibunAddr,
+                    roadAddr: selectedItem.roadAddr,
+                    bdMgtSn: selectedItem.bdMgtSn,
+                    admCd: selectedItem.admCd,
+                    rnMgtSn: selectedItem.rnMgtSn,
+                    buyDate: fixHouseInfo.acquisitionDate ? fixHouseInfo.acquisitionDate : foundItem.buyDate,
+                    buyPrice: foundItem.buyPrice,
+                    complete: false,
+                    detailAdr: detailAddress2,
+                    houseName: selectedItem.bdNm
+                  }));
+                  setCurrentPageIndex(3);
+                } else if (fixHouseInfo.acquisitionDate && foundItem.buyPrice === null) {
+                  dispatch(editFixHouseList({
+                    ...foundItem,
+                    houseId: foundItem.houseId,
+                    jibunAddr: selectedItem.jibunAddr,
+                    roadAddr: selectedItem.roadAddr,
+                    bdMgtSn: selectedItem.bdMgtSn,
+                    admCd: selectedItem.admCd,
+                    rnMgtSn: selectedItem.rnMgtSn,
+                    buyDate: fixHouseInfo.acquisitionDate ? fixHouseInfo.acquisitionDate : foundItem.buyDate,
+                    buyPrice: foundItem.buyPrice,
+                    complete: false,
+                    detailAdr: detailAddress2,
+                    houseName: selectedItem.bdNm
+                  }));
+                  setCurrentPageIndex(4);
+                } else if (fixHouseInfo.acquisitionDate && foundItem.buyPrice !== null) {
+                  dispatch(editFixHouseList({
+                    ...foundItem,
+                    houseId: foundItem.houseId,
+                    jibunAddr: selectedItem.jibunAddr,
+                    roadAddr: selectedItem.roadAddr,
+                    bdMgtSn: selectedItem.bdMgtSn,
+                    admCd: selectedItem.admCd,
+                    rnMgtSn: selectedItem.rnMgtSn,
+                    buyDate: fixHouseInfo.acquisitionDate ? fixHouseInfo.acquisitionDate : foundItem.buyDate,
+                    buyPrice: foundItem.buyPrice,
+                    complete: true,
+                    detailAdr: detailAddress2,
+                    houseName: selectedItem.bdNm
+                  }));
+                  navigation.navigate('FixedHouseList', { chatListindex: props.route.params.chatListindex });
+                }
+              }
+            }} style={{
+              width: '100%',
+              height: 50, // height 값을 숫자로 변경하고 단위 제거
+              borderRadius: 25, // border-radius를 camelCase로 변경하고 단위 제거
+              alignItems: 'center', // align-items를 camelCase로 변경
+              justifyContent: 'center', // justify-content를 camelCase로 변경
+              borderWidth: 1, // border-width를 camelCase로 변경하고 단위 제거
+              backgroundColor: selectedDate ? '#2f87ff' : '#E8EAED',
+              borderColor: selectedDate ? '#2f87ff' : '#E8EAED',
+            }}>
+            <ButtonText active={selectedDate} style={{
+              color: '#717274',
+              fontSize: 16, // font-size를 camelCase로 변경하고 단위 제거
+              fontFamily: 'Pretendard-Bold', // font-family를 camelCase로 변경
+              lineHeight: 20, // line-height를 camelCase로 변경하고 단위 제거
+              color: selectedDate ? '#fff' : '#717274'
+            }}
+            >다음으로</ButtonText>
+          </Button>
+        </DropShadow>
+      </ButtonSection></>
+  </Container>
+}
+{
+  currentPageIndex === 3 && <Container style={{ width: width }}>
+    <ProgressSection>
+    </ProgressSection>
+    <><IntroSection2 style={{ width: width }}>
+      <View style={{
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'flex-start',
+      }}>
+        <Title>취득일자를 입력해주세요.</Title>
+        {/*<TouchableOpacity
               activeOpacity={0.8}
               hitSlop={{ top: 20, bottom: 20, left: 20, right: 20 }}>
               <InfoIcon
@@ -1757,75 +1775,274 @@ const FixedHouse = props => {
                 }}
               />
             </TouchableOpacity>*/}
-          </View>
-          <SubTitle2>보유한 주택의 취득일자를 정확히 입력해주세요.</SubTitle2>
-          <HoustInfoSection>
-            <View
-              style={{
-                width: '100%',
-              }}>
-              <HoustInfoTitle>{/*selectedItem.houseName*/address}</HoustInfoTitle>
-              {detailAddress && (<HoustInfoText >{/*selectedItem.houseDetailName*/detailAddress}</HoustInfoText>)}
-            </View>
-          </HoustInfoSection>
-        </IntroSection2>
-          <View style={{
-            marginTop: 20
-          }}></View>
-          <View
+      </View>
+      <SubTitle2>해당 주택의 취득일자를 정확히 입력해주세요.</SubTitle2>
+      <HoustInfoSection>
+        <View
+          style={{
+            width: '100%',
+          }}>
+          <HoustInfoTitle>{/*selectedItem.houseName*/address.replace(/\n/g, " ")}</HoustInfoTitle>
+          {detailAddress && (<HoustInfoText >{/*selectedItem.houseDetailName*/detailAddress}</HoustInfoText>)}
+        </View>
+      </HoustInfoSection>
+    </IntroSection2>
+      <View style={{
+        marginTop: 20
+      }}></View>
+      <View
+        style={{
+          width: '100%',
+          height: 350,
+        }}>
+        <Calendar
+          ReservationYn='N'
+          currentPageIndex={1}
+          //      minDate={new Date(new Date('2024-05-02').setHours(0, 0, 0, 0))}
+          setSelectedDate={setSelectedDate}
+          selectedDate={new Date(selectedDate ? selectedDate : new Date().setHours(0, 0, 0, 0))}
+          currentDate={new Date(selectedDate ? selectedDate : new Date().setHours(0, 0, 0, 0))}
+        //      maxDate={new Date(new Date('2025-12-10').setHours(0, 0, 0, 0))}
+        />
+      </View>
+      <ButtonSection width={width} style={{
+        marginTop: 10,
+        height: 'auto', // height 값을 문자열로 변경
+        backgroundColor: '#fff', // background-color를 camelCase로 변경
+        alignItems: 'center', // align-items를 camelCase로 변경
+        flexDirection: 'row', // flex-direction을 camelCase로 변경
+        justifyContent: 'space-between', // justify-content를 camelCase로 변경
+        padding: 20,
+      }}>
+        <DropShadow
+          style={{
+            width: '48%',
+            shadowColor: '#fff',
+          }}>
+          <Button
+            onPress={async () => {
+              const state = await NetInfo.fetch();
+              const canProceed = await handleNetInfoChange(state);
+              if (canProceed) {
+                var foundItem = fixHouseList?.find((el) => el.index === props?.route.params.index);
+                console.log('foundItem', foundItem);
+                if (foundItem.admCd) {
+                  if (foundItem.detailAdr) {
+                    if (selectedHo) {
+                      setCurrentPageIndex(1);
+                    } else {
+                      if (searchText !== '') {
+                        setCurrentPageIndex(2);
+                      } else {
+                        navigation.navigate('FixedHouseList', { chatListindex: props.route.params.chatListindex });
+                      }
+                    }
+                  } else {
+                    setCurrentPageIndex(0);
+                    setSelectedDong('');
+                    setSelectedHo('');
+                    setHoList([]);
+                    setDongList([]);
+                    setDetailAddress3('');
+                  }
+                } else {
+                  setCurrentPageIndex(0);
+                  setSelectedDong('');
+                  setSelectedHo('');
+                  setHoList([]);
+                  setDongList([]);
+                  setDetailAddress3('');
+                }
+              }
+            }}
             style={{
               width: '100%',
-              height: 350,
+              height: 50, // height 값을 숫자로 변경하고 단위 제거
+              borderRadius: 25, // border-radius를 camelCase로 변경하고 단위 제거
+              backgroundColor: '#fff',
+              alignItems: 'center', // align-items를 camelCase로 변경
+              justifyContent: 'center', // justify-content를 camelCase로 변경
+              borderWidth: 1, // border-width를 camelCase로 변경하고 단위 제거
+              borderColor: '#E8EAED',
             }}>
-            <Calendar
-              ReservationYn='N'
-              currentPageIndex={1}
-              //      minDate={new Date(new Date('2024-05-02').setHours(0, 0, 0, 0))}
-              setSelectedDate={setSelectedDate}
-              selectedDate={new Date(selectedDate ? selectedDate : new Date().setHours(0, 0, 0, 0))}
-              currentDate={new Date(selectedDate ? selectedDate : new Date().setHours(0, 0, 0, 0))}
-            //      maxDate={new Date(new Date('2025-12-10').setHours(0, 0, 0, 0))}
-            />
-          </View>
-          <ButtonSection width={width} style={{
-            marginTop: 10,
-            height: 'auto', // height 값을 문자열로 변경
-            backgroundColor: '#fff', // background-color를 camelCase로 변경
-            alignItems: 'center', // align-items를 camelCase로 변경
-            flexDirection: 'row', // flex-direction을 camelCase로 변경
-            justifyContent: 'space-between', // justify-content를 camelCase로 변경
-            padding: 20,
-          }}>
-            <DropShadow
+            <ButtonText
+
               style={{
-                width: '48%',
-                shadowColor: '#fff',
+                color: '#717274',
+                fontSize: 16, // font-size를 camelCase로 변경하고 단위 제거
+                fontFamily: 'Pretendard-Bold', // font-family를 camelCase로 변경
+                color: '#717274', // color 값을 중복 제거
+                lineHeight: 20, // line-height를 camelCase로 변경하고 단위 제거
               }}>
-              <Button
-                onPress={async () => {
-                  const state = await NetInfo.fetch();
-                  const canProceed = await handleNetInfoChange(state);
-                  if (canProceed) {
-                    var foundItem = fixHouseList?.find((el) => el.index === props?.route.params.index);
-                    console.log('foundItem', foundItem);
-                    if (foundItem.admCd) {
-                      if (foundItem.detailAdr) {
-                        if (selectedHo) {
-                          setCurrentPageIndex(1);
-                        } else {
-                          if (searchText !== '') {
-                            setCurrentPageIndex(2);
-                          } else {
-                            navigation.navigate('FixedHouseList', { chatListindex: props.route.params.chatListindex });
-                          }
-                        }
+              이전으로
+            </ButtonText>
+          </Button>
+        </DropShadow>
+        <DropShadow style={styles.dropshadow}>
+          <Button active={selectedDate}
+            disabled={!(selectedDate)}
+            onPress={async () => {
+              const state = await NetInfo.fetch();
+              const canProceed = await handleNetInfoChange(state);
+              if (canProceed) {
+                foundItem = fixHouseList?.find((el) => el.index === props?.route.params.index);
+                if (foundItem.buyPrice === null) {
+                  dispatch(editFixHouseList({
+                    ...foundItem,
+                    houseId: foundItem.houseId,
+                    jibunAddr: foundItem.jibunAddr,
+                    roadAddr: foundItem.roadAddr,
+                    bdMgtSn: foundItem.bdMgtSn,
+                    admCd: foundItem.admCd,
+                    rnMgtSn: foundItem.rnMgtSn,
+                    buyDate: selectedDate,
+                    buyPrice: foundItem.buyPrice,
+                    complete: false,
+                    detailAdr: foundItem.detailAdr,
+                    houseName: foundItem.houseName
+                  }));
+                  setCurrentPageIndex(4);
+                } else {
+                  dispatch(editFixHouseList({
+                    ...foundItem,
+                    houseId: foundItem.houseId,
+                    jibunAddr: foundItem.jibunAddr,
+                    roadAddr: foundItem.roadAddr,
+                    bdMgtSn: foundItem.bdMgtSn,
+                    admCd: foundItem.admCd,
+                    rnMgtSn: foundItem.rnMgtSn,
+                    buyDate: selectedDate,
+                    buyPrice: foundItem.buyPrice,
+                    complete: true,
+                    detailAdr: foundItem.detailAdr,
+                    houseName: foundItem.houseName
+                  }));
+                  navigation.navigate('FixedHouseList', { chatListindex: props.route.params.chatListindex });
+                }
+                //console.log('fixHouseList', fixHouseList);
+              }
+            }} style={{
+              width: '100%',
+              height: 50, // height 값을 숫자로 변경하고 단위 제거
+              borderRadius: 25, // border-radius를 camelCase로 변경하고 단위 제거
+              alignItems: 'center', // align-items를 camelCase로 변경
+              justifyContent: 'center', // justify-content를 camelCase로 변경
+              borderWidth: 1, // border-width를 camelCase로 변경하고 단위 제거
+              backgroundColor: selectedDate ? '#2f87ff' : '#E8EAED',
+              borderColor: selectedDate ? '#2f87ff' : '#E8EAED',
+            }}>
+            <ButtonText active={selectedDate} style={{
+              color: '#717274',
+              fontSize: 16, // font-size를 camelCase로 변경하고 단위 제거
+              fontFamily: 'Pretendard-Bold', // font-family를 camelCase로 변경
+              lineHeight: 20, // line-height를 camelCase로 변경하고 단위 제거
+              color: selectedDate ? '#fff' : '#717274'
+            }}
+            >다음으로</ButtonText>
+          </Button>
+        </DropShadow>
+      </ButtonSection></>
+  </Container>
+}
+
+{
+  currentPageIndex === 4 && <Container style={{ width: width }}>
+    <ProgressSection>
+    </ProgressSection>
+    <><IntroSection2 style={{ width: width }}>
+      <View style={{
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'flex-start',
+      }}>
+        <Title>취득금액을 입력해주세요.</Title>
+        {/*<TouchableOpacity
+              activeOpacity={0.8}
+              hitSlop={{ top: 20, bottom: 20, left: 20, right: 20 }}>
+              <InfoIcon
+                onPress={() => {
+                  SheetManager.show('InfoBuyPrice');
+                }}
+              />
+            </TouchableOpacity>*/}
+      </View>
+      <SubTitle2>해당 주택의 취득할 당시의 취득금액을 정확히 입력해주세요.</SubTitle2>
+    </IntroSection2>
+
+      <ModalInputSection1>
+        <ModalInputContainer style={{
+          flexDirection: 'row', // flex-direction을 camelCase로 변경
+          justifyContent: 'space-between', // justify-content를 camelCase로 변경 
+        }}>
+          <ModalInput
+            ref={input2}
+            //  onSubmitEditing={() => input2.current.focus()}
+            style={{ width: '92%', height: 50, fontSize: 19 }}
+            value={buyprice ? buyprice.toLocaleString() : 0}
+            onChangeText={(text) => setBuyPrice(Number(text.replace(/[^0-9]/g, '')))}
+            maxLength={20}
+            keyboardType="number-pad"
+            autoCompleteType="price"
+            onSubmitEditing={async () => {
+              const state = await NetInfo.fetch();
+              const canProceed = await handleNetInfoChange(state);
+              if (canProceed) {
+                foundItem = fixHouseList?.find((el) => el.index === props?.route.params.index);
+                dispatch(editFixHouseList({
+                  ...foundItem,
+                  houseId: foundItem.houseId,
+                  jibunAddr: foundItem.jibunAddr,
+                  roadAddr: foundItem.roadAddr,
+                  bdMgtSn: foundItem.bdMgtSn,
+                  admCd: foundItem.admCd,
+                  rnMgtSn: foundItem.rnMgtSn,
+                  buyDate: foundItem.buyDate,
+                  buyPrice: buyprice,
+                  complete: true,
+                  detailAdr: foundItem.detailAdr,
+                  houseName: foundItem.houseName
+                }));
+                //console.log('fixHouseList', fixHouseList);
+                navigation.navigate('FixedHouseList', { chatListindex: props.route.params.chatListindex });
+              }
+            }}
+            placeholderTextColor="black"
+            textAlignVertical="center"
+            textAlign="right"
+          /><Text style={{ padding: 10, fontSize: 19, color: 'black' }}>원</Text>
+        </ModalInputContainer>
+      </ModalInputSection1>
+      <ButtonSection width={width} style={{
+        marginTop: 10,
+        height: 'auto', // height 값을 문자열로 변경
+        backgroundColor: '#fff', // background-color를 camelCase로 변경
+        alignItems: 'center', // align-items를 camelCase로 변경
+        flexDirection: 'row', // flex-direction을 camelCase로 변경
+        justifyContent: 'space-between', // justify-content를 camelCase로 변경
+        padding: 20,
+      }}>
+        <DropShadow
+          style={{
+            width: '48%',
+            shadowColor: '#fff',
+          }}>
+          <Button
+            onPress={async () => {
+              const state = await NetInfo.fetch();
+              const canProceed = await handleNetInfoChange(state);
+              if (canProceed) {
+                var foundItem = fixHouseList?.find((el) => el.index === props?.route.params.index);
+                if (directacquisitionDate) {
+                  if (foundItem.admCd) {
+                    if (foundItem.detailAdr) {
+                      if (selectedHo) {
+                        setCurrentPageIndex(1);
                       } else {
-                        setCurrentPageIndex(0);
-                        setSelectedDong('');
-                        setSelectedHo('');
-                        setHoList([]);
-                        setDongList([]);
-                        setDetailAddress3('');
+                        if (searchText !== '') {
+                          setCurrentPageIndex(2);
+                        } else {
+                          navigation.navigate('FixedHouseList', { chatListindex: props.route.params.chatListindex });
+                        }
                       }
                     } else {
                       setCurrentPageIndex(0);
@@ -1835,286 +2052,90 @@ const FixedHouse = props => {
                       setDongList([]);
                       setDetailAddress3('');
                     }
+                  } else {
+                    setCurrentPageIndex(0);
+                    setSelectedDong('');
+                    setSelectedHo('');
+                    setHoList([]);
+                    setDongList([]);
+                    setDetailAddress3('');
                   }
-                }}
-                style={{
-                  width: '100%',
-                  height: 50, // height 값을 숫자로 변경하고 단위 제거
-                  borderRadius: 25, // border-radius를 camelCase로 변경하고 단위 제거
-                  backgroundColor: '#fff',
-                  alignItems: 'center', // align-items를 camelCase로 변경
-                  justifyContent: 'center', // justify-content를 camelCase로 변경
-                  borderWidth: 1, // border-width를 camelCase로 변경하고 단위 제거
-                  borderColor: '#E8EAED',
-                }}>
-                <ButtonText
+                } else {
+                  setCurrentPageIndex(3);
+                }
 
-                  style={{
-                    color: '#717274',
-                    fontSize: 16, // font-size를 camelCase로 변경하고 단위 제거
-                    fontFamily: 'Pretendard-Bold', // font-family를 camelCase로 변경
-                    color: '#717274', // color 값을 중복 제거
-                    lineHeight: 20, // line-height를 camelCase로 변경하고 단위 제거
-                  }}>
-                  이전으로
-                </ButtonText>
-              </Button>
-            </DropShadow>
-            <DropShadow style={styles.dropshadow}>
-              <Button active={selectedDate}
-                disabled={!(selectedDate)}
-                onPress={async () => {
-                  const state = await NetInfo.fetch();
-                  const canProceed = await handleNetInfoChange(state);
-                  if (canProceed) {
-                    foundItem = fixHouseList?.find((el) => el.index === props?.route.params.index);
-                    if (foundItem.buyPrice === null) {
-                      dispatch(editFixHouseList({
-                        ...foundItem,
-                        houseId: foundItem.houseId,
-                        jibunAddr: foundItem.jibunAddr,
-                        roadAddr: foundItem.roadAddr,
-                        bdMgtSn: foundItem.bdMgtSn,
-                        admCd: foundItem.admCd,
-                        rnMgtSn: foundItem.rnMgtSn,
-                        buyDate: selectedDate,
-                        buyPrice: foundItem.buyPrice,
-                        complete: false,
-                        detailAdr: foundItem.detailAdr,
-                        houseName: foundItem.houseName
-                      }));
-                      setCurrentPageIndex(4);
-                    } else {
-                      dispatch(editFixHouseList({
-                        ...foundItem,
-                        houseId: foundItem.houseId,
-                        jibunAddr: foundItem.jibunAddr,
-                        roadAddr: foundItem.roadAddr,
-                        bdMgtSn: foundItem.bdMgtSn,
-                        admCd: foundItem.admCd,
-                        rnMgtSn: foundItem.rnMgtSn,
-                        buyDate: selectedDate,
-                        buyPrice: foundItem.buyPrice,
-                        complete: true,
-                        detailAdr: foundItem.detailAdr,
-                        houseName: foundItem.houseName
-                      }));
-                      navigation.navigate('FixedHouseList', { chatListindex: props.route.params.chatListindex });
-                    }
-                    //console.log('fixHouseList', fixHouseList);
-                  }
-                }} style={{
-                  width: '100%',
-                  height: 50, // height 값을 숫자로 변경하고 단위 제거
-                  borderRadius: 25, // border-radius를 camelCase로 변경하고 단위 제거
-                  alignItems: 'center', // align-items를 camelCase로 변경
-                  justifyContent: 'center', // justify-content를 camelCase로 변경
-                  borderWidth: 1, // border-width를 camelCase로 변경하고 단위 제거
-                  backgroundColor: selectedDate ? '#2f87ff' : '#E8EAED',
-                  borderColor: selectedDate ? '#2f87ff' : '#E8EAED',
-                }}>
-                <ButtonText active={selectedDate} style={{
-                  color: '#717274',
-                  fontSize: 16, // font-size를 camelCase로 변경하고 단위 제거
-                  fontFamily: 'Pretendard-Bold', // font-family를 camelCase로 변경
-                  lineHeight: 20, // line-height를 camelCase로 변경하고 단위 제거
-                  color: selectedDate ? '#fff' : '#717274'
-                }}
-                >다음으로</ButtonText>
-              </Button>
-            </DropShadow>
-          </ButtonSection></>
-      </Container>}
-
-      {currentPageIndex === 4 && <Container style={{ width: width }}>
-        <ProgressSection>
-        </ProgressSection>
-        <><IntroSection2 style={{ width: width }}>
-          <View style={{
-            flexDirection: 'row',
-            alignItems: 'center',
-            justifyContent: 'flex-start',
-          }}>
-            <Title>취득금액을 입력해주세요.</Title>
-            {/*<TouchableOpacity
-              activeOpacity={0.8}
-              hitSlop={{ top: 20, bottom: 20, left: 20, right: 20 }}>
-              <InfoIcon
-                onPress={() => {
-                  SheetManager.show('InfoBuyPrice');
-                }}
-              />
-            </TouchableOpacity>*/}
-          </View>
-          <SubTitle2>보유한 주택의 취득할 당시의 취득금액을 정확히 입력해주세요.</SubTitle2>
-        </IntroSection2>
-
-          <ModalInputSection1>
-            <ModalInputContainer style={{
-              flexDirection: 'row', // flex-direction을 camelCase로 변경
-              justifyContent: 'space-between', // justify-content를 camelCase로 변경 
+              }
+            }}
+            style={{
+              width: '100%',
+              height: 50, // height 값을 숫자로 변경하고 단위 제거
+              borderRadius: 25, // border-radius를 camelCase로 변경하고 단위 제거
+              backgroundColor: '#fff',
+              alignItems: 'center', // align-items를 camelCase로 변경
+              justifyContent: 'center', // justify-content를 camelCase로 변경
+              borderWidth: 1, // border-width를 camelCase로 변경하고 단위 제거
+              borderColor: '#E8EAED',
             }}>
-              <ModalInput
-                ref={input2}
-                //  onSubmitEditing={() => input2.current.focus()}
-                style={{ width: '92%', height: 50, fontSize: 19 }}
-                value={buyprice ? buyprice.toLocaleString() : 0}
-                onChangeText={(text) => setBuyPrice(Number(text.replace(/[^0-9]/g, '')))}
-                maxLength={20}
-                keyboardType="number-pad"
-                autoCompleteType="price"
-                onSubmitEditing={async () => {
-                  const state = await NetInfo.fetch();
-                  const canProceed = await handleNetInfoChange(state);
-                  if (canProceed) {
-                    foundItem = fixHouseList?.find((el) => el.index === props?.route.params.index);
-                    dispatch(editFixHouseList({
-                      ...foundItem,
-                      houseId: foundItem.houseId,
-                      jibunAddr: foundItem.jibunAddr,
-                      roadAddr: foundItem.roadAddr,
-                      bdMgtSn: foundItem.bdMgtSn,
-                      admCd: foundItem.admCd,
-                      rnMgtSn: foundItem.rnMgtSn,
-                      buyDate: foundItem.buyDate,
-                      buyPrice: buyprice,
-                      complete: true,
-                      detailAdr: foundItem.detailAdr,
-                      houseName: foundItem.houseName
-                    }));
-                    //console.log('fixHouseList', fixHouseList);
-                    navigation.navigate('FixedHouseList', { chatListindex: props.route.params.chatListindex });
-                  }
-                }}
-                placeholderTextColor="black"
-                textAlignVertical="center"
-                textAlign="right"
-              /><Text style={{ padding: 10, fontSize: 19, color: 'black' }}>원</Text>
-            </ModalInputContainer>
-          </ModalInputSection1>
-          <ButtonSection width={width} style={{
-            marginTop: 10,
-            height: 'auto', // height 값을 문자열로 변경
-            backgroundColor: '#fff', // background-color를 camelCase로 변경
-            alignItems: 'center', // align-items를 camelCase로 변경
-            flexDirection: 'row', // flex-direction을 camelCase로 변경
-            justifyContent: 'space-between', // justify-content를 camelCase로 변경
-            padding: 20,
-          }}>
-            <DropShadow
+            <ButtonText
+
               style={{
-                width: '48%',
-                shadowColor: '#fff',
+                color: '#717274',
+                fontSize: 16, // font-size를 camelCase로 변경하고 단위 제거
+                fontFamily: 'Pretendard-Bold', // font-family를 camelCase로 변경
+                lineHeight: 20, // line-height를 camelCase로 변경하고 단위 제거
               }}>
-              <Button
-                onPress={async () => {
-                  const state = await NetInfo.fetch();
-                  const canProceed = await handleNetInfoChange(state);
-                  if (canProceed) {
-                    var foundItem = fixHouseList?.find((el) => el.index === props?.route.params.index);
-                    if (directacquisitionDate ) {
-                      if (foundItem.admCd) {
-                        if (foundItem.detailAdr) {
-                          if (selectedHo) {
-                            setCurrentPageIndex(1);
-                          } else {
-                            if (searchText !== '') {
-                              setCurrentPageIndex(2);
-                            } else {
-                              navigation.navigate('FixedHouseList', { chatListindex: props.route.params.chatListindex });
-                            }
-                          }
-                        } else {
-                          setCurrentPageIndex(0);
-                          setSelectedDong('');
-                          setSelectedHo('');
-                          setHoList([]);
-                          setDongList([]);
-                          setDetailAddress3('');
-                        }
-                      } else {
-                        setCurrentPageIndex(0);
-                        setSelectedDong('');
-                        setSelectedHo('');
-                        setHoList([]);
-                        setDongList([]);
-                        setDetailAddress3('');
-                      }
-                    } else {
-                      setCurrentPageIndex(3);
-                    }
+              이전으로
+            </ButtonText>
+          </Button>
+        </DropShadow>
+        <DropShadow style={styles.dropshadow}>
+          <Button active={buyprice}
+            disabled={!(buyprice)}
+            onPress={async () => {
+              const state = await NetInfo.fetch();
+              const canProceed = await handleNetInfoChange(state);
+              if (canProceed) {
 
-                  }
-                }}
-                style={{
-                  width: '100%',
-                  height: 50, // height 값을 숫자로 변경하고 단위 제거
-                  borderRadius: 25, // border-radius를 camelCase로 변경하고 단위 제거
-                  backgroundColor: '#fff',
-                  alignItems: 'center', // align-items를 camelCase로 변경
-                  justifyContent: 'center', // justify-content를 camelCase로 변경
-                  borderWidth: 1, // border-width를 camelCase로 변경하고 단위 제거
-                  borderColor: '#E8EAED',
-                }}>
-                <ButtonText
-
-                  style={{
-                    color: '#717274',
-                    fontSize: 16, // font-size를 camelCase로 변경하고 단위 제거
-                    fontFamily: 'Pretendard-Bold', // font-family를 camelCase로 변경
-                    lineHeight: 20, // line-height를 camelCase로 변경하고 단위 제거
-                  }}>
-                  이전으로
-                </ButtonText>
-              </Button>
-            </DropShadow>
-            <DropShadow style={styles.dropshadow}>
-              <Button active={buyprice}
-                disabled={!(buyprice)}
-                onPress={async () => {
-                  const state = await NetInfo.fetch();
-                  const canProceed = await handleNetInfoChange(state);
-                  if (canProceed) {
-
-                    foundItem = fixHouseList?.find((el) => el.index === props?.route.params.index);
-                    dispatch(editFixHouseList({
-                      ...foundItem,
-                      houseId: foundItem.houseId,
-                      jibunAddr: foundItem.jibunAddr,
-                      roadAddr: foundItem.roadAddr,
-                      bdMgtSn: foundItem.bdMgtSn,
-                      admCd: foundItem.admCd,
-                      rnMgtSn: foundItem.rnMgtSn,
-                      buyDate: foundItem.buyDate,
-                      buyPrice: buyprice,
-                      complete: true,
-                      detailAdr: foundItem.detailAdr,
-                      houseName: foundItem.houseName
-                    }));
-                    navigation.navigate('FixedHouseList', { chatListindex: props.route.params.chatListindex });
-                  }
-                }} style={{
-                  width: '100%',
-                  height: 50, // height 값을 숫자로 변경하고 단위 제거
-                  borderRadius: 25, // border-radius를 camelCase로 변경하고 단위 제거
-                  alignItems: 'center', // align-items를 camelCase로 변경
-                  justifyContent: 'center', // justify-content를 camelCase로 변경
-                  borderWidth: 1, // border-width를 camelCase로 변경하고 단위 제거
-                  backgroundColor: buyprice ? '#2f87ff' : '#E8EAED',
-                  borderColor: buyprice ? '#2f87ff' : '#E8EAED',
-                }}>
-                <ButtonText active={buyprice} style={{
-                  color: '#717274',
-                  fontSize: 16, // font-size를 camelCase로 변경하고 단위 제거
-                  fontFamily: 'Pretendard-Bold', // font-family를 camelCase로 변경
-                  lineHeight: 20, // line-height를 camelCase로 변경하고 단위 제거
-                  color: buyprice ? '#fff' : '#717274'
-                }}
-                >다음으로</ButtonText>
-              </Button>
-            </DropShadow>
-          </ButtonSection></>
-      </Container>}
+                foundItem = fixHouseList?.find((el) => el.index === props?.route.params.index);
+                dispatch(editFixHouseList({
+                  ...foundItem,
+                  houseId: foundItem.houseId,
+                  jibunAddr: foundItem.jibunAddr,
+                  roadAddr: foundItem.roadAddr,
+                  bdMgtSn: foundItem.bdMgtSn,
+                  admCd: foundItem.admCd,
+                  rnMgtSn: foundItem.rnMgtSn,
+                  buyDate: foundItem.buyDate,
+                  buyPrice: buyprice,
+                  complete: true,
+                  detailAdr: foundItem.detailAdr,
+                  houseName: foundItem.houseName
+                }));
+                navigation.navigate('FixedHouseList', { chatListindex: props.route.params.chatListindex });
+              }
+            }} style={{
+              width: '100%',
+              height: 50, // height 값을 숫자로 변경하고 단위 제거
+              borderRadius: 25, // border-radius를 camelCase로 변경하고 단위 제거
+              alignItems: 'center', // align-items를 camelCase로 변경
+              justifyContent: 'center', // justify-content를 camelCase로 변경
+              borderWidth: 1, // border-width를 camelCase로 변경하고 단위 제거
+              backgroundColor: buyprice ? '#2f87ff' : '#E8EAED',
+              borderColor: buyprice ? '#2f87ff' : '#E8EAED',
+            }}>
+            <ButtonText active={buyprice} style={{
+              color: '#717274',
+              fontSize: 16, // font-size를 camelCase로 변경하고 단위 제거
+              fontFamily: 'Pretendard-Bold', // font-family를 camelCase로 변경
+              lineHeight: 20, // line-height를 camelCase로 변경하고 단위 제거
+              color: buyprice ? '#fff' : '#717274'
+            }}
+            >다음으로</ButtonText>
+          </Button>
+        </DropShadow>
+      </ButtonSection></>
+  </Container>
+}
 
 
 
