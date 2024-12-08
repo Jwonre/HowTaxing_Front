@@ -973,8 +973,7 @@ const ConsultingReservation = () => {
                 autoFocus={currentPageIndex === 2}
                 value={phone}
                 maxLength={13}
-                keyboardType="pho
-                ne-pad"
+                keyboardType="phone-pad"
                 onChangeText={async (phone) => {
                   const filteredPhone = phone.replace(/[^0-9]/g, '');
                   let formattedPhone = filteredPhone;
