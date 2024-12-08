@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { View, TouchableOpacity, StatusBar, Alert, Linking, Platform } from 'react-native';
+import { View, TouchableOpacity, StatusBar, Alert, Linking, Platform ,StyleSheet } from 'react-native';
 import AppNavigator from './navigator/AppNavigator';
 import { Provider } from 'react-redux';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
@@ -11,7 +11,10 @@ import DropShadow from 'react-native-drop-shadow';
 import Modal from 'react-native-modal';
 import InfoCircleIcon from './assets/icons/update_circle.svg';
 import 'dayjs/locale/ko';
+import naverLogin from '@react-native-seoul/naver-login';
+import { NativeModules } from 'react-native';
 
+const { KeyHashModule } = NativeModules;
 
 
 const SheetContainer = styled.View`
@@ -83,6 +86,13 @@ const ButtonText = styled.Text`
 `;
 
 dayjs.locale('ko');
+/** Fill your keys */
+const consumerKey = 'orG8AAE8iHfRSoiySAbv';
+const consumerSecret = 'DEn_pJGqup';
+const appName = '하우택싱';
+
+/** This key is setup in iOS. So don't touch it */
+const serviceUrlSchemeIOS = 'howtaxingrelease';
 
 const App = () => {
   const [UpdateCheck, setUpdateCheck] = useState(false);
@@ -93,8 +103,8 @@ const App = () => {
 
     console.log('currentVersion', currentVersion);
     console.log('latestVersion', latestVersion);
-    if (currentVersion < latestVersion) {
-      setUpdateCheck(true);
+    if (currentVersion !== latestVersion) {
+      setUpdateCheck(false);
     } else {
       setUpdateCheck(false);
     }
@@ -103,10 +113,26 @@ const App = () => {
   useEffect(() => {
     checkForUpdate();
   }, []);
+  console.log('NativeModules:', NativeModules); // 모든 네이티브 모듈 출력
+
+
+  KeyHashModule.getKeyHash()
+  .then((hash: any) => console.log('Hash Key:', hash))
+  .catch((err: any) => console.error('Error fetching Key Hash:', err));
+
+  useEffect(() => {
+    naverLogin.initialize({
+      appName,
+      consumerKey,
+      consumerSecret,
+      serviceUrlSchemeIOS,
+      disableNaverAppAuthIOS: true,
+    });
+  }, []);
 
   return (
     <><Provider store={store}>
-      <GestureHandlerRootView style={{ flex: 1 }}>
+      <GestureHandlerRootView style={{ flex: 1 , backgroundColor :'#fff'}}>
         <StatusBar
           animated={true}
           backgroundColor="transparent"
@@ -155,5 +181,10 @@ const App = () => {
     </>
   );
 };
-
+const styles = StyleSheet.create({
+  container: {
+      flex: 1,
+      backgroundColor: '#FFFFFF', // 원하는 색상
+  },
+});
 export default App;

@@ -1,5 +1,8 @@
 
-import { TouchableOpacity, useWindowDimensions, BackHandler, View } from 'react-native';
+import {
+  TouchableOpacity, useWindowDimensions, BackHandler, View, StatusBar, Keyboard, StyleSheet,
+
+} from 'react-native';
 import React, { useLayoutEffect, useState, useCallback, useRef } from 'react';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import BackIcon from '../../assets/icons/back_button.svg';
@@ -72,7 +75,8 @@ const IconView = styled.View`
   justify-content: center;
   position: absolute;
   right: 25px;
-  border: 1px solid #e8eaed;
+  margin-top: 60px;
+   border: 1px solid #e8eaed;
 `;
 const ListItem = styled.View`
   flex-direction: row; 
@@ -133,6 +137,12 @@ const ShadowContainer = styled(DropShadow)`
   shadow-opacity: 0.2;
   shadow-radius: 3px;
 `;
+const ProgressSection = styled.View`
+  flex-direction: row;
+  width: 100%;
+  height: 5px;
+  background-color: #2f87ff;
+`;
 
 
 const CheckTerms = props => {
@@ -163,7 +173,16 @@ const CheckTerms = props => {
     });
   };
 
+  // useFocusEffect(
+  //   useCallback(() => {
+  //     // 화면이 포커스를 얻으면 키보드 닫기
+  //     Keyboard.dismiss();
 
+  //     return () => {
+  //       // 포커스를 잃거나 화면을 떠날 때 추가 작업이 필요한 경우 여기에 작성
+  //     };
+  //   }, [])
+  // );
 
   const handleBackPress = () => {
     if (props?.route?.params?.LoginAcessType === 'SOCIAL') {
@@ -273,6 +292,9 @@ const CheckTerms = props => {
 
 
   useLayoutEffect(() => {
+    // 상태 표시줄 설정 (전역 설정)
+    StatusBar.setBarStyle('dark-content', true); // 아이콘 색상: 어두운 색
+    StatusBar.setBackgroundColor('#ffffff'); // 배경색: 흰색 (안드로이드 전용)
     navigation.setOptions({
       headerLeft: () => (
         <TouchableOpacity
@@ -313,7 +335,8 @@ const CheckTerms = props => {
           <BackIcon />
         </TouchableOpacity>
       ),
-      title: '',
+      title: '약관 확인하기',
+      headerTitleAlign: 'center',
       headerShadowVisible: false,
       contentStyle: {
         borderTopWidth: 0,
@@ -329,6 +352,8 @@ const CheckTerms = props => {
 
   return (
     <Container>
+      <ProgressSection>
+      </ProgressSection>
       <IconView>
         <HomeIcon />
       </IconView>
@@ -337,6 +362,15 @@ const CheckTerms = props => {
 
         <SubTitle >원활한 하우택싱 서비스 이용을 위해 약관에 동의해주세요.</SubTitle>
       </IntroSection>
+      <TouchableOpacity
+        style={{
+          width: '100%',
+          height: 1,
+          backgroundColor: '#E8EAED',
+          marginBottom: 20,
+        }}
+      />
+
       <ListItem>
 
         <ListItemTitle
@@ -370,6 +404,15 @@ const CheckTerms = props => {
           {agreeAge && agreeCert && agreePrivacy && agreeMarketing && <CheckOnIcon />}
         </CheckCircle>
       </ListItem>
+
+      <TouchableOpacity
+        style={{
+          width: '100%',
+          height: 1,
+          backgroundColor: '#E8EAED',
+          marginTop: 20,
+        }}
+      />
       <ListItem style={{ marginTop: 20 }}>
         <ListItemTitle >
           [필수] 14세 이상입니다.
@@ -500,27 +543,36 @@ const CheckTerms = props => {
             width={width}
             disabled={!(agreeCert && agreeAge && agreePrivacy)}
             onPress={async () => {
-              const state = await NetInfo.fetch();
-              const canProceed = await handleNetInfoChange(state);
-              if (canProceed) {
-                console.log('props?.route?.params', props?.route?.params);
-                if (props?.route?.params?.LoginAcessType === 'SOCIAL') {
-                  const Sighupresult = await handleSignUp(props?.route?.params?.tokens[0] ? props?.route?.params?.tokens[0] : null, agreeMarketing);
-                  console.log('Sighupresult', Sighupresult);
-                  if (Sighupresult) {
+              navigation.push('PhoneAuthConfirmScreen', {
+                prevSheet: 'CheckTerms', agreeMarketing: agreeMarketing,
+                id: props?.route?.params?.id ? props?.route?.params?.id : null,
+                password: props?.route?.params?.password ? props?.route?.params?.password : null,
+                accessToken: props?.route?.params?.accessToken ? props?.route?.params?.accessToken : null, authType: 'JOIN',
+                LoginAcessType: props?.route?.params?.LoginAcessType
+              });
 
-                    const tokenObject = { 'accessToken': props?.route?.params?.tokens[0], 'refreshToken': props?.route?.params?.tokens[1] };
-                    //  console.log('Login tokenObject:', tokenObject);
-                    dispatch(setCurrentUser(tokenObject));
-                  }
-                } else {
-                  const Sighupresult = await handleSignUp(null, agreeMarketing);
-                  console.log('Sighupresult', Sighupresult);
-                  if (Sighupresult) {
-                    navigation.navigate('AddMembershipFinish', { prevSheet: 'CheckTerms', id: props?.route?.params?.id ? props?.route?.params?.id : null, password: props?.route?.params?.password ? props?.route?.params?.password : null });
-                  }
-                }
-              }
+              // const state = await NetInfo.fetch();
+              // const canProceed = await handleNetInfoChange(state);
+              // if (canProceed) {
+              //   console.log('props?.route?.params', props?.route?.params);
+              //   if (props?.route?.params?.LoginAcessType === 'SOCIAL') {
+              //     const Sighupresult = await handleSignUp(props?.route?.params?.tokens[0] ? props?.route?.params?.tokens[0] : null, agreeMarketing);
+              //     console.log('Sighupresult', Sighupresult);
+              //     if (Sighupresult) {
+
+              //       const tokenObject = { 'accessToken': props?.route?.params?.tokens[0], 'refreshToken': props?.route?.params?.tokens[1] };
+              //       //  console.log('Login tokenObject:', tokenObject);
+              //       dispatch(setCurrentUser(tokenObject));
+              //     }
+              //   } else {
+              //     const Sighupresult = await handleSignUp(null, agreeMarketing);
+              //     console.log('Sighupresult', Sighupresult);
+              //     if (Sighupresult) {
+
+              //       navigation.navigate('PhoneAuthConfirmScreen', { prevSheet: 'CheckTerms', id: props?.route?.params?.id ? props?.route?.params?.id : null, password: props?.route?.params?.password ? props?.route?.params?.password : null });
+              //     }
+              //   }
+              // }
             }
             }
 
@@ -543,4 +595,5 @@ const CheckTerms = props => {
 };
 
 export default CheckTerms;
+
 

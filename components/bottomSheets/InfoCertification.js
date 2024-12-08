@@ -1,6 +1,6 @@
 // 정보 또는 경고 알림창 컴포넌트
 
-import { useWindowDimensions, Pressable, View } from 'react-native';
+import { useWindowDimensions, Pressable, View, Linking, Platform } from 'react-native';
 import React, { useEffect, useRef, useState } from 'react';
 import ActionSheet, { SheetManager } from 'react-native-actions-sheet';
 import { Animated, Easing } from 'react-native';
@@ -17,7 +17,9 @@ import { acquisitionTax, gainTax } from '../../data/chatData';
 import { setOwnHouseList } from '../../redux/ownHouseListSlice';
 import { setFixHouseList } from '../../redux/fixHouseListSlice';
 import axios from 'axios';
-import Config from 'react-native-config'
+import Config from 'react-native-config';
+// import CheckAppInstall from 'react-native-check-app-install';
+
 
 const SheetContainer = styled.View`
   background-color: #fff;
@@ -35,7 +37,16 @@ const ModalTitle = styled.Text`
   margin-bottom: 20px;
 
 `;
+const ModalContent = styled.Text`
+  width: 80%;
+  font-size: 13px;
+  font-family: Pretendard-Bold;
+  color: #FF7401;
+  line-height: 26px;
+  text-align: center;
+  margin-bottom: 20px;
 
+`;
 const ModalDescription = styled.Text`
   font-size: 12px;
   font-family: Pretendard-Regular;
@@ -124,7 +135,94 @@ const InfoCertification = props => {
   const hasNavigatedBackRef = useRef(hasNavigatedBack);
 
   const [isConnected, setIsConnected] = useState(true);
+  const [appStatus, setAppStatus] = useState({
+    kb: false,
+    toss: false,
+    naver: false,
+  });
 
+
+  // const checkAppPackageInstalled = async (packageName) => {
+  //   const isInstalled = await CheckAppInstall.isAppInstalled(packageName);
+  //   console.log(`${packageName} 설치 여부:`, isInstalled);
+  //   return isInstalled;
+  // };
+  const isPackageInstalled = (packageName) => {
+    try {
+      require.resolve(packageName);
+      return true; // 패키지가 설치되어 있음
+    } catch (error) {
+      return false; // 패키지가 설치되어 있지 않음
+    }
+  };
+  const checkAppInstalled = async () => {
+    try {
+      // let isKBInstalled = checkAppPackageInstalled('kb-auth://');
+      // let isTossInstalled = checkAppPackageInstalled('tossauth://');
+      // let isNaverInstalled = checkAppPackageInstalled('naverlogin://');
+
+      // if (Platform.OS === 'android') {
+      //   isKBInstalled = checkAppPackageInstalled('com.kbstar.kbbank'); // Android 패키지명 확인
+      //   isTossInstalled = checkAppPackageInstalled('vn.toss');
+      //   isNaverInstalled = checkAppPackageInstalled('com.nhn.android.search');
+      // }
+      let isKBInstalled = false;
+      let isTossInstalled = false;
+      let isNaverInstalled = false;
+      // if (Platform.OS === 'ios') {
+      // iOS에서 URL 스키마 확인
+      isKBInstalled = await Linking.canOpenURL('kbbank://');
+      isTossInstalled = await Linking.canOpenURL('supertoss://');
+      isNaverInstalled = await Linking.canOpenURL('naversearchapp://');
+      // } else if (Platform.OS === 'android') {
+      //   // Android에서 URL 스키마 확인
+      //   isKBInstalled = await Linking.canOpenURL('com.kbstar.kbbank');
+      //   isTossInstalled = await Linking.canOpenURL('vn.toss');
+      //   isNaverInstalled = await Linking.canOpenURL('com.nhn.android.search');
+      // }
+
+      console.log("install_status : ", `${isKBInstalled} `);
+
+      console.log("install_status : ", isTossInstalled);
+
+      console.log("install_status : ", isNaverInstalled);
+      setAppStatus({
+        kb: isKBInstalled,
+        toss: isTossInstalled,
+        naver: isNaverInstalled,
+      });
+    } catch (error) {
+      console.error('앱 확인 중 오류 발생:', error);
+    }
+  };
+
+  useEffect(() => {
+    checkAppInstalled();
+  }, []);
+  const appUrls = {
+    kb: {
+      ios: 'https://apps.apple.com/kr/app/id372174644',
+      android: 'market://details?id=com.kbstar.kbbank',
+    },
+    naver: {
+      ios: 'https://apps.apple.com/kr/app/id393499958',
+      android: 'market://details?id=com.nhn.android.search',
+    },
+    toss: {
+      ios: 'https://apps.apple.com/kr/app/id839333328',
+      android: 'market://details?id=viva.republica.toss&hl=ko&gl=US',
+    },
+  };
+
+  const downloadApp = async (certType) => {
+    const url = Platform.OS === 'ios' ? appUrls[certType].ios : appUrls[certType].android;
+
+    try {
+      await Linking.openURL(url); // 스토어로 이동
+    } catch (error) {
+      console.error('스토어 열기 오류:', error);
+    }
+  };
   const handleNetInfoChange = (state) => {
     return new Promise((resolve, reject) => {
       if (!state.isConnected && isConnected) {
@@ -207,6 +305,8 @@ const InfoCertification = props => {
                 setActiveYN(false);
                 props.payload?.input1.current.focus();
               } else {
+                await SheetManager.hide('infoCertification');
+
                 await SheetManager.show('info', {
                   payload: {
                     type: 'error',
@@ -763,7 +863,58 @@ const InfoCertification = props => {
       </Animated.View>
     );
   };
+  const openKBAuthApp = async () => {
+    try {
+      const url = 'kbbank://';
 
+      if (appStatus.kb === true) {
+        await Linking.openURL(url); // KB 인증서 앱 실행
+      } else {
+        console.log('KB 인증서 앱을 실행할 수 없습니다.');
+        downloadApp(certType.toLowerCase());
+      }
+    } catch (error) {
+      console.error('오류 발생:', error);
+    }
+  };
+
+  const opeToassAuthApp = async () => {
+    try {
+      // const url = 'supertoss://certificate?callback_url=howtaxingrelease://auth';
+      const url = 'supertoss://';
+
+      const supported = await Linking.canOpenURL(url);
+
+      if (appStatus.toss === true) {
+        await Linking.openURL(url); // KB 인증서 앱 실행
+      } else {
+        console.log('KB 인증서 앱을 실행할 수 없습니다.');
+        downloadApp(certType.toLowerCase());
+      }
+    } catch (error) {
+      console.error('오류 발생:', error);
+    }
+  };
+
+  const openNaverAuthApp = async () => {
+    try {
+      const callbackUrl = encodeURIComponent('howtaxingrelease://auth');
+
+      let url = `naversearchapp://default?version=${Platform.OS === 'android' ? '5' : '1'}`;
+
+      // url = 'naversearchapp://default?version=1';
+      console.log('Generated URL:', `appStatus.naver:${appStatus.naver} ${url}`);
+
+      if (appStatus.naver === true) {
+        await Linking.openURL(url); // KB 인증서 앱 실행
+      } else {
+        console.log('KB 인증서 앱을 실행할 수 없습니다.');
+        downloadApp(certType.toLowerCase());
+      }
+    } catch (error) {
+      console.error('오류 발생:', error);
+    }
+  };
   return (
     <ActionSheet
       ref={actionSheetRef}
@@ -777,7 +928,8 @@ const InfoCertification = props => {
               dispatch(setResend(false));
 
             }}>
-            {(ActiveYN) && <CloseIcon width={16} height={16} />}
+            {/* {(ActiveYN) && <CloseIcon width={16} height={16} />} */}
+            <CloseIcon width={16} height={16} />
           </Pressable>
         </ModalHeader>
       }
@@ -791,8 +943,8 @@ const InfoCertification = props => {
         backgroundColor: '#fff',
         borderTopLeftRadius: 20,
         borderTopRightRadius: 20,
-        height: ActiveYN === false ? 390 : 350,
-        width: width - 40
+        height: certType === 'KB' ? 350 : 450,
+        width: width - 40,
       }}>
       <SheetContainer width={width}>
         <ModalContentSection>
@@ -831,23 +983,47 @@ const InfoCertification = props => {
                   return null;
               }
             })()}</View>
-          <ModalTitle >{props?.payload?.message}</ModalTitle>
-          {(ActiveYN === false) && <CircularProgress size={50} strokeWidth={5} progress={30} />}
+
+          {certType === 'KB' && (
+            // <ModalTitle >{appStatus.kb === true ?
+            //   props?.payload?.message : '인증 앱을 해당 기기에서 찾을 수 없어요.\n먼저 인증하실 서비스를 설치해주세요.'}</ModalTitle>
+            <ModalTitle >{props?.payload?.message}</ModalTitle>
+          )}
+          {certType === 'toss' && (
+            // <ModalTitle >{appStatus.toss.toss === true ?
+            //   props?.payload?.message : '인증 앱을 해당 기기에서 찾을 수 없어요.\n먼저 인증하실 서비스를 설치해주세요.'}</ModalTitle>
+            <ModalTitle >{props?.payload?.message}</ModalTitle>
+          )}
+          {certType === 'naver' && (
+            // <ModalTitle >{appStatus.naver ?
+            //   props?.payload?.message : '인증 앱을 해당 기기에서 찾을 수 없어요.\n먼저 인증하실 서비스를 설치해주세요.'}</ModalTitle>
+            <ModalTitle >{props?.payload?.message}</ModalTitle>
+          )}
+
+
+
+          {(certType !== 'KB') && <ModalContent >신속한 인증을 원하시면 인증 앱으로 바로가기를 누르신 후 직접 인증을 부탁드려요. </ModalContent>}
+          {/* {(ActiveYN === true) && <ModalContent >다른 기기를 통해 인증할 예정이라면다른 기기로 인증하기를 눌러주세요. </ModalContent>} */}
+
+
+          {/* {(ActiveYN === false) && <CircularProgress size={50} strokeWidth={5} progress={30} />} */}
+          <CircularProgress size={50} strokeWidth={5} progress={30} />
         </ModalContentSection>
 
+
+
         <ButtonSection>
-          <DropShadow
+          <View
             style={{
-              shadowColor: 'rgba(0,0,0,0.25)',
-              shadowOffset: {
-                width: 0,
-                height: 4,
-              },
-              shadowOpacity: 0.15,
-              shadowRadius: 2,
-              alignSelf: 'center',
-              width: width - 120,
-            }}>
+              marginBottom: 40, // 하단에서 40px 띄우기
+              flexDirection: 'row', // 버튼을 가로로 배치
+              justifyContent: 'space-between', // 버튼 사이 간격 균등
+              alignItems: 'center', // 버튼의 세로 중심 정렬
+              marginTop: 10, // 로딩바와 여백
+              width: '100%', // 전체 너비 사용
+              paddingHorizontal: 20, // 양쪽에 여백 추가
+            }}
+          >
             <Button
               onPress={async () => {
                 const state = await NetInfo.fetch();
@@ -856,34 +1032,82 @@ const InfoCertification = props => {
                   dispatch(setResend(false));
                   setActiveYN(false);
                   const certresult = await postOwnHouse();
-                  //////console.log('certresult', certresult)
                   if (certresult) {
-                    SheetManager.hide("infoCertification");
+                    SheetManager.hide('infoCertification');
                     const { isGainsTax } = props.payload.isGainsTax;
                     const chatItem = isGainsTax
                       ? gainTax.find(el => el.id === 'allHouse1')
                       : acquisitionTax.find(el => el.id === 'moment1');
-                    //////console.log(chatItem);
                     dispatch(setChatDataList([...chatDataList, chatItem]));
-                    setTimeout(() =>
-                      navigation.goBack()
-                      , 300);
+                    setTimeout(() => navigation.goBack(), 300);
                   }
                 } else {
                   actionSheetRef.current?.hide();
                 }
               }}
               style={{
-                backgroundColor: ActiveYN ? '#2f87ff' : '#E8EAED',
-                borderColor: ActiveYN ? '#2f87ff' : '#E8EAED',
+                width: certType ==='KB' ?'100%' :'49%', // 버튼 너비를 부모 View의 45%로 설정
+                // backgroundColor: ActiveYN ? '#2f87ff' : '#FFF',
+                // borderColor: ActiveYN ? '#2f87ff' : '#E8EAED',
+                backgroundColor: '#FFF',
+                borderColor:'#E8EAED',
               }}
-              active={ActiveYN}
-              disabled={!(ActiveYN)}>
-              <ButtonText active={ActiveYN} style={{ color: ActiveYN ? '#fff' : '#717274' }}>알림 다시 보내기</ButtonText>
+              // active={ActiveYN}
+              // disabled={!ActiveYN}
+            >
+              {/* <ButtonText active={ActiveYN} style={{ color: ActiveYN ? '#fff' : '#717274' }}>
+                다시 보내기
+              </ButtonText> */}
+               <ButtonText active={ActiveYN} style={{ color: '#717274' }}>
+                다시 보내기
+              </ButtonText>
             </Button>
-          </DropShadow>
 
+
+            {certType !== 'KB' && (
+              <DropShadow
+                style={{
+                  shadowColor: 'rgba(0,0,0,0.25)',
+                  shadowOffset: {
+                    width: 0,
+                    height: 4,
+                  },
+                  shadowOpacity: 0.15,
+                  shadowRadius: 2,
+                  alignSelf: 'center',
+                  width: '49%', // 버튼 너비를 부모 View의 45%로 설정
+                }}
+              >
+                <Button
+                  style={{
+                    // backgroundColor: !ActiveYN ? '#2f87ff' : '#E8EAED',
+                    // borderColor: !ActiveYN ? '#2f87ff' : '#E8EAED',
+                    backgroundColor:'#2f87ff',
+                    borderColor: '#2f87ff',
+                  }}
+                  onPress={async () => {
+                    const state = await NetInfo.fetch();
+                    const canProceed = await handleNetInfoChange(state);
+                    if (canProceed) {
+                      if (certType === 'toss') opeToassAuthApp();
+                      else if (certType === 'naver') openNaverAuthApp();
+                    } else {
+                      actionSheetRef.current?.hide();
+                    }
+                  }}
+                >
+                  {/* <ButtonText style={{ color: !ActiveYN ? '#fff' : '#717274' }}>
+                    앱 바로가기
+                  </ButtonText> */}
+                   <ButtonText style={{ color: '#fff' }}>
+                    앱 바로가기
+                  </ButtonText>
+                </Button>
+              </DropShadow>
+            )}
+          </View>
         </ButtonSection>
+
       </SheetContainer>
     </ActionSheet >
   );

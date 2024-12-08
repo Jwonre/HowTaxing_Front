@@ -9,6 +9,10 @@ import axios from 'axios';
 import { SheetManager } from 'react-native-actions-sheet';
 import NetInfo from '@react-native-community/netinfo';
 import Config from 'react-native-config'
+import platformToKorean from '../../utils/platformUtils';
+import kakaoAuthManager from '../../screens/Auth/KakaoAuthManager';
+import NaverAuthManager from '../../screens/Auth/NaverAuthManager';
+
 
 const Container = styled.ImageBackground.attrs(props => ({
   source: require('../../assets/images/BackGroundLogin2.png'),
@@ -93,14 +97,17 @@ const Overlay = styled.View`
   background-color: rgba(27, 28, 31, 0.73);
 `;
 
+
 const Login = () => {
   const { width, height } = useWindowDimensions();
   const navigation = useNavigation();
   const route = useRoute();
   const dispatch = useDispatch();
-  //const [isConnected, setIsConnected] = useState(true);
+  const [socialType, setSocialType] = useState('');
+  const [accessToken, setAccessToken] = useState('');
+
   const agreeMarketing = route.params ? route.params.agreeMarketing : false;
-  const accessToken = null;
+  // const [result, setResult] = useState<string | null>(null);
 
   const [hasNavigatedBack, setHasNavigatedBack] = useState(false);
   const hasNavigatedBackRef = useRef(hasNavigatedBack);
@@ -112,6 +119,8 @@ const Login = () => {
       headerShown: false,
     });
   }, [navigation]);
+
+
 
   const handleNetInfoChange = (state) => {
     return new Promise((resolve, reject) => {
@@ -132,24 +141,24 @@ const Login = () => {
   };
 
 
-  const handleWebViewMessage = async (event) => {
-    const tokens = temp(event);
-    //console.log('Login:', event.nativeEvent.data);
-    if (event.nativeEvent.data.role === 'GUEST') {
-      await navigation.push('CheckTerms', { tokens: tokens, LoginAcessType: 'SOCIAL' });
-      //약관확인 화면으로 이동 후 약관 동의 완료시 handleSignUp 진행
-    } else {
-      //console.log('Login token:', tokens[0]);
-      const tokenObject = { 'accessToken': tokens[0], 'refreshToken': tokens[1] };
-      //console.log('Login tokenObject:', tokenObject);
-      dispatch(setCurrentUser(tokenObject));
-    }
-  };
-  const temp = (event) => {
-    const accessToken = event.nativeEvent.data.accessToken;
-    const refreshToken = event.nativeEvent.data.refreshToken;
-    return [accessToken, refreshToken];
-  }
+  // const handleWebViewMessage = async (event) => {
+  //   const tokens = temp(event);
+  //   //console.log('Login:', event.nativeEvent.data);
+  //   if (event.nativeEvent.data.role === 'GUEST') {
+  //     await navigation.push('CheckTerms', { tokens: tokens });
+  //     //약관확인 화면으로 이동 후 약관 동의 완료시 handleSignUp 진행
+  //   } else {
+  //     //console.log('Login token:', tokens[0]);
+  //     const tokenObject = { 'accessToken': tokens[0], 'refreshToken': tokens[1] };
+  //     //console.log('Login tokenObject:', tokenObject);
+  //     dispatch(setCurrentUser(tokenObject));
+  //   }
+  // };
+  // const temp = (event) => {
+  //   const accessToken = event.nativeEvent.data.accessToken;
+  //   const refreshToken = event.nativeEvent.data.refreshToken;
+  //   return [accessToken, refreshToken];
+  // }
 
 
   // 카카오 로그인
@@ -163,7 +172,20 @@ const Login = () => {
     const state = await NetInfo.fetch();
     const canProceed = await handleNetInfoChange(state);
     if (canProceed) {
-      navigation.navigate('LoginWebview', { onWebViewMessage: handleWebViewMessage, 'socialType': 'kakao', });
+      try {
+
+        
+        const token = await kakaoAuthManager.signIn();
+        console.log("token ", token ? JSON.stringify(token) : '로그인 실패');
+        const profile = await kakaoAuthManager.getProfile();
+        console.log("profile ",profile ? JSON.stringify(profile): '로그인 실패');
+
+        socialLogin('KAKAO', token.accessToken, profile.id);
+
+      } catch (error) {
+        console.error("kakao Login Error : ", error);
+      }
+      // navigation.navigate('LoginWebview', { onWebViewMessage: handleWebViewMessage, 'socialType': 'kakao', });
     }
 
   };
@@ -189,10 +211,45 @@ const Login = () => {
     const state = await NetInfo.fetch();
     const canProceed = await handleNetInfoChange(state);
     if (canProceed) {
-      navigation.navigate('LoginWebview', { onWebViewMessage: handleWebViewMessage, 'socialType': 'naver', });
+
+      const response = await NaverAuthManager.signIn();
+
+      const id = await NaverAuthManager.getProfile(response.successResponse);
+
+      console.log('네이버:',`${response.successResponse.accessToken} |${id}`);
+
+      socialLogin('NAVER', response.successResponse.accessToken,id);
+
+      // navigation.navigate('LoginWebview', { onWebViewMessage: handleWebViewMessage, 'socialType': 'naver', });
     }
   };
+  // 네이버 로그인
+  const onAppleLogin = async () => {
+    /*
+    await NaverLogin.login({
+      appName: '하우택싱',
+      consumerKey: 'orG8AAE8iHfRSoiySAbv',
+      consumerSecret: 'DEn_pJGqup',
+      serviceUrlScheme: 'howtaxing',
+    }).then(async res => {
+      const { accessToken } = res?.successResponse;
+  
+      ////console.log('accessToken', accessToken);
+  
+      if (accessToken) {
+        socialLogin(1, accessToken);
+      }
+    });
+    */
+    const state = await NetInfo.fetch();
+    const canProceed = await handleNetInfoChange(state);
+    if (canProceed) {
+      setSocialType('APPLE');
+      socialLogin('NAVER', '');
 
+      // navigation.navigate('LoginWebview', { onWebViewMessage: handleWebViewMessage, 'socialType': 'naver', });
+    }
+  };
   const onIDLogin = async () => {
     /*
     await NaverLogin.login({
@@ -213,7 +270,7 @@ const Login = () => {
     const state = await NetInfo.fetch();
     const canProceed = await handleNetInfoChange(state);
     if (canProceed) {
-      navigation.navigate('Login_ID', { onWebViewMessage: handleWebViewMessage, 'socialType': 'naver', });
+      navigation.push('Login_ID');
     }
   };
 
@@ -245,7 +302,7 @@ const Login = () => {
     const state = await NetInfo.fetch();
     const canProceed = await handleNetInfoChange(state);
     if (canProceed) {
-      navigation.navigate('LoginWebview', { onWebViewMessage: handleWebViewMessage, 'socialType': 'google', });
+      // navigation.navigate('LoginWebview', { onWebViewMessage: handleWebViewMessage, 'socialType': 'google', });
     }
 
 
@@ -329,15 +386,19 @@ const Login = () => {
     };
     */
   // 소셜 로그인
-  const socialLogin = async (userType, accessToken) => {
+  const socialLogin = async (socialType, accessToken,id) => {
     const data = {
-      userType,
+      socialType,
       accessToken,
+      id,
     };
 
+    console.log('네이버:',`${socialType} || ${accessToken} || ${id}`);
+
+    console.log(`${Config.APP_API_URL}user/socialLogin}`);
     axios
       .post(`${Config.APP_API_URL}user/socialLogin`, data)
-      .then(response => {
+      .then(async response => {
         if (response.data.errYn === 'Y') {
           SheetManager.show('info', {
             payload: {
@@ -350,8 +411,27 @@ const Login = () => {
           });
           return;
         } else {
-          const { id } = response.data;
-          getUserData(id);
+          const userData = response.data.data;
+          console.log(`${response.data.role}`);
+          console.log(`${userData}`);
+
+          const { role, accessToken, refreshToken } = userData;
+          console.log("profile ",`role : ${role}`);
+          console.log("profile ",`accessToken : ${accessToken}`);
+          console.log("profile ",`refreshToken : ${refreshToken}`);
+
+
+          if (role === 'USER') {
+             //console.log('Login token:', tokens[0]);
+             const tokenObject = { 'accessToken': accessToken, 'refreshToken': refreshToken };
+             //console.log('Login tokenObject:', tokenObject);
+             dispatch(setCurrentUser(tokenObject));
+ 
+        
+          } else {
+            await navigation.push('CheckTerms', { accessToken : accessToken ,refreshToken:refreshToken, authType : 'JOIN',LoginAcessType : 'SOCIAL',id:id});
+            //약관확인 화면으로 이동 후 약관 동의 완료시 handleSignUp 진행
+          }
         }
         // 성공적인 응답 처리
 
@@ -369,6 +449,74 @@ const Login = () => {
         console.error(error);
       });
   };
+
+  // const getLogin = async () => {
+  //   console.log('아이디 로그인');
+  //   const data = {
+  //     id,
+  //     password
+  //   }
+  //   try {
+  //     //////console.log('[HouseDetail] Fetching house details for item:', item);
+  //     const response = await axios.post(`${Config.APP_API_URL}auth2/authorization`, data, { headers: null });
+  //     console.log('response', response);
+  //     const detaildata = response.data.data;
+  //     console.log('detaildata', detaildata);
+  //     if (response.data.errYn === 'Y') {
+  //       if (response.data.errCode === 'LOGIN-003') {
+  //         SheetManager.show('info', {
+  //           payload: {
+  //             prevSheet: 'Login_ID',
+  //             type: 'error',
+  //             message: '존재하지 않는 아이디에요.',
+  //           },
+  //         });
+  //       } else if (response.data.errCode === 'LOGIN-002') {
+  //         SheetManager.show('info', {
+  //           payload: {
+  //             prevSheet: 'Login_ID',
+  //             type: 'error',
+  //             message: '비밀번호가 정확하지 않아요.',
+  //             description: '5회 잘못 입력 시 5분 후 재시도 할 수 있어요.\n(현재 ' + response.data.errMsgDtl.substring(0, 1) + '회 불일치)',
+  //           },
+  //         });
+  //       } else if (response.data.errCode === 'LOGIN-004') {
+  //         SheetManager.show('info', {
+  //           payload: {
+  //             prevSheet: 'Login_ID',
+  //             type: 'error',
+  //             message: '잠시 후에 다시 시도해주세요.',
+  //             description: '비밀번호를 반복하여 잘못 입력하셨어요.',
+  //           },
+  //         });
+  //       } else {
+  //         SheetManager.show('info', {
+  //           payload: {
+  //             prevSheet: 'Login_ID',
+  //             type: 'error',
+  //             message: response.data.errMsg ? response.data.errMsg : '로그인을 하는데 문제가 발생했어요.',
+  //             description: response.data.errMsgDtl ? response.data.errMsgDtl : '',
+  //           },
+  //         });
+  //       }
+  //     } else {
+  //       console.log('detaildata.accessToken', detaildata.accessToken);
+  //       console.log('detaildata.refreshToken', detaildata.refreshToken);
+  //       await onIDLogin(detaildata.accessToken, detaildata.refreshToken);
+  //     }
+  //   } catch (error) {
+  //     console.log('error', error);
+  //     SheetManager.show('info', {
+  //       payload: {
+  //         prevSheet: 'Login_ID',
+  //         type: 'error',
+  //         message: error?.errMsg ? error?.errMsg : '로그인을 하는데 문제가 발생했어요.',
+  //         errorMessage: error?.errCode ? error?.errCode : 'error',
+  //       },
+  //     });
+  //   }
+  // };
+
 
   // 유저 정보 가져오기
   const getUserData = async id => {
@@ -448,7 +596,30 @@ const Login = () => {
             }}>
             네이버로 시작하기
           </SocialButtonText>
+
         </SocialButton>
+
+        {platformToKorean.isIOS && (
+          <SocialButton
+            onPress={onAppleLogin}
+            width={width}
+            style={{
+              backgroundColor: '#000000',
+            }}>
+            <SocialButtonIcon
+              source={require('../../assets/images/socialIcon/apple_ico.png')}
+            />
+            <SocialButtonText
+
+              style={{
+                color: '#fff',
+              }}>
+              애플로 시작하기
+            </SocialButtonText>
+
+          </SocialButton>
+        )}
+
         <View>
           <Text
             style={{

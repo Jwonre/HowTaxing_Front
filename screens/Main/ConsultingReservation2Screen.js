@@ -1,12 +1,11 @@
-// 양도소득세 홈페이지
-
-import { TouchableOpacity, TouchableWithoutFeedback, useWindowDimensions, BackHandler, View, ScrollView, Keyboard, Dimensions } from 'react-native';
+import { TouchableOpacity, useWindowDimensions, BackHandler, View, ScrollView, Animated, Text, TextInput } from 'react-native';
 import { FlatList } from 'react-native-gesture-handler';
 import React, { useRef, useLayoutEffect, useState, useCallback, useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
+import { useDispatch, useSelector } from 'react-redux';
 import BackIcon from '../../assets/icons/back_button.svg';
 import CloseIcon from '../../assets/icons/close_button.svg';
+import Bottompolygon from '../../assets/icons/bottom_polygon.svg';
 import styled from 'styled-components';
 import { SheetManager } from 'react-native-actions-sheet';
 import FastImage from 'react-native-fast-image';
@@ -15,9 +14,15 @@ import NetInfo from "@react-native-community/netinfo";
 import Calendar from '../../components/ReservationCalendar';
 import Config from 'react-native-config'
 import axios from 'axios';
-import { setAdBanner } from '../../redux/adBannerSlice';
+import TaxCard from '../../components/TaxCard';
+import TaxInfoCard from '../../components/TaxInfoCard';
+import TaxCard2 from '../../components/TaxCard2';
+import TaxInfoCard2 from '../../components/TaxInfoCard2';
+import HouseInfo from '../../components/HouseInfo';
+import CalculationWarningCard from '../../components/CalculationWarning';
 
 
+// 배너 이미지의 원본 비율
 const Container = styled.View`
   flex: 1.0;
   background-color: #fff;
@@ -33,10 +38,6 @@ const IntroSection2 = styled.View`
   padding: 20px;
 `;
 
-const IntroSection3 = styled.View`
-  width: 100%;
-  padding: 10px;
-`;
 
 const ProfileAvatar = styled(FastImage).attrs(props => ({
   resizeMode: 'cover',
@@ -93,7 +94,6 @@ const ModalLabel = styled.Text`
   margin-right: 5px;
 `;
 
-
 const ProfileSection = styled.View`
   width: 90%;
   justify-content: flex-end;
@@ -136,6 +136,7 @@ const ProfileSubTitle3 = styled.Text`
   margin-top: 10px;
   margin-bottom: 10px;
 `;
+
 
 const Title = styled.Text`
   font-size: 20px;
@@ -197,6 +198,7 @@ const ReservationtimeSection = styled.View`
   padding: 20px;
   justify-content: flex-end;
 `;
+
 
 const TimeContainer = styled.View`
   width: 100%;
@@ -268,8 +270,7 @@ const Tag = styled.TouchableOpacity.attrs(props => ({
   border-width: 1px;
   border-color: #CFD1D5;
   margin-bottom: 20px;
-  align-self: flex-start; 
-
+  align-self: flex-start;
 `;
 
 const TagText = styled.Text`
@@ -285,6 +286,7 @@ const ConsultingItem = styled.View`
   flex-direction: row;
   align-items: left;
   justify-content: space-between;
+  margin-bottom: 20px;
 
 `;  // 세미콜론 추가
 
@@ -295,7 +297,7 @@ const ConsultingInput = styled.TextInput.attrs(props => ({
   verticalAlign: 'top',
 }))`
   width: auto; 
-  height: 260px;
+  height: 100px;
   background-color: #f5f7fa;
   padding: 15px; 
   font-size: 13px;
@@ -319,16 +321,14 @@ const TextLength = styled.Text`
 
 
 const ButtonSection = styled.View`
-  width: 100%;
-  height: auto;
   flex: 1;
   padding: 0 20px;
   align-items: center;
   justify-content: flex-end;  
+  margin-top: 10px;
   bottom: 10px;
   width: 100%;
 `;
-
 
 const ButtonSection2 = styled.View`
   flex: 1;
@@ -344,7 +344,6 @@ const ShadowContainer = styled(DropShadow)`
   shadow-offset: 2px 3px;
   shadow-opacity: 0.2;
   shadow-radius: 3px;
-  elevation: 5;
 `;
 
 const Button = styled.TouchableOpacity.attrs(props => ({
@@ -362,6 +361,19 @@ const Button = styled.TouchableOpacity.attrs(props => ({
   margin-bottom: 10px;
 `;
 
+const Button2 = styled.TouchableOpacity.attrs(props => ({
+  activeOpacity: 0.6,
+}))`
+  width: 60px;
+  height: 30px;
+  border-radius: 30px;
+  background-color: #2f87ff;
+  align-items: center;
+  justify-content: center;
+  align-self: right;
+`;
+
+
 const ButtonText = styled.Text`
   font-size: 16px;
   font-family: Pretendard-Bold;
@@ -370,27 +382,26 @@ const ButtonText = styled.Text`
 `;
 
 
-const ConsultingReservation = () => {
+const ConsultingReservation2Screen = props =>  {
   const _scrollViewRef = useRef(null);
   const _scrollViewRef2 = useRef(null);
+  const _scrollViewRef3 = useRef(null);
   // const data = [{ key: 'dummy' }]; // FlatList에 필요한 데이터
   const [currentPageIndex, setCurrentPageIndex] = useState(0);
   const currentPageIndexList = [0, 1, 2, 3, 4];
   const currentUser = useSelector(state => state.currentUser.value);
-  const [isKeyboardVisible, setKeyboardVisible] = useState(false);
-
+  const Pdata = props?.route.params?.Pdata;
   const navigation = useNavigation();
-  const width = Dimensions.get('window').width;
-  const height = Dimensions.get('window').height;
+  const houseInfo = props?.route.params?.houseInfo;
+  const { width, height } = useWindowDimensions();
   const input1 = useRef(null);
   const input2 = useRef(null);
-  const dispatch = useDispatch();
   const input3 = useRef(null);
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
   const [hasNavigatedBack, setHasNavigatedBack] = useState(false);
   const hasNavigatedBackRef = useRef(hasNavigatedBack);
-  const [selectedDate, setSelectedDate] = useState();
+  const [selectedDate, setSelectedDate] = useState(new Date());
   const [selectedList, setSelectedList] = useState([]);
   const ConsultingList = ['취득세', '양도소득세', '상속세', '증여세'];
   const morningTimes = [];
@@ -398,7 +409,11 @@ const ConsultingReservation = () => {
   const [text, setText] = useState('');
   const [dataList, setDataList] = useState([]);
   const [timeList, setTimeList] = useState([]);
+  const [isExpanded, setIsExpanded] = useState(false);
   const [taxTypeList, setTaxTypeList] = useState([]);
+  const toggleExpand = () => {
+    setIsExpanded(!isExpanded);
+  };
 
   for (let i = 9; i <= 11; i++) {
     if (i < 10) {
@@ -408,6 +423,7 @@ const ConsultingReservation = () => {
       morningTimes.push(`${i}:00`);
       morningTimes.push(`${i}:30`);
     }
+
   }
   for (let i = 12; i < 18; i++) {
     afternoonTimes.push(`${i}:00`);
@@ -439,6 +455,26 @@ const ConsultingReservation = () => {
 
   const [isConnected, setIsConnected] = useState(true);
 
+  {/*useEffect(() => {
+    _scrollViewRef.current?.scrollTo({
+      x: (width) * currentPageIndex,
+      y: 0,
+      animated: true,
+    });
+    setTimeout(() => {
+      if (currentPageIndex !== 4) {
+        setIsExpanded(false);
+      }
+    }, 300)
+
+  }, [currentPageIndex]);*/}
+  useEffect(() => {
+    setTimeout(() => {
+      if (currentPageIndex !== 4) {
+        setIsExpanded(false);
+      }
+    }, 300)
+  }, [currentPageIndex]);
   const handleNetInfoChange = (state) => {
     return new Promise((resolve, reject) => {
       if (!state.isConnected && isConnected) {
@@ -457,33 +493,50 @@ const ConsultingReservation = () => {
     });
   };
 
+  useEffect(() => {
+    if (props.route.params.IsGainTax !== undefined) {
+      if (props.route.params.IsGainTax) {
+        setTaxTypeList(['양도소득세']);
+      } else {
+        setTaxTypeList(['취득세']);
+      }
+    }
+    console.log('props.route.params.IsGainTax', props.route.params.IsGainTax);
+  }, []);
 
   useEffect(() => {
     if (currentPageIndex === 0) {
       getDateTimelist('1', '');
     }
-
   }, [currentPageIndex]);
 
+
   useEffect(() => {
-    dispatch(setAdBanner(false));
-  }, []);
+    const focusInput = () => {
+      if (currentPageIndex === 1 && input1.current) {
+        input1.current.focus();
+      } else if (currentPageIndex === 2 && input2.current) {
+        input2.current.focus();
+      } else if (currentPageIndex === 4 && input3.current) {
+        input3.current.focus();
+      }
+    };
 
-
+    focusInput();
+  }, [currentPageIndex]);
 
 
   useEffect(() => {
     if (selectedDate && currentPageIndex === 3) {
       console.log('selectedDate', selectedDate);
       getDateTimelist('2', selectedDate);
-      setSelectedList([]);
     }
     //console.log('timeList', timeList);
   }, [selectedDate, currentPageIndex]);
 
   const getDateTimelist = async (searchType, selectedDate) => {
     var consultantId = 1;
-    const url = searchType === '1' ? `${Config.APP_API_URL}consulting/availableSchedule?consultantId=${consultantId}&searchType=${searchType}` : `${Config.APP_API_URL}consulting/availableSchedule?consultantId=${consultantId}&searchType=${searchType}&searchDate=${selectedDate ? selectedDate.getFullYear() : new Date().getFullYear()}-${(selectedDate ? selectedDate.getMonth() + 1 : new Date().getMonth() + 1).toString().padStart(2, '0')}-${(selectedDate ? selectedDate : new Date()).getDate().toString().padStart(2, '0')}`;
+    const url = searchType === '1' ? `${Config.APP_API_URL}consulting/availableSchedule?consultantId=${consultantId}&searchType=${searchType}` : `${Config.APP_API_URL}consulting/availableSchedule?consultantId=${consultantId}&searchType=${searchType}&searchDate=${selectedDate.getFullYear()}-${(selectedDate.getMonth() + 1).toString().padStart(2, '0')}-${selectedDate.getDate().toString().padStart(2, '0')}`;
     //const url = `https://devapp.how-taxing.com/consulting/availableSchedule?consultantId=${consultantId}&searchType="${searchType}"`;
     const headers = {
       'Content-Type': 'application/json',
@@ -501,8 +554,8 @@ const ConsultingReservation = () => {
       .get(url,
         { headers: headers }
       )
-      .then(async response => {
-        console.log('response.data.dateList', response.data.dateList ? response.data.dateList : []);
+      .then(response => {
+        console.log('response.data', response.data);
         if (response.data.errYn === 'Y') {
           SheetManager.show('info', {
             payload: {
@@ -515,8 +568,6 @@ const ConsultingReservation = () => {
           });
         } else {
           if (searchType === "1") {
-            //console.log('response.data', response.data.data);
-            //console.log('response.data.dateList', response.data.data.dateList);
             const result = response === undefined ? [] : response.data.data.dateList;
             if (result.length > 0) {
               const list = result
@@ -539,16 +590,14 @@ const ConsultingReservation = () => {
                 navigation.goBack();
               }, 300);
             }
-
           } else if (searchType === "2") {
             const result = response === undefined ? [] : response.data.data.timeList;
             const list = result
               .filter(item => item.reservationStatus === "1")
               .map(item => item.consultingTime);
 
-            console.log('Timelist:', list);
+            console.log('list:', list);
             setTimeList([...list]);
-
           }
         }
 
@@ -600,15 +649,16 @@ const ConsultingReservation = () => {
       reservationDate: selectedDate ? `${year}-${month}-${day}` : '',
       reservationTime: selectedList ? selectedList[0] : '',
       consultingType: NumTaxTypeList ? NumTaxTypeList.sort().join(",") : '',
-      consultingInflowPath: '00',
-      calcHistoryId: '',
+      consultingInflowPath: props?.route.params.IsGainTax ? '02' : '01',
+      calcHistoryId: Pdata.calcHistoryId ? Pdata.calcHistoryId : '',
       consultingRequestContent: text ? text : '',
     };
-    console.log('data', data);
-    console.log('headers', headers);
+    //console.log('ConsultingReservation2 data', data);
+    //console.log('headers', headers);
     try {
       const response = await axios.post(`${Config.APP_API_URL}consulting/reservationApply`, data, { headers: headers });
       if (response.data.errYn === 'Y') {
+
         if (response.data.errCode === 'CONSULTING-013') {
           setCurrentPageIndex(3);
           setTimeout(async () => {
@@ -667,37 +717,8 @@ const ConsultingReservation = () => {
     }
   };
 
-  const handlePress = buttonIndex => {
-    if (buttonIndex === 'YES') {
-      navigation.goBack();
-    }
-  };
-
-
-  useEffect(() => {
-    const focusInput = () => {
-      if (currentPageIndex === 1 && input1.current) {
-        input1.current.focus();
-      } else if (currentPageIndex === 2 && input2.current) {
-        input2.current.focus();
-      } else if (currentPageIndex === 4 && input3.current) {
-        input3.current.focus();
-      };
-    }
-    _scrollViewRef.current?.scrollTo({
-      x: width * currentPageIndex,
-      y: 0, animated: true,
-    });
-
-    setTimeout(() => {
-      focusInput();
-    }, 200)
-  }, [currentPageIndex]);
-
-
   useLayoutEffect(() => {
     navigation.setOptions({
-
       headerLeft: () => (
         <TouchableOpacity
           activeOpacity={0.6}
@@ -731,6 +752,12 @@ const ConsultingReservation = () => {
     });
   }, [currentPageIndex]);
 
+  const handlePress = buttonIndex => {
+    if (buttonIndex === 'YES') {
+      navigation.goBack();
+    }
+  };
+
   return (
     <ScrollView
       ref={_scrollViewRef}
@@ -743,7 +770,7 @@ const ConsultingReservation = () => {
       showsHorizontalScrollIndicator={false}
       scrollEnabled={false}
       scrollEventThrottle={16}>
-      <Container style={{ width: width }}>
+      {currentPageIndex === 0 && <Container style={{ width: width }}>
         <ProgressSection>
         </ProgressSection>
 
@@ -779,7 +806,6 @@ const ConsultingReservation = () => {
               width: '50%',
               marginLeft: 0,
               borderBottomWidth: 0,
-              marginLeft: 0
             }}>
               <View style={{
                 flexDirection: 'row',
@@ -841,7 +867,6 @@ const ConsultingReservation = () => {
                   const canProceed = await handleNetInfoChange(state);
                   if (canProceed) {
                     setCurrentPageIndex(1);
-
                   }
                 }}>
                 <ButtonText >다음으로</ButtonText>
@@ -875,11 +900,13 @@ const ConsultingReservation = () => {
               ))}
             </View>
           </ButtonSection></>
-      </Container>
+      </Container>}
 
-      <Container style={{ width: width }}>
+      {currentPageIndex === 1 && <Container style={{ width: width }}>
         <ProgressSection>
         </ProgressSection>
+
+
         <><IntroSection2 style={{ width: width }}>
           <Title>고객님의 이름을 알려주세요.</Title>
           <SubTitle>이름을 밝히고 싶지않다면 닉네임도 괜찮아요.</SubTitle>
@@ -957,8 +984,8 @@ const ConsultingReservation = () => {
             </View>
           </ButtonSection></>
 
-      </Container>
-      <Container style={{ width: width }}>
+      </Container>}
+      {currentPageIndex === 2 && <Container style={{ width: width }}>
         <ProgressSection>
         </ProgressSection>
         <><IntroSection2 style={{ width: width }}>
@@ -970,12 +997,9 @@ const ConsultingReservation = () => {
               <ModalInput
                 ref={input2}
                 //  onSubmitEditing={() => input2.current.focus()}
-                placeholder="전화번호를 입력해주세요."
                 autoFocus={currentPageIndex === 2}
+                placeholder="전화번호를 입력해주세요."
                 value={phone}
-                maxLength={13}
-                keyboardType="phone-pad" // 숫자 키보드 표시
-                autoCompleteType="tel"
                 onChangeText={async (phone) => {
                   const filteredPhone = phone.replace(/[^0-9]/g, '');
                   let formattedPhone = filteredPhone;
@@ -986,6 +1010,8 @@ const ConsultingReservation = () => {
                   }
                   setPhone(formattedPhone);
                 }}
+                maxLength={13}
+                keyboardType="phone-pad"
                 autoCompleteType="tel"
                 onSubmitEditing={async () => {
                   const state = await NetInfo.fetch();
@@ -1040,7 +1066,7 @@ const ConsultingReservation = () => {
               }}>
                 <Button
                   style={{
-                    backgroundColor: phone.length < 11 ? '#E8EAED' : '#2F87FF',
+                    backgroundColor: phone.length < 13 ? '#E8EAED' : '#2F87FF',
                     color: phone.length < 13 ? '#1b1c1f' : '#FFFFFF',
                     width: '100%',
                     height: 50, // height 값을 숫자로 변경하고 단위 제거
@@ -1058,7 +1084,6 @@ const ConsultingReservation = () => {
                     if (canProceed) {
                       if (phone.length > 12) {
                         setCurrentPageIndex(3);
-                        Keyboard.dismiss();
                       }
                     }
                   }}>
@@ -1095,8 +1120,8 @@ const ConsultingReservation = () => {
             </View>
           </ButtonSection></>
 
-      </Container>
-      <Container style={{ width: width }}>
+      </Container>}
+      {currentPageIndex === 3 && <Container style={{ width: width }}>
         <ProgressSection>
         </ProgressSection>
         <><FlatList
@@ -1153,7 +1178,7 @@ const ConsultingReservation = () => {
                   ></FlatList>
                 </TimeContainer>
                 <TimeTitle>오후</TimeTitle>
-                <TimeContainer style={{ marginBottom: 70 }}>
+                <TimeContainer>
                   <FlatList
                     //contentContainerStyle={styles.container}
                     data={afternoonTimes}
@@ -1177,6 +1202,11 @@ const ConsultingReservation = () => {
                     numColumns={4} // 한 줄에 4개의 
                   ></FlatList>
                 </TimeContainer>
+                <View style={{
+                  marginBottom: 60
+                }}>
+                  <SubTitle3 style={{ textAlign: 'center' }}>{'상담시간은 15분이예요.'}</SubTitle3>
+                </View>
               </ReservationtimeSection>
             </>
           }
@@ -1275,195 +1305,246 @@ const ConsultingReservation = () => {
             </ButtonSection></>
           }
         /></>
-      </Container>
-      <ScrollView scrollEnabled={false} overScrollMode="never"><TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-        <Container style={{ width: width, height: height * 0.89 }}>
+      </Container>}
 
-          <ProgressSection>
-          </ProgressSection>
-          <>
-            <IntroSection2>
-              <View style={{ flexDirection: 'row', alignItems: 'left', marginBottom: 10 }}>
-                <ProfileAvatar2 source={require('../../assets/images/Minjungum_Lee_consulting.png')}></ProfileAvatar2>
-                <ProfileName>이민정음 세무사</ProfileName>
-                <ConsultingTime>{selectedDate ? new Date(selectedDate).getFullYear() + '년 ' + (new Date(selectedDate).getMonth() + 1) + '월 ' + new Date(selectedDate).getDate() + '일 ' + selectedList : ''}</ConsultingTime>
-              </View>
-              <View style={{
-                flexDirection: 'column', alignItems: 'left', borderBottomWidth: 1,
-                borderBottomColor: '#E8EAED', borderTopWidth: 1,
-                borderTopColor: '#E8EAED',
-              }}>
-                <Title style={{ marginBottom: 10, marginTop: 10 }}>상세 내용을 알려주세요.</Title>
-                <SubTitle4>세금종류</SubTitle4>
-                <View style={{ width: '100%', flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
-                  {ConsultingList.map((item, index) => (
-                    <Tag
+      {currentPageIndex === 4 && <Container style={{ width: width }}>
+        <ProgressSection>
+        </ProgressSection>
+        <><FlatList
+          ref={_scrollViewRef3}
+          scrollEnabled={true}
+          scrollEventThrottle={16}
+          data={[]}
+          renderItem={() => null} // 실제로 렌더링할 항목이 없으므로 null 반환
+          showsVerticalScrollIndicator={false}
+          overScrollMode="never" // 이 줄을 추가하세요
+          ListHeaderComponent={
+            <>
+              <IntroSection2 style={{ height: 'auto' }}>
+                <View style={{ flexDirection: 'row', alignItems: 'left', marginBottom: 10 }}>
+                  <ProfileAvatar2 source={require('../../assets/images/Minjungum_Lee_consulting.png')}></ProfileAvatar2>
+                  <ProfileName>이민정음 세무사</ProfileName>
+                  <ConsultingTime>{selectedDate.getFullYear() + '년 ' + (selectedDate.getMonth() + 1) + '월 ' + selectedDate.getDate() + '일 ' + selectedList}</ConsultingTime>
+                </View>
+                <View style={{
+                  flexDirection: 'column', alignItems: 'left', borderBottomWidth: 1,
+                  borderBottomColor: '#E8EAED', borderTopWidth: 1,
+                  borderTopColor: '#E8EAED',
+                }}>
+                  <Title style={{ marginBottom: 10, marginTop: 10 }}>상세 내용을 알려주세요.</Title>
+                  <SubTitle4>세금종류</SubTitle4>
+                  <View style={{ width: '100%', flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
+                    {ConsultingList.map((item, index) => (
+                      <Tag
+                        style={{
+                          borderColor: taxTypeList.indexOf(item) < 0 ? '#E8EAED'
+                            : item === '취득세'
+                              ? '#2F87FF'
+                              : item === '양도소득세'
+                                ? '#2F87FF'
+                                : item === '상속세'
+                                  ? '#2F87FF'
+                                  : item === '증여세'
+                                    ? '#2F87FF'
+                                    : '#E8EAED',
+                          margin: 5
+                        }}
+                        //disabled={taxTypeList.indexOf(item) < 0}
+                        active={taxTypeList.indexOf(item) > -1}
+                        onPress={() => {
+                          if (taxTypeList.indexOf(item) > -1) {
+                            setTaxTypeList(
+                              taxTypeList.filter(selectedItem => selectedItem !== item),
+                            );
+                          } else {
+                            setTaxTypeList([...taxTypeList, item]);
+                          }
+                        }}
+                        key={index}>
+                        <TagText style={{
+                          color: taxTypeList.indexOf(item) < 0 ? '#E8EAED'
+                            : item === '취득세'
+                              ? '#2F87FF'
+                              : item === '양도소득세'
+                                ? '#2F87FF'
+                                : item === '상속세'
+                                  ? '#2F87FF'
+                                  : item === '증여세'
+                                    ? '#2F87FF'
+                                    : '#E8EAED'
+                        }}>
+                          {item}
+                        </TagText>
+                      </Tag>
+                    ))}
+                  </View>
+                </View>
+                <View style={{
+                  borderBottomWidth: 1,
+                  borderBottomColor: '#E8EAED'
+                }}>
+                  <SubTitle4 style={{ marginTop: 20, marginBottom: 20 }}>상세 내용</SubTitle4>
+                  <ConsultingItem>
+                    <ScrollView keyboardShouldPersistTaps='always'>
+                      <ConsultingInput
+                        ref={input3}
+                        autoFocus={currentPageIndex === 4}
+                        multiline={true}
+                        width={width}
+                        placeholder="정확한 상담을 위해 사실 관계 및 문의사항을 자세하게 입력해주세요."
+                        onChangeText={(input) => {
+                          let byteCount = encodeURI(input).split(/%..|./).length - 1;
+                          if (byteCount <= 1000) {
+                            setText(input);
+                          }
+                        }}
+                        value={text.slice(0, 1000)}
+                        style={{ flexWrap: 'wrap' }}
+                        blurOnSubmit={false}
+                      />
+                    </ScrollView>
+                  </ConsultingItem>
+                </View>
+
+                <View style={{
+                  borderBottomWidth: 1,
+                  borderBottomColor: '#E8EAED',
+                  marginBottom: 10,
+                  flexDirection: 'row',
+                  flexWrap: 'wrap',
+                }}>
+                  <SubTitle4 style={{ marginTop: 20, marginBottom: 20 }}>세금 계산 결과</SubTitle4>
+                  <ButtonSection2 style={{
+                    flex: 1,
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    justifyContent: 'flex-end',
+                    width: '100%'
+                  }}>
+                    <Button2 onPress={toggleExpand} style={{
+                      borderWidth: 1, borderColor: '#E8EAED', backgroundColor: '#fff', width: 80, flexDirection: 'row',
+                      alignItems: 'center',
+
+                    }}>
+                      <ButtonText style={{ color: '#717274', fontSize: 12, fontFamily: 'Pretendard-regular' }}> {isExpanded ? '접기' : '펼치기'}</ButtonText>
+                      {!isExpanded ? <Bottompolygon style={{ marginLeft: 5, marginTop: 1 }} />
+                        : <Bottompolygon style={{
+                          marginLeft: 5,
+                          marginTop: 1,
+                          transform: [{ rotate: '180deg' }]
+                        }} />}
+                    </Button2>
+                  </ButtonSection2>
+                </View>
+
+                {isExpanded && (<>
+                  {!props?.route.params.IsGainTax ? <HouseInfo item={houseInfo} navigation={navigation} ChatType='AcquisitionChat' /> : <HouseInfo item={houseInfo} navigation={navigation} ChatType='GainsTaxChat' />}
+                  {!props?.route.params.IsGainTax ? <TaxCard navigation={navigation} Pdata={Pdata ? Pdata : null} /> : <TaxCard2 navigation={navigation} Pdata={Pdata ? Pdata : null} />}
+                  {!props?.route.params.IsGainTax ? <TaxInfoCard Pdata={Pdata ? Pdata : null} /> : <TaxInfoCard2 Pdata={Pdata ? Pdata : null} />}
+                </>)
+                }
+                <SubTitle3>고객님께서 본인 인증하여 로드하거나 직접 입력하신 주택정보와{'\n'}아래 세금 계산 결과를 활용하여 세금 상담을 진행할 예정이에요.{'\n'}이에 동의하시나요?{'\n'}{'\n'}{'\n'}{'\n'}{'\n'}{'\n'}</SubTitle3>
+              </IntroSection2>
+            </>
+          }
+          ListFooterComponent={
+            <>
+              <ButtonSection2>
+                <View
+                  style={{
+                    alignItems: 'center', // align-items를 camelCase로 변경
+                    flexDirection: 'row', // flex-direction을 camelCase로 변경
+                    justifyContent: 'space-between', // justify-content를 camelCase로 변경 
+                  }}>
+                  <View style={{ width: '49%', marginRight: '1%' }}>
+                    <Button
                       style={{
-                        borderColor: taxTypeList.indexOf(item) < 0 ? '#E8EAED'
-                          : item === '취득세'
-                            ? '#2F87FF'
-                            : item === '양도소득세'
-                              ? '#2F87FF'
-                              : item === '상속세'
-                                ? '#2F87FF'
-                                : item === '증여세'
-                                  ? '#2F87FF'
-                                  : '#E8EAED',
-                        margin: 5 // 각 Tag 간에 5px의 간격을 추가
+                        backgroundColor: '#fff',
+                        color: '#1b1c1f',
+                        width: '100%',
+                        height: 50, // height 값을 숫자로 변경하고 단위 제거
+                        alignItems: 'center', // align-items를 camelCase로 변경
+                        justifyContent: 'center', // justify-content를 camelCase로 변경
+                        borderWidth: 1, // border-width를 camelCase로 변경하고 단위 제거
+                        borderColor: '#E8EAED',
                       }}
-                      //disabled={taxTypeList.indexOf(item) < 0}
-                      active={taxTypeList.indexOf(item) > -1}
-                      onPress={() => {
-                        if (taxTypeList.indexOf(item) > -1) {
-                          setTaxTypeList(
-                            taxTypeList.filter(selectedItem => selectedItem !== item),
-                          );
-                        } else {
-                          setTaxTypeList([...taxTypeList, item]);
+                      width={width}
+                      onPress={async () => {
+                        const state = await NetInfo.fetch();
+                        const canProceed = await handleNetInfoChange(state);
+                        if (canProceed) {
+                          setCurrentPageIndex(3);
                         }
-                      }}
-                      key={index}>
-                      <TagText style={{
-                        color: taxTypeList.indexOf(item) < 0 ? '#E8EAED'
-                          : item === '취득세'
-                            ? '#2F87FF'
-                            : item === '양도소득세'
-                              ? '#2F87FF'
-                              : item === '상속세'
-                                ? '#2F87FF'
-                                : item === '증여세'
-                                  ? '#2F87FF'
-                                  : '#E8EAED'
                       }}>
-                        {item}
-                      </TagText>
-                    </Tag>
+                      <ButtonText style={{ color: '#717274' }}>이전으로</ButtonText>
+                    </Button>
+                  </View>
+                  <ShadowContainer style={{ width: '49%', marginLeft: '1%' }}>
+                    <Button
+                      style={{
+                        backgroundColor: text === '' ? '#E8EAED' : '#2F87FF',
+                        color: text === '' ? '#1b1c1f' : '#FFFFFF',
+                        width: '100%',
+                        height: 50, // height 값을 숫자로 변경하고 단위 제거
+                        alignItems: 'center', // align-items를 camelCase로 변경
+                        justifyContent: 'center', // justify-content를 camelCase로 변경
+                        borderWidth: 1, // border-width를 camelCase로 변경하고 단위 제거
+                        borderColor: '#E8EAED',
+                      }}
+                      disabled={!text}
+                      active={text}
+                      width={width}
+                      onPress={async () => {
+                        const state = await NetInfo.fetch();
+                        const canProceed = await handleNetInfoChange(state);
+                        if (canProceed) {
+                          const result = await requestReservation();
+                          if (result) {
+                            navigation.goBack();
+                          }
+                        }
+                      }}>
+                      <ButtonText>동의 후 상담 예약하기</ButtonText>
+                    </Button>
+                  </ShadowContainer>
+                </View>
+                <View
+                  style={{
+                    marginTop: 5,
+                    marginBottom: 15,
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    alignSelf: 'center',
+                    zIndex: 2,
+                  }}>
+                  {currentPageIndexList?.map((item, index) => (
+                    <TouchableOpacity
+                      key={index}
+                      activeOpacity={0.6}
+                      hitSlop={{ top: 20, bottom: 20, left: 20, right: 20 }}
+                      style={{
+                        width: 4 === index ? 20 : 8, // Elongate the dot
+                        height: 8,
+                        borderRadius: 4,
+                        backgroundColor: 4 === index ? '#2F87FF' : '#1b1c1f',
+                        borderWidth: 1,
+                        borderColor: 4 === index ? '#2F87FF' : '#1b1c1f',
+                        marginRight: 4,
+                      }}
+                    />
                   ))}
                 </View>
-              </View>
-              <SubTitle4 style={{ marginTop: 20, marginBottom: 20 }}>상세 내용</SubTitle4>
-              <ConsultingItem>
-                <ScrollView keyboardShouldPersistTaps='always'>
-                  <ConsultingInput
-                    ref={input3}
-                    autoFocus={currentPageIndex === 4}
-                    multiline={true}
-                    width={width}
-                    placeholder="정확한 상담을 위해 사실 관계 및 문의사항을 자세하게 입력해주세요."
-                    onChangeText={(input) => {
-                      let byteCount = encodeURI(input).split(/%..|./).length - 1;
-                      if (byteCount <= 1000) {
-                        setText(input);
-                      }
-                    }}
-                    value={text.slice(0, 1000)}
-                    style={{ flexWrap: 'wrap' }}
-                    blurOnSubmit={false}
-                  />
-                </ScrollView>
-              </ConsultingItem>
-            </IntroSection2>
-            <ButtonSection2>
-
-
-              <View
-                style={{
-                  alignItems: 'center', // align-items를 camelCase로 변경
-                  flexDirection: 'row', // flex-direction을 camelCase로 변경
-                  justifyContent: 'space-between', // justify-content를 camelCase로 변경 
-                }}>
-                <View style={{ width: '49%', marginRight: '1%' }}>
-                  <Button
-                    style={{
-                      backgroundColor: '#fff',
-                      color: '#1b1c1f',
-                      width: '100%',
-                      height: 50, // height 값을 숫자로 변경하고 단위 제거
-                      alignItems: 'center', // align-items를 camelCase로 변경
-                      justifyContent: 'center', // justify-content를 camelCase로 변경
-                      borderWidth: 1, // border-width를 camelCase로 변경하고 단위 제거
-                      borderColor: '#E8EAED',
-                    }}
-                    width={width}
-                    onPress={async () => {
-                      const state = await NetInfo.fetch();
-                      const canProceed = await handleNetInfoChange(state);
-                      if (canProceed) {
-                        setCurrentPageIndex(3);
-                      }
-                    }}>
-                    <ButtonText style={{ color: '#717274' }}>이전으로</ButtonText>
-                  </Button>
-                </View>
-                <ShadowContainer style={{ width: '49%', marginLeft: '1%' }}>
-                  <Button
-                    style={{
-                      backgroundColor: text === '' ? '#E8EAED' : '#2F87FF',
-                      color: text === '' ? '#1b1c1f' : '#FFFFFF',
-                      width: '100%',
-                      height: 50, // height 값을 숫자로 변경하고 단위 제거
-                      alignItems: 'center', // align-items를 camelCase로 변경
-                      justifyContent: 'center', // justify-content를 camelCase로 변경
-                      borderWidth: 1, // border-width를 camelCase로 변경하고 단위 제거
-                      borderColor: '#E8EAED',
-                    }}
-                    disabled={!text}
-                    active={text}
-                    width={width}
-                    onPress={async () => {
-                      const state = await NetInfo.fetch();
-                      const canProceed = await handleNetInfoChange(state);
-                      if (canProceed) {
-                        const result = await requestReservation();
-                        console.log('result', result);;
-                        if (result) {
-                          navigation.navigate('Home');
-                        }
-                      }
-                    }}>
-                    <ButtonText>상담 예약하기</ButtonText>
-                  </Button>
-                </ShadowContainer>
-              </View>
-              <View
-                style={{
-                  marginTop: 5,
-                  marginBottom: 15,
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  alignSelf: 'center',
-                  zIndex: 2,
-                }}>
-                {currentPageIndexList?.map((item, index) => (
-                  <TouchableOpacity
-                    key={index}
-                    activeOpacity={0.6}
-                    hitSlop={{ top: 20, bottom: 20, left: 20, right: 20 }}
-                    style={{
-                      width: 4 === index ? 20 : 8, // Elongate the dot
-                      height: 8,
-                      borderRadius: 4,
-                      backgroundColor: 4 === index ? '#2F87FF' : '#1b1c1f',
-                      borderWidth: 1,
-                      borderColor: 4 === index ? '#2F87FF' : '#1b1c1f',
-                      marginRight: 4,
-                    }}
-                  />
-                ))}
-              </View>
-            </ButtonSection2>
-          </>
-        </Container>
-
-      </TouchableWithoutFeedback>
-      </ScrollView>
+              </ButtonSection2></>}
+        /></>
+      </Container>}
 
 
 
-
-    </ScrollView >
-  );
+    </ScrollView>
+  )
 };
 
-export default ConsultingReservation;
+
+
+export default ConsultingReservation2Screen;

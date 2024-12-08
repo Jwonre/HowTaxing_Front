@@ -11,7 +11,18 @@ import AddMembership from '../screens/Auth/AddMembership';
 import AddMembershipFinish from '../screens/Auth/AddMembershipFinish';
 import Home from '../screens/Main/Home';
 import LoginWebview from '../screens/Auth/LoginWebview';
+import IdFindScreen from '../screens/Auth/IdFindScreen';
+import PasswordReSettingScreen from '../screens/Auth/PasswordReSettingScreen';
+import PasswordChangeScreen from '../screens/Auth/PasswordChangeScreen';
+import PhoneAuthConfirmScreen from '../screens/Auth/PhoneAuthConfirmScreen';
+import PaymentScreen from '../screens/Main/PaymentScreen';
+import PaymentCompletScreen from '../screens/Main/PaymentCompletScreen';
+import ConsultingReservationHistory from '../screens/Main/ConsultingReservationHistory';
+import ConsultingReservationDetail from '../screens/Main/ConsultingReservationDetail';
+import ReservationListScreen from '../screens/Main/ReservationListScreen.js';
+import ReservationList from '../screens/Main/ReservationList.js';
 
+import ReservationDetail from '../screens/Main/ReservationDetail';
 // Redux
 import { useSelector, useDispatch } from 'react-redux';
 
@@ -19,15 +30,17 @@ import Acquisition from '../screens/Main/Acquisition';
 import CheckTerms from '../screens/Main/CheckTerms';
 import GainsTax from '../screens/Main/GainsTax';
 import ConsultingReservation from '../screens/Main/ConsultingReservation';
-import ConsultingReservation2 from '../screens/Main/ConsultingReservation2';
+import ConsultingReservation2Screen from '../screens/Main/ConsultingReservation2Screen.js';
+import ConsultingReservation2 from '../screens/Main/ConsultingReservation2.js';
+
+
 import FixedHouse from '../screens/Main/FixedHouse';
 import AddHouse from '../screens/Main/AddHouse';
 import FixedHouseList from '../screens/Main/FixedHouseList';
 import AddHouseList from '../screens/Main/AddHouseList';
 import CertificationAcq from '../screens/Main/CertificationAcq';
 import CertificationGains from '../screens/Main/CertificationGains';
-import ReservationList from '../screens/Main/ReservationList';
-import ReservationDetail from '../screens/Main/ReservationDetail';
+
 import AcquisitionChat from '../screens/Main/AcquisitionChat';
 import FamilyHouse from '../screens/Main/FamilyHouse';
 import RegisterFamilyHouse from '../screens/Main/RegisterFamilyHouse';
@@ -225,6 +238,9 @@ const AppNavigator = () => {
               <Stack.Screen name="GainsTax" component={GainsTax} />
               <Stack.Screen name="ConsultingReservation" component={ConsultingReservation} />
               <Stack.Screen name="ConsultingReservation2" component={ConsultingReservation2} />
+
+            
+
               <Stack.Screen name="FamilyHouse" component={FamilyHouse} />
               <Stack.Screen
                 name="Information"
@@ -340,6 +356,19 @@ const AppNavigator = () => {
               <Stack.Screen name="AddMembership" component={AddMembership} />
               <Stack.Screen name="AddMembershipFinish" component={AddMembershipFinish} />
               <Stack.Screen name="CheckTerms" component={CheckTerms} />
+              <Stack.Screen name="IdFindScreen" component={IdFindScreen} />
+              <Stack.Screen name="PasswordReSettingScreen" component={PasswordReSettingScreen} />
+              <Stack.Screen name="PasswordChangeScreen" component={PasswordChangeScreen} />
+              <Stack.Screen name="PhoneAuthConfirmScreen" component={PhoneAuthConfirmScreen} />
+              <Stack.Screen name="PaymentScreen" component={PaymentScreen} />
+              <Stack.Screen name="PaymentCompletScreen" component={PaymentCompletScreen} />
+              <Stack.Screen name="ConsultingReservationDetail" component={ConsultingReservationDetail} />
+              <Stack.Screen name="ConsultingReservationHistory" component={ConsultingReservationHistory} />
+              <Stack.Screen name="ConsultingReservation2Screen" component={ConsultingReservation2Screen} />
+              <Stack.Screen
+                name="ReservationListScreen"
+                component={ReservationListScreen}
+              />
               <Stack.Group screenOptions={{ presentation: 'modal' }}>
                 <Stack.Screen name="Cert2" component={Cert2} />
                 <Stack.Screen name="Privacy2" component={Privacy2} />
