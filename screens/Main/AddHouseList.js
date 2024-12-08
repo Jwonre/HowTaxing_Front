@@ -18,6 +18,7 @@ import NetInfo from "@react-native-community/netinfo";
 import CloseIcon from '../../assets/icons/close_button.svg';
 import BackIcon from '../../assets/icons/back_button.svg';
 import XCircleIcon from '../../assets/icons/x_circle.svg';
+import { setCert } from '../../redux/certSlice';
 import { setChatDataList } from '../../redux/chatDataListSlice';
 import { setFixHouseList } from '../../redux/fixHouseListSlice';
 import { setAddHouseList } from '../../redux/addHouseListSlice';
@@ -651,6 +652,7 @@ const AddHouseList = props => {
                     const chatItem = gainTax.find(el => el.id === 'allHouse1')
                     dispatch(setChatDataList([...chatDataList, chatItem]), setFixHouseList([]), setAddHouseList([]));
                     navigation.navigate('GainsTaxChat');
+                    dispatch(setCert({ agreePrivacy: false }));
                   }
                 }} style={{
                   width: '100%',

@@ -532,6 +532,7 @@ const ConsultingReservation2 = props => {
     if (selectedDate && currentPageIndex === 3) {
       console.log('selectedDate', selectedDate);
       getDateTimelist('2', selectedDate);
+      setSelectedList([]);
     }
     //console.log('timeList', timeList);
   }, [selectedDate, currentPageIndex]);

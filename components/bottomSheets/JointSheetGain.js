@@ -253,7 +253,7 @@ const JointSheetGain = props => {
                 const canProceed = await handleNetInfoChange(state);
                 if (canProceed) {
                   dispatch(
-                    setHouseInfo({ ...houseInfo, ownerCnt: personCount, userProportion: personCount === 1 ? 100 : 50 })
+                    setHouseInfo({ ...houseInfo, ownerCnt: personCount })
                   );
                   actionSheetRef.current?.hide();
                   const chat = {

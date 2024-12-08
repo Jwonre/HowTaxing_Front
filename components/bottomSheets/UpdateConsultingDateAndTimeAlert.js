@@ -202,6 +202,7 @@ const UpdateConsultingDateAndTimeAlert = props => {
     if (selectedDate && currentPageIndex === 1) {
       console.log('selectedDate', selectedDate);
       getDateTimelist('2', selectedDate);
+      setSelectedList([]);
     }
     //console.log('timeList', timeList);
   }, [selectedDate, currentPageIndex]);
@@ -241,6 +242,7 @@ const UpdateConsultingDateAndTimeAlert = props => {
           return;
         } else {
           if (searchType === "1") {
+            const result = response === undefined ? [] : response.data.data.dateList;
             if (result.length > 0) {
               const list = result
                 .filter(item => item.isReservationAvailable)

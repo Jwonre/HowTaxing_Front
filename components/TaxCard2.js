@@ -163,7 +163,7 @@ const TaxCard2 = props => {
           </InfoContentText>
         </InfoContentItem>
         <SubContainer>
-          <InfoContentLabel >{listCnt === 1 ? '양도금액' : '양도금액(지분비율 50%)'}</InfoContentLabel>
+          <InfoContentLabel >{listCnt === 1 ? '양도금액' : '양도금액(지분비율 '+Number(Pdata?.list[index]?.userProportion)+'%)'}</InfoContentLabel>
           <InfoContentText
             
             style={{
@@ -173,7 +173,7 @@ const TaxCard2 = props => {
           </InfoContentText>
         </SubContainer>
         <SubContainer>
-          <InfoContentLabel >{listCnt === 1 ? '취득금액' : '취득금액(지분비율 50%)'}</InfoContentLabel>
+          <InfoContentLabel >{listCnt === 1 ? '취득금액' : '취득금액(지분비율 '+Number(Pdata?.list[index]?.userProportion)+'%)'}</InfoContentLabel>
           <InfoContentText
             
             style={{
@@ -183,7 +183,7 @@ const TaxCard2 = props => {
           </InfoContentText>
         </SubContainer>
         <SubContainer>
-          <InfoContentLabel >{listCnt === 1 ? '필요경비' : '필요경비(지분비율 50%)'}</InfoContentLabel>
+          <InfoContentLabel >{listCnt === 1 ? '필요경비' : '필요경비(지분비율 '+Number(Pdata?.list[index]?.userProportion)+'%)'}</InfoContentLabel>
           <InfoContentText
             
             style={{

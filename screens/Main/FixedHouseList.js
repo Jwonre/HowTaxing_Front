@@ -18,6 +18,7 @@ import axios from 'axios';
 import NetInfo from "@react-native-community/netinfo";
 import CloseIcon from '../../assets/icons/close_button.svg';
 import XCircleIcon from '../../assets/icons/x_circle.svg';
+import { setCert } from '../../redux/certSlice';
 import { setChatDataList } from '../../redux/chatDataListSlice';
 import { setFixHouseList } from '../../redux/fixHouseListSlice';
 import { setOwnHouseList } from '../../redux/ownHouseListSlice';
@@ -490,7 +491,7 @@ const FixedHouseList = props => {
                       }
                     }
                   }
-
+                  dispatch(setCert({ agreePrivacy: false }));
 
                 }
               }} style={{
