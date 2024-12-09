@@ -31,7 +31,7 @@
         <data android:="kakao9b9f977d588a05bbf9d5d2f77a327e8c" android:host="oauth" />
     </intent-filter>
 </activity>-->
-    <activity
+    <!--<activity
         android:name="com.kakao.sdk.auth.AuthCodeHandlerActivity"
         android:exported="true">
       <intent-filter>
@@ -50,7 +50,7 @@
       <category android:name="android.intent.category.BROWSABLE" />
       <data android:scheme="howtaxingrelease" />
     </intent-filter>
-  </activity>
+  </activity>-->
 
   </application>
   <queries>
