@@ -1,6 +1,8 @@
 // 양도소득세 홈페이지
 
-import { TouchableOpacity, TouchableWithoutFeedback, useWindowDimensions, BackHandler, View, ScrollView, Keyboard, Dimensions } from 'react-native';
+import {
+  TouchableOpacity, TouchableWithoutFeedback, useWindowDimensions, BackHandler, View, ScrollView, Keyboard, Dimensions, StyleSheet, Text,
+} from 'react-native';
 import { FlatList } from 'react-native-gesture-handler';
 import React, { useRef, useLayoutEffect, useState, useCallback, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -16,7 +18,10 @@ import Calendar from '../../components/ReservationCalendar';
 import Config from 'react-native-config'
 import axios from 'axios';
 import { setAdBanner } from '../../redux/adBannerSlice';
+import CheckOnIcon from '../../assets/icons/check_on.svg';
 
+import CheckIcon from '../../assets/icons/check_circle.svg';
+import ImpossibleIcon from '../../assets/icons/impossible_circle.svg';
 
 const Container = styled.View`
   flex: 1.0;
@@ -368,9 +373,87 @@ const ButtonText = styled.Text`
   color: #fff;
   line-height: 20px;
 `;
+const ProfileInfoSection = styled.View`
+  width: 100%;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #fff;
+`;
+const LeftContainer = styled.View`
+  flex: 1;
+  justify-content: center;
+`;
 
+const RightContainer = styled.View`
+  flex: 1;
+  align-items: flex-end;
+  justify-content: center;
+`;
+const ListItemTitle = styled.Text`
+  font-size: 13px;
+  font-family: Pretendard-Bold;
+  color: #1b1c1f;
+  line-height: 20px;
+`;
+const ListItem = styled.View`
+  flex-direction: row; 
+  justify-content: center;
+  align-items: center;
+  padding-top:12px;
+  padding-right : 16px;
+  padding-left : 16px;
+  padding-bottom: 12px;
 
-const ConsultingReservation = () => {
+`;
+const CheckCircle = styled.TouchableOpacity.attrs(props => ({
+  activeOpacity: 0.8,
+}))`
+
+    width: 20px;
+    height: 20px;
+    border-radius: 5px;  
+    background-color: #fff;
+    border: 2px solid #BAC7D5;  
+    align-items: center;
+    justify-content: center;
+    margin-left:8px;
+`;
+const ButtonSection3 = styled.View`
+margin-top: 10px;
+  width: 100%;
+   padding: 16px; /* 패딩 추가 */
+  background-color: #fff; /* 배경색 설정 */
+    position: absolute; /* 버튼을 고정 */
+ bottom: 0; /* 화면 하단에 위치 */
+  left: 0; /* 왼쪽 시작 */
+  right: 0; /* 오른쪽 끝 */
+`;
+
+const Button2 = styled.TouchableOpacity.attrs(props => ({
+  activeOpacity: 0.6,
+  disabled: !props.active, // active가 false일 때 버튼 비활성화
+
+}))`
+  width: ${props => props.width - 40}px;
+  height: 60px;
+  border-radius: 30px;
+  background-color: ${props => (props.active ? '#2F87FF' : '#e5e5e5')};
+  align-items: center;
+  justify-content: center;
+  align-self: center;
+  background-color: #2F87FF;
+`;
+
+const ButtonText2 = styled.Text`
+  font-size: 17px;
+  font-family: Pretendard-Bold;
+  color: ${props => (props.active ? '#fff' : '#a3a5a8')};
+  line-height: 20px;
+  color: #fff;
+`;
+
+const ConsultingReservation = props => {
   const _scrollViewRef = useRef(null);
   const _scrollViewRef2 = useRef(null);
   // const data = [{ key: 'dummy' }]; // FlatList에 필요한 데이터
@@ -399,6 +482,7 @@ const ConsultingReservation = () => {
   const [dataList, setDataList] = useState([]);
   const [timeList, setTimeList] = useState([]);
   const [taxTypeList, setTaxTypeList] = useState([]);
+  const [agreePrivacy, setAgreePrivacy] = useState(false); // 팝업 상태 관리
 
   for (let i = 9; i <= 11; i++) {
     if (i < 10) {
@@ -424,7 +508,10 @@ const ConsultingReservation = () => {
         },
       });
     } else {
-      setCurrentPageIndex(currentPageIndex - 1);
+      if (currentPageIndex != 4) {
+        setCurrentPageIndex((currentPageIndex === 5 ? currentPageIndex - 1 : currentPageIndex) - 1);
+
+      }
     }
     return true;
   }
@@ -459,10 +546,11 @@ const ConsultingReservation = () => {
 
 
   useEffect(() => {
+
+    console.log("PaymentScreen", currentPageIndex);
     if (currentPageIndex === 0) {
       getDateTimelist('1', '');
     }
-
   }, [currentPageIndex]);
 
   useEffect(() => {
@@ -679,10 +767,11 @@ const ConsultingReservation = () => {
         input1.current.focus();
       } else if (currentPageIndex === 2 && input2.current) {
         input2.current.focus();
-      } else if (currentPageIndex === 4 && input3.current) {
+      } else if (currentPageIndex === 5 && input3.current) {
         input3.current.focus();
       };
     }
+
     _scrollViewRef.current?.scrollTo({
       x: width * currentPageIndex,
       y: 0, animated: true,
@@ -691,6 +780,7 @@ const ConsultingReservation = () => {
     setTimeout(() => {
       focusInput();
     }, 200)
+
   }, [currentPageIndex]);
 
 
@@ -731,152 +821,141 @@ const ConsultingReservation = () => {
   }, [currentPageIndex]);
 
   return (
-    <ScrollView
-      ref={_scrollViewRef}
-      pagingEnabled
-      style={{
-        width: width,
-      }}
-      horizontal
-      keyboardShouldPersistTaps='always'
-      showsHorizontalScrollIndicator={false}
-      scrollEnabled={false}
-      scrollEventThrottle={16}>
-      <Container style={{ width: width }}>
-        <ProgressSection>
-        </ProgressSection>
+    <Container style={{ width: width }}>
+      {currentPageIndex === 0 &&  <Container style={{ width: width }}>
+          <ProgressSection>
+          </ProgressSection>
 
-        <><IntroSection>
-          <ProfileAvatar
-            source={require('../../assets/images/Minjungum_Lee_consulting.png')} />
-        </IntroSection>
-          <View style={{
-            marginLeft: '5%',
-            width: '90%',
-            borderBottomWidth: 1,
-            borderBottomColor: '#E8EAED', flexDirection: 'row', justifyContent: 'space-between'
-          }}>
-            <ProfileSection style={{
-              flexDirection: 'column', alignItems: 'flex-start',  // 변경 
-              justifyContent: 'flex-start',  // 변경
-              alignSelf: 'flex-start',  // 변경 
-              zIndex: 2,
-              width: '50%',
-              borderBottomWidth: 0,
-              marginLeft: 0
-            }}>
-              <ProfileTitle>이민정음 세무사</ProfileTitle>
-              <ProfileSubTitle>JS회계법인</ProfileSubTitle>
-              <ProfileSubTitle2>세무사, 공인중개사 전문가</ProfileSubTitle2>
-            </ProfileSection>
-            <ProfileSection style={{
-              flexDirection: 'column',
-              alignItems: 'flex-end',  // 변경 
-              justifyContent: 'flex-end',  // 변경
-              alignSelf: 'flex-end',
-              zIndex: 2,
-              width: '50%',
-              marginLeft: 0,
-              borderBottomWidth: 0,
-              marginLeft: 0
-            }}>
-              <View style={{
-                flexDirection: 'row',
-                zIndex: 2,
-                marginBottom: -10
-              }}>
-                <Tag style={{ color: '#fff', borderColor: '#2F87FF', backgroundColor: '#2F87FF', marginRight: 5 }}><TagText style={{ color: '#FFFFFF' }}>양도소득세</TagText></Tag>
-                <Tag style={{ color: '#fff', borderColor: '#2F87FF', backgroundColor: '#2F87FF', width: 50 }}><TagText style={{ color: '#FFFFFF' }}>증여세</TagText></Tag>
-              </View>
-              <View style={{
-                flexDirection: 'row',
-                zIndex: 2,
-              }}>
-                <Tag style={{ color: '#fff', borderColor: '#2F87FF', backgroundColor: '#2F87FF', width: 50 }}><TagText style={{ color: '#FFFFFF' }}>상속세</TagText></Tag>
-              </View>
-            </ProfileSection>
-          </View>
-          <ProfileSection>
-            <ProfileSubTitle3>1,000건 이상의 재산제세 경험을 바탕으로 양도, 증여, 상속에 관한
-              전문적인 상담 및 컨설팅 진행 도와드리겠습니다.{'\n'}감사합니다.</ProfileSubTitle3>
-          </ProfileSection>
-          <ProfileSection style={{
-            borderBottomWidth: 0, marginTop: 10, flexDirection: 'row', justifyContent: 'space-between'
-          }}>
+          <><IntroSection>
+            <ProfileAvatar
+              source={require('../../assets/images/Minjungum_Lee_consulting.png')} />
+          </IntroSection>
             <View style={{
-              flexDirection: 'column',
-              alignItems: 'left',
-              justifyContent: 'left',
-              alignSelf: 'left',
-              zIndex: 2,
-              width: '50%',
+              marginLeft: '5%',
+              width: '90%',
+              borderBottomWidth: 1,
+              borderBottomColor: '#E8EAED', flexDirection: 'row', justifyContent: 'space-between'
             }}>
-              <ProfileTitle style={{ marginBottom: 10 }}>전문분야</ProfileTitle>
-              <ProfileSubTitle2>• 양도/상속/증여세 신고{'\n'}
-                • 자금출처조사{'\n'}
-                • 부동산 관련 절세{'\n'}
-                • 상속 및 가업승계</ProfileSubTitle2>
-            </View>
-            <View style={{
-              flexDirection: 'column',
-              alignItems: 'left',
-              justifyContent: 'left',
-              alignSelf: 'left',
-              zIndex: 2,
-              width: '50%',
-            }}>
-              <ProfileTitle style={{ marginBottom: 10 }}>주요경력</ProfileTitle>
-              <ProfileSubTitle2>• 텍스온세무법인 2021{'\n'}
-                • 신승세무법인 2021{'\n'}
-                • JS세무회계 2023</ProfileSubTitle2>
-            </View>
-          </ProfileSection>
-          <ButtonSection>
-            <ShadowContainer>
-              <Button
-                width={width}
-                onPress={async () => {
-                  const state = await NetInfo.fetch();
-                  const canProceed = await handleNetInfoChange(state);
-                  if (canProceed) {
-                    setCurrentPageIndex(1);
-
-                  }
+              <ProfileSection style={{
+                flexDirection: 'column', alignItems: 'flex-start',  // 변경 
+                justifyContent: 'flex-start',  // 변경
+                alignSelf: 'flex-start',  // 변경 
+                zIndex: 2,
+                width: '50%',
+                borderBottomWidth: 0,
+                marginLeft: 0
+              }}>
+                <ProfileTitle>이민정음 세무사</ProfileTitle>
+                <ProfileSubTitle>JS회계법인</ProfileSubTitle>
+                <ProfileSubTitle2>세무사, 공인중개사 전문가</ProfileSubTitle2>
+              </ProfileSection>
+              <ProfileSection style={{
+                flexDirection: 'column',
+                alignItems: 'flex-end',  // 변경 
+                justifyContent: 'flex-end',  // 변경
+                alignSelf: 'flex-end',
+                zIndex: 2,
+                width: '50%',
+                marginLeft: 0,
+                borderBottomWidth: 0,
+                marginLeft: 0
+              }}>
+                <View style={{
+                  flexDirection: 'row',
+                  zIndex: 2,
+                  marginBottom: -10
                 }}>
-                <ButtonText >다음으로</ButtonText>
-              </Button>
-            </ShadowContainer>
-            <View
-              style={{
-                marginTop: 5,
-                marginBottom: 5,
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'center',
-                alignSelf: 'center',
-                zIndex: 2,
-              }}>
-              {currentPageIndexList?.map((item, index) => (
-                <TouchableOpacity
-                  key={index}
-                  activeOpacity={0.6}
-                  hitSlop={{ top: 20, bottom: 20, left: 20, right: 20 }}
-                  style={{
-                    width: 0 === index ? 20 : 8, // Elongate the dot
-                    height: 8,
-                    borderRadius: 4,
-                    backgroundColor: 0 === index ? '#2F87FF' : '#1b1c1f',
-                    borderWidth: 1,
-                    borderColor: 0 === index ? '#2F87FF' : '#1b1c1f',
-                    marginRight: 4,
-                  }}
-                />
-              ))}
+                  <Tag style={{ color: '#fff', borderColor: '#2F87FF', backgroundColor: '#2F87FF', marginRight: 5 }}><TagText style={{ color: '#FFFFFF' }}>양도소득세</TagText></Tag>
+                  <Tag style={{ color: '#fff', borderColor: '#2F87FF', backgroundColor: '#2F87FF', width: 50 }}><TagText style={{ color: '#FFFFFF' }}>증여세</TagText></Tag>
+                </View>
+                <View style={{
+                  flexDirection: 'row',
+                  zIndex: 2,
+                }}>
+                  <Tag style={{ color: '#fff', borderColor: '#2F87FF', backgroundColor: '#2F87FF', width: 50 }}><TagText style={{ color: '#FFFFFF' }}>상속세</TagText></Tag>
+                </View>
+              </ProfileSection>
             </View>
-          </ButtonSection></>
-      </Container>
+            <ProfileSection>
+              <ProfileSubTitle3>1,000건 이상의 재산제세 경험을 바탕으로 양도, 증여, 상속에 관한
+                전문적인 상담 및 컨설팅 진행 도와드리겠습니다.{'\n'}감사합니다.</ProfileSubTitle3>
+            </ProfileSection>
+            <ProfileSection style={{
+              borderBottomWidth: 0, marginTop: 10, flexDirection: 'row', justifyContent: 'space-between'
+            }}>
+              <View style={{
+                flexDirection: 'column',
+                alignItems: 'left',
+                justifyContent: 'left',
+                alignSelf: 'left',
+                zIndex: 2,
+                width: '50%',
+              }}>
+                <ProfileTitle style={{ marginBottom: 10 }}>전문분야</ProfileTitle>
+                <ProfileSubTitle2>• 양도/상속/증여세 신고{'\n'}
+                  • 자금출처조사{'\n'}
+                  • 부동산 관련 절세{'\n'}
+                  • 상속 및 가업승계</ProfileSubTitle2>
+              </View>
+              <View style={{
+                flexDirection: 'column',
+                alignItems: 'left',
+                justifyContent: 'left',
+                alignSelf: 'left',
+                zIndex: 2,
+                width: '50%',
+              }}>
+                <ProfileTitle style={{ marginBottom: 10 }}>주요경력</ProfileTitle>
+                <ProfileSubTitle2>• 텍스온세무법인 2021{'\n'}
+                  • 신승세무법인 2021{'\n'}
+                  • JS세무회계 2023</ProfileSubTitle2>
+              </View>
+            </ProfileSection>
+            <ButtonSection>
+              <ShadowContainer>
+                <Button
+                  width={width}
+                  onPress={async () => {
+                    const state = await NetInfo.fetch();
+                    const canProceed = await handleNetInfoChange(state);
+                    if (canProceed) {
+                      setCurrentPageIndex(1);
 
-      <Container style={{ width: width }}>
+                    }
+                  }}>
+                  <ButtonText >다음으로</ButtonText>
+                </Button>
+              </ShadowContainer>
+              <View
+                style={{
+                  marginTop: 5,
+                  marginBottom: 5,
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  alignSelf: 'center',
+                  zIndex: 2,
+                }}>
+                {currentPageIndexList?.map((item, index) => (
+                  <TouchableOpacity
+                    key={index}
+                    activeOpacity={0.6}
+                    hitSlop={{ top: 20, bottom: 20, left: 20, right: 20 }}
+                    style={{
+                      width: 0 === index ? 20 : 8, // Elongate the dot
+                      height: 8,
+                      borderRadius: 4,
+                      backgroundColor: 0 === index ? '#2F87FF' : '#1b1c1f',
+                      borderWidth: 1,
+                      borderColor: 0 === index ? '#2F87FF' : '#1b1c1f',
+                      marginRight: 4,
+                    }}
+                  />
+                ))}
+              </View>
+            </ButtonSection></>
+        </Container>}
+      {currentPageIndex === 1 &&   <Container style={{ width: width }}>
         <ProgressSection>
         </ProgressSection>
         <><IntroSection2 style={{ width: width }}>
@@ -956,8 +1035,9 @@ const ConsultingReservation = () => {
             </View>
           </ButtonSection></>
 
-      </Container>
-      <Container style={{ width: width }}>
+      </Container>}
+
+      {currentPageIndex === 2 &&     <Container style={{ width: width }}>
         <ProgressSection>
         </ProgressSection>
         <><IntroSection2 style={{ width: width }}>
@@ -985,7 +1065,6 @@ const ConsultingReservation = () => {
                   }
                   setPhone(formattedPhone);
                 }}
-                autoCompleteType="tel"
                 onSubmitEditing={async () => {
                   const state = await NetInfo.fetch();
                   const canProceed = await handleNetInfoChange(state);
@@ -1094,8 +1173,9 @@ const ConsultingReservation = () => {
             </View>
           </ButtonSection></>
 
-      </Container>
-      <Container style={{ width: width }}>
+      </Container>}
+
+      {currentPageIndex === 3 &&       <Container style={{ width: width }}>
         <ProgressSection>
         </ProgressSection>
         <><FlatList
@@ -1234,6 +1314,18 @@ const ConsultingReservation = () => {
                     active={selectedList.length > 0}
                     width={width}
                     onPress={async () => {
+                      // try {
+                      //   const state = await NetInfo.fetch();
+                      //   const canProceed = await handleNetInfoChange(state);
+
+                      //   if (canProceed) {
+                      //     console.log('Navigating to PaymentScreen');
+
+                      //   }
+                      // } catch (error) {
+                      //   console.error('Error navigating to PaymentScreen:', error);
+                      // }
+
                       const state = await NetInfo.fetch();
                       const canProceed = await handleNetInfoChange(state);
                       if (canProceed) {
@@ -1253,6 +1345,8 @@ const ConsultingReservation = () => {
                   </Button>
                 </ShadowContainer>
               </View>
+
+
               <View
                 style={{
                   marginTop: 5,
@@ -1283,8 +1377,142 @@ const ConsultingReservation = () => {
             </ButtonSection></>
           }
         /></>
-      </Container>
-      <ScrollView scrollEnabled={false} overScrollMode="never"><TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+      </Container>}
+
+      {currentPageIndex === 4 &&     <Container style={{ width: width, height: height * 0.89 }}>
+        <ProgressSection>
+        </ProgressSection>
+        <ScrollView contentContainerStyle={styles.scrollContent}>
+          {/* Input Section */}
+          <View style={styles.inputSection}>
+            {/* Label */}
+            <Text style={styles.bigTitle}>입력 정보를 확인하신 후 결제해주세요.</Text>
+            <View style={styles.Line1} />
+
+            <ProfileInfoSection>
+
+              <LeftContainer>
+                <Text style={styles.dateText}>2024년 5월 7일 (수)</Text>
+                <Text style={styles.timeText}>
+                  <Text style={styles.timeHighlight}>13:00</Text>
+                  <Text style={styles.timeSubtext}> (오후 1시)</Text>
+                </Text>
+              </LeftContainer>
+              <RightContainer>
+                <Text style={styles.titleText}>JS회계법인</Text>
+                <Text style={styles.nameText}>이민정음 세무사</Text>
+                <Text style={styles.addressText}>서울특별시 송파구</Text>
+              </RightContainer>
+            </ProfileInfoSection>
+            <View style={styles.Line1} />
+
+            <Text style={styles.subTitleLabel}>신청정보</Text>
+
+            <View style={styles.infoBox}>
+              {/* 고객명 */}
+              <View style={styles.rowInfo}>
+                <Text style={styles.labelInfo}>고객명</Text>
+                <Text style={styles.valueIfno}>홍길동</Text>
+              </View>
+
+              {/* 할인 금액 */}
+              <View style={styles.rowInfo}>
+                <Text style={styles.labelInfo}>전화번호</Text>
+                <Text style={styles.valueIfno}>010-0000-0000</Text>
+              </View>
+
+
+            </View>
+            <View style={styles.Line1} />
+
+            <Text style={styles.subTitleLabel}>결제 금액</Text>
+            <View style={styles.infoBox}>
+              {/* 상품 금액 */}
+              <View style={styles.rowInfo}>
+                <Text style={styles.labelInfo}>상품 금액</Text>
+                <Text style={styles.valueIfno}>50,000 원</Text>
+              </View>
+
+              {/* 할인 금액 */}
+              <View style={styles.rowInfo}>
+                <Text style={styles.labelInfo}>할인 금액</Text>
+                <Text style={styles.valueIfno}>0 원</Text>
+              </View>
+
+              {/* 구분선 */}
+              <View style={styles.separator} />
+
+              {/* 결제 금액 */}
+              <View style={styles.rowInfo}>
+                <Text style={styles.labelInfo}>결제 금액</Text>
+                <Text style={styles.totalValue}>50,000 원</Text>
+              </View>
+            </View>
+
+            <View style={styles.Line1} />
+
+            <ListItem style={{ marginTop: 0 }}>
+              <View style={{ flexDirection: 'row' }}>
+                <TouchableOpacity
+                  onPress={() => {
+                    navigation.navigate('Privacy2', { agreePrivacy: agreePrivacy, navigation: navigation, tokens: props?.route?.params?.tokens ? props?.route?.params?.tokens : null, id: props?.route?.params?.id ? props?.route?.params?.id : null, password: props?.route?.params?.password ? props?.route?.params?.password : null });
+                  }} >
+                  <ListItemTitle style={{ color: '#2F87FF', textDecorationLine: 'underline' }}>개인정보 수집 및 이용</ListItemTitle>
+                </TouchableOpacity>
+                <ListItemTitle>에 대하여 동의하시나요?</ListItemTitle>
+              </View>
+              <CheckCircle
+                onPress={() => {
+                  setAgreePrivacy(!agreePrivacy);
+                }}>
+                {agreePrivacy && <CheckOnIcon />}
+              </CheckCircle>
+            </ListItem>
+
+
+            <View style={styles.Line1} />
+
+
+            {/* 만료 메시지 */}
+            {/* 만료 메시지와 재전송 버튼 */}
+
+
+          </View>
+
+
+        </ScrollView>
+        <ButtonSection3>
+          <Button2
+            style={{ backgroundColor: agreePrivacy ? '#2F87FF' : '#E8EAED' }}
+            active={agreePrivacy} // agreePrivacy 값에 따라 버튼 활성화
+            width={width}
+            onPress={async () => {
+              const state = await NetInfo.fetch();
+              const canProceed = await handleNetInfoChange(state);
+              if (canProceed) {
+                console.log('결제하기');
+                navigation.push('PaymentCompletScreen',);
+                navigation.navigate('PaymentCompletScreen', {
+                  onPaymentComplete: () => {
+                    if (props.route.params?.onPaymentComplete) {
+                      props.route.params.onPaymentComplete(); // 콜백 호출
+                    }
+                    navigation.goBack(); // 이전 화면으로 이동
+                  },
+                });
+
+              }
+            }
+              // 동의하기 버튼 클릭 시 redux에 저장
+            }>
+            <ButtonText2
+              active={agreePrivacy}>{'결제하기'}</ButtonText2>
+          </Button2>
+
+        </ButtonSection3>
+      </Container>}
+
+      {currentPageIndex === 5 &&     <ScrollView scrollEnabled={false} overScrollMode="never"><TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <Container style={{ width: width, height: height * 0.89 }}>
 
           <ProgressSection>
@@ -1354,7 +1582,7 @@ const ConsultingReservation = () => {
                 <ScrollView keyboardShouldPersistTaps='always'>
                   <ConsultingInput
                     ref={input3}
-                    autoFocus={currentPageIndex === 4}
+                    autoFocus={currentPageIndex === 5}
                     multiline={true}
                     width={width}
                     placeholder="정확한 상담을 위해 사실 관계 및 문의사항을 자세하게 입력해주세요."
@@ -1399,6 +1627,16 @@ const ConsultingReservation = () => {
                       if (canProceed) {
                         setCurrentPageIndex(3);
                       }
+
+
+                      // setTimeout(() => {
+                      //   navigation.navigate('PaymentScreen', {
+                      //     onPaymentComplete: () => {
+                      //       setIsPayment(false);
+                      //       setCurrentPageIndex(4);
+                      //     },
+                      //   });
+                      // }, 200)
                     }}>
                     <ButtonText style={{ color: '#717274' }}>이전으로</ButtonText>
                   </Button>
@@ -1465,13 +1703,150 @@ const ConsultingReservation = () => {
         </Container>
 
       </TouchableWithoutFeedback>
-      </ScrollView>
-
-
-
-
-    </ScrollView >
+      </ScrollView>}
+    </Container>
+    
   );
 };
+
+const styles = StyleSheet.create({
+  timerText: {
+    fontSize: 13,
+    color: '#FF7401', // 빨간색 텍스트
+    marginRight: 10,
+    fontFamily: 'Pretendard-Bold', // 원하는 폰트 패밀리
+    fontWeight: '700', // 폰트 두께 (400은 기본)
+  },
+  rootContainer: {
+    flex: 1,
+    backgroundColor: '#fff',
+  },
+  blueLine: {
+    height: 5, // 라인 두께
+    backgroundColor: '#2f87ff', // 파란색
+  },
+  bigTitle: {
+    fontSize: 20,
+    color: '#1b1C1F',
+    fontFamily: 'Pretendard-Bold', // 원하는 폰트 패밀리
+    lineHeight: 24,
+  },
+
+  subTitleLabel: {
+    fontSize: 17,
+
+    color: '#1b1C1F',
+    fontFamily: 'Pretendard-Bold', // 원하는 폰트 패밀리
+
+  },
+
+  infoBox: {
+    marginTop: 20,
+    width: '100%',
+    paddingLeft: 20,
+    paddingRight: 20,
+    paddingTop: 20,
+    paddingBottom: 10,
+    backgroundColor: '#fff',
+    borderRadius: 5,
+    borderWidth: 1,
+    borderColor: '#d9d9d9', // 연한 테두리
+    alignSelf: 'center',
+  },
+
+  rowInfo: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 10, // 각 행 간 간격
+  },
+
+  labelInfo: {
+    fontSize: 13,
+    fontFamily: 'Pretendard-SemiBold',
+    color: '#717274', // 회색 텍스트
+  },
+  valueIfno: {
+    fontSize: 13,
+    fontFamily: 'Pretendard-Bold', // 원하는 폰트 패밀리
+    color: '#a3a5a8', // 회색 텍스트
+  },
+
+  totalValue: {
+    fontSize: 13,
+    color: '#2F87FF', // 파란 텍스트
+    fontFamily: 'Pretendard-Bold', // 원하는 폰트 패밀리
+  },
+  separator: {
+    height: 1,
+    backgroundColor: '#E8EAED', // 구분선 색상
+  },
+  content: {
+    padding: 20,
+  },
+  container: {
+    flex: 1,
+    padding: 20,
+    backgroundColor: '#fff',
+  },
+  title: {
+    fontSize: 20,
+    fontFamily: 'Pretendard-Bold', // 원하는 폰트 패밀리
+    marginBottom: 30,
+    textAlign: 'center',
+  },
+  scrollContent: {
+    paddingBottom: 80, // 버튼 공간 확보
+    paddingHorizontal: 20,
+    paddingTop: 20,
+  },
+  secondContent: {
+    marginTop: 20,
+  },
+  inputSection: {
+    marginTop: 22,
+  },
+  Line1: {
+    height: 1, // 라인 두께
+    backgroundColor: '#E8EaEd', // 파란색
+    marginBottom: 20,
+    marginTop: 20,
+  },
+  dateText: {
+    fontSize: 16,
+    fontFamily: 'Pretendard-Bold',
+    color: '#1B1C1F',
+  },
+  timeText: {
+    marginTop: 5,
+  },
+  timeHighlight: {
+    fontFamily: 'Pretendard-Bold',
+    fontSize: 16,
+    color: '#1B1C1F',
+  },
+  timeSubtext: {
+    fontSize: 13,
+    fontFamily: 'Pretendard-Bold',
+    color: '#1B1C1F',
+  },
+  titleText: {
+    fontSize: 13,
+    fontFamily: 'Pretendard-Bold',
+    color: '#717274',
+    marginBottom: 4,
+  },
+  nameText: {
+    fontSize: 17,
+    fontFamily: 'Pretendard-Bold',
+    color: '#1B1C1F',
+    marginBottom: 4,
+  },
+  addressText: {
+    fontSize: 13,
+    fontFamily: 'Pretendard-SemiBold',
+    color: '#a3a5a8', // 연회색
+  },
+});
 
 export default ConsultingReservation;
