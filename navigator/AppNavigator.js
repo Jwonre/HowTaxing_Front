@@ -32,6 +32,7 @@ import GainsTax from '../screens/Main/GainsTax';
 import ConsultingReservation from '../screens/Main/ConsultingReservation';
 import ConsultingReservation2Screen from '../screens/Main/ConsultingReservation2Screen.js';
 import ConsultingReservation2 from '../screens/Main/ConsultingReservation2.js';
+import TossPaymentScreen from '../screens/Main/TossPaymentScreen.js';
 
 
 import FixedHouse from '../screens/Main/FixedHouse';
@@ -365,6 +366,9 @@ const AppNavigator = () => {
               <Stack.Screen name="ConsultingReservationDetail" component={ConsultingReservationDetail} />
               <Stack.Screen name="ConsultingReservationHistory" component={ConsultingReservationHistory} />
               <Stack.Screen name="ConsultingReservation2Screen" component={ConsultingReservation2Screen} />
+              
+              <Stack.Screen name="TossPaymentScreen" component={TossPaymentScreen} />
+
               <Stack.Screen
                 name="ReservationListScreen"
                 component={ReservationListScreen}

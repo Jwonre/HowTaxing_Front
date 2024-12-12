@@ -1235,10 +1235,13 @@ const ConsultingReservation = () => {
                     active={selectedList.length > 0}
                     width={width}
                     onPress={async () => {
-                      const state = await NetInfo.fetch();
-                      const canProceed = await handleNetInfoChange(state);
                       if (canProceed) {
                         setCurrentPageIndex(4);
+                                             navigation.navigate('PaymentScreen', {
+                          onPaymentComplete: () => {
+                            setCurrentPageIndex(4);
+                          },
+                        });
                       }
                     }}>
                     <ButtonText>다음으로</ButtonText>

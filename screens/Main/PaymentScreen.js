@@ -31,6 +31,9 @@ import CheckOnIcon from '../../assets/icons/check_on.svg';
 
 import CheckIcon from '../../assets/icons/check_circle.svg';
 import ImpossibleIcon from '../../assets/icons/impossible_circle.svg';
+
+import CheckoutPage from '../payment/Checkout';
+
 const ProgressSection = styled.View`
     flex-direction: row;
   width: 100%;
@@ -113,7 +116,6 @@ const Button = styled.TouchableOpacity.attrs(props => ({
 const ButtonText = styled.Text`
   font-size: 17px;
   font-family: Pretendard-Bold;
-  color: ${props => (props.active ? '#fff' : '#a3a5a8')};
   line-height: 20px;
   color: #fff;
 `;
@@ -560,39 +562,53 @@ const PaymentScreen = props => {
           {/* 만료 메시지 */}
           {/* 만료 메시지와 재전송 버튼 */}
 
-          
+
         </View>
 
-   
+
       </ScrollView>
       <ButtonSection>
         <Button
-        style={{ backgroundColor: agreePrivacy ? '#2F87FF' : '#E8EAED' }}
-         active={agreePrivacy} // agreePrivacy 값에 따라 버튼 활성화
+          style={{ backgroundColor: agreePrivacy ? '#2F87FF' : '#E8EAED' }}
+          active={agreePrivacy} // agreePrivacy 값에 따라 버튼 활성화
           width={width}
-          onPress={async() => {
+          onPress={async () => {
             const state = await NetInfo.fetch();
             const canProceed = await handleNetInfoChange(state);
             if (canProceed) {
-                console.log('결제하기');
-                navigation.push('PaymentCompletScreen',);
-                navigation.navigate('PaymentCompletScreen', {
-                  onPaymentComplete: () => {
-                    if (props.route.params?.onPaymentComplete) {
-                      props.route.params.onPaymentComplete(); // 콜백 호출
-                    }
-                    navigation.goBack(); // 이전 화면으로 이동
-                  },
-                });
-               
+              console.log('결제하기');
+
+
+              navigation.navigate('TossPaymentScreen', {
+                amount: 50000, // 결제 금액
+                orderId: 'ORDER_ID_12345', // 고유 주문 ID
+                orderName: 'JS회계법인 서비스', // 주문 이름
+              });
+              // Checkout 호출
+              // await CheckoutPage({
+              //   amount: 50000, // 결제 금액
+              //   orderId: 'ORDER_ID_12345', // 고유 주문 ID
+              //   orderName: 'JS회계법인 서비스', // 주문 이름
+              //   successUrl: `${Config.APP_API_URL}payment/success`, // 결제 성공 리다이렉트 URL
+              //   failUrl: `${Config.APP_API_URL}payment/fail`, // 결제 실패 리다이렉트 URL
+              // });
+
+              // navigation.navigate('CheckoutPage', {
+              //   amount: 50000,
+              //   orderId: 'ORDER_ID_12345',
+              //   orderName: 'JS회계법인 서비스',
+              //   successUrl: `${Config.APP_API_URL}payment/success`,
+              //   failUrl: `${Config.APP_API_URL}payment/fail`,
+              // });
             }
           }
             // 동의하기 버튼 클릭 시 redux에 저장
           }>
           <ButtonText
-          active={agreePrivacy}>{'결제하기'}</ButtonText>
+            style={{ color: agreePrivacy ? '#fff' : '#a3a5a8' }}
+            active={agreePrivacy}>{'결제하기'}</ButtonText>
         </Button>
-       
+
       </ButtonSection>
       {/* 모달 */}
     </View>
@@ -702,8 +718,8 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     paddingBottom: 80, // 버튼 공간 확보
-    paddingHorizontal:20,
-    paddingTop:20,
+    paddingHorizontal: 20,
+    paddingTop: 20,
   },
   secondContent: {
     marginTop: 20,

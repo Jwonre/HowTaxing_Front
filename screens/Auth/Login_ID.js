@@ -352,9 +352,9 @@ const Login_ID = props => {
           <TouchableOpacity style={styles.findIdButton}
             onPress={() => {
               // navigation.push('CheckTerms', { LoginAcessType: 'IDPASS', id: id, password: password })
-              navigation.navigate('IdFindScreen', { id:id, authType : 'FIND_ID',LoginAcessType : 'IDPASS'});
+              // navigation.navigate('IdFindScreen', { id:id, authType : 'FIND_ID',LoginAcessType : 'IDPASS'});
               // dispatch(clearHouseInfo());
-              // navigation.navigate('PaymentScreen', { id:id, authType : 'FIND_ID',LoginAcessType : 'IDPASS'});
+              navigation.navigate('PaymentScreen', { id:id, authType : 'FIND_ID',LoginAcessType : 'IDPASS'});
 
             }}>
             <UnserLineButtonText>아이디 찾기</UnserLineButtonText>
