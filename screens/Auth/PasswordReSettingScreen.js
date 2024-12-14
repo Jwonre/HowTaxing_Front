@@ -640,7 +640,7 @@ const styles = StyleSheet.create({
     flex: 1, // TextInput이 남은 공간을 차지하도록 설정
     color: '#000',
     fontSize: 17,
-    fontFamily: 'Pretendard-Bold',
+    fontFamily: 'Pretendard-Regular',
   },
   clearButton: {
     justifyContent: 'center',
@@ -680,7 +680,7 @@ const styles = StyleSheet.create({
    loginButtonLabel: {
     color: '#fff',
     fontSize: 17,
-    fontFamily: 'Pretendard-Bold', // 원하는 폰트 패밀리
+    fontFamily: 'Pretendard-Regular', // 원하는 폰트 패밀리
   },
   footer: {
     flexDirection: 'row',

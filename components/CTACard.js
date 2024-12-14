@@ -123,7 +123,7 @@ const CTACard = props => {
     const canProceed = await handleNetInfoChange(state);
     if (canProceed) {
       navigation.push('ConsultingReservation2', {
-        IsGainTax: props?.IsGainTax,
+        isGainsTax: props?.IsGainTax,
         houseInfo: props?.houseInfo,
         Pdata: props?.Pdata,
       });

@@ -16,6 +16,7 @@ class KakaoAuthManager {
   async signIn(): Promise<KakaoOAuthToken | null> {
     
     try {
+      console.log('카카오 로그인 시작:');
       const token: KakaoOAuthToken = await login();
       console.log('카카오 로그인 성공:', token);
       return token;

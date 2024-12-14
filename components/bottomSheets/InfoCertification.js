@@ -29,10 +29,10 @@ const SheetContainer = styled.View`
 
 const ModalTitle = styled.Text`
   width: 80%;
-  font-size: 17px;
+  font-size: 18px;
   font-family: Pretendard-Bold;
   color: #1b1c1f;
-  line-height: 26px;
+  line-height: 25px;
   text-align: center;
   margin-bottom: 20px;
 
@@ -42,7 +42,7 @@ const ModalContent = styled.Text`
   font-size: 13px;
   font-family: Pretendard-Bold;
   color: #FF7401;
-  line-height: 26px;
+  line-height: 20px;
   text-align: center;
   margin-bottom: 20px;
 
@@ -64,7 +64,6 @@ const ModalDescription = styled.Text`
 const ModalContentSection = styled.View`
   width: 100%;
   height: auto;
-  margin-top: 10px;
   background-color: #fff;
   align-items: center;
   justify-content: center;
@@ -93,7 +92,7 @@ const ButtonSection = styled.View`
   align-items: center;
   flex-direction: row;
   justify-content: center;
-  padding: 20px;
+  padding: 10px;
   margin-top: 10px;
 `;
 
@@ -943,12 +942,12 @@ const InfoCertification = props => {
         backgroundColor: '#fff',
         borderTopLeftRadius: 20,
         borderTopRightRadius: 20,
-        height: certType === 'KB' ? 350 : 450,
+        height: certType === 'KB' ? 350 : 390,
         width: width - 40,
       }}>
       <SheetContainer width={width}>
         <ModalContentSection>
-          <View style={{ width: 30, height: 50 }}>
+          <View style={{ width: 30, height: 45 }}>
             {(() => {
               switch (certType) {
                 case 'KB':
@@ -1100,7 +1099,7 @@ const InfoCertification = props => {
                     앱 바로가기
                   </ButtonText> */}
                    <ButtonText style={{ color: '#fff' }}>
-                    앱 바로가기
+                    앱으로 바로가기
                   </ButtonText>
                 </Button>
               </DropShadow>

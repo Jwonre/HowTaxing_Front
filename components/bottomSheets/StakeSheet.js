@@ -235,7 +235,10 @@ const StakeSheet = props => {
     const state = await NetInfo.fetch();
     const canProceed = await handleNetInfoChange(state);
     if (canProceed) {
-      dispatch(setHouseInfo({ ...houseInfo, userProportion: value }),);
+      const updateUserProportion = {...houseInfo, userProportion: value};
+      setTimeout(() => {
+        dispatch(setHouseInfo(updateUserProportion));
+      }, 300)
       const chat1 = {
         id: 'stake',
         type: 'my',

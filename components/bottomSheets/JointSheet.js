@@ -54,7 +54,7 @@ const ModalInputSection = styled.View`
 const ModalButton = styled.TouchableOpacity.attrs(props => ({
   activeOpacity: 0.8,
 }))`
-  width: 49%;
+  width: 48%;
   height: 50px;
   border-radius: 25px;
   background-color: #2f87ff;
@@ -230,7 +230,7 @@ const JointSheet = props => {
             const newChatDataList = chatDataList.slice(0, props.payload?.index + 1);
             dispatch(setChatDataList(newChatDataList));
             actionSheetRef.current?.hide();
-          }} style={{ borderColor: '#E8EAED', borderWidth: 1, marginRight: '2%', backgroundColor: '#fff', borderColor: '#E8EAED' }}>
+          }} style={{ borderColor: '#E8EAED', borderWidth: 1, marginRight: 10, backgroundColor: '#fff', borderColor: '#E8EAED' }}>
             <ModalButtonText style={{ color: '#717274' }}>이전으로</ModalButtonText>
           </ModalButton>
           <DropShadow

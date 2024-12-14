@@ -174,7 +174,7 @@ const Login = () => {
     if (canProceed) {
       try {
 
-        
+        console.log("kakao Login Start");
         const token = await kakaoAuthManager.signIn();
         console.log("token ", token ? JSON.stringify(token) : '로그인 실패');
         const profile = await kakaoAuthManager.getProfile();
@@ -424,7 +424,7 @@ const Login = () => {
           if (role === 'USER') {
              //console.log('Login token:', tokens[0]);
              const tokenObject = { 'accessToken': accessToken, 'refreshToken': refreshToken };
-             //console.log('Login tokenObject:', tokenObject);
+             console.log('Login tokenObject:', tokenObject);
              dispatch(setCurrentUser(tokenObject));
  
         

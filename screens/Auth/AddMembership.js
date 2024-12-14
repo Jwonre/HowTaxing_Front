@@ -435,7 +435,7 @@ const styles = StyleSheet.create({
     flex: 1, // TextInput이 남은 공간을 차지하도록 설정
     color: '#000',
     fontSize: 17,
-    fontFamily: 'Pretendard-Bold',
+    fontFamily: 'Pretendard-Regular',
   },
   expiredText2: {
     fontSize: 13,
