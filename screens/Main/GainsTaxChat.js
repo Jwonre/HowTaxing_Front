@@ -1650,60 +1650,56 @@ const GainsTaxChat = () => {
 
                           if (item2.id === 'only' && item2.type === 'my') {
                             console.log('only');
-<<<<<<< HEAD
-=======
-                            // 업데이트된 상태를 변수로 선언
->>>>>>> eeb0f17058f339d9b70e709ce36a6fc1dde37886
+
                             const updatedHouseInfo = {
                               ...houseInfo,
                               ownerCnt: 1,
                               userProportion: 100,
-<<<<<<< HEAD
                             }
                             setTimeout(() => {
                               dispatch(setHouseInfo(updatedHouseInfo));
                             }, 300);
-                            
-=======
-                            };
->>>>>>> eeb0f17058f339d9b70e709ce36a6fc1dde37886
-
-                            // 상태 업데이트
-                            dispatch(setHouseInfo(updatedHouseInfo));
-
-                            console.log('Updated houseInfo:', updatedHouseInfo.ownerCnt);
-                            await processItem0(chatDataList, myChatItem, updatedHouseInfo);
-                          }
-                          console.log('test_houseInfo item.6', houseInfo.ownerCnt)
 
 
-                          //  ////console.log('item2?.openSheet : ', item2?.openSheet)
-                          if (item2?.openSheet) {
-                            if (item2?.id === 'ok' && item2?.chungYackYn) {
-                              SheetManager.show(item2.openSheet, {
-                                payload: {
-                                  navigation: navigation,
-                                  data: item2.id,
-                                  isGainsTax: true,
-                                  currentPageIndex: item2?.currentPageIndex,
-                                  index,
-                                  chungYackYn: item2?.chungYackYn,
-                                },
-                              });
-                            } else {
-                              SheetManager.show(item2.openSheet, {
-                                payload: {
-                                  navigation: navigation,
-                                  data: item2.id,
-                                  isGainsTax: true,
-                                  currentPageIndex: item2?.currentPageIndex,
-                                  index,
-                                },
-                              });
-                            }
+                          };
+
+
+                          // 상태 업데이트
+                          dispatch(setHouseInfo(updatedHouseInfo));
+
+                          console.log('Updated houseInfo:', updatedHouseInfo.ownerCnt);
+                          await processItem0(chatDataList, myChatItem, updatedHouseInfo);
+                        }
+                        console.log('test_houseInfo item.6', houseInfo.ownerCnt)
+
+
+                        //  ////console.log('item2?.openSheet : ', item2?.openSheet)
+                        if (item2?.openSheet) {
+                          if (item2?.id === 'ok' && item2?.chungYackYn) {
+                            SheetManager.show(item2.openSheet, {
+                              payload: {
+                                navigation: navigation,
+                                data: item2.id,
+                                isGainsTax: true,
+                                currentPageIndex: item2?.currentPageIndex,
+                                index,
+                                chungYackYn: item2?.chungYackYn,
+                              },
+                            });
+                          } else {
+                            SheetManager.show(item2.openSheet, {
+                              payload: {
+                                navigation: navigation,
+                                data: item2.id,
+                                isGainsTax: true,
+                                currentPageIndex: item2?.currentPageIndex,
+                                index,
+                              },
+                            });
                           }
                         }
                       }
+
                       }>
                       {item2?.icon ? item2.icon : null}
                       <SelectButtonText >{item2?.name}</SelectButtonText>
