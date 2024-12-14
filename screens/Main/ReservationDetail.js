@@ -27,12 +27,45 @@ import FastImage from 'react-native-fast-image';
 import CloseIcon from '../../assets/icons/close_button.svg';
 import StatusOffIcon from '../../assets/icons/progress_1.svg';
 import StatusOnIcon from '../../assets/icons/progress_2.svg';
+import ModifyIcon from '../../assets/icons/modify.svg';
+import BottomArrow from '../../assets/icons/bottom_arrow.svg';
 
 const ShadowContainer = styled(DropShadow)`
   shadow-color: rgba(0, 0, 0, 0.25);
   shadow-offset: 2px 3px;
   shadow-opacity: 0.2;
   shadow-radius: 3px;
+`;
+const ButtonRowSection = styled.View`
+  width: 100%;
+  height: auto;
+  background-color: #fff;
+  align-items: center;
+  flex-direction: row;
+  justify-content: center;
+  margin-top: 10px;
+  padding: 20px;
+`;
+
+
+const ButtonRow = styled.TouchableOpacity.attrs(props => ({
+  activeOpacity: 0.8,
+}))`
+  width: 100%;
+  height: 50px;
+  border-radius: 25px;
+  background-color: #2f87ff;
+  align-items: center;
+  justify-content: center;
+  border-width: 1px;
+  border-color: #2f87ff;
+`;
+
+const ButtonRowText = styled.Text`
+  font-size: 16px;
+  font-family: Pretendard-Bold;
+  color: #fff;
+  line-height: 20px;
 `;
 
 const ButtonSection = styled.View`
@@ -125,7 +158,37 @@ const ReservationDetail = props => {
     navigation.goBack();
     return true;
   }
+  const consultingTypeMap = {
+    '01': '취득세',
+    '02': '양도소득세',
+    '03': '상속세',
+    '04': '증여세'
+  };
+  const consultingStatusTypeMap = {
+    'WAITING': '상담대기',
+    'CANCEL': '상담취소',
+    'PROGRESS': '상담중',
+    'FINISH': '상담완료',
+    'PAYMENT_COMPLETED': '결제완료'
 
+  };
+
+  const consultingStatusTypeColorMap = {
+    'WAITING': '#A2C62B',
+    'CANCEL': '#FF2C65',
+    'PROGRESS': '#FF7401',
+    'FINISH': '#A82BC6',
+    'PAYMENT_COMPLETED': '#A2C62B'
+
+  };
+  const consultingStatusTypeIndexMap = {
+    'WAITING': 1,
+    'CANCEL': 4,
+    'PROGRESS': 2,
+    'FINISH': 3,
+    'PAYMENT_COMPLETED': 0,
+
+  };
   const handleHouseChange1 = async (Date, Time) => {
     setReservationDetail(prevDetail => ({
       ...prevDetail,
@@ -246,6 +309,8 @@ const ReservationDetail = props => {
             //console.log('new Date(list[0]):', new Date(list[0]));
             setReservationDetail({ ...result });
 
+            setProgressStatus(consultingStatusTypeIndexMap[response.data.data.consultingStatus])
+
           }
         }
 
@@ -264,46 +329,63 @@ const ReservationDetail = props => {
   };
 
 
+  const setConsultingCancel = async (consultingReservationId) => {
+    const url = `${Config.APP_API_URL}consulting/reservationCancel?consultingReservationId=${consultingReservationId}`;
+    //const url = `https://devapp.how-taxing.com/consulting/availableSchedule?consultantId=${consultantId}&searchType="${searchType}"`;
+    const headers = {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${currentUser.accessToken}`
+    };
+    /*
+    const params = {
+      consultantId: consultantId,
+      searchType: searchType,
+    }*/
+    console.log('url', url);
+    // console.log('params', params);
+    console.log('headers', headers);
+    await axios
+      .delete(url,
+        { headers: headers }
+      )
+      .then(response => {
+        console.log('response.data', response.data);
+        if (response.data.errYn === 'Y') {
+          SheetManager.show('info', {
+            payload: {
+              type: 'error',
+              errorType: response.data.type,
+              message: response.data.errMsg ? response.data.errMsg : '상담 예약 상세 내역을 불러오는데 문제가 발생했어요.',
+              description: response.data.errMsgDtl ? response.data.errMsgDtl : '',
+              buttontext: '확인하기',
+            },
+          });
+        } else {
+          console.log('response.data', response.data.data);
+          const result = response === undefined ? [] : response.data.data;
+          if (result) {
+            console.log('result:', result);
+            //console.log('new Date(list[0]):', new Date(list[0]));
+            setReservationDetail({ ...result });
 
+            setProgressStatus(consultingStatusTypeIndexMap[response.data.data.consultingStatus])
 
+          }
+        }
 
-  // 미입력
-  const progressStatus1 = [
-    { id: 1, status: '결제 완료', isActive: true },
-    { id: 2, status: '상담 상세정보 입력', isActive: false },
-    { id: 3, status: '상담 대기', isActive: false },
-    { id: 4, status: '상담 시작', isActive: false },
-    { id: 5, status: '상담 종료', isActive: false },
-  ];
-  // 상담대기
-  const progressStatus2 = [
-    { id: 1, status: '결제 완료', isActive: false },
-    { id: 2, status: '상담 상세정보 입력', isActive: false },
-    { id: 3, status: '상담 대기', isActive: true },
-    { id: 4, status: '상담 시작', isActive: false },
-    { id: 5, status: '상담 종료', isActive: false },
-  ];
-  // 상담중중
-  const progressStatus3 = [
-    { id: 1, status: '결제 완료', isActive: false },
-    { id: 2, status: '상담 상세정보 입력', isActive: false },
-    { id: 3, status: '상담 대기', isActive: false },
-    { id: 4, status: '상담 시작', isActive: true },
-    { id: 5, status: '상담 종료', isActive: false },
-  ];
-  // 상담종료
-  const progressStatus4 = [
-    { id: 1, status: '결제 완료', isActive: false },
-    { id: 2, status: '상담 상세정보 입력', isActive: false },
-    { id: 3, status: '상담 대기', isActive: false },
-    { id: 4, status: '상담 시작', isActive: false },
-    { id: 5, status: '상담 종료', isActive: true },
-  ];
-  const progressCancelData = [
-    { id: 1, status: '결제 완료', isActive: false },
-    { id: 2, status: '상담 상세정보 입력', isActive: false },
-    { id: 3, status: '상담 취소', isActive: true },
-  ];
+      })
+      .catch(function (error) {
+        SheetManager.show('info', {
+          payload: {
+            message: '상담 예약 상세 내역을 불러오는데 문제가 발생했어요.',
+            description: error?.message ? error?.message : '오류가 발생했습니다.',
+            type: 'error',
+            buttontext: '확인하기',
+          }
+        });
+        ////console.log(error ? error : 'error');
+      });
+  };
 
   const temp = (accessToken, refreshToken) => {
     return [accessToken, refreshToken];
@@ -401,10 +483,44 @@ const ReservationDetail = props => {
           <HoustInfoSection style={{ paddingTop: 10, paddingBottom: 10 }}>
             <ProfileAvatar2 source={require('../../assets/images/Minjungum_Lee_consulting.png')} />
             <Text style={styles.contentPayment}>
-              {'#' + `${'3272'}`}
+              {'#' + `${reservationDetail.consultingReservationId}`}
             </Text>
             <Text style={styles.namePayment}>이민정음 세무사</Text>
 
+            <View
+              style={{
+                marginTop: 5,
+                marginStart: 10,
+                borderRadius: 50,
+                paddingHorizontal: 7,
+                justifyContent: 'center', // 수직 가운데 정렬
+                alignItems: 'center', // 수평 가운데 정렬
+                height: 22,
+                backgroundColor:
+                  progressStatus === 0
+                    ? '#A2C62B' // 상태 0
+                    : progressStatus === 1
+                      ? '#A2C62B' // 상태 1
+                      : progressStatus === 2
+                        ? '#FF7401' // 상태 2
+                        : progressStatus === 3
+                          ? '#A82BC6' // 상태 3
+                          : '#FF2C65', // 기본값 또는 기타 상태
+              }}
+            >
+
+              <Text style={[styles.statusText2, { lineHeight: 22 }]}>
+                {progressStatus === 4
+                  ? '상담 취소'
+                  : progressStatus === 3
+                    ? '상담 종료'
+                    : progressStatus === 2
+                      ? '상담 시작'
+                      : progressStatus === 1
+                        ? '상담 대기'
+                        : '결제 완료'}
+              </Text>
+            </View>
 
           </HoustInfoSection>
 
@@ -412,244 +528,452 @@ const ReservationDetail = props => {
 
           <Text style={styles.subTitleLabel}>진행 상태 </Text>
 
-          <View style={styles.progressStatus}>
+          <View style={progressStatus == 4 ? styles.progressStatusCanCel : styles.progressStatus}>
 
             {/* 세로 라인 */}
-            <View style={styles.verticalLine} />
+            <View style={progressStatus == 4 ? styles.verticalCanCelLine : styles.verticalLine} />
             {/* 상태 아이콘 리스트 */}
 
             <View style={styles.progressContainer}>
-              <View style={styles.rowInfoProgress}>
-                {/* 아이콘 */}
-                <View
-                  style={{
-                    position: 'relative',
-                    left: (progressStatus === 0 ? progressStatus1 :
-                      progressStatus === 1 ? progressStatus2 :
-                        progressStatus === 2 ? progressStatus3 :
-                          progressStatus === 3 ? progressStatus4 : progressCancelData).isActive ? 0 : 9,
-                    zIndex: 1,
-                  }}
-                >
-                  {(progressStatus === 0 ? progressStatus1 :
-                    progressStatus === 1 ? progressStatus2 :
-                      progressStatus === 2 ? progressStatus3 :
-                        progressStatus === 3 ? progressStatus4 : progressCancelData).isActive ? <StatusOnIcon /> : <StatusOffIcon />}
-                </View>
-
-                {/* 상태 텍스트 */}
-                <Text style={styles.statusText}>결제 완료</Text>
-
-                <Text style={styles.progressDate}>-</Text>
-
-              </View>
-              <View style={styles.rowInfoProgress}>
-                {/* 아이콘 */}
-                <View
-                  style={{
-                    position: 'relative',
-                    left: (progressStatus === 0 ? progressStatus1 :
-                      progressStatus === 1 ? progressStatus2 :
-                        progressStatus === 2 ? progressStatus3 :
-                          progressStatus === 3 ? progressStatus4 : progressCancelData).isActive ? 0 : 9,
-                    zIndex: 1,
-                  }}
-                >
-                  {(progressStatus === 0 ? progressStatus1 :
-                    progressStatus === 1 ? progressStatus2 :
-                      progressStatus === 2 ? progressStatus3 :
-                        progressStatus === 3 ? progressStatus4 : progressCancelData).isActive ? <StatusOnIcon /> : <StatusOffIcon />}
-                </View>
-
-                {/* 상태 텍스트 */}
-                <Text style={styles.statusText}>결제 완료</Text>
-
-                <Text style={styles.progressDate}>-</Text>
-
-              </View>
-              <View style={styles.rowInfoProgress}>
-                {/* 아이콘 */}
-                <View
-                  style={{
-                    position: 'relative',
-                    left: (progressStatus === 0 ? progressStatus1 :
-                      progressStatus === 1 ? progressStatus2 :
-                        progressStatus === 2 ? progressStatus3 :
-                          progressStatus === 3 ? progressStatus4 : progressCancelData).isActive ? 0 : 9,
-                    zIndex: 1,
-                  }}
-                >
-                  {(progressStatus === 0 ? progressStatus1 :
-                    progressStatus === 1 ? progressStatus2 :
-                      progressStatus === 2 ? progressStatus3 :
-                        progressStatus === 3 ? progressStatus4 : progressCancelData).isActive ? <StatusOnIcon /> : <StatusOffIcon />}
-                </View>
-
-                {/* 상태 텍스트 */}
-                <Text style={styles.statusText}>결제 완료</Text>
-
-                <Text style={styles.progressDate}>-</Text>
-
-              </View>
-              <View style={styles.rowInfoProgress}>
-                {/* 아이콘 */}
-                <View
-                  style={{
-                    position: 'relative',
-                    left: (progressStatus === 0 ? progressStatus1 :
-                      progressStatus === 1 ? progressStatus2 :
-                        progressStatus === 2 ? progressStatus3 :
-                          progressStatus === 3 ? progressStatus4 : progressCancelData).isActive ? 0 : 9,
-                    zIndex: 1,
-                  }}
-                >
-                  {(progressStatus === 0 ? progressStatus1 :
-                    progressStatus === 1 ? progressStatus2 :
-                      progressStatus === 2 ? progressStatus3 :
-                        progressStatus === 3 ? progressStatus4 : progressCancelData).isActive ? <StatusOnIcon /> : <StatusOffIcon />}
-                </View>
-
-                {/* 상태 텍스트 */}
-                <Text style={styles.statusText}>결제 완료</Text>
-
-                <Text style={styles.progressDate}>-</Text>
-
-              </View>
-              <View style={styles.rowInfoProgress}>
-                {/* 아이콘 */}
-                <View
-                  style={{
-                    position: 'relative',
-                    left: (progressStatus === 0 ? progressStatus1 :
-                      progressStatus === 1 ? progressStatus2 :
-                        progressStatus === 2 ? progressStatus3 :
-                          progressStatus === 3 ? progressStatus4 : progressCancelData).isActive ? 0 : 9,
-                    zIndex: 1,
-                  }}
-                >
-                  {(progressStatus === 0 ? progressStatus1 :
-                    progressStatus === 1 ? progressStatus2 :
-                      progressStatus === 2 ? progressStatus3 :
-                        progressStatus === 3 ? progressStatus4 : progressCancelData).isActive ? <StatusOnIcon /> : <StatusOffIcon />}
-                </View>
-
-                {/* 상태 텍스트 */}
-                <Text style={styles.statusText}>결제 완료</Text>
-
-                <Text style={styles.progressDate}>-</Text>
-
-              </View>
-            </View>
-            {/* <FlatList
-              data={progressStatus === 0 ? progressStatus1 :
-                progressStatus === 1 ? progressStatus2 :
-                  progressStatus === 2 ? progressStatus3 :
-                    progressStatus === 3 ? progressStatus4 : progressCancelData
-              }
-              renderItem={({ item, index }) => (
-                <View style={[styles.itemContainer, {
-                  marginTop: 10, marginBottom: index < (
-                    progressStatus === 0 ? progressStatus1.length :
-                      progressStatus === 1 ? progressStatus2.length :
-                        progressStatus === 2 ? progressStatus3.length :
-                          progressStatus === 3 ? progressStatus4.length :
-                            progressCancelData.length
-                  ) - 1 ? 15 : 0
-                }]}>
-            
-                  <View style={styles.iconAndTextContainer}>
+              {Array(progressStatus == 4 ? 2 : 4)
+                .fill(0) // 5개의 `View`를 생성
+                .map((_, index) => (
+                  <View key={index} style={styles.rowInfoProgress}>
+                    {/* 아이콘 */}
                     <View
                       style={{
                         position: 'relative',
-                        left: item.isActive ? 0 : 9,
+                        left:
+                          index + 1 === progressStatus + 1
+                            ? 0 // 현재 활성화된 상태면 위치 조정
+                            : 9, // 비활성화 상태면 다른 위치
                         zIndex: 1,
                       }}
                     >
-                      {item.isActive ? <StatusOnIcon /> : <StatusOffIcon />}
+                      {index + 1 === progressStatus + 1 ? (
+                        <StatusOnIcon /> // 활성화 상태
+                      ) : (
+                        <StatusOffIcon /> // 비활성화 상태
+                      )}
                     </View>
 
-                    <Text style={styles.statusText}>{item.status}</Text>
-
-                    <Text style={styles.progressDate}>{item.status}</Text>
-
+                    {/* 텍스트 */}
+                    <Text style={[styles.statusText, { marginStart: (index + 1 === progressStatus + 1) ? 20 : 40 }]}>
+                      {progressStatus === 4 // 결제 취소 상태일 때 텍스트 변경
+                        ? index === 0
+                          ? '결제 완료'
+                          : index === 1
+                            ? '상담 취소'
+                            : ''
+                        : index === 0
+                          ? '결제 완료'
+                          : index === 1
+                            ? '상담 대기'
+                            : index === 2
+                              ? '상담 시작'
+                              : '상담 종료'}
+                    </Text>
+                    <Text style={styles.progressDate}>
+                      {index + 1 <= progressStatus + 1
+                        ? // 상태에 따라 날짜 표시
+                        index === 0
+                          ? reservationDetail.reservationDate === undefined ? '' : reservationDetail.reservationDate.replace(/-/g, '.') + ' ' + reservationDetail.reservationStartTime  // 결제 완료 날짜
+                          : index === 1
+                            ? reservationDetail.reservationDate === undefined ? '' : reservationDetail.reservationDate.replace(/-/g, '.') + ' ' + reservationDetail.reservationStartTime // 상담 대기 날짜
+                            : index === 2
+                              ? reservationDetail.reservationDate === undefined ? '' : reservationDetail.reservationDate.replace(/-/g, '.') + ' ' + reservationDetail.reservationStartTime // 상담 시작 날짜
+                              : reservationDetail.reservationDate === undefined ? '' : reservationDetail.reservationDate.replace(/-/g, '.') + ' ' + reservationDetail.reservationStartTime // 상담 종료 날짜
+                        : reservationDetail.reservationDate === undefined ? '' : reservationDetail.reservationDate.replace(/-/g, '.') + ' ' + reservationDetail.reservationStartTime}
+                    </Text>
                   </View>
+                ))}
 
+            </View>
 
-                </View>
-              )}
-              keyExtractor={(item) => item.id.toString()}
-            /> */}
           </View>
 
           <View style={styles.Line1} />
 
-          <Text style={styles.subTitleLabel}>결제 정보</Text>
+          {progressStatus === 0 && (
+            <ConsultingWating data={reservationDetail} />
+          )}
+          {progressStatus === 1 && (
+            <ConsultingWating data={reservationDetail} />
+          )}
+          {progressStatus === 2 && (
+            <ConsultingStart data={reservationDetail} />
+          )}
 
-          <View style={styles.infoBox}>
-            {/* 고객명 */}
-            <View style={styles.rowInfo}>
-              <Text style={styles.labelInfo}>고객명</Text>
-              <Text style={styles.valueIfno}>홍길동</Text>
-            </View>
+          {progressStatus === 3 && (
+            <ConsultingEnd data={reservationDetail} />
+          )}
+          {progressStatus === 4 && (
+            <CounsultingCancel data={reservationDetail} />
+          )}
 
-            {/* 할인 금액 */}
-            <View style={styles.rowInfo}>
-              <Text style={styles.labelInfo}>전화번호</Text>
-              <Text style={styles.valueIfno}>010-0000-0000</Text>
-            </View>
-            {/* 구분선 */}
-            <View style={styles.separator} />
-            <View style={styles.rowInfo2}>
-              <Text style={styles.labelInfo}>상품 금액</Text>
-              <Text style={styles.valueIfno}>50,000 원</Text>
-            </View>
-
-            {/* 할인 금액 */}
-            <View style={styles.rowInfo}>
-              <Text style={styles.labelInfo}>할인 금액</Text>
-              <Text style={styles.valueIfno}>0 원</Text>
-            </View>
-            <View style={styles.separator} />
-            <View style={styles.rowInfo2}>
-              <Text style={styles.labelInfo}>결제 금액</Text>
-              <Text style={styles.totalValue}>50,000 원</Text>
-            </View>
-            <View style={styles.separator} />
-            <View style={styles.rowInfo2}>
-              <Text style={styles.labelInfo}>결제 방식</Text>
-              <Text style={styles.valueIfno}>-</Text>
-            </View>
-          </View>
-
+          {(reservationDetail.calculationBuyResultResponse != null ||
+            reservationDetail.calculationSellResultResponse != null) && (
+              <TaxResultMore />
+            )}
           {/* 만료 메시지 */}
           {/* 만료 메시지와 재전송 버튼 */}
 
         </View>
 
 
-      </ScrollView>
-      <ButtonSection>
-        <ShadowContainer>
-          <Button
-            style={{ backgroundColor: '#2F87FF' }}
+      </ScrollView >
 
-            width={width}
+      {progressStatus === 4 || progressStatus === 2 || progressStatus === 3 ? (
+        // 두 번째 ButtonSection 렌더링
+        <ButtonSection>
+          <ShadowContainer>
+            <Button
+              style={{ backgroundColor: '#2F87FF' }}
+              width={width}
+              onPress={() => {
+                navigation.goBack();
+              }}
+            >
+              <ButtonText style={{ color: '#fff' }}>돌아가기</ButtonText>
+            </Button>
+          </ShadowContainer>
+        </ButtonSection>
+      ) : (
+
+        // 첫 번째 ButtonSection 렌더링
+        <ButtonRowSection>
+
+          <ButtonRow
+            onPress={() => {
+              console.log('팝업 먼저 띄워야함');
+              // setConsultingCancel(reservationDetail.consultingReservationId);
+            }}
+            style={{
+              width: '48%',
+              backgroundColor: '#fff',
+              borderColor: '#E8EAED',
+              marginRight: 10,
+            }}
+          >
+            <ButtonRowText
+              style={{
+                color: '#717274',
+              }}
+            >
+              취소하기
+            </ButtonRowText>
+          </ButtonRow>
+          <ButtonRow
             onPress={() => {
               navigation.goBack();
+            }}
+            style={{
+              width: '48%',
 
-            }}>
-            <ButtonText style={{ color: '#fff' }}>돌아가기</ButtonText>
-          </Button>
-        </ShadowContainer>
+            }}
+          >
+            <ButtonRowText>돌아가기</ButtonRowText>
+          </ButtonRow>
+        </ButtonRowSection>
+      )}
 
-
-      </ButtonSection>
       {/* 모달 */}
-    </View>
+    </View >
 
   );
 };
+function ConsultingWating({ data }) {
+  const consultingTypeMap = {
+    '01': '취득세',
+    '02': '양도소득세',
+    '03': '상속세',
+    '04': '증여세'
+  };
 
+  const default_date = data?.reservationDate ?? '0000-00-00' ;
+  const type = data?.consultingType ?? '';
+  const date = new Date(default_date);
+  const dayNames = ['일', '월', '화', '수', '목', '금', '토'];
+
+  const dayOfWeek = dayNames[date.getDay()];
+
+  const time = data.reservationStartTime?? '0:0' ;
+  const [hours, minutes] = time.split(':').map(Number); // 시간과 분 분리
+  const isPM = hours >= 12; // 12 이상이면 오후
+  const formattedHours = isPM ? hours - 12 || 12 : hours || 12; // 12시간제로 변환
+  const period = isPM ? '오후' : '오전'; // 오전/오후 결정
+
+  const [year, month, day] = default_date.split('-');
+  const dateInfo = `${year}년 ${month}월 ${day}일 (${dayOfWeek})`;
+  const timeInfo = `(${period} ${formattedHours}시)`;
+  const consultingTypeList = type.split(',');
+  const consultingTypes = type.split(',').map(type => consultingTypeMap[type]).join(', ');
+
+
+  const payment = data?.paymentPrice ?? '0'; // data.paymentPrice가 없으면 기본값 '0'
+  return <>
+    <View style={styles.inputSection}>
+      <Text style={styles.subTitleLabel}>상세 정보</Text>
+
+      <View style={styles.infoBox}>
+        {/* 고객명 */}
+        <View style={styles.rowInfo}>
+          <Text style={styles.labelInfo}>예약일자</Text>
+          <Text style={styles.valueIfno}>{dateInfo}</Text>
+        </View>
+
+        {/* 할인 금액 */}
+        <View style={styles.rowInfo}>
+          <Text style={styles.labelInfo}>예약시간</Text>
+          <View style={{ flexDirection: 'row' }}>
+            <Text style={styles.valueIfno}>{data.reservationStartTime}</Text>
+            <Text style={styles.valueIfno2}>{timeInfo}</Text>
+          </View>
+        </View>
+        <View style={styles.separator} />
+        <View style={styles.rowInfo2}>
+          <Text style={styles.labelInfo}>결제 금액</Text>
+          <Text style={styles.totalValue}>{payment + '원'} </Text>
+        </View>
+
+        {/* 구분선 */}
+        <View style={styles.separator} />
+        <View style={styles.rowInfo2}>
+          <Text style={styles.labelInfo}>세금 종류</Text>
+          <Text style={styles.valueIfno}>{consultingTypes}</Text>
+        </View>
+
+        <View style={styles.separator} />
+        <View style={[styles.rowInfo2, { flexDirection: 'column', alignItems: 'flex-start' }]}>
+          <Text style={[styles.labelInfo,{marginBottom : 10}]}>상세 내용</Text>
+          <Text style={[styles.valueIfno,{}]}>{data.consultingRequestContent}</Text>
+        </View>
+      </View>
+    </View></>
+}
+function CounsultingCancel({ data }) {
+  return <>
+    <View style={styles.inputSection}>
+      <Text style={styles.subTitleLabel}>결제 정보</Text>
+
+      <View style={styles.infoBox}>
+        {/* 고객명 */}
+        <View style={styles.rowInfo}>
+          <Text style={styles.labelInfo}>고객명</Text>
+          <Text style={styles.valueIfno}>홍길동</Text>
+        </View>
+
+        {/* 할인 금액 */}
+        <View style={styles.rowInfo}>
+          <Text style={styles.labelInfo}>전화번호</Text>
+          <Text style={styles.valueIfno}>010-0000-0000</Text>
+        </View>
+        {/* 구분선 */}
+        <View style={styles.separator} />
+        <View style={styles.rowInfo2}>
+          <Text style={styles.labelInfo}>상품 금액</Text>
+          <Text style={styles.valueIfno}>50,000 원</Text>
+        </View>
+
+        {/* 할인 금액 */}
+        <View style={styles.rowInfo}>
+          <Text style={styles.labelInfo}>할인 금액</Text>
+          <Text style={styles.valueIfno}>0 원</Text>
+        </View>
+        <View style={styles.separator} />
+        <View style={styles.rowInfo2}>
+          <Text style={styles.labelInfo}>결제 금액</Text>
+          <Text style={styles.totalValue}>50,000 원</Text>
+        </View>
+        <View style={styles.separator} />
+        <View style={styles.rowInfo2}>
+          <Text style={styles.labelInfo}>결제 방식</Text>
+          <Text style={styles.valueIfno}>-</Text>
+        </View>
+      </View>
+    </View></>
+}
+
+function ConsultingStart({ data }) {
+  const consultingTypeMap = {
+    '01': '취득세',
+    '02': '양도소득세',
+    '03': '상속세',
+    '04': '증여세'
+  };
+
+  const default_date = data?.reservationDate ?? '0000-00-00' ;
+  const type = data?.consultingType ?? '';
+  const date = new Date(default_date);
+  const dayNames = ['일', '월', '화', '수', '목', '금', '토'];
+
+  const dayOfWeek = dayNames[date.getDay()];
+
+  const time = data.reservationStartTime?? '0:0' ;
+  const [hours, minutes] = time.split(':').map(Number); // 시간과 분 분리
+  const isPM = hours >= 12; // 12 이상이면 오후
+  const formattedHours = isPM ? hours - 12 || 12 : hours || 12; // 12시간제로 변환
+  const period = isPM ? '오후' : '오전'; // 오전/오후 결정
+
+  const [year, month, day] = default_date.split('-');
+  const dateInfo = `${year}년 ${month}월 ${day}일 (${dayOfWeek})`;
+  const timeInfo = `(${period} ${formattedHours}시)`;
+  const consultingTypeList = type.split(',');
+  const consultingTypes = type.split(',').map(type => consultingTypeMap[type]).join(', ');
+
+
+  const payment = data?.paymentPrice ?? '0'; // data.paymentPrice가 없으면 기본값 '0'
+  return <>
+    <View style={styles.inputSection}>
+      <Text style={styles.subTitleLabel}>상세 정보</Text>
+
+      <View style={styles.infoBox}>
+        {/* 고객명 */}
+        <View style={styles.rowInfo}>
+          <Text style={styles.labelInfo}>예약일자</Text>
+          <Text style={styles.valueIfno}>{dateInfo}</Text>
+        </View>
+
+        {/* 할인 금액 */}
+        <View style={styles.rowInfo}>
+          <Text style={styles.labelInfo}>예약시간</Text>
+          <View style={{ flexDirection: 'row' }}>
+            <Text style={styles.valueIfno}>{data.reservationStartTime}</Text>
+            <Text style={styles.valueIfno2}>{timeInfo}</Text>
+          </View>
+        </View>
+        <View style={styles.separator} />
+        <View style={styles.rowInfo2}>
+          <Text style={styles.labelInfo}>결제 금액</Text>
+          <Text style={styles.totalValue}>{payment + '원'} </Text>
+        </View>
+
+        {/* 구분선 */}
+        <View style={styles.separator} />
+        <View style={styles.rowInfo2}>
+          <Text style={styles.labelInfo}>세금 종류</Text>
+          <Text style={styles.valueIfno}>{consultingTypes}</Text>
+        </View>
+
+        <View style={styles.separator} />
+        <View style={[styles.rowInfo2, { flexDirection: 'column', alignItems: 'flex-start' }]}>
+          <Text style={[styles.labelInfo,{marginBottom : 10}]}>상세 내용</Text>
+          <Text style={[styles.valueIfno,{}]}>{data.consultingRequestContent}</Text>
+        </View>
+      </View>
+    </View></>
+}
+function ConsultingEnd({ data }) {
+  const consultingTypeMap = {
+    '01': '취득세',
+    '02': '양도소득세',
+    '03': '상속세',
+    '04': '증여세'
+  };
+
+  const default_date = data?.reservationDate ?? '0000-00-00' ;
+  const type = data?.consultingType ?? '';
+  const date = new Date(default_date);
+  const dayNames = ['일', '월', '화', '수', '목', '금', '토'];
+
+  const dayOfWeek = dayNames[date.getDay()];
+
+  const time = data.reservationStartTime?? '0:0' ;
+  const [hours, minutes] = time.split(':').map(Number); // 시간과 분 분리
+  const isPM = hours >= 12; // 12 이상이면 오후
+  const formattedHours = isPM ? hours - 12 || 12 : hours || 12; // 12시간제로 변환
+  const period = isPM ? '오후' : '오전'; // 오전/오후 결정
+
+  const [year, month, day] = default_date.split('-');
+  const dateInfo = `${year}년 ${month}월 ${day}일 (${dayOfWeek})`;
+  const timeInfo = `(${period} ${formattedHours}시)`;
+  const consultingTypeList = type.split(',');
+  const consultingTypes = type.split(',').map(type => consultingTypeMap[type]).join(', ');
+
+
+  const payment = data?.paymentPrice ?? '0'; // data.paymentPrice가 없으면 기본값 '0'
+  return <>
+    <View style={styles.inputSection}>
+      <Text style={styles.subTitleLabel}>상세 정보</Text>
+
+      <View style={styles.infoBox}>
+        {/* 고객명 */}
+        <View style={styles.rowInfo}>
+          <Text style={styles.labelInfo}>예약일자</Text>
+          <Text style={styles.valueIfno}>{dateInfo}</Text>
+        </View>
+
+        {/* 할인 금액 */}
+        <View style={styles.rowInfo}>
+          <Text style={styles.labelInfo}>예약시간</Text>
+          <View style={{ flexDirection: 'row' }}>
+            <Text style={styles.valueIfno}>{data.reservationStartTime}</Text>
+            <Text style={styles.valueIfno2}>{timeInfo}</Text>
+          </View>
+        </View>
+        <View style={styles.separator} />
+        <View style={styles.rowInfo2}>
+          <Text style={styles.labelInfo}>결제 금액</Text>
+          <Text style={styles.totalValue}>{payment + '원'} </Text>
+        </View>
+
+        {/* 구분선 */}
+        <View style={styles.separator} />
+        <View style={styles.rowInfo2}>
+          <Text style={styles.labelInfo}>세금 종류</Text>
+          <Text style={styles.valueIfno}>{consultingTypes}</Text>
+        </View>
+
+        <View style={styles.separator} />
+        <View style={[styles.rowInfo2, { flexDirection: 'column', alignItems: 'flex-start' }]}>
+          <Text style={[styles.labelInfo,{marginBottom : 10}]}>상세 내용</Text>
+          <Text style={[styles.valueIfno,{}]}>{data.consultingRequestContent}</Text>
+        </View>
+      </View>
+    </View></>
+}
+function TaxResultMore({ data }) {
+  return <>
+
+    <View style={[styles.inputSection]}>
+      <View style={[styles.separator, { marginTop: 20, marginBottom : 20 }]} />
+
+      <View style={[styles.rowInfo,{height : 36}]}>
+          <Text  style={{
+            fontSize: 16,
+            color: '#1b1C1F',
+            fontFamily: 'Pretendard-Bold', // 원하는 폰트 패밀리
+            lineHeight: 24,
+
+            }}>세금 계산 결과</Text>
+          <ButtonRow
+            onPress={() => {
+              console.log('팝업 먼저 띄워야함');
+              // setConsultingCancel(reservationDetail.consultingReservationId);
+            }}
+            style={{
+              width: 90,
+              height : 36,
+              backgroundColor: '#fff',
+              borderColor: '#E8EAED',
+              alignItems : 'center',
+              justifyContent : 'center'
+            }}
+          >
+            <Text
+              style={{
+                color: '#717274',
+                fontSize : 13,
+                fontFamily : 'Pretendard-Medium'
+              }}
+            >
+              펼치기
+            </Text>
+            <BottomArrow/>
+          </ButtonRow>
+        </View>
+    </View></>
+}
 
 const styles = StyleSheet.create({
   timerText: {
@@ -680,19 +1004,36 @@ const styles = StyleSheet.create({
     color: '#1b1C1F',
     fontFamily: 'Pretendard-Bold', // 원하는 폰트 패밀리
 
+    marginBottom: 20,
   },
   progressStatus: {
-    height: 200,
-    marginVertical: 20,
+    height: 150,
     flexDirection: 'row',
   },
 
+  progressStatusCanCel: {
+    height: 70,
+    flexDirection: 'row',
+  },
+  verticalCanCelLine: {
+    position: 'absolute',
+    left: 13, // 라인의 위치
+    top: 0,
+    width: 2,
+    height: 70,
+    marginTop: 10,
+    marginBottom: 10,
+    // height:180,
+    backgroundColor: '#BDBDBD',
+  },
   verticalLine: {
     position: 'absolute',
     left: 13, // 라인의 위치
     top: 0,
     width: 2,
-    height: '100%',
+    height: 130,
+    marginTop: 10,
+    marginBottom: 10,
     // height:180,
     backgroundColor: '#BDBDBD',
   },
@@ -703,6 +1044,7 @@ const styles = StyleSheet.create({
   },
   progressContainer: {
     flex: 1,
+
   },
   rowInfoProgress: {
     flexDirection: 'row',
@@ -714,15 +1056,24 @@ const styles = StyleSheet.create({
     flexDirection: 'row', // 아이콘과 텍스트를 수평으로 배치
     // alignItems: 'center', // 세로축 중앙 정렬
   },
+  statusText2: {
+    fontSize: 10,
+    fontFamily: 'Pretendard-Medium',
+    color: '#fff',
+    // marginLeft: 10, // 아이콘과 텍스트 간 간격
+  },
   statusText: {
-    marginStart: 30,
-    fontSize: 14,
-    color: '#333',
+    fontFamily: 'Pretendard-Bold',
+
+    fontSize: 13,
+    color: '#000',
     // marginLeft: 10, // 아이콘과 텍스트 간 간격
   },
   progressDate: {
-    fontSize: 14,
-    color: '#333',
+    fontSize: 10,
+    fontFamily: 'Pretendard-Bold',
+
+    color: '#717274',
     marginLeft: 10, // 아이콘과 텍스트 간 간격
   },
   iconContainer: {
@@ -731,7 +1082,6 @@ const styles = StyleSheet.create({
     zIndex: 1, // 라인 위에 배치
   },
   infoBox: {
-    marginTop: 20,
     width: '100%',
     paddingLeft: 20,
     paddingRight: 20,
@@ -782,7 +1132,12 @@ const styles = StyleSheet.create({
     fontFamily: 'Pretendard-Bold', // 원하는 폰트 패밀리
     color: '#a3a5a8', // 회색 텍스트
   },
-
+  valueIfno2: {
+    fontSize: 10,
+    marginStart: 2,
+    fontFamily: 'Pretendard-Bold', // 원하는 폰트 패밀리
+    color: '#a3a5a8', // 회색 텍스트
+  },
   totalValue: {
     fontSize: 13,
     color: '#2F87FF', // 파란 텍스트

@@ -87,10 +87,27 @@ const HoustInfoTitle = styled.Text`
 `;
 
 const HoustInfoText = styled.Text`
-  font-size: 12px;
-  font-family: Pretendard-Regular;
+  font-size: 13px;
+  font-family: Pretendard-Bold;
   line-height: 20px;
-  color: #a3a5a8;
+  color: #000;
+`;
+const HoustInfoText2 = styled.Text`
+  font-size: 10px;
+  font-family: Pretendard-Bold;
+  line-height: 20px;
+  color: #000;
+`;
+
+const HoustInfoConsultingBadge = styled.TouchableOpacity.attrs(_props => ({
+  activeOpacity: 0.9,
+}))`
+  width: auto;
+  height: 22px;
+  padding: 0 10px;
+  border-radius: 20px;
+  align-items: center;
+  justify-content: center;
 `;
 
 const HoustInfoBadge = styled.TouchableOpacity.attrs(_props => ({
@@ -133,7 +150,10 @@ const SubTitle2 = styled.Text`
   text-align: left;
 `;
 
-
+const InfoConsultingContainer = styled.View`
+  flex: 1; /* 나머지 공간 차지 */
+  justify-content: center;
+`;
 const InfoContainer = styled.View`
   flex: 1; /* 나머지 공간 차지 */
   justify-content: center;
@@ -195,14 +215,21 @@ const ReservationList = () => {
   const [reservationPaymentList, setReservationPaymentList] = useState(FakeReservationData);
 
   const [selectedTab, setSelectedTab] = useState(0); // 탭 상태 관리
+  const dayNames = ['일', '월', '화', '수', '목', '금', '토'];
 
   //const Pdata = props?.Pdata;
   //console.log('ori fixHouseList', fixHouseList);
 
   useFocusEffect(
     useCallback(() => {
-      getReservationlist();
-    }, [])
+      if (selectedTab === 0) {
+        getReservationlist();
+
+      } else if (selectedTab === 1) {
+        setReservationPaymentList([...FakeReservationData]);
+
+      }
+    }, [selectedTab])
   );
 
   // useEffect(() => 
@@ -408,9 +435,8 @@ const ReservationList = () => {
         <TouchableOpacity
           style={[styles.tab, selectedTab === 0 && styles.activeTab]}
           onPress={() => {
-            setSelectedTab(0); // 탭 상태 변경
             setReservationList([]);
-            getReservationList(); // 예약 목록 가져오기 함수 호출
+            setSelectedTab(0); // 탭 상태 변경
           }}
         >
           <Text style={selectedTab === 0 ? styles.activeTabText : styles.tabText}>상담 예약 내역</Text>
@@ -418,8 +444,8 @@ const ReservationList = () => {
         <TouchableOpacity
           style={[styles.tab, selectedTab === 1 && styles.activeTab]}
           onPress={() => {
+            setReservationPaymentList([]);
             setSelectedTab(1); // 탭 상태 변경
-            setReservationPaymentList([...FakeReservationData]);
             // getReservationPaymentlist(); // 예약 목록 가져오기 함수 호출
           }}
         >
@@ -491,74 +517,141 @@ const ReservationList = () => {
                     'WAITING': '상담대기',
                     'CANCEL': '상담취소',
                     'PROGRESS': '상담중',
-                    'FINISH': '상담완료'
+                    'FINISH': '상담완료',
+                    'PAYMENT_COMPLETED':'결제완료'
                   };
-
+               
                   const consultingStatusTypeColorMap = {
                     'WAITING': '#A2C62B',
-                    'CANCEL': '#2F87FF',
+                    'CANCEL': '#FF2C65',
                     'PROGRESS': '#FF7401',
-                    'FINISH': '#A82BC6'
+                    'FINISH': '#A82BC6',
+                     'PAYMENT_COMPLETED':'#A2C62B'
                   };
 
+
+                  const date = new Date(item.reservationDate);
+                  const dayOfWeek = dayNames[date.getDay()];
+
+                  const [hours, minutes] = item.reservationStartTime.split(':').map(Number); // 시간과 분 분리
+                  const isPM = hours >= 12; // 12 이상이면 오후
+                  const formattedHours = isPM ? hours - 12 || 12 : hours || 12; // 12시간제로 변환
+                  const period = isPM ? '오후' : '오전'; // 오전/오후 결정
+
+                  const [year, month, day] = item.reservationDate.split('-');
+                  const dateInfo = `${year}년 ${month}월 ${day}일 (${dayOfWeek})`;
+                  const timeInfo = `(${period} ${formattedHours}시)`;
+                  const consultingTypeList = item.consultingType.split(',');
 
                   const consultingTypes = item.consultingType.split(',').map(type => consultingTypeMap[type]).join(', ');
                   return (
-                    <InfoContentSection overScrollMode="never" style={{ width: width, marginBottom: 10 }}>
 
-                      <HoustInfoSection
+                    <InfoContentSection overScrollMode="never" style={{ width: width, marginBottom: 10 }}>
+                      <HoustInfo2Section
                         style={{
                           borderColor: '#E8EAED',
                         }}
                         key={index}>
-                        <View
-                          style={{
-                            width: '60%',
-                            marginRight: '10%',
-                          }}>
-
-                          <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 10 }}>
-                            {consultingTypes && <HoustInfoBadge style={{ backgroundColor: '#2F87FF', marginRight: 10 }}>
-                              <HoustInfoBadgeText>{consultingTypes}</HoustInfoBadgeText>
-                            </HoustInfoBadge>}
-                            <HoustInfoBadge style={{ backgroundColor: consultingStatusTypeColorMap[item.consultingStatus] }}>
-                              <HoustInfoBadgeText>{consultingStatusTypeMap[item.consultingStatus]}</HoustInfoBadgeText>
-                            </HoustInfoBadge>
+                        <View style={{ flexDirection: 'column', marginBottom: 10, marginEnd: 10, }}>
+                          <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 10, marginEnd: 10, }}>
+                            {/* 프로필 이미지 */}
+                            <ProfileAvatar2 source={require('../../assets/images/Minjungum_Lee_consulting.png')} />
+                            {/* 상담 정보 */}
+                            <InfoContainer>
+                              <Text style={styles.contentCounsulting}>
+                                {'#' + `${item.consultingReservationId}`}
+                              </Text>
+                              <Text style={styles.namePayment}>{item.consultantName}</Text>
+                            </InfoContainer>
                           </View>
-                          <HoustInfoTitle>
-                            {item.consultantName}
-                          </HoustInfoTitle>
-                          <HoustInfoText>
-                            {new Date(item.reservationDate).toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' }) + ' ' + item.reservationStartTime}
+
+                          <HoustInfoText styles={{ marginBottom: 3 }}>
+                            {dateInfo}
                           </HoustInfoText>
+                          <View style={{ flexDirection: 'row' }}>
+                            <HoustInfoText style={{ marginRight: 2 }}>
+                              {item.reservationStartTime}
+                            </HoustInfoText>
+                            <HoustInfoText2>
+                              {timeInfo}
+                            </HoustInfoText2>
+                          </View>
                         </View>
-                        <HoustInfoBadge
-                          onPress={async () => {
-                            const state = await NetInfo.fetch();
-                            const canProceed = await handleNetInfoChange(state);
-                            if (canProceed) {
-                              navigation.navigate('ReservationDetail', {
-                                consultingReservationId: item.consultingReservationId
-                              });
-                            }
-                          }}
-                          style={{
-                            height: 30,
-                            width: '30%',
-                            justifyContent: 'center',
-                            alignItems: 'center',
-                            alignContent: 'center',
-                            flexDirection: 'row',
-                            backgroundColor: '#fff',
-                            borderColor: '#E8EAED',
-                            borderWidth: 1,
+
+
+                        {/* 가격 및 버튼 */}
+                        <RightContainer>
+                          {/* <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 7 }}>
+                            {Array(consultingTypeList.length)
+                              .fill(0) // 5개의 `View`를 생성
+                              .map((_, index) => (
+                                <HoustInfoConsultingBadge key={index} >
+                                  <HoustInfoBadgeText>{consultingTypeList[index]}</HoustInfoBadgeText>
+                                </HoustInfoConsultingBadge>
+                              ))}
+
+
+                          </View> */}
+
+                          <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'flex-end', alignItems : 'center' }}>
+                            {consultingTypeList.map((type, index) => (
+                              <View
+                                key={index}
+                                style={{
+                                  backgroundColor: '#2F87FF',
+                                  paddingHorizontal: 5,
+                                  borderRadius: 50,
+                                  height : 22,
+                                  alignItems : 'center',
+                                  justifyContent : 'center',
+                                  marginLeft: index == 0 ? 0 : 10,
+                                  marginBottom: 5, // 버튼 간격
+                                }}
+                              >
+                                <HoustInfoBadgeText>{consultingTypeMap[type]}</HoustInfoBadgeText>
+
+                              </View>
+                            ))}
+                          </View>
+                          <View style={{
+                            borderRadius: 50, height: 22, marginBottom: 10, justifyContent: 'center',
+                            alignItems: 'center', paddingHorizontal: 5, backgroundColor: consultingStatusTypeColorMap[item.consultingStatus]
                           }}>
-                          <HoustInfoBadgeText style={{ fontSize: 12, lineHeight: 30, color: '#717274' }}>
-                            {'자세히보기'}
-                          </HoustInfoBadgeText>
-                        </HoustInfoBadge>
-                      </HoustInfoSection>
+                            <HoustInfoBadgeText>{consultingStatusTypeMap[item.consultingStatus]}</HoustInfoBadgeText>
+                          </View>
+                          <View style={{ flexDirection: 'row', justifyContent: 'flex-end', alignItems : 'center' }}>
+
+                           <HoustInfoBadge
+                            onPress={async () => {
+                              const state = await NetInfo.fetch();
+                              const canProceed = await handleNetInfoChange(state);
+                              if (canProceed) {
+
+                                navigation.navigate('ReservationDetail', {
+                                  consultingReservationId: item.consultingReservationId,
+                                });
+                              }
+                            }}
+                            style={{
+                              height: 30,
+                              width: 80,
+                              justifyContent: 'center',
+                              alignItems: 'center',
+                              backgroundColor: '#fff',
+                              borderColor: '#E8EAED',
+                              borderWidth: 1,
+                              borderRadius: 5,
+                            }}
+                          >
+                            <Text style={{ fontSize: 12, color: '#717274' }}>자세히 보기</Text>
+                          </HoustInfoBadge>
+                          </View>
+                          
+                        </RightContainer>
+                      </HoustInfo2Section>
                     </InfoContentSection>
+
+                    
                   );
                 }}
                 keyExtractor={(item) => item.consultingReservationId.toString()}
@@ -602,10 +695,10 @@ const ReservationList = () => {
                   return (
                     <InfoContentSection overScrollMode="never" style={{ width: width, marginBottom: 10 }}>
                       <HoustInfo2Section
-                       style={{
-                        borderColor: '#E8EAED',
-                      }}
-                      key={index}>
+                        style={{
+                          borderColor: '#E8EAED',
+                        }}
+                        key={index}>
                         {/* 프로필 이미지 */}
                         <ProfileAvatar2 source={require('../../assets/images/Minjungum_Lee_consulting.png')} />
 
@@ -615,7 +708,7 @@ const ReservationList = () => {
                             {item.reservationDate} {item.reservationStartTime}
                           </Text>
                           <Text style={styles.contentPayment}>
-                            {'#'+`${item.consultingReservationId}`}
+                            {'#' + `${item.consultingReservationId}`}
                           </Text>
                           <Text style={styles.namePayment}>{item.consultantName}</Text>
                         </InfoContainer>
@@ -630,13 +723,10 @@ const ReservationList = () => {
                               const state = await NetInfo.fetch();
                               const canProceed = await handleNetInfoChange(state);
                               if (canProceed) {
-                                navigation.navigate('ReservationDetail', {
+
+                                navigation.navigate('PaymentDetail', {
                                   consultingReservationId: item.consultingReservationId,
                                 });
-
-                                // navigation.navigate('PaymentDetail', {
-                                //   consultingReservationId: item.consultingReservationId,
-                                // });
                               }
                             }}
                             style={{
@@ -676,7 +766,7 @@ const styles = StyleSheet.create({
   header: { padding: 20, borderBottomWidth: 1, borderColor: '#eee' },
   headerText: { fontSize: 18, fontWeight: 'bold' },
 
-  tabs: { flexDirection: 'row', borderBottomWidth: 1, borderColor: '#E8EAED', color: '#fff' },
+  tabs: { flexDirection: 'row', borderBottomWidth: 1, borderColor: '#E8EAED', color: '#fff', backgroundColor: '#fff' },
   tab: {
     width: 120, // 각 버튼의 고정된 너비
     alignItems: 'center', // 텍스트 가운데 정렬
@@ -735,29 +825,34 @@ const styles = StyleSheet.create({
     color: '#888',
     marginTop: 5,
   },
-
+  contentCounsulting: {
+    fontFamily: 'Pretendard-Bold',
+    fontSize: 13,
+    color: '#1b1c1f',
+    marginBottom: 3
+  },
   regDatePayment: {
     fontFamily: 'Pretendard-Bold',
     fontSize: 10,
     color: '#a3a5a8',
-    marginBottom:3
+    marginBottom: 3
   },
   contentPayment: {
     fontFamily: 'Pretendard-Bold',
     fontSize: 13,
     color: '#1b1c1f',
-    marginBottom:3
+    marginBottom: 3
   },
   namePayment: {
     fontFamily: 'Pretendard-Bold',
     fontSize: 10,
     color: '#717274',
   },
- pricePayment: {
+  pricePayment: {
     fontFamily: 'Pretendard-Bold',
     fontSize: 13,
     color: '#2f87ff',
-    marginBottom:6
+    marginBottom: 6
   },
 });
 export default ReservationList;
