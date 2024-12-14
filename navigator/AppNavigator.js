@@ -19,10 +19,13 @@ import PaymentScreen from '../screens/Main/PaymentScreen';
 import PaymentCompletScreen from '../screens/Main/PaymentCompletScreen';
 import ConsultingReservationHistory from '../screens/Main/ConsultingReservationHistory';
 import ConsultingReservationDetail from '../screens/Main/ConsultingReservationDetail';
-import ReservationListScreen from '../screens/Main/ReservationListScreen.js';
+import PaymentDetailScreen from '../screens/Main/PaymentDetailScreen.js';
 import ReservationList from '../screens/Main/ReservationList.js';
 
 import ReservationDetail from '../screens/Main/ReservationDetail';
+import PaymentDetail from '../screens/Main/PaymentDetail';
+
+
 // Redux
 import { useSelector, useDispatch } from 'react-redux';
 
@@ -301,6 +304,10 @@ const AppNavigator = () => {
                 name="ReservationDetail"
                 component={ReservationDetail}
               />
+                 <Stack.Screen
+                name="PaymentDetail"
+                component={PaymentDetail}
+              />
               <Stack.Screen
                 name="FixedHouseDetail"
                 component={FixedHouseDetail}
@@ -370,8 +377,8 @@ const AppNavigator = () => {
               <Stack.Screen name="TossPaymentScreen" component={TossPaymentScreen} />
 
               <Stack.Screen
-                name="ReservationListScreen"
-                component={ReservationListScreen}
+                name="PaymentDetailScreen"
+                component={PaymentDetailScreen}
               />
               <Stack.Group screenOptions={{ presentation: 'modal' }}>
                 <Stack.Screen name="Cert2" component={Cert2} />

@@ -1,92 +1,36 @@
+// 양도소득세 홈페이지
 
-
-// import Icon from 'react-native-vector-icons/Ionicons';
-import {
-  TouchableOpacity,
-  View,
-  Text,
-  TextInput,
-  ScrollView,
-  StyleSheet,
+import { TouchableOpacity, useWindowDimensions, BackHandler, View, Text, ScrollView, Animated, StyleSheet, TextInput, KeyboardAvoidingView, Platform ,   StatusBar,
   Dimensions,
-  StatusBar,
-  BackHandler,
-
 } from 'react-native';
-import React, { useRef, useLayoutEffect, useState, useEffect, useCallback, } from 'react';
+import { FlatList } from 'react-native-gesture-handler';
+import React, { useRef, useLayoutEffect, useState, useCallback, useEffect } from 'react';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import BackIcon from '../../assets/icons/back_button.svg';
 import styled from 'styled-components';
-import getFontSize from '../../utils/getFontSize';
-import CloseIcon from '../../assets/icons/close_button.svg';
-import DeleteIcon from '../../assets/icons/delete_circle.svg';
-import NetInfo from '@react-native-community/netinfo';
-import axios from 'axios';
-import Config from 'react-native-config'
-import { SheetManager } from 'react-native-actions-sheet';
-import IdSendSmsCompletAlert from '../Auth/component/IdSendSmsCompletAlert';
+import { SheetManager, useScrollHandlers } from 'react-native-actions-sheet';
 import { useDispatch, useSelector } from 'react-redux';
-import { setCert } from '../../redux/certSlice';
-import CheckOnIcon from '../../assets/icons/check_on.svg';
+import DropShadow from 'react-native-drop-shadow';
+import axios from 'axios';
+import NetInfo from "@react-native-community/netinfo";
+import Config from 'react-native-config'
+import TaxCard from '../../components/TaxCard';
+import TaxInfoCard from '../../components/TaxInfoCard';
+import TaxCard2 from '../../components/TaxCard2';
+import TaxInfoCard2 from '../../components/TaxInfoCard2';
+import HouseInfo from '../../components/HouseInfo';
+import Bottompolygon from '../../assets/icons/bottom_polygon.svg';
+import EditButtom from '../../assets/icons/edit_Reservation.svg';
+import FastImage from 'react-native-fast-image';
+import CloseIcon from '../../assets/icons/close_button.svg';
 
-import CheckIcon from '../../assets/icons/check_circle.svg';
-import ImpossibleIcon from '../../assets/icons/impossible_circle.svg';
-
-import CheckoutPage from '../payment/Checkout';
-
-const ProgressSection = styled.View`
-    flex-direction: row;
-  width: 100%;
-  height: 5px;
-  background-color: #e8eaed; 
+const ShadowContainer = styled(DropShadow)`
+  shadow-color: rgba(0, 0, 0, 0.25);
+  shadow-offset: 2px 3px;
+  shadow-opacity: 0.2;
+  shadow-radius: 3px;
 `;
 
-const ProfileInfoSection = styled.View`
-  width: 100%;
-  flex-direction: row;
-  align-items: center;
-  justify-content: space-between;
-  background-color: #fff;
-`;
-const LeftContainer = styled.View`
-  flex: 1;
-  justify-content: center;
-`;
-
-const RightContainer = styled.View`
-  flex: 1;
-  align-items: flex-end;
-  justify-content: center;
-`;
-const ListItemTitle = styled.Text`
-  font-size: 13px;
-  font-family: Pretendard-Bold;
-  color: #1b1c1f;
-  line-height: 20px;
-`;
-const ListItem = styled.View`
-  flex-direction: row; 
-  justify-content: center;
-  align-items: center;
-  padding-top:12px;
-  padding-right : 16px;
-  padding-left : 16px;
-  padding-bottom: 12px;
-
-`;
-const CheckCircle = styled.TouchableOpacity.attrs(props => ({
-  activeOpacity: 0.8,
-}))`
-
-    width: 20px;
-    height: 20px;
-    border-radius: 5px;  
-    background-color: #fff;
-    border: 2px solid #BAC7D5;  
-    align-items: center;
-    justify-content: center;
-    margin-left:8px;
-`;
 const ButtonSection = styled.View`
 margin-top: 10px;
   width: 100%;
@@ -97,7 +41,16 @@ margin-top: 10px;
   left: 0; /* 왼쪽 시작 */
   right: 0; /* 오른쪽 끝 */
 `;
-
+const ProfileAvatar2 = styled(FastImage).attrs(props => ({
+  resizeMode: 'cover',
+}))`
+  width: 40px;
+  height: 40px;
+  border-radius: 55px;
+  background-color: '#F0F3F8';
+  align-self: left;
+  margin-right: 12px;
+`;
 const Button = styled.TouchableOpacity.attrs(props => ({
   activeOpacity: 0.6,
   disabled: !props.active, // active가 false일 때 버튼 비활성화
@@ -120,7 +73,21 @@ const ButtonText = styled.Text`
   color: #fff;
 `;
 
-const PaymentScreen = props => {
+
+const HoustInfoSection = styled.View`
+  width: 100%;
+  height: auto;
+  background-color: #fff;
+  flex-direction: row;
+`;
+const ProgressSection = styled.View`
+    flex-direction: row;
+  width: 100%;
+  height: 5px;
+  background-color: #e8eaed; 
+`;
+
+const PaymentDetail = props => {
   const dispatch = useDispatch();
 
   const [phoneNumber, setPhoneNumber] = useState('');
@@ -446,7 +413,7 @@ const PaymentScreen = props => {
       ),
 
       headerTitleAlign: 'center',
-      title: '결제하기',
+      title: '결제 상세 정보',
       headerShadowVisible: false,
       contentStyle: {
         borderTopWidth: 0,
@@ -472,27 +439,19 @@ const PaymentScreen = props => {
         {/* Input Section */}
         <View style={styles.inputSection}>
           {/* Label */}
-          <Text style={styles.bigTitle}>입력 정보를 확인하신 후 결제해주세요.</Text>
+          <HoustInfoSection style = {{paddingTop : 10, paddingBottom: 10}}>
+            <ProfileAvatar2 source={require('../../assets/images/Minjungum_Lee_consulting.png')} />
+            <Text style={styles.contentPayment}>
+              {'#' + `${'3272'}`}
+            </Text>
+            <Text style={styles.namePayment}>이민정음 세무사</Text>
+
+
+          </HoustInfoSection>
+
           <View style={styles.Line1} />
 
-          <ProfileInfoSection>
-
-            <LeftContainer>
-              <Text style={styles.dateText}>2024년 5월 7일 (수)</Text>
-              <Text style={styles.timeText}>
-                <Text style={styles.timeHighlight}>13:00</Text>
-                <Text style={styles.timeSubtext}> (오후 1시)</Text>
-              </Text>
-            </LeftContainer>
-            <RightContainer>
-              <Text style={styles.titleText}>JS회계법인</Text>
-              <Text style={styles.nameText}>이민정음 세무사</Text>
-              <Text style={styles.addressText}>서울특별시 송파구</Text>
-            </RightContainer>
-          </ProfileInfoSection>
-          <View style={styles.Line1} />
-
-          <Text style={styles.subTitleLabel}>신청정보</Text>
+          <Text style={styles.subTitleLabel}>결제 정보</Text>
 
           <View style={styles.infoBox}>
             {/* 고객명 */}
@@ -506,15 +465,9 @@ const PaymentScreen = props => {
               <Text style={styles.labelInfo}>전화번호</Text>
               <Text style={styles.valueIfno}>010-0000-0000</Text>
             </View>
-
-
-          </View>
-          <View style={styles.Line1} />
-
-          <Text style={styles.subTitleLabel}>결제 금액</Text>
-          <View style={styles.infoBox}>
-            {/* 상품 금액 */}
-            <View style={styles.rowInfo}>
+            {/* 구분선 */}
+            <View style={styles.separator} />
+            <View style={styles.rowInfo2}>
               <Text style={styles.labelInfo}>상품 금액</Text>
               <Text style={styles.valueIfno}>50,000 원</Text>
             </View>
@@ -524,90 +477,39 @@ const PaymentScreen = props => {
               <Text style={styles.labelInfo}>할인 금액</Text>
               <Text style={styles.valueIfno}>0 원</Text>
             </View>
-
-            {/* 구분선 */}
             <View style={styles.separator} />
-
-            {/* 결제 금액 */}
             <View style={styles.rowInfo2}>
               <Text style={styles.labelInfo}>결제 금액</Text>
               <Text style={styles.totalValue}>50,000 원</Text>
             </View>
-          </View>
-
-          <View style={styles.Line1} />
-
-          <ListItem style={{ marginTop: 0 }}>
-            <View style={{ flexDirection: 'row' }}>
-              <TouchableOpacity
-                onPress={() => {
-                  navigation.navigate('Privacy2', { agreePrivacy: agreePrivacy, navigation: navigation, tokens: props?.route?.params?.tokens ? props?.route?.params?.tokens : null, id: props?.route?.params?.id ? props?.route?.params?.id : null, password: props?.route?.params?.password ? props?.route?.params?.password : null });
-                }} >
-                <ListItemTitle style={{ color: '#2F87FF', textDecorationLine: 'underline' }}>개인정보 수집 및 이용</ListItemTitle>
-              </TouchableOpacity>
-              <ListItemTitle>에 대하여 동의하시나요?</ListItemTitle>
+            <View style={styles.separator} />
+            <View style={styles.rowInfo2}>
+              <Text style={styles.labelInfo}>결제 방식</Text>
+              <Text style={styles.valueIfno}>-</Text>
             </View>
-            <CheckCircle
-              onPress={() => {
-                setAgreePrivacy(!agreePrivacy);
-              }}>
-              {agreePrivacy && <CheckOnIcon />}
-            </CheckCircle>
-          </ListItem>
-
-
-          <View style={styles.Line1} />
-
+          </View>
 
           {/* 만료 메시지 */}
           {/* 만료 메시지와 재전송 버튼 */}
-
 
         </View>
 
 
       </ScrollView>
       <ButtonSection>
-        <Button
-          style={{ backgroundColor: agreePrivacy ? '#2F87FF' : '#E8EAED' }}
-          active={agreePrivacy} // agreePrivacy 값에 따라 버튼 활성화
-          width={width}
-          onPress={async () => {
-            const state = await NetInfo.fetch();
-            const canProceed = await handleNetInfoChange(state);
-            if (canProceed) {
-              console.log('결제하기');
+        <ShadowContainer>
+          <Button
+            style={{ backgroundColor: '#2F87FF' }}
 
+            width={width}
+            onPress={ () => {
+              navigation.goBack();
 
-              navigation.navigate('TossPaymentScreen', {
-                amount: 50000, // 결제 금액
-                orderId: 'ORDER_ID_12345', // 고유 주문 ID
-                orderName: 'JS회계법인 서비스', // 주문 이름
-              });
-              // Checkout 호출
-              // await CheckoutPage({
-              //   amount: 50000, // 결제 금액
-              //   orderId: 'ORDER_ID_12345', // 고유 주문 ID
-              //   orderName: 'JS회계법인 서비스', // 주문 이름
-              //   successUrl: `${Config.APP_API_URL}payment/success`, // 결제 성공 리다이렉트 URL
-              //   failUrl: `${Config.APP_API_URL}payment/fail`, // 결제 실패 리다이렉트 URL
-              // });
-
-              // navigation.navigate('CheckoutPage', {
-              //   amount: 50000,
-              //   orderId: 'ORDER_ID_12345',
-              //   orderName: 'JS회계법인 서비스',
-              //   successUrl: `${Config.APP_API_URL}payment/success`,
-              //   failUrl: `${Config.APP_API_URL}payment/fail`,
-              // });
-            }
-          }
-            // 동의하기 버튼 클릭 시 redux에 저장
-          }>
-          <ButtonText
-            style={{ color: agreePrivacy ? '#fff' : '#a3a5a8' }}
-            active={agreePrivacy}>{'결제하기'}</ButtonText>
-        </Button>
+            }}>
+            <ButtonText style={{ color: '#fff' }}>돌아가기</ButtonText>
+          </Button>
+        </ShadowContainer>
+        
 
       </ButtonSection>
       {/* 모달 */}
@@ -616,19 +518,6 @@ const PaymentScreen = props => {
   );
 };
 
-const formatPhoneNumber = (number) => {
-  // 숫자만 남기기
-  const cleaned = ('' + number).replace(/\D/g, '');
-
-  // 010-XXXX-XXXX 형식으로 포맷팅
-  const match = cleaned.match(/^(\d{3})(\d{3,4})(\d{4})$/);
-  if (match) {
-    return `${match[1]}-${match[2]}-${match[3]}`;
-  }
-
-  // 포맷이 적용되지 않는 경우 원본 반환
-  return number;
-};
 
 const styles = StyleSheet.create({
   timerText: {
@@ -775,8 +664,24 @@ const styles = StyleSheet.create({
     fontFamily: 'Pretendard-SemiBold',
     color: '#a3a5a8', // 연회색
   },
+
+
+  contentPayment: {
+    fontFamily: 'Pretendard-Bold',
+    fontSize: 20,
+    marginStart: 10,
+
+    color: '#1b1c1f',
+  },
+
+  namePayment: {
+    fontFamily: 'Pretendard-Bold',
+    fontSize: 20,
+    marginStart: 10,
+    color: '#717274',
+  },
 });
 
 
 
-export default PaymentScreen;
+export default PaymentDetail;

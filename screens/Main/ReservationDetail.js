@@ -1,6 +1,10 @@
 // 양도소득세 홈페이지
 
-import { TouchableOpacity, useWindowDimensions, BackHandler, View, Text, ScrollView, Animated, StyleSheet, TextInput, KeyboardAvoidingView, Platform } from 'react-native';
+import {
+  TouchableOpacity, useWindowDimensions, BackHandler, View, Text, ScrollView, Animated, StyleSheet, TextInput, KeyboardAvoidingView, Platform, StatusBar,
+  Dimensions, Image,
+} from 'react-native';
+
 import { FlatList } from 'react-native-gesture-handler';
 import React, { useRef, useLayoutEffect, useState, useCallback, useEffect } from 'react';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
@@ -19,173 +23,73 @@ import TaxInfoCard2 from '../../components/TaxInfoCard2';
 import HouseInfo from '../../components/HouseInfo';
 import Bottompolygon from '../../assets/icons/bottom_polygon.svg';
 import EditButtom from '../../assets/icons/edit_Reservation.svg';
+import FastImage from 'react-native-fast-image';
+import CloseIcon from '../../assets/icons/close_button.svg';
+import StatusOffIcon from '../../assets/icons/progress_1.svg';
+import StatusOnIcon from '../../assets/icons/progress_2.svg';
 
-const Container = styled.View`
-  flex: 1.0;
-  background-color: #fff;
-  padding: 0 20px;
-`;
-
-
-
-const IntroSection = styled.View`
-  width: 100%;
-  padding: 20px 0 20px 0;
-`;
-
-
-const ProgressSection = styled.View`
-  flex-direction: row;
-  width: 100%;
-  height: 5px;
-  background-color: #F0F0F2;
-`;
-
-
-const ModalInputSection = styled.View`
-  width: 100%;
-  background-color: #fff;
-  margin-bottom: 20px;
-  border-top-width: 1px;
-  border-top-color: #E8EAED;
-`;
-
-
-const ModalInputContainer = styled.View`
-  margin-top: 10px;
-  width: 100%;
-`;
-
-const ModalInput = styled.ScrollView.attrs(_props => ({
-  showsVerticalScrollIndicator: false,
-}))`
-  width: 100%;
-  height: 100px;
-  padding: 10px 10px 10px 20px;
-  background-color: #F5F7FA;
-  color: #A3A5A8;
-  overflow: hidden; 
-  border-radius: 8px;
-`;
-
-const ModalInputText = styled.Text`
-  font-size: 13px;
-  font-family: Pretendard-regular;
-  color: #A3A5A8;
-  line-height: 15px;
-  text-align: left;
-  text-align-vertical: top;
-  overflow: hidden;
-`;
-
-const HoustInfoBadge = styled.View`
-  width: auto;
-  margin-right: auto;
-  height: 22px;
-  padding: 0 10px;
-  border-radius: 11px;
-  align-items: center;
-  justify-content: center;
-  background-color: #1fc9a8;
-  align-self: center;
-`;
-
-const HoustInfoBadgeText = styled.Text`
-  font-size: 10px;
-  font-family: Pretendard-Medium;
-  color: #fff;
-  line-height: 12px;
-  letter-spacing: -0.5px;
-`;
-
-
-const Title = styled.Text`
-  font-size: 20px;
-  font-family: Pretendard-Bold;
-  color: #1b1c1f;
-  line-height: 30px;
-  letter-spacing: -0.5px;
-  margin-right: 10px;
-`;
-
-const SubTitle = styled.Text`
-  font-size: 17px;
-  font-family: Pretendard-Bold;
-  color: #1b1c1f;
-  line-height: 25px;
-  
-`;
-
-const SubTitle2 = styled.Text`
-  font-size: 12px;
-  font-family: Pretendard-Bold;
-  color: #a3a5a8;
-  line-height: 14px;
-  margin-top: 10px;
-  margin-bottom: 20px;
-  text-align: left;
-`;
-
-
-const SubTitle4 = styled.Text`
-  font-size: 16px;
-  font-family: Pretendard-Bold;
-  color: #1b1c1f;
-  line-height: 20px;
-  margin-top: 10px;
-  margin-bottom: 10px;
+const ShadowContainer = styled(DropShadow)`
+  shadow-color: rgba(0, 0, 0, 0.25);
+  shadow-offset: 2px 3px;
+  shadow-opacity: 0.2;
+  shadow-radius: 3px;
 `;
 
 const ButtonSection = styled.View`
-  flex: 1;
-  align-items: center;
-  justify-content: flex-end;  
+margin-top: 10px;
   width: 100%;
-  margin-bottom: 20px;
-  padding: 20px 0;
+   padding: 16px; /* 패딩 추가 */
+  background-color: #fff; /* 배경색 설정 */
+    position: absolute; /* 버튼을 고정 */
+ bottom: 0; /* 화면 하단에 위치 */
+  left: 0; /* 왼쪽 시작 */
+  right: 0; /* 오른쪽 끝 */
 `;
-
-
-const ButtonSection2 = styled.View`
-  flex: 1;
-  align-items: center;
-  justify-content: flex-end;  
-  width: 100%;
+const ProfileAvatar2 = styled(FastImage).attrs(props => ({
+  resizeMode: 'cover',
+}))`
+  width: 40px;
+  height: 40px;
+  border-radius: 55px;
+  background-color: '#F0F3F8';
+  align-self: left;
+  margin-right: 12px;
 `;
-
 const Button = styled.TouchableOpacity.attrs(props => ({
   activeOpacity: 0.6,
+  disabled: !props.active, // active가 false일 때 버튼 비활성화
+
 }))`
   width: ${props => props.width - 40}px;
-  height: 50px;
+  height: 60px;
   border-radius: 30px;
-  background-color: #2f87ff;
+  background-color: ${props => (props.active ? '#2F87FF' : '#e5e5e5')};
   align-items: center;
   justify-content: center;
   align-self: center;
-  bottom: 0px;
+  background-color: #2F87FF;
 `;
-
-const Button2 = styled.TouchableOpacity.attrs(props => ({
-  activeOpacity: 0.6,
-}))`
-  width: 60px;
-  height: 30px;
-  border-radius: 30px;
-  background-color: #2f87ff;
-  align-items: center;
-  justify-content: center;
-  align-self: right;
-`;
-
 
 const ButtonText = styled.Text`
-  font-size: 18px;
+  font-size: 17px;
   font-family: Pretendard-Bold;
-  color: #fff;
   line-height: 20px;
+  color: #fff;
 `;
 
+
+const HoustInfoSection = styled.View`
+  width: 100%;
+  height: auto;
+  background-color: #fff;
+  flex-direction: row;
+`;
+const ProgressSection = styled.View`
+    flex-direction: row;
+  width: 100%;
+  height: 5px;
+  background-color: #e8eaed; 
+`;
 
 const ReservationDetail = props => {
   const _scrollViewRef = useRef(null);
@@ -193,14 +97,26 @@ const ReservationDetail = props => {
   const actionSheetRef = useRef(null);
   const navigation = useNavigation();
   const { width, height } = useWindowDimensions();
-
-  const [hasNavigatedBack, setHasNavigatedBack] = useState(false);
-  const hasNavigatedBackRef = useRef(hasNavigatedBack);
   const [reservationDetail, setReservationDetail] = useState({});
   const dispatch = useDispatch();
   const currentUser = useSelector(state => state.currentUser.value);
   const [isExpanded, setIsExpanded] = useState(false);
   const houseInfo = props?.route.params?.houseInfo;
+
+  const [phoneNumber, setPhoneNumber] = useState('');
+  const [authNum, setAuthNumber] = useState('');
+
+  const [step, setStep] = useState(1); // 현재 단계 상태 (1: 휴대폰 입력, 2: 인증번호 입력)
+  const [timer, setTimer] = useState(180); // 3분 = 180초
+  const [isTimerActive, setIsTimerActive] = useState(false);
+  const [isConnected, setIsConnected] = useState(true);
+  const [hasNavigatedBack, setHasNavigatedBack] = useState(false);
+  const hasNavigatedBackRef = useRef(hasNavigatedBack);
+  const [isModalVisible, setIsModalVisible] = useState(false); // 팝업 상태 관리
+  const [progressStatus, setProgressStatus] = useState(0);
+  const inputRef = useRef();
+
+  const [agreePrivacy, setAgreePrivacy] = useState(false); // 팝업 상태 관리
 
   const toggleExpand = () => {
     setIsExpanded(!isExpanded);
@@ -241,36 +157,56 @@ const ReservationDetail = props => {
       getReservationDetail(props.route?.params?.consultingReservationId);
     }, [])
   );
-  const [isConnected, setIsConnected] = useState(true);
-
-  /*useEffect(() => {
-    _scrollViewRef2.current?.scrollTo({
-      x: (width) * currentPageIndex2,
-      y: 0,
-      animated: true,
-    });
-  }, [currentPageIndex2]);
-*/
 
 
-  const handleNetInfoChange = (state) => {
-    return new Promise((resolve, reject) => {
-      if (!state.isConnected && isConnected) {
-        setIsConnected(false);
-        navigation.push('NetworkAlert', navigation);
-        resolve(false);
-      } else if (state.isConnected && !isConnected) {
-        setIsConnected(true);
-        if (!hasNavigatedBackRef.current) {
-          setHasNavigatedBack(true);
-        }
-        resolve(true);
-      } else {
-        resolve(true);
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (inputRef.current) {
+        inputRef.current.focus();
       }
-    });
+    }, 500); // 딜레이 추가
+    return () => clearTimeout(timer);
+  }, []);
+  const openModal = () => {
+    setIsModalVisible(true); // 팝업 열기
   };
 
+  const closeModal = () => {
+    setIsModalVisible(false); // 팝업 닫기
+  };
+  useEffect(() => {
+    let interval = null;
+    if (isTimerActive && timer > 0) {
+      interval = setInterval(() => {
+        setTimer((prev) => prev - 1);
+      }, 1000); // 1초마다 감소
+    } else if (timer === 0) {
+      clearInterval(interval); // 타이머 종료
+    }
+    return () => clearInterval(interval); // 컴포넌트 언마운트 시 정리
+  }, [isTimerActive, timer]);
+
+  const formatTime = (time) => {
+    const minutes = Math.floor(time / 60); // 분
+    const seconds = time % 60; // 초
+    console.log("남은시간 : ", `${minutes}:${seconds < 10 ? `0${seconds}` : seconds}`);
+    return `${minutes}:${seconds < 10 ? `0${seconds}` : seconds}`; // "분:초" 형식
+  };
+  const handleResendAuth = async () => {
+    setTimer(180); // 타이머를 3분으로 초기화
+    setIsTimerActive(false); // 타이머 활성화
+    setAuthNumber('');
+    const state = await NetInfo.fetch();
+    const canProceed = await handleNetInfoChange(state);
+    if (canProceed) {
+      console.log("sendAuthMobile", `${props.route?.params?.authType}`);
+      sendAuthMobile(phoneNumber.replace(/-/g, ''), props.route?.params?.authType, props?.route?.params?.id);
+    }
+    console.log('인증번호 재전송');
+    // 인증번호 재전송 API 호출 로직 추가
+  };
+
+  // 버튼 클릭 핸들러
   const getReservationDetail = async (consultingReservationId) => {
     const url = `${Config.APP_API_URL}consulting/reservationDetail?consultingReservationId=${consultingReservationId}`;
     //const url = `https://devapp.how-taxing.com/consulting/availableSchedule?consultantId=${consultantId}&searchType="${searchType}"`;
@@ -328,7 +264,100 @@ const ReservationDetail = props => {
   };
 
 
+
+
+
+  // 미입력
+  const progressStatus1 = [
+    { id: 1, status: '결제 완료', isActive: true },
+    { id: 2, status: '상담 상세정보 입력', isActive: false },
+    { id: 3, status: '상담 대기', isActive: false },
+    { id: 4, status: '상담 시작', isActive: false },
+    { id: 5, status: '상담 종료', isActive: false },
+  ];
+  // 상담대기
+  const progressStatus2 = [
+    { id: 1, status: '결제 완료', isActive: false },
+    { id: 2, status: '상담 상세정보 입력', isActive: false },
+    { id: 3, status: '상담 대기', isActive: true },
+    { id: 4, status: '상담 시작', isActive: false },
+    { id: 5, status: '상담 종료', isActive: false },
+  ];
+  // 상담중중
+  const progressStatus3 = [
+    { id: 1, status: '결제 완료', isActive: false },
+    { id: 2, status: '상담 상세정보 입력', isActive: false },
+    { id: 3, status: '상담 대기', isActive: false },
+    { id: 4, status: '상담 시작', isActive: true },
+    { id: 5, status: '상담 종료', isActive: false },
+  ];
+  // 상담종료
+  const progressStatus4 = [
+    { id: 1, status: '결제 완료', isActive: false },
+    { id: 2, status: '상담 상세정보 입력', isActive: false },
+    { id: 3, status: '상담 대기', isActive: false },
+    { id: 4, status: '상담 시작', isActive: false },
+    { id: 5, status: '상담 종료', isActive: true },
+  ];
+  const progressCancelData = [
+    { id: 1, status: '결제 완료', isActive: false },
+    { id: 2, status: '상담 상세정보 입력', isActive: false },
+    { id: 3, status: '상담 취소', isActive: true },
+  ];
+
+  const temp = (accessToken, refreshToken) => {
+    return [accessToken, refreshToken];
+  }
+
+
+  /**
+   * This function is a callback function for NetInfo's
+   * event listener. It returns a promise that resolves
+   * to true if the internet is connected and false if
+   * it is not. It also navigates to the NetworkAlert
+   * screen if the internet is not connected.
+   *
+   * @param {Object} state - The state of the internet
+   *   connection.
+   *
+   * @return {Promise<Boolean>} - A promise that resolves
+   *   to true if the internet is connected and false if
+   *   it is not.
+   */
+  const handleNetInfoChange = (state) => {
+    return new Promise((resolve, reject) => {
+      if (!state.isConnected && isConnected) {
+        setIsConnected(false);
+        navigation.push('NetworkAlert', navigation);
+        resolve(false);
+      } else if (state.isConnected && !isConnected) {
+        setIsConnected(true);
+        if (!hasNavigatedBackRef.current) {
+          setHasNavigatedBack(true);
+        }
+        resolve(true);
+      } else {
+        resolve(true);
+      }
+    });
+  };
+
+
+  useFocusEffect(
+    useCallback(() => {
+      BackHandler.addEventListener('hardwareBackPress', handleBackPress)
+      return () => {
+        BackHandler.removeEventListener('hardwareBackPress', handleBackPress);
+      }
+    }, [handleBackPress])
+  );
+
+
+
   useLayoutEffect(() => {
+    // 상태 표시줄 설정 (전역 설정)
+    StatusBar.setBarStyle('dark-content', true); // 아이콘 색상: 어두운 색
+    StatusBar.setBackgroundColor('#ffffff'); // 배경색: 흰색 (안드로이드 전용)
     navigation.setOptions({
       headerLeft: () => (
         <TouchableOpacity
@@ -336,16 +365,17 @@ const ReservationDetail = props => {
           hitSlop={{ top: 20, bottom: 20, left: 20, right: 20 }}
           onPress={() => {
             navigation.goBack();
-          }} >
-          <BackIcon />
-        </TouchableOpacity >
+            // dispatch(clearHouseInfo());
+          }}>
+          <CloseIcon />
+        </TouchableOpacity>
       ),
+
       headerTitleAlign: 'center',
-      title: '상담 예약 상세 정보',
+      title: '결제 상세 정보',
       headerShadowVisible: false,
       contentStyle: {
-        borderTopColor: '#F7F7F7',
-        borderTopWidth: 1,
+        borderTopWidth: 0,
       },
       headerTitleStyle: {
         fontFamily: 'Pretendard-Bold',
@@ -353,322 +383,499 @@ const ReservationDetail = props => {
         color: '#333',
         letterSpacing: -0.8,
       },
+
     });
   }, []);
-  const consultingTypeMap = {
-    '01': '취득세',
-    '02': '양도소득세',
-    '03': '상속세',
-    '04': '증여세'
-  };
-
-  const consultingStatusTypeMap = {
-    'WAITING': '상담대기',
-    'CANCEL': '상담취소',
-    'PROGRESS': '상담중',
-    'FINISH': '상담완료'
-  };
-
-  const consultingStatusTypeColorMap = {
-    'WAITING': '#A2C62B',
-    'CANCEL': '#2F87FF',
-    'PROGRESS': '#FF7401',
-    'FINISH': '#A82BC6'
-  };
-
 
   return (
+    <View style={styles.rootContainer}>
+      {/* 파란색 라인 */}
+      <ProgressSection>
+      </ProgressSection>
 
-    <><ProgressSection>
-    </ProgressSection>
-      <Container style={{ width: width }}>
-        <><FlatList
-          ref={_scrollViewRef}
-          scrollEnabled={true}
-          scrollEventThrottle={16}
-          data={[]}
-          renderItem={() => null} // 실제로 렌더링할 항목이 없으므로 null 반환
-          showsVerticalScrollIndicator={false}
-          overScrollMode="never" // 이 줄을 추가하세요
-          ListHeaderComponent={<>
-            <IntroSection style={{ width: '100%', height: 'auto' }}>
-              <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 20 }}>
-                <Title>이민정음 세무사</Title>
-                <HoustInfoBadge style={{ backgroundColor: consultingStatusTypeColorMap[reservationDetail.consultingStatus] }}>
-                  <HoustInfoBadgeText>{consultingStatusTypeMap[reservationDetail.consultingStatus]}</HoustInfoBadgeText>
-                </HoustInfoBadge>
-              </View>
+      {/* 스크롤 뷰 */}
+      <ScrollView contentContainerStyle={styles.scrollContent}>
+        {/* Input Section */}
+        <View style={styles.inputSection}>
+          {/* Label */}
+          <HoustInfoSection style={{ paddingTop: 10, paddingBottom: 10 }}>
+            <ProfileAvatar2 source={require('../../assets/images/Minjungum_Lee_consulting.png')} />
+            <Text style={styles.contentPayment}>
+              {'#' + `${'3272'}`}
+            </Text>
+            <Text style={styles.namePayment}>이민정음 세무사</Text>
 
-              <ModalInputSection style={{ width: '100%' }}>
-                <ModalInputContainer>
-                  <SubTitle>상담 예약일시</SubTitle>
-                  <SubTitle2>확정된 상담 예약 날짜와 시간이에요.</SubTitle2>
-                  <ModalInput keyboardShouldPersistTaps='always'
-                    style={{ height: 50, textAlignVertical: 'top', paddingTop: reservationDetail.consultingStatus === 'WAITING' ? 10 : 20 }}
-                  >
-                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-                      <ModalInputText style={{ textAlignVertical: 'center', width: '90%' }}>
-                        {new Date(reservationDetail.reservationDate).toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' }) + ' ' + reservationDetail.reservationStartTime}
-                      </ModalInputText>
-                      {reservationDetail.consultingStatus === 'WAITING' && (<TouchableOpacity
-                        style={{ paddingTop: 5 }}
-                        activeOpacity={0.6}
-                        hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-                        onPress={() => {
-                          //  console.log('reservationDetail', reservationDetail);
-                          SheetManager.show('updateConsultingDateAndTimeAlert', {
-                            payload: {
-                              navigation,
-                              consultingReservationId: props.route?.params?.consultingReservationId,
-                              handleHouseChange1,
-                            },
-                          });
-                        }}>
-                        <DropShadow style={{
-                          width: '100%',
-                          shadowColor: '#000',
-                          shadowOffset: {
-                            width: 0,
-                            height: 3,
-                          },
-                          shadowOpacity: 0.2,
-                          shadowRadius: 1,
-                        }}>
-                          <EditButtom />
-                        </DropShadow>
-                      </TouchableOpacity>)}
 
-                    </View>
-                  </ModalInput>
-                </ModalInputContainer>
-              </ModalInputSection>
-              <ModalInputSection style={{ width: '100%' }}>
-                <ModalInputContainer>
-                  <SubTitle>상담 내용</SubTitle>
-                  <SubTitle2>상담을 원하시는 세금 종류와 상담 내용이에요.</SubTitle2>
-                  <View style={{ flexDirection: 'row', flexWrap: 'wrap', marginBottom: 20 }}>
-                    {reservationDetail.consultingType && reservationDetail.consultingType?.split(',').map(type => consultingTypeMap[type]).map((type) => (
-                      <HoustInfoBadge key={type} style={{ backgroundColor: '#2F87FF', marginRight: 10 }}>
-                        <HoustInfoBadgeText>{type}</HoustInfoBadgeText>
-                      </HoustInfoBadge>
-                    ))}
-                  </View>
-                  <ModalInput keyboardShouldPersistTaps='always'
-                    style={{ height: reservationDetail.consultingInflowPath && reservationDetail.consultingInflowPath !== '00' ? 130 : 150, textAlignVertical: 'top', paddingTop: reservationDetail.consultingStatus === 'WAITING' ? 10 : 20 }}>
-                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-                      <ModalInputText style={{ width: '90%', paddingTop: 10 }}>{reservationDetail.consultingRequestContent}</ModalInputText>
-                      {reservationDetail.consultingStatus === 'WAITING' && (<TouchableOpacity
-                        style={{ paddingTop: 5 }}
-                        activeOpacity={0.6}
-                        hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-                        onPress={() => {
-                          SheetManager.show('updateConsultingContentAlert', {
-                            payload: {
-                              navigation,
-                              consultingReservationId: props.route?.params?.consultingReservationId,
-                              consultingRequestContent: reservationDetail.consultingRequestContent,
-                              consultingType: reservationDetail.consultingType,
-                              handleHouseChange2,
-                            },
-                          });
-                        }}>
-                        <DropShadow style={{
-                          width: '100%',
-                          shadowColor: '#000',
-                          shadowOffset: {
-                            width: 0,
-                            height: 3,
-                          },
-                          shadowOpacity: 0.2,
-                          shadowRadius: 1,
-                        }}>
-                          <EditButtom />
-                        </DropShadow>
-                      </TouchableOpacity>)}
-                    </View>
-                  </ModalInput>
-                </ModalInputContainer>
-              </ModalInputSection>
-              {reservationDetail.consultingInflowPath && reservationDetail.consultingInflowPath !== '00' && <View style={{
-                borderTopWidth: 1,
-                borderTopColor: '#E8EAED',
-                flexDirection: 'row',
-                flexWrap: 'wrap',
-              }}>
-                <SubTitle4 style={{ marginTop: 20, marginBottom: 20 }}>세금 계산 결과</SubTitle4>
-                <ButtonSection2 style={{
-                  flex: 1,
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  justifyContent: 'flex-end',
-                  width: '100%'
-                }}>
-                  <Button2 onPress={toggleExpand} style={{
-                    borderWidth: 1, borderColor: '#E8EAED', backgroundColor: '#fff', width: 80, flexDirection: 'row',
-                    alignItems: 'center',
+          </HoustInfoSection>
 
-                  }}>
-                    <ButtonText style={{ color: '#717274', fontSize: 12, fontFamily: 'Pretendard-regular' }}> {isExpanded ? '접기' : '펼치기'}</ButtonText>
-                    {!isExpanded ? <Bottompolygon style={{ marginLeft: 5, marginTop: 1 }} />
-                      : <Bottompolygon style={{
-                        marginLeft: 5,
-                        marginTop: 1,
-                        transform: [{ rotate: '180deg' }]
-                      }} />}
-                  </Button2>
-                </ButtonSection2>
-              </View>}
+          <View style={styles.Line1} />
 
-              {isExpanded && (<>
-                {/*reservationDetail.consultingInflowPath !== '02' ? <HouseInfo item={houseInfo} navigation={navigation} ChatType='AcquisitionChat' /> : <HouseInfo item={houseInfo} navigation={navigation} ChatType='GainsTaxChat' />*/}
-                {reservationDetail.consultingInflowPath !== '02' ? <TaxCard navigation={navigation} Pdata={reservationDetail.calculationBuyResultResponse !== null ? reservationDetail.calculationBuyResultResponse : null} /> : <TaxCard2 navigation={navigation} Pdata={reservationDetail.calculationSellResultResponse !== null ? reservationDetail.calculationSellResultResponse : null} />}
-                {reservationDetail.consultingInflowPath !== '02' ? <TaxInfoCard Pdata={reservationDetail.calculationBuyResultResponse !== null ? reservationDetail.calculationBuyResultResponse : null} /> : <TaxInfoCard2 Pdata={reservationDetail.calculationSellResultResponse !== null ? reservationDetail.calculationSellResultResponse : null} />}
-              </>)
-              }
-            </IntroSection>
-          </>}
-          ListFooterComponent={
-            <>
-              <ButtonSection style={{
-                backgroundColor: '#fff', // background-color를 camelCase로 변경
-                alignItems: 'center', // align-items를 camelCase로 변경
-                flexDirection: 'row', // flex-direction을 camelCase로 변경
-                justifyContent: 'space-between', // justify-content를 camelCase로 변경
-              }}>
-                <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', flexDirection: 'row' }}>
-                  {reservationDetail.consultingStatus && reservationDetail.consultingStatus === 'WAITING' && (<><DropShadow
-                    style={{
-                      width: '48%',
-                      marginRight: '4%',
-                      shadowColor: '#000',
-                      shadowOffset: {
-                        width: 0,
-                        height: 0,
-                      },
-                      shadowOpacity: 0,
-                      shadowRadius: 1,
-                    }}>
-                    <Button
-                      onPress={async () => {
-                        const state = await NetInfo.fetch();
-                        const canProceed = await handleNetInfoChange(state);
-                        if (canProceed) {
-                          // Your code here
-                          SheetManager.show('InfoReservationCancel', {
-                            payload: {
-                              consultingReservationId: props.route?.params?.consultingReservationId,
-                              navigation: navigation
-                            },
-                          });
-                        }
-                      }}
-                      style={{
-                        width: '100%',
-                        borderRadius: 25,
-                        backgroundColor: '#fff',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        borderWidth: 1,
-                        borderColor: '#E8EAED',
-                      }}>
-                      <ButtonText
-                        style={{
-                          color: '#717274',
-                          fontSize: 16,
-                          fontFamily: 'Pretendard-Bold',
-                          lineHeight: 20,
-                        }}>
-                        예약 취소하기
-                      </ButtonText>
-                    </Button>
-                  </DropShadow>
-                    <DropShadow style={{
-                      width: '48%',
-                      shadowColor: '#000',
-                      shadowOffset: {
-                        width: 0,
-                        height: 3,
-                      },
-                      shadowOpacity: 0.2,
-                      shadowRadius: 1,
-                    }}>
-                      <Button
-                        onPress={async () => {
-                          const state = await NetInfo.fetch();
-                          const canProceed = await handleNetInfoChange(state);
-                          if (canProceed) {
-                            navigation.goBack();
-                          }
-                        }} style={{
-                          width: '100%',
-                          borderRadius: 25, // border-radius를 camelCase로 변경하고 단위 제거
-                          alignItems: 'center', // align-items를 camelCase로 변경
-                          justifyContent: 'center', // justify-content를 camelCase로 변경
-                          borderWidth: 1, // border-width를 camelCase로 변경하고 단위 제거
-                          backgroundColor: '#2f87ff',
-                          borderColor: '#2f87ff'
-                        }}>
-                        <ButtonText
-                          style={{
-                            color: '#717274',
-                            fontSize: 16, // font-size를 camelCase로 변경하고 단위 제거
-                            fontFamily: 'Pretendard-Bold', // font-family를 camelCase로 변경
-                            lineHeight: 20, // line-height를 camelCase로 변경하고 단위 제거
-                            color: '#fff'
-                          }}
-                        >돌아가기</ButtonText>
-                      </Button>
-                    </DropShadow></>)}
-                  {reservationDetail.consultingStatus && reservationDetail.consultingStatus !== 'WAITING' &&
-                    (<><DropShadow style={{
-                      width: '100%',
-                      shadowColor: '#000',
-                      shadowOffset: {
-                        width: 2,
-                        height: 2,
-                      },
-                      shadowOpacity: 0.2,
-                      shadowRadius: 3,
-                    }}>
-                      <Button
-                        //active={buyprice}
-                        //disabled={!(buyprice)}
-                        onPress={async () => {
-                          const state = await NetInfo.fetch();
-                          const canProceed = await handleNetInfoChange(state);
-                          if (canProceed) {
-                            navigation.goBack();
-                          }
-                        }} style={{
-                          width: '100%',
-                          height: 50, // height 값을 숫자로 변경하고 단위 제거
-                          borderRadius: 25, // border-radius를 camelCase로 변경하고 단위 제거
-                          alignItems: 'center', // align-items를 camelCase로 변경
-                          justifyContent: 'center', // justify-content를 camelCase로 변경
-                          borderWidth: 1, // border-width를 camelCase로 변경하고 단위 제거
-                          backgroundColor: '#2f87ff',
-                          borderColor: '#2f87ff'
-                        }}>
-                        <ButtonText
-                          style={{
-                            color: '#717274',
-                            fontSize: 16, // font-size를 camelCase로 변경하고 단위 제거
-                            fontFamily: 'Pretendard-Bold', // font-family를 camelCase로 변경
-                            lineHeight: 20, // line-height를 camelCase로 변경하고 단위 제거
-                            color: '#fff'
-                          }}
-                        >돌아가기</ButtonText>
-                      </Button>
-                    </DropShadow></>)}
+          <Text style={styles.subTitleLabel}>진행 상태 </Text>
+
+          <View style={styles.progressStatus}>
+
+            {/* 세로 라인 */}
+            <View style={styles.verticalLine} />
+            {/* 상태 아이콘 리스트 */}
+
+            <View style={styles.progressContainer}>
+              <View style={styles.rowInfoProgress}>
+                {/* 아이콘 */}
+                <View
+                  style={{
+                    position: 'relative',
+                    left: (progressStatus === 0 ? progressStatus1 :
+                      progressStatus === 1 ? progressStatus2 :
+                        progressStatus === 2 ? progressStatus3 :
+                          progressStatus === 3 ? progressStatus4 : progressCancelData).isActive ? 0 : 9,
+                    zIndex: 1,
+                  }}
+                >
+                  {(progressStatus === 0 ? progressStatus1 :
+                    progressStatus === 1 ? progressStatus2 :
+                      progressStatus === 2 ? progressStatus3 :
+                        progressStatus === 3 ? progressStatus4 : progressCancelData).isActive ? <StatusOnIcon /> : <StatusOffIcon />}
                 </View>
-              </ButtonSection>
-            </>
-          }
-        />
-        </></Container>
-    </>
-  )
+
+                {/* 상태 텍스트 */}
+                <Text style={styles.statusText}>결제 완료</Text>
+
+                <Text style={styles.progressDate}>-</Text>
+
+              </View>
+              <View style={styles.rowInfoProgress}>
+                {/* 아이콘 */}
+                <View
+                  style={{
+                    position: 'relative',
+                    left: (progressStatus === 0 ? progressStatus1 :
+                      progressStatus === 1 ? progressStatus2 :
+                        progressStatus === 2 ? progressStatus3 :
+                          progressStatus === 3 ? progressStatus4 : progressCancelData).isActive ? 0 : 9,
+                    zIndex: 1,
+                  }}
+                >
+                  {(progressStatus === 0 ? progressStatus1 :
+                    progressStatus === 1 ? progressStatus2 :
+                      progressStatus === 2 ? progressStatus3 :
+                        progressStatus === 3 ? progressStatus4 : progressCancelData).isActive ? <StatusOnIcon /> : <StatusOffIcon />}
+                </View>
+
+                {/* 상태 텍스트 */}
+                <Text style={styles.statusText}>결제 완료</Text>
+
+                <Text style={styles.progressDate}>-</Text>
+
+              </View>
+              <View style={styles.rowInfoProgress}>
+                {/* 아이콘 */}
+                <View
+                  style={{
+                    position: 'relative',
+                    left: (progressStatus === 0 ? progressStatus1 :
+                      progressStatus === 1 ? progressStatus2 :
+                        progressStatus === 2 ? progressStatus3 :
+                          progressStatus === 3 ? progressStatus4 : progressCancelData).isActive ? 0 : 9,
+                    zIndex: 1,
+                  }}
+                >
+                  {(progressStatus === 0 ? progressStatus1 :
+                    progressStatus === 1 ? progressStatus2 :
+                      progressStatus === 2 ? progressStatus3 :
+                        progressStatus === 3 ? progressStatus4 : progressCancelData).isActive ? <StatusOnIcon /> : <StatusOffIcon />}
+                </View>
+
+                {/* 상태 텍스트 */}
+                <Text style={styles.statusText}>결제 완료</Text>
+
+                <Text style={styles.progressDate}>-</Text>
+
+              </View>
+              <View style={styles.rowInfoProgress}>
+                {/* 아이콘 */}
+                <View
+                  style={{
+                    position: 'relative',
+                    left: (progressStatus === 0 ? progressStatus1 :
+                      progressStatus === 1 ? progressStatus2 :
+                        progressStatus === 2 ? progressStatus3 :
+                          progressStatus === 3 ? progressStatus4 : progressCancelData).isActive ? 0 : 9,
+                    zIndex: 1,
+                  }}
+                >
+                  {(progressStatus === 0 ? progressStatus1 :
+                    progressStatus === 1 ? progressStatus2 :
+                      progressStatus === 2 ? progressStatus3 :
+                        progressStatus === 3 ? progressStatus4 : progressCancelData).isActive ? <StatusOnIcon /> : <StatusOffIcon />}
+                </View>
+
+                {/* 상태 텍스트 */}
+                <Text style={styles.statusText}>결제 완료</Text>
+
+                <Text style={styles.progressDate}>-</Text>
+
+              </View>
+              <View style={styles.rowInfoProgress}>
+                {/* 아이콘 */}
+                <View
+                  style={{
+                    position: 'relative',
+                    left: (progressStatus === 0 ? progressStatus1 :
+                      progressStatus === 1 ? progressStatus2 :
+                        progressStatus === 2 ? progressStatus3 :
+                          progressStatus === 3 ? progressStatus4 : progressCancelData).isActive ? 0 : 9,
+                    zIndex: 1,
+                  }}
+                >
+                  {(progressStatus === 0 ? progressStatus1 :
+                    progressStatus === 1 ? progressStatus2 :
+                      progressStatus === 2 ? progressStatus3 :
+                        progressStatus === 3 ? progressStatus4 : progressCancelData).isActive ? <StatusOnIcon /> : <StatusOffIcon />}
+                </View>
+
+                {/* 상태 텍스트 */}
+                <Text style={styles.statusText}>결제 완료</Text>
+
+                <Text style={styles.progressDate}>-</Text>
+
+              </View>
+            </View>
+            {/* <FlatList
+              data={progressStatus === 0 ? progressStatus1 :
+                progressStatus === 1 ? progressStatus2 :
+                  progressStatus === 2 ? progressStatus3 :
+                    progressStatus === 3 ? progressStatus4 : progressCancelData
+              }
+              renderItem={({ item, index }) => (
+                <View style={[styles.itemContainer, {
+                  marginTop: 10, marginBottom: index < (
+                    progressStatus === 0 ? progressStatus1.length :
+                      progressStatus === 1 ? progressStatus2.length :
+                        progressStatus === 2 ? progressStatus3.length :
+                          progressStatus === 3 ? progressStatus4.length :
+                            progressCancelData.length
+                  ) - 1 ? 15 : 0
+                }]}>
+            
+                  <View style={styles.iconAndTextContainer}>
+                    <View
+                      style={{
+                        position: 'relative',
+                        left: item.isActive ? 0 : 9,
+                        zIndex: 1,
+                      }}
+                    >
+                      {item.isActive ? <StatusOnIcon /> : <StatusOffIcon />}
+                    </View>
+
+                    <Text style={styles.statusText}>{item.status}</Text>
+
+                    <Text style={styles.progressDate}>{item.status}</Text>
+
+                  </View>
+
+
+                </View>
+              )}
+              keyExtractor={(item) => item.id.toString()}
+            /> */}
+          </View>
+
+          <View style={styles.Line1} />
+
+          <Text style={styles.subTitleLabel}>결제 정보</Text>
+
+          <View style={styles.infoBox}>
+            {/* 고객명 */}
+            <View style={styles.rowInfo}>
+              <Text style={styles.labelInfo}>고객명</Text>
+              <Text style={styles.valueIfno}>홍길동</Text>
+            </View>
+
+            {/* 할인 금액 */}
+            <View style={styles.rowInfo}>
+              <Text style={styles.labelInfo}>전화번호</Text>
+              <Text style={styles.valueIfno}>010-0000-0000</Text>
+            </View>
+            {/* 구분선 */}
+            <View style={styles.separator} />
+            <View style={styles.rowInfo2}>
+              <Text style={styles.labelInfo}>상품 금액</Text>
+              <Text style={styles.valueIfno}>50,000 원</Text>
+            </View>
+
+            {/* 할인 금액 */}
+            <View style={styles.rowInfo}>
+              <Text style={styles.labelInfo}>할인 금액</Text>
+              <Text style={styles.valueIfno}>0 원</Text>
+            </View>
+            <View style={styles.separator} />
+            <View style={styles.rowInfo2}>
+              <Text style={styles.labelInfo}>결제 금액</Text>
+              <Text style={styles.totalValue}>50,000 원</Text>
+            </View>
+            <View style={styles.separator} />
+            <View style={styles.rowInfo2}>
+              <Text style={styles.labelInfo}>결제 방식</Text>
+              <Text style={styles.valueIfno}>-</Text>
+            </View>
+          </View>
+
+          {/* 만료 메시지 */}
+          {/* 만료 메시지와 재전송 버튼 */}
+
+        </View>
+
+
+      </ScrollView>
+      <ButtonSection>
+        <ShadowContainer>
+          <Button
+            style={{ backgroundColor: '#2F87FF' }}
+
+            width={width}
+            onPress={() => {
+              navigation.goBack();
+
+            }}>
+            <ButtonText style={{ color: '#fff' }}>돌아가기</ButtonText>
+          </Button>
+        </ShadowContainer>
+
+
+      </ButtonSection>
+      {/* 모달 */}
+    </View>
+
+  );
 };
+
+
+const styles = StyleSheet.create({
+  timerText: {
+    fontSize: 13,
+    color: '#FF7401', // 빨간색 텍스트
+    marginRight: 10,
+    fontFamily: 'Pretendard-Bold', // 원하는 폰트 패밀리
+    fontWeight: '700', // 폰트 두께 (400은 기본)
+  },
+  rootContainer: {
+    flex: 1,
+    backgroundColor: '#fff',
+  },
+  blueLine: {
+    height: 5, // 라인 두께
+    backgroundColor: '#2f87ff', // 파란색
+  },
+  bigTitle: {
+    fontSize: 20,
+    color: '#1b1C1F',
+    fontFamily: 'Pretendard-Bold', // 원하는 폰트 패밀리
+    lineHeight: 24,
+  },
+
+  subTitleLabel: {
+    fontSize: 17,
+
+    color: '#1b1C1F',
+    fontFamily: 'Pretendard-Bold', // 원하는 폰트 패밀리
+
+  },
+  progressStatus: {
+    height: 200,
+    marginVertical: 20,
+    flexDirection: 'row',
+  },
+
+  verticalLine: {
+    position: 'absolute',
+    left: 13, // 라인의 위치
+    top: 0,
+    width: 2,
+    height: '100%',
+    // height:180,
+    backgroundColor: '#BDBDBD',
+  },
+  itemContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    position: 'relative', // 아이콘을 라인 위에 겹치도록 설정
+  },
+  progressContainer: {
+    flex: 1,
+  },
+  rowInfoProgress: {
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+    alignItems: 'center',
+    marginBottom: 20, // 각 행 간 간격
+  },
+  iconAndTextContainer: {
+    flexDirection: 'row', // 아이콘과 텍스트를 수평으로 배치
+    // alignItems: 'center', // 세로축 중앙 정렬
+  },
+  statusText: {
+    marginStart: 30,
+    fontSize: 14,
+    color: '#333',
+    // marginLeft: 10, // 아이콘과 텍스트 간 간격
+  },
+  progressDate: {
+    fontSize: 14,
+    color: '#333',
+    marginLeft: 10, // 아이콘과 텍스트 간 간격
+  },
+  iconContainer: {
+    position: 'relative', // 아이콘을 라인 위에 배치
+    left: 0, // 라인의 위치와 맞춤
+    zIndex: 1, // 라인 위에 배치
+  },
+  infoBox: {
+    marginTop: 20,
+    width: '100%',
+    paddingLeft: 20,
+    paddingRight: 20,
+    paddingTop: 20,
+    paddingBottom: 10,
+    backgroundColor: '#fff',
+    borderRadius: 5,
+    borderWidth: 1,
+    borderColor: '#d9d9d9', // 연한 테두리
+    alignSelf: 'center',
+  },
+
+  textContainer: {
+    marginLeft: 15,
+    justifyContent: 'center',
+  },
+  // statusText: {
+  //   fontSize: 16,
+  //   fontWeight: 'bold',
+  //   marginBottom: 5,
+  // },
+  dateText: {
+    fontSize: 14,
+    color: '#757575',
+  },
+
+  rowInfo: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 10, // 각 행 간 간격
+  },
+  rowInfo2: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginTop: 10, // 각 행 간 간격
+    marginBottom: 10, // 각 행 간 간격
+  },
+
+  labelInfo: {
+    fontSize: 13,
+    fontFamily: 'Pretendard-SemiBold',
+    color: '#717274', // 회색 텍스트
+  },
+  valueIfno: {
+    fontSize: 13,
+    fontFamily: 'Pretendard-Bold', // 원하는 폰트 패밀리
+    color: '#a3a5a8', // 회색 텍스트
+  },
+
+  totalValue: {
+    fontSize: 13,
+    color: '#2F87FF', // 파란 텍스트
+    fontFamily: 'Pretendard-Bold', // 원하는 폰트 패밀리
+  },
+  separator: {
+    height: 1,
+    backgroundColor: '#E8EAED', // 구분선 색상
+  },
+  content: {
+    padding: 20,
+  },
+  container: {
+    flex: 1,
+    padding: 20,
+    backgroundColor: '#fff',
+  },
+  title: {
+    fontSize: 20,
+    fontFamily: 'Pretendard-Bold', // 원하는 폰트 패밀리
+    marginBottom: 30,
+    textAlign: 'center',
+  },
+  scrollContent: {
+    paddingBottom: 80, // 버튼 공간 확보
+    paddingHorizontal: 20,
+    paddingTop: 20,
+  },
+  secondContent: {
+    marginTop: 20,
+  },
+  inputSection: {
+    marginTop: 22,
+  },
+  Line1: {
+    height: 1, // 라인 두께
+    backgroundColor: '#E8EaEd', // 파란색
+    marginBottom: 20,
+    marginTop: 20,
+  },
+  dateText: {
+    fontSize: 16,
+    fontFamily: 'Pretendard-Bold',
+    color: '#1B1C1F',
+  },
+  timeText: {
+    marginTop: 5,
+  },
+  timeHighlight: {
+    fontFamily: 'Pretendard-Bold',
+    fontSize: 16,
+    color: '#1B1C1F',
+  },
+  timeSubtext: {
+    fontSize: 13,
+    fontFamily: 'Pretendard-Bold',
+    color: '#1B1C1F',
+  },
+  titleText: {
+    fontSize: 13,
+    fontFamily: 'Pretendard-Bold',
+    color: '#717274',
+    marginBottom: 4,
+  },
+  nameText: {
+    fontSize: 17,
+    fontFamily: 'Pretendard-Bold',
+    color: '#1B1C1F',
+    marginBottom: 4,
+  },
+  addressText: {
+    fontSize: 13,
+    fontFamily: 'Pretendard-SemiBold',
+    color: '#a3a5a8', // 연회색
+  },
+
+
+  contentPayment: {
+    fontFamily: 'Pretendard-Bold',
+    fontSize: 20,
+    marginStart: 10,
+
+    color: '#1b1c1f',
+  },
+
+  namePayment: {
+    fontFamily: 'Pretendard-Bold',
+    fontSize: 20,
+    marginStart: 10,
+    color: '#717274',
+  },
+});
+
 
 
 export default ReservationDetail;
