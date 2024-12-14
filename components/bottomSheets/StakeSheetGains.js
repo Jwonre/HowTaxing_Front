@@ -312,8 +312,11 @@ const StakeSheetGains = props => {
     const state = await NetInfo.fetch();
     const canProceed = await handleNetInfoChange(state);
     if (canProceed) {
-
-      dispatch(setHouseInfo({ ...houseInfo, userProportion: value }),);
+      console.log('[StakeSheetGains] nextHandler value:', value);
+      const updateUserProportion = {...houseInfo, userProportion: value};
+      setTimeout(() => {
+        dispatch(setHouseInfo(updateUserProportion));
+      }, 300)
       const chat6 = {
         id: 'stake',
         type: 'my',

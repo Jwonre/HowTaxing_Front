@@ -21,7 +21,8 @@ import TaxInfoCard from '../../components/TaxInfoCard';
 import TaxCard2 from '../../components/TaxCard2';
 import TaxInfoCard2 from '../../components/TaxInfoCard2';
 import HouseInfo from '../../components/HouseInfo';
-import CalculationWarningCard from '../../components/CalculationWarning';
+import CheckOnIcon from '../../assets/icons/check_on.svg';
+import { setCert } from '../../redux/certSlice';
 
 const Container = styled.View`
   flex: 1.0;
@@ -381,6 +382,36 @@ const ButtonText = styled.Text`
   line-height: 20px;
 `;
 
+const FirstItem = styled.View`
+  flex-direction: row; 
+  justify-content: flex-end;
+  align-items: center;
+  padding: 0 10px;
+
+`;
+
+const FirstItemTitle = styled.Text`
+  font-size: 13px;
+  font-family: Pretendard-Bold;
+  color: #1b1c1f;
+  line-height: 18px;
+`;
+
+const FirstCheckCircle = styled.TouchableOpacity.attrs(props => ({
+  activeOpacity: 0.8,
+}))`
+    width: 20px;
+    height: 20px;
+    border-radius: 5px;  
+    background-color: #fff;
+    border: 2px solid #BAC7D5;  
+    align-items: center;
+    justify-content: center;
+    margin-right: 15px;
+    margin-left: 10;
+`;
+
+
 
 const ConsultingReservation2 = props => {
   const _scrollViewRef = useRef(null);
@@ -395,6 +426,7 @@ const ConsultingReservation2 = props => {
   const houseInfo = props?.route.params?.houseInfo;
   const width = Dimensions.get('window').width;
   const height = Dimensions.get('window').height;
+  const dispatch = useDispatch();
   const input1 = useRef(null);
   const input2 = useRef(null);
   const input3 = useRef(null);
@@ -412,8 +444,12 @@ const ConsultingReservation2 = props => {
   const [timeList, setTimeList] = useState([]);
   const [isExpanded, setIsExpanded] = useState(false);
   const [taxTypeList, setTaxTypeList] = useState([]);
+  const { certType, agreeCert, agreePrivacy } = useSelector(
+    state => state.cert.value,
+  );
   const toggleExpand = () => {
     setIsExpanded(!isExpanded);
+    console.log('props.route.params.isGainsTax', props.route.params.isGainsTax);
   };
 
   for (let i = 9; i <= 11; i++) {
@@ -510,14 +546,14 @@ const ConsultingReservation2 = props => {
   };
 
   useEffect(() => {
-    if (props.route.params.IsGainTax !== undefined) {
-      if (props.route.params.IsGainTax) {
+    if (props.route.params.isGainsTax !== undefined) {
+      if (props.route.params.isGainsTax) {
         setTaxTypeList(['양도소득세']);
       } else {
         setTaxTypeList(['취득세']);
       }
     }
-    console.log('props.route.params.IsGainTax', props.route.params.IsGainTax);
+    console.log('props.route.params.isGainsTax', props.route.params.isGainsTax);
   }, []);
 
   useEffect(() => {
@@ -526,7 +562,10 @@ const ConsultingReservation2 = props => {
     }
   }, [currentPageIndex]);
 
-
+  useEffect(() => {
+    dispatch(setCert({ agreePrivacy: false }));
+    //console.log('timeList', timeList);
+  }, []);
 
   useEffect(() => {
     if (selectedDate && currentPageIndex === 3) {
@@ -652,7 +691,7 @@ const ConsultingReservation2 = props => {
       reservationDate: selectedDate ? `${year}-${month}-${day}` : '',
       reservationTime: selectedList ? selectedList[0] : '',
       consultingType: NumTaxTypeList ? NumTaxTypeList.sort().join(",") : '',
-      consultingInflowPath: props?.route.params.IsGainTax ? '02' : '01',
+      consultingInflowPath: props?.route.params.isGainsTax ? '02' : '01',
       calcHistoryId: Pdata.calcHistoryId ? Pdata.calcHistoryId : '',
       consultingRequestContent: text ? text : '',
     };
@@ -1334,7 +1373,7 @@ const ConsultingReservation2 = props => {
           overScrollMode="never" // 이 줄을 추가하세요
           ListHeaderComponent={
             <>
-              <IntroSection2 style={{ height: 'auto' }}>
+              <IntroSection2 style={{ height: 'auto', paddingBottom: 10 }}>
                 <View style={{ flexDirection: 'row', alignItems: 'left', marginBottom: 10 }}>
                   <ProfileAvatar2 source={require('../../assets/images/Minjungum_Lee_consulting.png')}></ProfileAvatar2>
                   <ProfileName>이민정음 세무사</ProfileName>
@@ -1452,18 +1491,48 @@ const ConsultingReservation2 = props => {
                 </View>
 
                 {isExpanded && (<>
-                  {!props?.route.params.IsGainTax ? <HouseInfo item={houseInfo} navigation={navigation} ChatType='AcquisitionChat' /> : <HouseInfo item={houseInfo} navigation={navigation} ChatType='GainsTaxChat' />}
-                  {!props?.route.params.IsGainTax ? <TaxCard navigation={navigation} Pdata={Pdata ? Pdata : null} /> : <TaxCard2 navigation={navigation} Pdata={Pdata ? Pdata : null} />}
-                  {!props?.route.params.IsGainTax ? <TaxInfoCard Pdata={Pdata ? Pdata : null} /> : <TaxInfoCard2 Pdata={Pdata ? Pdata : null} />}
+                  {!props?.route.params.isGainsTax ? <HouseInfo item={houseInfo} navigation={navigation} ChatType='AcquisitionChat' /> : <HouseInfo item={houseInfo} navigation={navigation} ChatType='GainsTaxChat' />}
+                  {!props?.route.params.isGainsTax ? <TaxCard navigation={navigation} Pdata={Pdata ? Pdata : null} /> : <TaxCard2 navigation={navigation} Pdata={Pdata ? Pdata : null} />}
+                  {!props?.route.params.isGainsTax ? <TaxInfoCard Pdata={Pdata ? Pdata : null} /> : <TaxInfoCard2 Pdata={Pdata ? Pdata : null} />}
                 </>)
                 }
-                <SubTitle3>고객님께서 본인 인증하여 로드하거나 직접 입력하신 주택정보와{'\n'}아래 세금 계산 결과를 활용하여 세금 상담을 진행할 예정이에요.{'\n'}이에 동의하시나요?{'\n'}{'\n'}{'\n'}{'\n'}{'\n'}{'\n'}</SubTitle3>
+                {/*<SubTitle3>고객님께서 본인 인증하여 로드하거나 직접 입력하신 주택정보와{'\n'}아래 세금 계산 결과를 활용하여 세금 상담을 진행할 예정이에요.{'\n'}이에 동의하시나요?{'\n'}{'\n'}{'\n'}{'\n'}{'\n'}{'\n'}</SubTitle3>*/}
               </IntroSection2>
+              <FirstItem style={{ marginBottom: isExpanded ? '45%' : '43%' }}>
+                <View style={{ flexDirection: 'row' }}>
+                  <TouchableOpacity
+                    onPress={async () => {
+                      console.log(props?.route.params);
+                      navigation.navigate('CertificationPrivacy', {
+                        prevSheet: 'ConsultingReservation2',
+                        isGainsTax: props?.route.params.isGainsTax,
+                        houseInfo: props?.route.params.houseInfo,
+                        Pdata: props?.route.params.Pdata,
+                      });
+                    }}>
+                    <FirstItemTitle style={{ color: '#2F87FF', textDecorationLine: 'underline' }}>개인정보 수집 및 이용</FirstItemTitle>
+                  </TouchableOpacity>
+                  <FirstItemTitle>에 대하여 동의하시나요?</FirstItemTitle>
+                </View>
+                <FirstCheckCircle
+                  onPress={() => {
+                    dispatch(
+                      setCert({
+                        agreePrivacy: !agreePrivacy,
+                      }),
+                    );
+                  }}>
+                  {agreePrivacy && <CheckOnIcon />}
+                </FirstCheckCircle>
+
+              </FirstItem>
             </>
           }
           ListFooterComponent={
             <>
-              <ButtonSection2>
+              <ButtonSection2 style={{
+    
+              }}>
                 <View
                   style={{
                     alignItems: 'center', // align-items를 camelCase로 변경
@@ -1487,6 +1556,7 @@ const ConsultingReservation2 = props => {
                         const state = await NetInfo.fetch();
                         const canProceed = await handleNetInfoChange(state);
                         if (canProceed) {
+                          dispatch(setCert({ agreePrivacy: false }));
                           setCurrentPageIndex(3);
                         }
                       }}>
@@ -1496,8 +1566,8 @@ const ConsultingReservation2 = props => {
                   <ShadowContainer style={{ width: '49%', marginLeft: '1%' }}>
                     <Button
                       style={{
-                        backgroundColor: text === '' ? '#E8EAED' : '#2F87FF',
-                        color: text === '' ? '#1b1c1f' : '#FFFFFF',
+                        backgroundColor: text === '' || !agreePrivacy ? '#E8EAED' : '#2F87FF',
+                        color: text === '' || !agreePrivacy ? '#1b1c1f' : '#FFFFFF',
                         width: '100%',
                         height: 50, // height 값을 숫자로 변경하고 단위 제거
                         alignItems: 'center', // align-items를 camelCase로 변경
@@ -1505,8 +1575,8 @@ const ConsultingReservation2 = props => {
                         borderWidth: 1, // border-width를 camelCase로 변경하고 단위 제거
                         borderColor: '#E8EAED',
                       }}
-                      disabled={!text}
-                      active={text}
+                      disabled={!(text && agreePrivacy)}
+                      active={text && agreePrivacy}
                       width={width}
                       onPress={async () => {
                         const state = await NetInfo.fetch();
@@ -1514,6 +1584,7 @@ const ConsultingReservation2 = props => {
                         if (canProceed) {
                           const result = await requestReservation();
                           if (result) {
+                            dispatch(setCert({ agreePrivacy: false }));
                             navigation.goBack();
                           }
                         }

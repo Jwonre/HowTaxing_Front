@@ -466,7 +466,7 @@ const GainsTaxChat = () => {
           const chat9 = gainTax.find(el => el.id === 'ExpenseInquiry');
           const chat10 = gainTax.find(el => el.id === 'ExpenseAnswer');
           if (additionalQuestion.returndata) {
-            if (additionalQuestion.detaildata?.hasNextQuestion ) {
+            if (additionalQuestion.detaildata?.hasNextQuestion) {
               if (additionalQuestion.detaildata?.nextQuestionId === 'Q_0004') {
                 let chatIndex = gainTax.findIndex(el => el.id === 'additionalQuestion2');
                 if (chatIndex !== -1) {
@@ -481,7 +481,7 @@ const GainsTaxChat = () => {
                 const additionalQuestion2 = await getadditionalQuestion(additionalQuestion.detaildata?.nextQuestionId, '' ? additionalQuestion.detaildata?.selectSelectList.answerValue : '02', houseInfo?.houseId, houseInfo?.sellDate, houseInfo?.sellAmount);
                 //     console.log('additionalQuestion2', additionalQuestion2);
                 if (additionalQuestion2.returndata) {
-                  if (additionalQuestion2.detaildata?.hasNextQuestion ) {
+                  if (additionalQuestion2.detaildata?.hasNextQuestion) {
                     if (additionalQuestion2.detaildata?.nextQuestionId === 'Q_0005') {
                       let chatIndex = gainTax.findIndex(el => el.id === 'residenceperiod');
                       if (chatIndex !== -1) {
@@ -579,7 +579,7 @@ const GainsTaxChat = () => {
           const chat9 = gainTax.find(el => el.id === 'ExpenseInquiry');
           const chat10 = gainTax.find(el => el.id === 'ExpenseAnswer');
           if (additionalQuestion.returndata) {
-            if (additionalQuestion.detaildata?.hasNextQuestion ) {
+            if (additionalQuestion.detaildata?.hasNextQuestion) {
               if (additionalQuestion.detaildata?.nextQuestionId === 'Q_0008') {
                 let chatIndex = gainTax.findIndex(el => el.id === 'additionalQuestion');
                 //  let chatIndex2 = gainTax.findIndex(el => el.id === 'additionalQuestion2');
@@ -617,7 +617,7 @@ const GainsTaxChat = () => {
                 const additionalQuestion2 = await getadditionalQuestion(additionalQuestion.detaildata?.nextQuestionId, '' ? additionalQuestion.detaildata?.selectSelectList.answerValue : '02', houseInfo?.houseId, houseInfo?.sellDate, houseInfo?.sellAmount);
                 //     console.log('additionalQuestion2', additionalQuestion2);
                 if (additionalQuestion2.returndata) {
-                  if (additionalQuestion2.detaildata?.hasNextQuestion ) {
+                  if (additionalQuestion2.detaildata?.hasNextQuestion) {
                     if (additionalQuestion2.detaildata?.nextQuestionId === 'Q_0005') {
                       let chatIndex = gainTax.findIndex(el => el.id === 'residenceperiod');
                       if (chatIndex !== -1) {
@@ -713,7 +713,7 @@ const GainsTaxChat = () => {
     const chat9 = gainTax.find(el => el.id === 'ExpenseInquiry');
     const chat10 = gainTax.find(el => el.id === 'ExpenseAnswer');
     if (additionalQuestion.returndata) {
-      if (additionalQuestion.detaildata?.hasNextQuestion ) {
+      if (additionalQuestion.detaildata?.hasNextQuestion) {
         if (additionalQuestion.detaildata?.nextQuestionId === 'Q_0001') {
           let chatIndex = gainTax.findIndex(el => el.id === 'additionalQuestion');
           if (chatIndex !== -1) {
@@ -753,7 +753,7 @@ const GainsTaxChat = () => {
           const additionalQuestion2 = await getadditionalQuestion(additionalQuestion.detaildata?.nextQuestionId, '' ? additionalQuestion.detaildata?.selectSelectList.answerValue : '02', houseInfo?.houseId, houseInfo?.sellDate, houseInfo?.sellAmount);
           //console.log('additionalQuestion2', additionalQuestion2);
           if (additionalQuestion2.returndata) {
-            if (additionalQuestion2.detaildata?.hasNextQuestion ) {
+            if (additionalQuestion2.detaildata?.hasNextQuestion) {
               if (additionalQuestion2.detaildata?.nextQuestionId === 'Q_0005') {
 
                 let chatIndex = gainTax.findIndex(el => el.id === 'residenceperiod');
@@ -1217,7 +1217,7 @@ const GainsTaxChat = () => {
                         ?.name
                     }
                   </Text>
-                  {houseInfo?.houseType !== '3' && houseInfo?.isMoveInRight  &&
+                  {houseInfo?.houseType !== '3' && houseInfo?.isMoveInRight &&
                     <Text style={{
                       fontSize: 9,
                       fontFamily: 'Pretendard-Medium',
@@ -1521,7 +1521,7 @@ const GainsTaxChat = () => {
                         const state = await NetInfo.fetch();
                         const canProceed = await handleNetInfoChange(state);
                         if (canProceed) {
-
+                          console.log('houseInfo', houseInfo);
                           const myChatItem = {
                             id: item?.id + item2.id,
                             type: 'my',
@@ -1634,13 +1634,15 @@ const GainsTaxChat = () => {
 
                           if (item2.id === 'only' && item2.type === 'my') {
                             console.log('only');
-                            dispatch(
-                              setHouseInfo({
-                                ...houseInfo,
-                                ownerCnt: 1,
-                                userProportion: 100,
-                              }),
-                            );
+                            const updatedHouseInfo = {
+                              ...houseInfo,
+                              ownerCnt: 1,
+                              userProportion: 100,
+                            }
+                            setTimeout(() => {
+                              dispatch(setHouseInfo(updatedHouseInfo));
+                            }, 300);
+                            
 
                             await processItem0(chatDataList, myChatItem);
                           }
@@ -1687,6 +1689,7 @@ const GainsTaxChat = () => {
                     const state = await NetInfo.fetch();
                     const canProceed = await handleNetInfoChange(state);
                     if (canProceed) {
+                      console.log('last houseInfo : ', houseInfo);
                       SheetManager.show('confirm2', {
                         payload: {
                           questionId: item?.id,

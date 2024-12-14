@@ -59,13 +59,15 @@ const CertificationPrivacy = props => {
   );
 
   const handleBackPress = () => {
-    navigation.navigate(props.route?.params?.prevSheet === 'CertificationGains2' ? 'CertificationGains2' : props.route?.params?.prevSheet === 'CertificationGains' ? 'CertificationGains' : 'CertificationAcq',{
+    navigation.navigate(props.route?.params?.prevSheet === 'ConsultingReservation' ? 'ConsultingReservation' : props.route?.params?.prevSheet === 'ConsultingReservation2'? 'ConsultingReservation2' : props.route?.params?.prevSheet === 'CertificationGains' ? 'CertificationGains' : 'CertificationAcq',{
       navigation: navigation,
       data: props.route?.params?.cert,
       isGainsTax: props.route?.params?.isGainsTax,
       prevChat: props.route?.params?.prevChat,
       prevSheet: props.route?.params?.prevSheet,
       index: props.route?.params?.index,
+      houseInfo: props?.route.params?.houseInfo,
+      Pdata: props?.route.params?.Pdata,
   });
     return true;
   }
@@ -85,13 +87,15 @@ const CertificationPrivacy = props => {
           activeOpacity={0.6}
           hitSlop={{ top: 20, bottom: 20, left: 20, right: 20 }}
           onPress={() => {
-            navigation.navigate(props.route?.params?.prevSheet === 'CertificationGains2' ? 'CertificationGains2' : props.route?.params?.prevSheet === 'CertificationGains' ? 'CertificationGains' : 'CertificationAcq',{
+            navigation.navigate(props.route?.params?.prevSheet === 'ConsultingReservation' ? 'ConsultingReservation' : props.route?.params?.prevSheet === 'ConsultingReservation2'? 'ConsultingReservation2' : props.route?.params?.prevSheet === 'CertificationGains' ? 'CertificationGains' : 'CertificationAcq',{
               navigation: navigation,
               data: props.route?.params?.cert,
               isGainsTax: props.route?.params?.isGainsTax,
               prevChat: props.route?.params?.prevChat,
               prevSheet: props.route?.params?.prevSheet,
               index: props.route?.params?.index,
+              houseInfo: props?.route.params?.houseInfo,
+              Pdata: props?.route.params?.Pdata,
           });
           }}>
           <CloseIcon />
@@ -149,14 +153,16 @@ const CertificationPrivacy = props => {
                   }),
                 );
               }, 300);
-              console.log('props.route?.params?.prevSheet', props.route?.params?.prevSheet);
-              navigation.navigate(props.route?.params?.prevSheet === 'CertificationGains2' ? 'CertificationGains2' : props.route?.params?.prevSheet === 'CertificationGains' ? 'CertificationGains' : 'CertificationAcq',{
+              console.log('props.route?.params?.isGainsTax', props.route?.params.isGainsTax);
+              navigation.navigate(props.route?.params?.prevSheet === 'ConsultingReservation' ? 'ConsultingReservation' : props.route?.params?.prevSheet === 'ConsultingReservation2'? 'ConsultingReservation2' : props.route?.params?.prevSheet === 'CertificationGains' ? 'CertificationGains' : 'CertificationAcq',{
                 navigation: navigation,
                 data: props.route?.params?.cert,
                 isGainsTax: props.route?.params?.isGainsTax,
                 prevChat: props.route?.params?.prevChat,
                 prevSheet: props.route?.params?.prevSheet,
                 index: props.route?.params?.index,
+                houseInfo: props?.route.params?.houseInfo,
+                Pdata: props?.route.params?.Pdata,
             });
             }
             }>

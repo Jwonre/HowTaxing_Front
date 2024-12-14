@@ -475,7 +475,7 @@ const AcquisitionChat = () => {
       const response = await axios.post(`${Config.APP_API_URL}calculation/buyResult`, params, { headers });
       console.log('taxCard params', params)
       console.log('response.data', response.data);
-      for(let i = 0; i < response.data.data.list.length; i++) {
+      for (let i = 0; i < response.data.data.list.length; i++) {
         console.log('response.data.list[i]', response.data.data.list[i]);
       }
 
@@ -755,7 +755,7 @@ const AcquisitionChat = () => {
           const chat9 = acquisitionTax.find(el => el.id === 'getInfoDone');
           const chat10 = acquisitionTax.find(el => el.id === 'getInfoConfirm');
           if (additionalQuestion.returndata) {
-            if (additionalQuestion.detaildata?.hasNextQuestion ) {
+            if (additionalQuestion.detaildata?.hasNextQuestion) {
               if (additionalQuestion.detaildata?.nextQuestionId === 'Q_0009') {
 
                 let chatIndex = acquisitionTax.findIndex(el => el.id === 'additionalQuestion');
@@ -826,7 +826,7 @@ const AcquisitionChat = () => {
           const chat9 = acquisitionTax.find(el => el.id === 'getInfoDone');
           const chat10 = acquisitionTax.find(el => el.id === 'getInfoConfirm');
           if (additionalQuestion.returndata) {
-            if (additionalQuestion.detaildata?.hasNextQuestion ) {
+            if (additionalQuestion.detaildata?.hasNextQuestion) {
               if (additionalQuestion.detaildata?.nextQuestionId === 'Q_0012') {
                 let chatIndex = acquisitionTax.findIndex(el => el.id === 'additionalQuestion');
                 //  let chatIndex2 = gainTax.findIndex(el => el.id === 'additionalQuestion2');
@@ -1126,7 +1126,7 @@ const AcquisitionChat = () => {
                         ?.name
                     }
                   </Text>
-                  {houseInfo?.houseType !== '3' && houseInfo?.isMoveInRight  &&
+                  {houseInfo?.houseType !== '3' && houseInfo?.isMoveInRight &&
                     <Text style={{
                       fontSize: 9,
                       fontFamily: 'Pretendard-Medium',
@@ -1552,13 +1552,14 @@ const AcquisitionChat = () => {
 
 
                           if (item2.id === 'only' && item2.type === 'my') {
-                            dispatch(
-                              setHouseInfo({
-                                ...houseInfo,
-                                ownerCnt: 1,
-                                userProportion: 100,
-                              }),
-                            );
+                            const updatedHouseInfo = {
+                              ...houseInfo,
+                              ownerCnt: 1,
+                              userProportion: 100,
+                            }
+                            setTimeout(() => {
+                              dispatch(setHouseInfo(updatedHouseInfo));
+                            }, 300);
                           }
 
                           if (item.id === 'moreHouse' && item2.id === 'no') {

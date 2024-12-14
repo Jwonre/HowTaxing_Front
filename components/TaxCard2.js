@@ -106,7 +106,7 @@ const TaxCard2 = props => {
   // console.log('props TaxCard2', props);
   const Pdata = props?.Pdata ? props?.Pdata : null;
   const listCnt = Pdata ? Pdata.listCnt : 0;
-
+  console.log('pdata.list', Pdata?.list);
   return (
     //    {dataList, whrjs, pData, currentUser} = houseInfo, dataList?.map((data, index) => {
     //     for(let i = 0; i < 2; i++) { key={index} data={data}

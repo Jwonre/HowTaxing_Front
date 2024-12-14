@@ -16,7 +16,8 @@ import Calendar from '../../components/ReservationCalendar';
 import Config from 'react-native-config'
 import axios from 'axios';
 import { setAdBanner } from '../../redux/adBannerSlice';
-
+import CheckOnIcon from '../../assets/icons/check_on.svg';
+import { setCert } from '../../redux/certSlice';
 
 const Container = styled.View`
   flex: 1.0;
@@ -295,7 +296,7 @@ const ConsultingInput = styled.TextInput.attrs(props => ({
   verticalAlign: 'top',
 }))`
   width: auto; 
-  height: 260px;
+  height: 220px;
   background-color: #f5f7fa;
   padding: 15px; 
   font-size: 13px;
@@ -370,6 +371,37 @@ const ButtonText = styled.Text`
 `;
 
 
+const FirstItem = styled.View`
+  flex-direction: row; 
+  justify-content: flex-end;
+  align-items: center;
+  margin-bottom: 40px;
+  padding: 0 10px;
+`;
+
+const FirstItemTitle = styled.Text`
+  font-size: 13px;
+  font-family: Pretendard-Bold;
+  color: #1b1c1f;
+  line-height: 18px;
+`;
+
+
+const FirstCheckCircle = styled.TouchableOpacity.attrs(props => ({
+  activeOpacity: 0.8,
+}))`
+    width: 20px;
+    height: 20px;
+    border-radius: 5px;  
+    background-color: #fff;
+    border: 2px solid #BAC7D5;  
+    align-items: center;
+    justify-content: center;
+    margin-right: 15px;
+    margin-left: 10;
+`;
+
+
 const ConsultingReservation = () => {
   const _scrollViewRef = useRef(null);
   const _scrollViewRef2 = useRef(null);
@@ -399,6 +431,10 @@ const ConsultingReservation = () => {
   const [dataList, setDataList] = useState([]);
   const [timeList, setTimeList] = useState([]);
   const [taxTypeList, setTaxTypeList] = useState([]);
+  const { certType, agreeCert, agreePrivacy } = useSelector(
+    state => state.cert.value,
+  );
+
 
   for (let i = 9; i <= 11; i++) {
     if (i < 10) {
@@ -467,6 +503,7 @@ const ConsultingReservation = () => {
 
   useEffect(() => {
     dispatch(setAdBanner(false));
+    dispatch(setCert({ agreePrivacy: false }));
   }, []);
 
 
@@ -986,7 +1023,6 @@ const ConsultingReservation = () => {
                   }
                   setPhone(formattedPhone);
                 }}
-                autoCompleteType="tel"
                 onSubmitEditing={async () => {
                   const state = await NetInfo.fetch();
                   const canProceed = await handleNetInfoChange(state);
@@ -1282,7 +1318,7 @@ const ConsultingReservation = () => {
           <ProgressSection>
           </ProgressSection>
           <>
-            <IntroSection2>
+            <IntroSection2 style={{ paddingBottom: 10 }}>
               <View style={{ flexDirection: 'row', alignItems: 'left', marginBottom: 10 }}>
                 <ProfileAvatar2 source={require('../../assets/images/Minjungum_Lee_consulting.png')}></ProfileAvatar2>
                 <ProfileName>이민정음 세무사</ProfileName>
@@ -1363,6 +1399,31 @@ const ConsultingReservation = () => {
                 </ScrollView>
               </ConsultingItem>
             </IntroSection2>
+            <FirstItem>
+              <View style={{ flexDirection: 'row' }}>
+                <TouchableOpacity
+                  onPress={async () => {
+                    //console.log('개인정보 수집 및 이용');
+                    navigation.navigate('CertificationPrivacy', {
+                      prevSheet: 'ConsultingReservation',
+                    });
+                  }}>
+                  <FirstItemTitle style={{ color: '#2F87FF', textDecorationLine: 'underline' }}>개인정보 수집 및 이용</FirstItemTitle>
+                </TouchableOpacity>
+                <FirstItemTitle>에 대하여 동의하시나요?</FirstItemTitle>
+              </View>
+              <FirstCheckCircle
+                onPress={() => {
+                  dispatch(
+                    setCert({
+                      agreePrivacy: !agreePrivacy,
+                    }),
+                  );
+                }}>
+                {agreePrivacy && <CheckOnIcon />}
+              </FirstCheckCircle>
+
+            </FirstItem>
             <ButtonSection2>
 
 
@@ -1390,6 +1451,7 @@ const ConsultingReservation = () => {
                       const canProceed = await handleNetInfoChange(state);
                       if (canProceed) {
                         setCurrentPageIndex(3);
+                        dispatch(setCert({agreePrivacy: false}));
                       }
                     }}>
                     <ButtonText style={{ color: '#717274' }}>이전으로</ButtonText>
@@ -1398,8 +1460,8 @@ const ConsultingReservation = () => {
                 <ShadowContainer style={{ width: '49%', marginLeft: '1%' }}>
                   <Button
                     style={{
-                      backgroundColor: text === '' ? '#E8EAED' : '#2F87FF',
-                      color: text === '' ? '#1b1c1f' : '#FFFFFF',
+                      backgroundColor: text === '' || !agreePrivacy ? '#E8EAED' : '#2F87FF',
+                      color: text === '' || !agreePrivacy ? '#1b1c1f' : '#FFFFFF',
                       width: '100%',
                       height: 50, // height 값을 숫자로 변경하고 단위 제거
                       alignItems: 'center', // align-items를 camelCase로 변경
@@ -1407,8 +1469,8 @@ const ConsultingReservation = () => {
                       borderWidth: 1, // border-width를 camelCase로 변경하고 단위 제거
                       borderColor: '#E8EAED',
                     }}
-                    disabled={!text}
-                    active={text}
+                    disabled={!(text && agreePrivacy)}
+                    active={text && agreePrivacy}
                     width={width}
                     onPress={async () => {
                       const state = await NetInfo.fetch();
@@ -1417,6 +1479,7 @@ const ConsultingReservation = () => {
                         const result = await requestReservation();
                         console.log('result', result);;
                         if (result) {
+                          dispatch(setCert({agreePrivacy: false}));
                           navigation.navigate('Home');
                         }
                       }

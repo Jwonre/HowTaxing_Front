@@ -85,7 +85,7 @@ const ModalInput = styled.TextInput.attrs(props => ({
   border-radius: 10px;
   background-color: #f0f3f8;
   padding: 0 40px 0 15px; 
-  font-size: 13px;
+  font-size: 17px;
   font-family: Pretendard-Regular;
   color: #1b1c1f;
   line-height: 20px;
@@ -332,6 +332,7 @@ const Login_ID = props => {
           <ModalText>아이디</ModalText>
           <ModalInputContainer>
             <ModalInput
+              style={{ fontSize: id.length > 0 ? 17 : 13}}
               ref={input1}
               onSubmitEditing={() => input2.current.focus()}
               placeholder="아이디를 입력해주세요."
@@ -365,6 +366,7 @@ const Login_ID = props => {
           <ModalInputContainer>
             <ModalInput
               ref={input2}
+              style={{ fontSize: password.length > 0 ? 17 : 13}}
               //  onSubmitEditing={() => input2.current.focus()}
               placeholder="비밀번호를 입력해주세요."
               value={password}
