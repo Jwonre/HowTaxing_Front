@@ -332,7 +332,7 @@ const GainsTaxChat = () => {
         sellPrice: sellPrice ? sellPrice : 0,
         ownHouseCnt: houseInfo?.ownHouseCnt ? houseInfo?.ownHouseCnt : 0
       };
-      //console.log('[additionalQuestion] additionalQuestion param:', param);
+      console.log('[additionalQuestion] additionalQuestion param:', param);
       const response = await axios.post(url, param, { headers });
       const detaildata = response.data.data;
       //console.log('response.data', response.data);
@@ -701,8 +701,10 @@ const GainsTaxChat = () => {
     }
   }
 
-  const processItem0 = async (chatDataList, myChatItem) => {
+  const processItem0 = async (chatDataList, myChatItem, houseInfo) => {
 
+
+    console.log('test_houseInfo', houseInfo)
     const additionalQuestion = await getadditionalQuestion('', '', houseInfo?.houseId, houseInfo?.sellDate, houseInfo?.sellAmount);
     //console.log('additionalQuestion', additionalQuestion);
     //console.log('additionalQuestion?.detaildata?.answerSelectList[0]?.answerValue', additionalQuestion?.detaildata?.answerSelectList[0]?.answerValue);
@@ -823,6 +825,9 @@ const GainsTaxChat = () => {
 
       } else {
         if (additionalQuestion.detaildata?.answerSelectList === null && additionalQuestion.detaildata?.nextQuestionContent === null) {
+          console.log('test_houseInfo 1 ', houseInfo)
+          console.log('test_houseInfo 1_1', houseInfo.ownerCnt)
+
           dispatch(
             setHouseInfo({
               ...houseInfo,
@@ -841,6 +846,9 @@ const GainsTaxChat = () => {
 
       }
     } else {
+      console.log('test_houseInfo 2', houseInfo)
+      console.log('test_houseInfo 2_1', houseInfo.ownerCnt)
+
       dispatch(
         setHouseInfo({
           ...houseInfo,
@@ -952,6 +960,8 @@ const GainsTaxChat = () => {
       additionalAnswerList: houseInfo.additionalAnswerList === undefined ? [] : houseInfo.additionalAnswerList
       //planAnswer : houseInfo.planAnswer === undefined ? '' : houseInfo.planAnswer
     };
+
+    console.log('test_houseInfo', data);
 
     console.log('양도소득세 파라미터 data:', data);
     const headers = {
@@ -1532,6 +1542,9 @@ const GainsTaxChat = () => {
                           console.log('item', item);
                           console.log('item2', item2);
                           console.log('item2.select', item2.select);
+                          console.log('test_houseInfo item', item)
+                          console.log('test_houseInfo item2', item2)
+                          console.log('test_houseInfo item.select', item2.select)
 
                           await processItem(chatList, item, item2);
                           await processItem2(chatList, index, item, item2);
@@ -1631,21 +1644,37 @@ const GainsTaxChat = () => {
                               navigation.push('CertificationGains', { data: item2.id, index, isGainsTax: true, currentPageIndex: 2 });
                             };
                           }
+                          console.log('test_houseInfo item.3', item2.id)
+                          console.log('test_houseInfo item.4', item2.type)
+                          console.log('test_houseInfo item.5', houseInfo)
 
                           if (item2.id === 'only' && item2.type === 'my') {
                             console.log('only');
+<<<<<<< HEAD
+=======
+                            // 업데이트된 상태를 변수로 선언
+>>>>>>> eeb0f17058f339d9b70e709ce36a6fc1dde37886
                             const updatedHouseInfo = {
                               ...houseInfo,
                               ownerCnt: 1,
                               userProportion: 100,
+<<<<<<< HEAD
                             }
                             setTimeout(() => {
                               dispatch(setHouseInfo(updatedHouseInfo));
                             }, 300);
                             
+=======
+                            };
+>>>>>>> eeb0f17058f339d9b70e709ce36a6fc1dde37886
 
-                            await processItem0(chatDataList, myChatItem);
+                            // 상태 업데이트
+                            dispatch(setHouseInfo(updatedHouseInfo));
+
+                            console.log('Updated houseInfo:', updatedHouseInfo.ownerCnt);
+                            await processItem0(chatDataList, myChatItem, updatedHouseInfo);
                           }
+                          console.log('test_houseInfo item.6', houseInfo.ownerCnt)
 
 
                           //  ////console.log('item2?.openSheet : ', item2?.openSheet)
