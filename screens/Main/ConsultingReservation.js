@@ -1271,15 +1271,26 @@ const ConsultingReservation = () => {
                     active={selectedList.length > 0}
                     width={width}
                     onPress={async () => {
+                      const state = await NetInfo.fetch();
+                      const canProceed = await handleNetInfoChange(state);
                       if (canProceed) {
-                        setCurrentPageIndex(4);
-                                             navigation.navigate('PaymentScreen', {
-                          onPaymentComplete: () => {
-                            setCurrentPageIndex(4);
-                          },
-                        });
+                        navigation.navigate('PaymentScreen', {
+                          consultantId:'1',consultingType:'01',consultingInflowPath:'01'
+                          ,calcHistoryId:2002,name: name, phone: phone, selectedDate: selectedDate, selectedList: selectedList});
+                        //   onPaymentComplete: () => {
+                        //     setCurrentPageIndex(4);
+                        //   },
+                        // });
                       }
                     }}>
+                    {/* onPress={async () => {
+                       const state = await NetInfo.fetch();
+                       const canProceed = await handleNetInfoChange(state);
+                      if (canProceed) {
+                        setCurrentPageIndex(4);
+                                         
+                      }
+                    }}> */}
                     <ButtonText>다음으로</ButtonText>
                   </Button>
                 </ShadowContainer>

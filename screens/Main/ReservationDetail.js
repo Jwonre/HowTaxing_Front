@@ -31,6 +31,10 @@ import ModifyIcon from '../../assets/icons/modify.svg';
 import BottomArrow from '../../assets/icons/bottom_arrow.svg';
 import BottomArrowUp from '../../assets/icons/bottom_arrow_up.svg';
 
+import ConsultingCancelConfirmAlert from '../Main/component/ConsultingCancelConfirmAlert';
+import ConsultingDetailInputAlert from '../Main/component/ConsultingDetailInputAlert';
+import ConsultingTaxMultiSelectAlert from '../Main/component/ConsultingTaxMultiSelectAlert';
+
 const ShadowContainer = styled(DropShadow)`
   shadow-color: rgba(0, 0, 0, 0.25);
   shadow-offset: 2px 3px;
@@ -146,12 +150,40 @@ const ReservationDetail = props => {
   const [isConnected, setIsConnected] = useState(true);
   const [hasNavigatedBack, setHasNavigatedBack] = useState(false);
   const hasNavigatedBackRef = useRef(hasNavigatedBack);
-  const [isModalVisible, setIsModalVisible] = useState(false); // 팝업 상태 관리
+  const [isModalCancelTypeVisible, setIsModalCancelTypeVisible] = useState(false); // 팝업 상태 관리
+  const [isModalTaxVisible, setIsModalTaxVisible] = useState(false); // 팝업 상태 관리
+  const [isModalConsultingInputVisible, setIsModalConsultingInputVisible] = useState(false); // 팝업 상태 관리
+
   const [progressStatus, setProgressStatus] = useState(0);
   const inputRef = useRef();
   const [isTaxResultVisible, setIsTaxResultVisible] = useState(false); // 팝업 상태 관리
 
   const [agreePrivacy, setAgreePrivacy] = useState(false); // 팝업 상태 관리
+
+
+  const openCancelTypeModal = () => {
+    setIsModalCancelTypeVisible(true); // 팝업 열기
+  };
+
+  const closeCancelTypeModal = () => {
+    setIsModalCancelTypeVisible(false); // 팝업 닫기
+  };
+
+  const openTaxModal = () => {
+    setIsModalTaxVisible(true); // 팝업 열기
+  };
+
+  const closeTaxModal = () => {
+    setIsModalTaxVisible(false); // 팝업 닫기
+  };
+  const openDetailInputModal = () => {
+    setIsModalConsultingInputVisible(true); // 팝업 열기
+  };
+
+  const closeDetailInputModal = () => {
+    setIsModalConsultingInputVisible(false); // 팝업 닫기
+  };
+
 
   const toggleExpand = () => {
     setIsExpanded(!isExpanded);
@@ -207,6 +239,35 @@ const ReservationDetail = props => {
     }));
   };
 
+
+  const handleCancelRequest = async () => {
+    const state = await NetInfo.fetch();
+    const canProceed = await handleNetInfoChange(state);
+    if (canProceed) {
+    setConsultingCancel(reservationDetail.consultingReservationId);
+    closeCancelTypeModal();
+    }
+
+  };
+ 
+  const handleMultiSelectTaxRequest = async () => {
+    const state = await NetInfo.fetch();
+    const canProceed = await handleNetInfoChange(state);
+    if (canProceed) {
+    setConsultingCancel(reservationDetail.consultingReservationId);
+    closeTaxModal();
+    }
+
+  };
+  const handleInputRequest = async () => {
+    const state = await NetInfo.fetch();
+    const canProceed = await handleNetInfoChange(state);
+    if (canProceed) {
+      setConsultingCancel(reservationDetail.consultingReservationId);
+    closeDetailInputModal();
+    }
+
+  };
   useFocusEffect(
     useCallback(() => {
       BackHandler.addEventListener('hardwareBackPress', handleBackPress);
@@ -224,21 +285,7 @@ const ReservationDetail = props => {
   );
 
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      if (inputRef.current) {
-        inputRef.current.focus();
-      }
-    }, 500); // 딜레이 추가
-    return () => clearTimeout(timer);
-  }, []);
-  const openModal = () => {
-    setIsModalVisible(true); // 팝업 열기
-  };
-
-  const closeModal = () => {
-    setIsModalVisible(false); // 팝업 닫기
-  };
+ 
   useEffect(() => {
     let interval = null;
     if (isTimerActive && timer > 0) {
@@ -605,10 +652,14 @@ const ReservationDetail = props => {
           <View style={styles.Line1} />
 
           {progressStatus === 0 && (
-            <ConsultingWating data={reservationDetail} />
+            <ConsultingWating data={reservationDetail} setInTaxSelectDialog={setIsTaxResultVisible} setInConsultingInputDialog={
+              setIsModalConsultingInputVisible
+            } />
           )}
           {progressStatus === 1 && (
-            <ConsultingWating data={reservationDetail} />
+             <ConsultingWating data={reservationDetail} setInTaxSelectDialog={setIsTaxResultVisible} setInConsultingInputDialog={
+              setIsModalConsultingInputVisible
+            } />
           )}
           {progressStatus === 2 && (
             <ConsultingStart data={reservationDetail} />
@@ -657,6 +708,7 @@ const ReservationDetail = props => {
             onPress={() => {
               console.log('팝업 먼저 띄워야함');
               // setConsultingCancel(reservationDetail.consultingReservationId);
+              openCancelTypeModal();
             }}
             style={{
               width: '48%',
@@ -687,12 +739,17 @@ const ReservationDetail = props => {
         </ButtonRowSection>
       )}
 
+
+<ConsultingCancelConfirmAlert visible={isModalCancelTypeVisible} onClose={closeCancelTypeModal}  onCancelRequest={handleCancelRequestPassword} />
+<ConsultingDetailInputAlert visible={isModalConsultingInputVisible} onClose={closeDetailInputModal}onInputCallback={handleResetPassword} />
+<ConsultingTaxMultiSelectAlert visible={isModalTaxVisible} onClose={closeTaxModal}  onResetPassword={handleResetPassword} />
+
       {/* 모달 */}
     </View >
 
   );
 };
-function ConsultingWating({ data }) {
+function ConsultingWating({ data ,setInTaxSelectDialog, setInConsultingInputDialog}) {
   const consultingTypeMap = {
     '01': '취득세',
     '02': '양도소득세',
@@ -752,9 +809,9 @@ function ConsultingWating({ data }) {
           <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-start' }}>
             <Text style={[styles.labelInfo, { marginRight: 5 }]}>세금 종류</Text>
             <TouchableOpacity
-              onPress={
-                console.log('테스트 ')
-              }
+              onPress={() => {
+                setInTaxSelectDialog(true);
+              }}
             >
               <ShadowContainer>
                 <ModifyIcon width={16} height={16} />
@@ -772,9 +829,9 @@ function ConsultingWating({ data }) {
           <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-start' }}>
             <Text style={[styles.labelInfo, { marginRight: 5 }]}>상세 내용</Text>
             <TouchableOpacity
-              onPress={
-                console.log('테스트 ')
-              }
+                onPress={() => {
+                  setInConsultingInputDialog(true);
+                }}
             >
               <ShadowContainer>
                 <ModifyIcon width={16} height={16} />

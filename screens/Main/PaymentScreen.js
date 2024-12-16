@@ -137,6 +137,7 @@ const PaymentScreen = props => {
   const [isModalVisible, setIsModalVisible] = useState(false); // 팝업 상태 관리
   const [phoneNumberOk, setPhoneNumberOk] = useState('1');
   const inputRef = useRef();
+  const [reservationProductInfo, setReservationProductInfo] = useState([]);
 
   const [agreePrivacy, setAgreePrivacy] = useState(false); // 팝업 상태 관리
 
@@ -187,83 +188,75 @@ const PaymentScreen = props => {
     // 인증번호 재전송 API 호출 로직 추가
   };
 
-  // 버튼 클릭 핸들러
-  const handleNextStep = async () => {
-    if (step === 1) {
-      console.log("sendAuthMobile:", '팝업');
-
-      const state = await NetInfo.fetch();
-      const canProceed = await handleNetInfoChange(state);
-      console.log("test:", `state :$state [${canProceed}]`);
-
-      if (canProceed) {
-        sendAuthMobile(phoneNumber.replace(/-/g, ''), props.route?.params?.authType, props?.route?.params?.id);
-
-      }
-
-
-    } else {
-      const state = await NetInfo.fetch();
-      const canProceed = await handleNetInfoChange(state);
-      if (canProceed) {
-        sendAuthMobileConfirm(phoneNumber.replace(/-/g, ''), props.route?.params?.authType, authNum);
-      }
-      // // 두 번째 단계에서 확인 버튼 클릭
-      // console.log('인증번호 확인:', authNum);
-      // // 여기서 인증번호 검증 로직 추가
-      // navigation.navigate('NextScreen'); // 다음 화면으로 이동
-    }
-  };
+   useFocusEffect(
+      useCallback(() => {
+        getProductInfo("1");
+      }, [selectedTab])
+    );
 
 
 
 
-  const sendAuthMobile = async (phoneNumber, authType, id = null) => {
-    console.log("sendAuthMobile:", `${phoneNumber} || ${authType}`);
-    const data = {
-      phoneNumber,
-      authType,
+  const getProductInfo = async (consultantId) => {
+    const url = `${Config.APP_API_URL}product/productInfo?consultantId=${consultantId}`;
+    //const url = `https://devapp.how-taxing.com/consulting/availableSchedule?consultantId=${consultantId}&searchType="${searchType}"`;
+    const headers = {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${currentUser.accessToken}`
     };
-
-    if (id) {
-      data.id = id;
-    }
-
-    axios
-      .post(`${Config.APP_API_URL}sms/sendAuthCode`, data)
-      .then(async response => {
+    /*
+    const params = {
+      consultantId: consultantId,
+      searchType: searchType,
+    }*/
+    console.log('url', url);
+    // console.log('params', params);
+    console.log('headers', headers);
+    await axios
+      .get(url,
+        { headers: headers }
+      )
+      .then(response => {
+        console.log('response.data', response.data);
         if (response.data.errYn === 'Y') {
           SheetManager.show('info', {
             payload: {
               type: 'error',
-              message: response.data.errMsg ? response.data.errMsg : '인증번호 발송에 실패하였습니다.',
+              errorType: response.data.type,
+              message: response.data.errMsg ? response.data.errMsg : '상품 정보를 불러오는데 문제가 발생했어요.',
               description: response.data.errMsgDtl ? response.data.errMsgDtl : '',
               buttontext: '확인하기',
             },
           });
-          return;
         } else {
-          const userData = response.data.data;
-          setStep(2);
-          setIsTimerActive(true); // 타이머 활성화
+          console.log('response.data', response.data.data);
+          
+          const result = response === undefined ? null : response.data.data;
+          if (result != null) {
+            console.log('result:', result);
+            //console.log('new Date(list[0]):', new Date(list[0]));
+            setReservationProductInfo([result]);
+
+          }
+
         }
-        // 성공적인 응답 처리
 
       })
-      .catch(error => {
-        // 오류 처리
+      .catch(function (error) {
         SheetManager.show('info', {
           payload: {
-            message: '인증번호 발송에 실패하였습니다.',
-            description: error?.message,
+            message: '상품 정보를 불러오는데 문제가 발생했어요.',
+            description: error?.message ? error?.message : '오류가 발생했습니다.',
             type: 'error',
             buttontext: '확인하기',
           }
         });
-        console.error(error);
+        ////console.log(error ? error : 'error');
       });
   };
-  const sendAuthMobileConfirm = async (phoneNumber, authType, authCode) => {
+
+  const setPaymentTemp = async (consultantId,customerName,customerPhone,reservationDate,reservationTime,
+    counsultingType,consultingInflowPath,calcHistoryId,orderId,orderName,productPrice,productDiscountPrice,paymentAmount,productId,productName) => {
     const data = {
       phoneNumber,
       authType,
@@ -277,7 +270,7 @@ const PaymentScreen = props => {
 
 
     axios
-      .post(`${Config.APP_API_URL}sms/checkAuthCode`, data)
+      .post(`${Config.APP_API_URL}payment/saveTemp`, data)
       .then(async response => {
         if (response.data.errYn === 'Y') {
           SheetManager.show('info', {
@@ -461,6 +454,25 @@ const PaymentScreen = props => {
     });
   }, []);
 
+  const year = selectedDate.getFullYear();
+  const month = String(selectedDate.getMonth() + 1).padStart(2, '0'); // 월은 0부터 시작하므로 1을 더해줍니다.
+  const day = String(selectedDate.getDate()).padStart(2, '0');
+
+  const default_date = `${year}-${month}-${day}`;
+  const date = new Date(default_date);
+  const dayNames = ['일', '월', '화', '수', '목', '금', '토'];
+
+  const dayOfWeek = dayNames[date.getDay()];
+
+  const time = props.route?.params?.selectedList ? props.route?.params?.selectedList[0] : '00:00'; // 시간
+  const [hours, minutes] = time.split(':').map(Number); // 시간과 분 분리
+  const isPM = hours >= 12; // 12 이상이면 오후
+  const formattedHours = isPM ? hours - 12 || 12 : hours || 12; // 12시간제로 변환
+  const period = isPM ? '오후' : '오전'; // 오전/오후 결정
+
+  const dateInfo = `${year}년 ${month}월 ${day}일 (${dayOfWeek})`;
+  const timeInfo = `(${period} ${formattedHours}시)`;
+
   return (
     <View style={styles.rootContainer}>
       {/* 파란색 라인 */}
@@ -478,10 +490,10 @@ const PaymentScreen = props => {
           <ProfileInfoSection>
 
             <LeftContainer>
-              <Text style={styles.dateText}>2024년 5월 7일 (수)</Text>
+              <Text style={styles.dateText}>{dateInfo}</Text>
               <Text style={styles.timeText}>
-                <Text style={styles.timeHighlight}>13:00</Text>
-                <Text style={styles.timeSubtext}> (오후 1시)</Text>
+                <Text style={styles.timeHighlight}>{time}</Text>
+                <Text style={styles.timeSubtext}> {timeInfo}</Text>
               </Text>
             </LeftContainer>
             <RightContainer>
@@ -498,13 +510,13 @@ const PaymentScreen = props => {
             {/* 고객명 */}
             <View style={styles.rowInfo}>
               <Text style={styles.labelInfo}>고객명</Text>
-              <Text style={styles.valueIfno}>홍길동</Text>
+              <Text style={styles.valueIfno}>{props?.route?.params?.name}</Text>
             </View>
 
             {/* 할인 금액 */}
             <View style={styles.rowInfo}>
               <Text style={styles.labelInfo}>전화번호</Text>
-              <Text style={styles.valueIfno}>010-0000-0000</Text>
+              <Text style={styles.valueIfno}>{props?.route?.params?.phone}</Text>
             </View>
 
 
@@ -516,13 +528,13 @@ const PaymentScreen = props => {
             {/* 상품 금액 */}
             <View style={styles.rowInfo}>
               <Text style={styles.labelInfo}>상품 금액</Text>
-              <Text style={styles.valueIfno}>50,000 원</Text>
+              <Text style={styles.valueIfno}>{Number(reservationProductInfo?.productPrice??'0')?.toLocaleString()} 원</Text>
             </View>
 
             {/* 할인 금액 */}
             <View style={styles.rowInfo}>
               <Text style={styles.labelInfo}>할인 금액</Text>
-              <Text style={styles.valueIfno}>0 원</Text>
+              <Text style={styles.valueIfno}>{Number(reservationProductInfo?.paymentAmount??'0')?.toLocaleString()} 원</Text>
             </View>
 
             {/* 구분선 */}
@@ -531,7 +543,7 @@ const PaymentScreen = props => {
             {/* 결제 금액 */}
             <View style={styles.rowInfo2}>
               <Text style={styles.labelInfo}>결제 금액</Text>
-              <Text style={styles.totalValue}>50,000 원</Text>
+              <Text style={styles.valueIfno}>{Number(reservationProductInfo?.productDiscountPrice??'0')?.toLocaleString()} 원</Text>
             </View>
           </View>
 

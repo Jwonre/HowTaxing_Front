@@ -1312,7 +1312,7 @@ const ConsultingReservation2 = props => {
                       const state = await NetInfo.fetch();
                       const canProceed = await handleNetInfoChange(state);
                       if (canProceed) {
-                        setCurrentPageIndex(4);
+                        // setCurrentPageIndex(4);
                         // setTimeout(() => {
                         //   navigation.navigate('PaymentScreen', {
                         //     onPaymentComplete: () => {
@@ -1321,6 +1321,9 @@ const ConsultingReservation2 = props => {
                         //   });
                         // }, 100); // 100ms 딜레이 추가
                         console.log('PaymentScreen', 'PaymentScreen');
+                        navigation.navigate('PaymentScreen', {
+                          consultantId:'1',consultingType:'01',consultingInflowPath:'01'
+                          ,calcHistoryId:2002,name: name, phone: phone, selectedDate: selectedDate, selectedList: selectedList});
 
                       }
                     }}>
