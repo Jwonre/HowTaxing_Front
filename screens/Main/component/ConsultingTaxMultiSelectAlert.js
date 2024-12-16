@@ -1,8 +1,12 @@
 
-import React from 'react';
-import { Modal, View, Text, Pressable, StyleSheet, Dimensions } from 'react-native';
+import React, { useState, } from 'react';
+import {
+  Modal, View, Text, Pressable, StyleSheet, Dimensions, TouchableOpacity,
+} from 'react-native';
 import styled from 'styled-components';
 import InfoCircleIcon from '../../../assets/icons/info_circle.svg';
+import DropShadow from 'react-native-drop-shadow';
+import CloseIcon from '../../../assets/icons/close_button.svg';
 
 
 const ModalContainer = styled.View`
@@ -51,15 +55,41 @@ const ShadowContainer = styled(DropShadow)`
   shadow-opacity: 0.2;
   shadow-radius: 3px;
 `;
-const ConsultingTaxMultiSelectAlert = ({ visible, onClose, onCancelRequest }) => {
+const ConsultingTaxMultiSelectAlert = ({ visible, onClose, onTaxMultiSelect }) => {
   const [selectTaxType, setSelectTaxType] = useState(0);
+  const [selectedItems, setSelectedItems] = useState([]); // 선택된 아이템 관리
 
-const taxTypes = [
-  '취득세',
-  '양도소득세',
-  '상속세',
-  '증여세',
-];
+  const taxTypes = [
+    '취득세',
+    '양도소득세',
+    '상속세',
+    '증여세',
+  ];
+  const taxTypesIndex = [
+    '01',
+    '02',
+    '03',
+    '04',
+  ];
+
+  const toggleSelect = (item) => {
+    setSelectedItems((prev) => {
+      if (prev.includes(item)) {
+        // 이미 선택된 경우 제거
+        return prev.filter((i) => i !== item);
+      } else {
+        // 선택되지 않은 경우 추가
+        return [...prev, item];
+      }
+    });
+  };
+
+  const saveSelection = () => {
+    const result = selectedItems.join(','); // 선택된 값을 ','로 구분된 문자열로 변환
+    console.log('최종 선택값:', result);
+    // 저장 로직 추가 가능
+  };
+
   return (
     <Modal
       animationType="fade"
@@ -69,83 +99,141 @@ const taxTypes = [
     >
       <View style={styles.modalOverlay}>
         <ModalContainer>
-          <InfoCircleIcon style={{ color: '#FF7401', marginBottom: 10 }} />
+          <View style={{  width: '100%', flexDirection: 'row', justifyContent: 'flex-end' , marginBottom : 20}}>
+          
+                      <TouchableOpacity
+                        activeOpacity={0.6}
+                        hitSlop={{ top: 20, bottom: 20, left: 20, right: 20 }}
+                        onPress={() => {
+                          navigation.goBack();
+                          // dispatch(clearHouseInfo());
+                        }}>
+                        <CloseIcon />
+                      </TouchableOpacity>
+                    </View>
           <ModalTitle>세금 종류를 선택해주세요.</ModalTitle>
           <ModalDescription>상담을 원하시는 세금 종류를 하나 이상 선택해주세요.</ModalDescription>
-        
+
+          <View style={{ marginStart: 15, marginEnd: 15, width: '100%' }}>
+            {taxTypes.map((tax, index) => (
+              <TouchableOpacity
+                key={index}
+                activeOpacity={0.6}
+                style={{
+                  marginBottom: 10,
+                  width: '100%',
+                }}
+                onPress={() => {
+                  toggleSelect(taxTypesIndex[index])
+                }} // 선택/제거 토글
+              >
+                <View
+                  style={{
+                    borderRadius: 5,
+                    height: 40,
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: '100%',
+                    backgroundColor: selectedItems.includes(taxTypesIndex[index]) ? '#2F87FF' : '#E8EAED', // 선택 여부에 따라 색상 변경
+                  }}
+                >
+                  <Text
+                    style={{
+                      fontSize: 15,
+                      color: '#fff',
+                      fontFamily: 'Pretendard-SemiBold',
+                    }}
+                  >
+                    {tax}
+                  </Text>
+                </View>
+              </TouchableOpacity>
+            ))}
+            {/* <TouchableOpacity activeOpacity={0.6}
+              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+              style={{
+                marginBottom: 10,
+                width: '100%', // 부모 컨테이너도 가로로 채우기
+              }}
+
+              onPress={() => {
+                setSelectCancelType(0);
+
+                // ////console.log('after data', data);
+              }}>
+              <View style={{ borderRadius: 5, height: 40, alignItems: 'center', justifyContent: 'center', width: '100%', backgroundColor: selectCancelType === 0 ? '#2F87FF' : '#E8EAED' }}>
+                <Text style={{ fontSize: 15, color: '#fff', fontFamily: 'Pretendard-SemiBold' }}>{taxTypes[0]}</Text>
+              </ View>
+            </TouchableOpacity>
 
             <TouchableOpacity activeOpacity={0.6}
-                hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-                style={{marginBottom : 10}}
+              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+              style={{
+                marginBottom: 10,
+                width: '100%', // 부모 컨테이너도 가로로 채우기
+              }}
 
-                onPress={() => {
-                  setSelectTaxType(0);
-                
-                  // ////console.log('after data', data);
-                }}>
-                <View style={{height : 40, alignItems : 'center', justifyContent : 'center', width : '100%'}}>
-                 <Text style={{fontSize : 15, color : '#fff', fontFamily : 'Pretendard-SemiBold'}}>{taxTypes[0]}</Text>
-                </ View>  
-              </TouchableOpacity>
+              onPress={() => {
+                setSelectCancelType(0);
 
-              <TouchableOpacity activeOpacity={0.6}
-                hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-                style={{marginBottom : 10}}
+                // ////console.log('after data', data);
+              }}>
+              <View style={{ borderRadius: 5, height: 40, alignItems: 'center', justifyContent: 'center', width: '100%', backgroundColor: selectCancelType === 0 ? '#2F87FF' : '#E8EAED' }}>
+                <Text style={{ fontSize: 15, color: '#fff', fontFamily: 'Pretendard-SemiBold' }}>{taxTypes[1]}</Text>
+              </ View>
+            </TouchableOpacity>
 
-                onPress={() => {
-                  setSelectTaxType(1);
-                
-                  // ////console.log('after data', data);
-                }}>
-                <View style={{height : 40, alignItems : 'center', justifyContent : 'center', width : '100%'}}>
-                 <Text style={{fontSize : 15, color : '#fff', fontFamily : 'Pretendard-SemiBold'}}>{taxTypes[1]}</Text>
-                </ View>  
-              </TouchableOpacity>
+            <TouchableOpacity activeOpacity={0.6}
+              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+              style={{
+                marginBottom: 10,
+                width: '100%', // 부모 컨테이너도 가로로 채우기
+              }}
 
-              <TouchableOpacity activeOpacity={0.6}
-                hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-                style={{marginBottom : 10}}
+              onPress={() => {
+                setSelectCancelType(0);
 
-                onPress={() => {
-                  setSelectTaxType(2);
-                
-                  // ////console.log('after data', data);
-                }}>
-                <View style={{height : 40, alignItems : 'center', justifyContent : 'center', width : '100%'}}>
-                 <Text style={{fontSize : 15, color : '#fff', fontFamily : 'Pretendard-SemiBold'}}>{taxTypes[2]}</Text>
-                </ View>  
-              </TouchableOpacity>
+                // ////console.log('after data', data);
+              }}>
+              <View style={{ borderRadius: 5, height: 40, alignItems: 'center', justifyContent: 'center', width: '100%', backgroundColor: selectCancelType === 0 ? '#2F87FF' : '#E8EAED' }}>
+                <Text style={{ fontSize: 15, color: '#fff', fontFamily: 'Pretendard-SemiBold' }}>{taxTypes[2]}</Text>
+              </ View>
+            </TouchableOpacity>
 
-              <TouchableOpacity activeOpacity={0.6}
-                hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-                style={{marginBottom : 10}}
+            <TouchableOpacity activeOpacity={0.6}
+              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+              style={{
+                marginBottom: 10,
+                width: '100%', // 부모 컨테이너도 가로로 채우기
+              }}
 
-                onPress={() => {
-                  setSelectTaxType(3);
-                
-                  // ////console.log('after data', data);
-                }}>
-                <View style={{height : 40, alignItems : 'center', justifyContent : 'center', width : '100%'}}>
-                 <Text style={{fontSize : 15, color : '#fff', fontFamily : 'Pretendard-SemiBold'}}>{taxTypes[3]}</Text>
-                </ View>  
-              </TouchableOpacity>
+              onPress={() => {
+                setSelectCancelType(0);
+
+                // ////console.log('after data', data);
+              }}>
+              <View style={{ borderRadius: 5, height: 40, alignItems: 'center', justifyContent: 'center', width: '100%', backgroundColor: selectCancelType === 0 ? '#2F87FF' : '#E8EAED' }}>
+                <Text style={{ fontSize: 15, color: '#fff', fontFamily: 'Pretendard-SemiBold' }}>{taxTypes[3]}</Text>
+              </ View>
+            </TouchableOpacity> */}
+          </View>
+
 
           <View style={styles.buttonContainer}>
+
             <Button
-              style={[styles.button, styles.resetButton]}
-              onPress={onClose}
+              style={[styles.button, styles.loginButton, { width: '100%' }]}
+              onPress={() => {
+
+                const result = selectedItems.join(','); // 선택된 값을 ','로 구분된 문자열로 변환
+
+
+                onTaxMultiSelect(result);
+              }}
             >
-              <ButtonText style={styles.resetButtonText}>아니오</ButtonText>
+              <ButtonText style={styles.loginButtonText}>선택하기</ButtonText>
             </Button>
-            <ShadowContainer>
-            <Button
-              style={[styles.button, styles.loginButton]}
-              onPress={onCancelRequest(selectCancelType, cancelTitle[selectCancelType])}
-            >
-              <ButtonText style={styles.loginButtonText}>네</ButtonText>
-            </Button>
-          </ShadowContainer>
-            
+
           </View>
         </ModalContainer>
       </View>

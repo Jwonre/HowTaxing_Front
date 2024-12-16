@@ -244,18 +244,18 @@ const ReservationDetail = props => {
     const state = await NetInfo.fetch();
     const canProceed = await handleNetInfoChange(state);
     if (canProceed) {
-    setConsultingCancel(reservationDetail.consultingReservationId);
-    closeCancelTypeModal();
+      // setConsultingCancel(reservationDetail.consultingReservationId);
+      closeCancelTypeModal();
     }
 
   };
- 
+
   const handleMultiSelectTaxRequest = async () => {
     const state = await NetInfo.fetch();
     const canProceed = await handleNetInfoChange(state);
     if (canProceed) {
-    setConsultingCancel(reservationDetail.consultingReservationId);
-    closeTaxModal();
+      // setConsultingCancel(reservationDetail.consultingReservationId);
+      closeTaxModal();
     }
 
   };
@@ -263,8 +263,8 @@ const ReservationDetail = props => {
     const state = await NetInfo.fetch();
     const canProceed = await handleNetInfoChange(state);
     if (canProceed) {
-      setConsultingCancel(reservationDetail.consultingReservationId);
-    closeDetailInputModal();
+      // setConsultingCancel(reservationDetail.consultingReservationId);
+      closeDetailInputModal();
     }
 
   };
@@ -277,15 +277,25 @@ const ReservationDetail = props => {
     }, [handleBackPress])
   );
 
+  console.log('log_id 1', props.route?.params?.consultingReservationId);
+
+
+  const consultingReservationId = props.route?.params?.consultingReservationId || null;
   useFocusEffect(
+
     useCallback(() => {
-      console.log('consultingReservationId', props.route?.params?.consultingReservationId);
-      getReservationDetail(props.route?.params?.consultingReservationId);
-    }, [])
+      const id = props.route?.params?.consultingReservationId;
+      console.log('log_id 2', id);
+      console.log('log_id 4', consultingReservationId);
+      if (id) {
+        getReservationDetail(consultingReservationId);
+      } else {
+        console.warn('consultingReservationId 값이 없습니다.');
+      }
+    }, [props.route?.params?.consultingReservationId])
   );
 
 
- 
   useEffect(() => {
     let interval = null;
     if (isTimerActive && timer > 0) {
@@ -298,29 +308,12 @@ const ReservationDetail = props => {
     return () => clearInterval(interval); // 컴포넌트 언마운트 시 정리
   }, [isTimerActive, timer]);
 
-  const formatTime = (time) => {
-    const minutes = Math.floor(time / 60); // 분
-    const seconds = time % 60; // 초
-    console.log("남은시간 : ", `${minutes}:${seconds < 10 ? `0${seconds}` : seconds}`);
-    return `${minutes}:${seconds < 10 ? `0${seconds}` : seconds}`; // "분:초" 형식
-  };
-  const handleResendAuth = async () => {
-    setTimer(180); // 타이머를 3분으로 초기화
-    setIsTimerActive(false); // 타이머 활성화
-    setAuthNumber('');
-    const state = await NetInfo.fetch();
-    const canProceed = await handleNetInfoChange(state);
-    if (canProceed) {
-      console.log("sendAuthMobile", `${props.route?.params?.authType}`);
-      sendAuthMobile(phoneNumber.replace(/-/g, ''), props.route?.params?.authType, props?.route?.params?.id);
-    }
-    console.log('인증번호 재전송');
-    // 인증번호 재전송 API 호출 로직 추가
-  };
+
+
 
   // 버튼 클릭 핸들러
   const getReservationDetail = async (consultingReservationId) => {
-    const url = `${Config.APP_API_URL}consulting/reservationDetail?consultingReservationId=${consultingReservationId}`;
+    const url = `${Config.APP_API_URL}consulting/reservationDetail?consultingReservationId=${(consultingReservationId ?? props.route?.params?.consultingReservationId ?? '')}`;
     //const url = `https://devapp.how-taxing.com/consulting/availableSchedule?consultantId=${consultantId}&searchType="${searchType}"`;
     const headers = {
       'Content-Type': 'application/json',
@@ -503,7 +496,7 @@ const ReservationDetail = props => {
       ),
 
       headerTitleAlign: 'center',
-      title: '결제 상세 정보',
+      title: '상담 예약 상세 정보',
       headerShadowVisible: false,
       contentStyle: {
         borderTopWidth: 0,
@@ -652,14 +645,22 @@ const ReservationDetail = props => {
           <View style={styles.Line1} />
 
           {progressStatus === 0 && (
-            <ConsultingWating data={reservationDetail} setInTaxSelectDialog={setIsTaxResultVisible} setInConsultingInputDialog={
-              setIsModalConsultingInputVisible
-            } />
+            <ConsultingWating data={reservationDetail} setInTaxSelectDialog={(value) => {
+              openTaxModal();
+              console.log('log_03', 'value' + value)
+            }} setInConsultingInputDialog={(value) => {
+              openDetailInputModal();
+              console.log('log_03', 'value' + value)
+            }} />
           )}
           {progressStatus === 1 && (
-             <ConsultingWating data={reservationDetail} setInTaxSelectDialog={setIsTaxResultVisible} setInConsultingInputDialog={
-              setIsModalConsultingInputVisible
-            } />
+            <ConsultingWating data={reservationDetail} setInTaxSelectDialog={(value) => {
+              openTaxModal();
+              console.log('log_03', 'value' + value)
+            }} setInConsultingInputDialog={(value) => {
+              openDetailInputModal();
+              console.log('log_03', 'value' + value)
+            }} />
           )}
           {progressStatus === 2 && (
             <ConsultingStart data={reservationDetail} />
@@ -740,16 +741,16 @@ const ReservationDetail = props => {
       )}
 
 
-<ConsultingCancelConfirmAlert visible={isModalCancelTypeVisible} onClose={closeCancelTypeModal}  onCancelRequest={handleCancelRequestPassword} />
-<ConsultingDetailInputAlert visible={isModalConsultingInputVisible} onClose={closeDetailInputModal}onInputCallback={handleResetPassword} />
-<ConsultingTaxMultiSelectAlert visible={isModalTaxVisible} onClose={closeTaxModal}  onResetPassword={handleResetPassword} />
+      <ConsultingCancelConfirmAlert visible={isModalCancelTypeVisible} onClose={closeCancelTypeModal} onCancelRequest={handleCancelRequest} />
+      <ConsultingDetailInputAlert visible={isModalConsultingInputVisible} onClose={closeDetailInputModal} onInputCallback={handleInputRequest} />
+      <ConsultingTaxMultiSelectAlert visible={isModalTaxVisible} onClose={closeTaxModal} onTaxMultiSelect={handleMultiSelectTaxRequest} />
 
       {/* 모달 */}
     </View >
 
   );
 };
-function ConsultingWating({ data ,setInTaxSelectDialog, setInConsultingInputDialog}) {
+function ConsultingWating({ data, setInTaxSelectDialog, setInConsultingInputDialog }) {
   const consultingTypeMap = {
     '01': '취득세',
     '02': '양도소득세',
@@ -810,6 +811,7 @@ function ConsultingWating({ data ,setInTaxSelectDialog, setInConsultingInputDial
             <Text style={[styles.labelInfo, { marginRight: 5 }]}>세금 종류</Text>
             <TouchableOpacity
               onPress={() => {
+                console.log('log_03', 'sdfsdfsdfd');
                 setInTaxSelectDialog(true);
               }}
             >
@@ -829,9 +831,11 @@ function ConsultingWating({ data ,setInTaxSelectDialog, setInConsultingInputDial
           <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-start' }}>
             <Text style={[styles.labelInfo, { marginRight: 5 }]}>상세 내용</Text>
             <TouchableOpacity
-                onPress={() => {
-                  setInConsultingInputDialog(true);
-                }}
+              onPress={() => {
+                console.log('log_03', 'setInConsultingInputDialog');
+
+                setInConsultingInputDialog(true);
+              }}
             >
               <ShadowContainer>
                 <ModifyIcon width={16} height={16} />
@@ -1134,6 +1138,214 @@ function TaxResultMore({ data, isTaxResultVisible, setIsTaxResultVisible }) {
 
 function InfoCalculationBuyResult({ data }) {
 
+  console.log('log_04', data);
+  const renderItem = ({ item, index }) => {
+    {/* 소유자 1 */ }
+    console.log('log_04', item);
+
+    return (
+      <View style={[styles.infoBox, { marginBottom: 10 }]}>
+        <View style={[styles.rowInfo, { marginBottom: 10 }]}>
+          <View
+            style={{
+              width: 71,
+              marginBottom: 14,
+              borderRadius: 50,
+              paddingHorizontal: 10,
+              justifyContent: 'center', // 수직 가운데 정렬
+              alignItems: 'center', // 수평 가운데 정렬
+              height: 22,
+              backgroundColor:
+                '#2F87FF'
+            }}
+          >
+
+            <Text style={[styles.statusText2, {}]}>
+              {'소유자' + (index + 1)}
+            </Text>
+          </View>
+
+          <Text style={[styles.statusText2, {
+            fontSize: 13,
+            fontFamily: 'Pretendard-Bold',
+            color: '#2F87FF',
+          }]}>
+            {'지분율:' + (Number(item?.userProportion ?? '0') * 100).toFixed(2) + '%'}
+          </Text>
+        </View>
+
+        <View style={[styles.infoBox, { marginBottom: 10 }]}>
+          <View style={[styles.rowInfo, { paddingVertical: 10, alignItems: 'center' }]}>
+            <Text style={[styles.statusText2, {
+              fontSize: 12,
+              fontFamily: 'Pretendard-Medium',
+              color: '#1b1c1f',
+            }]}>
+              {'총 납부세액'}
+            </Text>
+
+            <Text style={[styles.statusText2, {
+              fontSize: 13,
+              fontFamily: 'Pretendard-Bold',
+              color: '#2F87FF',
+            }]}>
+              {Number(item?.totalTaxPrice ?? '0')?.toLocaleString() + '원'}
+            </Text>
+          </View>
+
+        </View>
+
+        <View style={[styles.infoBox, { marginBottom: 10 }]}>
+          <View style={[styles.rowInfo, { paddingVertical: 10, alignItems: 'center' }]}>
+            <Text style={[styles.statusText2, {
+              fontSize: 12,
+              fontFamily: 'Pretendard-Medium',
+              color: '#1b1c1f',
+            }]}>
+              {'취득세'}
+            </Text>
+
+            <Text style={[styles.statusText2, {
+              fontSize: 13,
+              fontFamily: 'Pretendard-Bold',
+              color: '#1b1c1f',
+            }]}>
+              {Number(item?.buyTaxPrice ?? '0')?.toLocaleString() + '원'}
+
+            </Text>
+          </View>
+
+        </View>
+
+        <View style={[styles.rowInfo, { marginBottom: 13, alignItems: 'center' }]}>
+          <View style={{ flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center' }}>
+            <Text style={[styles.statusText2, {
+              fontSize: 12,
+              fontFamily: 'Pretendard-Regular',
+              color: '#1b1c1f',
+            }]}>
+              {'취득금액 '}
+            </Text>
+            <Text style={[styles.statusText2, {
+              fontSize: 10,
+              fontFamily: 'Pretendard-Medium',
+              color: '#1b1c1f',
+            }]}>
+              {'지분비율 ' + (Number(item?.userProportion ?? '0') * 100).toFixed(2) + '%'}
+            </Text>
+          </View>
+
+          <Text style={[styles.statusText2, {
+            fontSize: 13,
+            fontFamily: 'Pretendard-Medium',
+            color: '#a3a5a8',
+          }]}>
+            {Number(item?.buyPrice ?? '0')?.toLocaleString() + '원'}
+          </Text>
+        </View>
+
+        <View style={[styles.rowInfo, { marginBottom: 10, alignItems: 'center' }]}>
+          <Text style={[styles.statusText2, {
+            fontSize: 12,
+            fontFamily: 'Pretendard-Medium',
+            color: '#1b1c1f',
+          }]}>
+            {'취득세율'}
+          </Text>
+
+          <Text style={[styles.statusText2, {
+            fontSize: 13,
+            fontFamily: 'Pretendard-Medium',
+            color: '#a3a5a8',
+          }]}>
+            {Number(item?.buyTaxRate ?? '0') + '%'}
+          </Text>
+        </View>
+
+        <View style={[styles.separator, { marginBottom: 10 }]} />
+
+        <View style={[styles.infoBox, { marginBottom: 10 }]}>
+          <View style={[styles.rowInfo, { paddingVertical: 10, alignItems: 'center' }]}>
+            <Text style={[styles.statusText2, {
+              fontSize: 12,
+              fontFamily: 'Pretendard-Medium',
+              color: '#1b1c1f',
+            }]}>
+              {'지방교육세'}
+            </Text>
+
+            <Text style={[styles.statusText2, {
+              fontSize: 13,
+              fontFamily: 'Pretendard-Bold',
+              color: '#1b1c1f',
+            }]}>
+              {Number(item?.eduTaxPrice ?? '0')?.toLocaleString() + '원'}
+            </Text>
+          </View>
+
+        </View>
+        <View style={[styles.rowInfo, { marginBottom: 10, alignItems: 'center' }]}>
+          <Text style={[styles.statusText2, {
+            fontSize: 12,
+            fontFamily: 'Pretendard-Medium',
+            color: '#1b1c1f',
+          }]}>
+            {'지방교육세율'}
+          </Text>
+
+          <Text style={[styles.statusText2, {
+            fontSize: 13,
+            fontFamily: 'Pretendard-Medium',
+            color: '#a3a5a8',
+          }]}>
+            {Number(item?.eduTaxRate ?? '0') + '%'}
+          </Text>
+        </View>
+
+        <View style={[styles.separator, { marginBottom: 10 }]} />
+
+        <View style={[styles.infoBox, { marginBottom: 10 }]}>
+          <View style={[styles.rowInfo, { paddingVertical: 10, alignItems: 'center' }]}>
+            <Text style={[styles.statusText2, {
+              fontSize: 12,
+              fontFamily: 'Pretendard-Medium',
+              color: '#1b1c1f',
+            }]}>
+              {'농어촌특별세'}
+            </Text>
+
+            <Text style={[styles.statusText2, {
+              fontSize: 13,
+              fontFamily: 'Pretendard-Bold',
+              color: '#1b1c1f',
+            }]}>
+              {Number(item?.agrTaxPrice ?? '0')?.toLocaleString() + '원'}
+            </Text>
+          </View>
+
+        </View>
+        <View style={[styles.rowInfo, { marginBottom: 10, alignItems: 'center' }]}>
+          <Text style={[styles.statusText2, {
+            fontSize: 12,
+            fontFamily: 'Pretendard-Medium',
+            color: '#1b1c1f',
+          }]}>
+            {'농어촌특별세율율'}
+          </Text>
+
+          <Text style={[styles.statusText2, {
+            fontSize: 13,
+            fontFamily: 'Pretendard-Medium',
+            color: '#a3a5a8',
+          }]}>
+            {Number(item?.agrTaxRate ?? '0') + '%'}
+          </Text>
+        </View>
+        <View style={[styles.separator, { marginBottom: 10 }]} />
+
+      </View>
+    );
+  }
   return <>
     <View style={[styles.inputSection]}>
       <View style={[styles.infoBox, { marginBottom: 20, }]}>
@@ -1197,210 +1409,16 @@ function InfoCalculationBuyResult({ data }) {
       </View>
 
 
+      <FlatList
+        data={data?.list ?? []} // 서버에서 받은 list 데이터
+        renderItem={renderItem} // 함수 자체를 전달
+        keyExtractor={(item, index) => index.toString()} // 고유 키 설정
+        scrollEnabled={false} // FlatList 스크롤 비활성화
+      />
 
 
-      {/* 소유자 1 */}
-      <View style={[styles.infoBox, { marginBottom: 10 }]}>
-        <View style={[styles.rowInfo, { marginBottom: 10 }]}>
-          <View
-            style={{
-              width: 71,
-              marginBottom: 14,
-              borderRadius: 50,
-              paddingHorizontal: 10,
-              justifyContent: 'center', // 수직 가운데 정렬
-              alignItems: 'center', // 수평 가운데 정렬
-              height: 22,
-              backgroundColor:
-                '#2F87FF'
-            }}
-          >
-
-            <Text style={[styles.statusText2, {}]}>
-              {'소유자1'}
-            </Text>
-          </View>
-
-          <Text style={[styles.statusText2, {
-            fontSize: 13,
-            fontFamily: 'Pretendard-Bold',
-            color: '#2F87FF',
-          }]}>
-            {'지분율:50%'}
-          </Text>
-        </View>
-
-        <View style={[styles.infoBox, { marginBottom: 10 }]}>
-          <View style={[styles.rowInfo, { paddingVertical: 10, alignItems: 'center' }]}>
-            <Text style={[styles.statusText2, {
-              fontSize: 12,
-              fontFamily: 'Pretendard-Medium',
-              color: '#1b1c1f',
-            }]}>
-              {'총 납부세액'}
-            </Text>
-
-            <Text style={[styles.statusText2, {
-              fontSize: 13,
-              fontFamily: 'Pretendard-Bold',
-              color: '#2F87FF',
-            }]}>
-              {'0 원'}
-            </Text>
-          </View>
-
-        </View>
-
-        <View style={[styles.infoBox, { marginBottom: 10 }]}>
-          <View style={[styles.rowInfo, { paddingVertical: 10, alignItems: 'center' }]}>
-            <Text style={[styles.statusText2, {
-              fontSize: 12,
-              fontFamily: 'Pretendard-Medium',
-              color: '#1b1c1f',
-            }]}>
-              {'취득세'}
-            </Text>
-
-            <Text style={[styles.statusText2, {
-              fontSize: 13,
-              fontFamily: 'Pretendard-Bold',
-              color: '#1b1c1f',
-            }]}>
-              {'0 원'}
-            </Text>
-          </View>
-
-        </View>
-
-        <View style={[styles.rowInfo, { marginBottom: 13, alignItems: 'center' }]}>
-          <View style={{ flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center' }}>
-            <Text style={[styles.statusText2, {
-              fontSize: 12,
-              fontFamily: 'Pretendard-Regular',
-              color: '#1b1c1f',
-            }]}>
-              {'취득금액 '}
-            </Text>
-            <Text style={[styles.statusText2, {
-              fontSize: 10,
-              fontFamily: 'Pretendard-Medium',
-              color: '#1b1c1f',
-            }]}>
-              {'지분비율 50%'}
-            </Text>
-          </View>
-
-          <Text style={[styles.statusText2, {
-            fontSize: 13,
-            fontFamily: 'Pretendard-Medium',
-            color: '#a3a5a8',
-          }]}>
-            {'0 원'}
-          </Text>
-        </View>
-
-        <View style={[styles.rowInfo, { marginBottom: 10, alignItems: 'center' }]}>
-          <Text style={[styles.statusText2, {
-            fontSize: 12,
-            fontFamily: 'Pretendard-Medium',
-            color: '#1b1c1f',
-          }]}>
-            {'취득세율'}
-          </Text>
-
-          <Text style={[styles.statusText2, {
-            fontSize: 13,
-            fontFamily: 'Pretendard-Medium',
-            color: '#a3a5a8',
-          }]}>
-            {'0 원'}
-          </Text>
-        </View>
-
-        <View style={[styles.separator, { marginBottom: 10 }]} />
-
-        <View style={[styles.infoBox, { marginBottom: 10 }]}>
-          <View style={[styles.rowInfo, { paddingVertical: 10, alignItems: 'center' }]}>
-            <Text style={[styles.statusText2, {
-              fontSize: 12,
-              fontFamily: 'Pretendard-Medium',
-              color: '#1b1c1f',
-            }]}>
-              {'지방교육세'}
-            </Text>
-
-            <Text style={[styles.statusText2, {
-              fontSize: 13,
-              fontFamily: 'Pretendard-Bold',
-              color: '#1b1c1f',
-            }]}>
-              {'0 원'}
-            </Text>
-          </View>
-
-        </View>
-        <View style={[styles.rowInfo, { marginBottom: 10, alignItems: 'center' }]}>
-          <Text style={[styles.statusText2, {
-            fontSize: 12,
-            fontFamily: 'Pretendard-Medium',
-            color: '#1b1c1f',
-          }]}>
-            {'지방교육세율'}
-          </Text>
-
-          <Text style={[styles.statusText2, {
-            fontSize: 13,
-            fontFamily: 'Pretendard-Medium',
-            color: '#a3a5a8',
-          }]}>
-            {'0 원'}
-          </Text>
-        </View>
-
-        <View style={[styles.separator, { marginBottom: 10 }]} />
-
-        <View style={[styles.infoBox, { marginBottom: 10 }]}>
-          <View style={[styles.rowInfo, { paddingVertical: 10, alignItems: 'center' }]}>
-            <Text style={[styles.statusText2, {
-              fontSize: 12,
-              fontFamily: 'Pretendard-Medium',
-              color: '#1b1c1f',
-            }]}>
-              {'농어촌특별세'}
-            </Text>
-
-            <Text style={[styles.statusText2, {
-              fontSize: 13,
-              fontFamily: 'Pretendard-Bold',
-              color: '#1b1c1f',
-            }]}>
-              {'0 원'}
-            </Text>
-          </View>
-
-        </View>
-        <View style={[styles.rowInfo, { marginBottom: 10, alignItems: 'center' }]}>
-          <Text style={[styles.statusText2, {
-            fontSize: 12,
-            fontFamily: 'Pretendard-Medium',
-            color: '#1b1c1f',
-          }]}>
-            {'농어촌특별세율율'}
-          </Text>
-
-          <Text style={[styles.statusText2, {
-            fontSize: 13,
-            fontFamily: 'Pretendard-Medium',
-            color: '#a3a5a8',
-          }]}>
-            {'0 원'}
-          </Text>
-        </View>
-        <View style={[styles.separator, { marginBottom: 10 }]} />
-
-      </View>
       {/* 소유자 2 */}
-      <View style={styles.infoBox}>
+      {/* <View style={styles.infoBox}>
         <View style={[styles.rowInfo, { marginBottom: 10 }]}>
           <View
             style={{
@@ -1598,11 +1616,373 @@ function InfoCalculationBuyResult({ data }) {
         </View>
         <View style={[styles.separator, { marginBottom: 10 }]} />
 
-      </View>
+      </View> */}
     </View >
   </>
 }
 function InfoCalculationSelResult({ data }) {
+  const renderItem = ({ item, index }) => {
+    {/* 소유자 1 */ }
+    console.log('log_04', item);
+
+    return (
+      <View style={[styles.infoBox, { marginBottom: 10 }]}>
+        <View style={[styles.rowInfo, { marginBottom: 10 }]}>
+          <View
+            style={{
+              width: 71,
+              marginBottom: 14,
+              borderRadius: 50,
+              paddingHorizontal: 10,
+              justifyContent: 'center', // 수직 가운데 정렬
+              alignItems: 'center', // 수평 가운데 정렬
+              height: 22,
+              backgroundColor:
+                '#2F87FF'
+            }}
+          >
+
+            <Text style={[styles.statusText2, {}]}>
+              {'소유자' + (index + 1)}
+            </Text>
+          </View>
+
+          <Text style={[styles.statusText2, {
+            fontSize: 13,
+            fontFamily: 'Pretendard-Bold',
+            color: '#2F87FF',
+          }]}>
+            {'지분비율 ' + (Number(item?.userProportion ?? '0') * 100).toFixed(2) + '%'}
+          </Text>
+        </View>
+
+        <View style={[styles.infoBox, { marginBottom: 10 }]}>
+          <View style={[styles.rowInfo, { paddingVertical: 10, alignItems: 'center' }]}>
+            <Text style={[styles.statusText2, {
+              fontSize: 12,
+              fontFamily: 'Pretendard-Medium',
+              color: '#1b1c1f',
+            }]}>
+              {'총 납부세액'}
+            </Text>
+
+            <Text style={[styles.statusText2, {
+              fontSize: 13,
+              fontFamily: 'Pretendard-Bold',
+              color: '#2F87FF',
+            }]}>
+              {Number(item?.totalTaxPrice ?? '0')?.toLocaleString() + '원'}
+            </Text>
+          </View>
+
+        </View>
+
+        <View style={[styles.infoBox, { marginBottom: 10 }]}>
+          <View style={[styles.rowInfo, { paddingVertical: 10, alignItems: 'center' }]}>
+            <Text style={[styles.statusText2, {
+              fontSize: 12,
+              fontFamily: 'Pretendard-Medium',
+              color: '#1b1c1f',
+            }]}>
+              {'양도소득세'}
+            </Text>
+
+            <Text style={[styles.statusText2, {
+              fontSize: 13,
+              fontFamily: 'Pretendard-Bold',
+              color: '#1b1c1f',
+            }]}>
+              {Number(item?.sellTaxPrice ?? '0')?.toLocaleString() + '원'}
+            </Text>
+          </View>
+
+        </View>
+        <View style={[styles.infoBox, { marginBottom: 10 }]}>
+          <View style={[styles.rowInfo, { paddingVertical: 10, alignItems: 'center' }]}>
+            <Text style={[styles.statusText2, {
+              fontSize: 12,
+              fontFamily: 'Pretendard-Medium',
+              color: '#1b1c1f',
+            }]}>
+              {'지방소득세'}
+            </Text>
+
+            <Text style={[styles.statusText2, {
+              fontSize: 13,
+              fontFamily: 'Pretendard-Bold',
+              color: '#1b1c1f',
+            }]}>
+              {Number(item?.localTaxPrice ?? '0')?.toLocaleString() + '원'}
+            </Text>
+          </View>
+
+        </View>
+
+        <View style={[styles.rowInfo, { marginBottom: 10, alignItems: 'center' }]}>
+          <View style={{ flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center' }}>
+            <Text style={[styles.statusText2, {
+              fontSize: 12,
+              fontFamily: 'Pretendard-Regular',
+              color: '#1b1c1f',
+            }]}>
+              {'양도금액 '}
+            </Text>
+            <Text style={[styles.statusText2, {
+              fontSize: 10,
+              fontFamily: 'Pretendard-Medium',
+              color: '#1b1c1f',
+            }]}>
+              {'지분비율 ' + (Number(item?.userProportion ?? '0') * 100).toFixed(2) + '%'}
+            </Text>
+          </View>
+
+          <Text style={[styles.statusText2, {
+            fontSize: 13,
+            fontFamily: 'Pretendard-Medium',
+            color: '#a3a5a8',
+          }]}>
+            {Number(item?.sellPrice ?? '0')?.toLocaleString() + '원'}
+          </Text>
+        </View>
+
+        <View style={[styles.rowInfo, { marginBottom: 10, alignItems: 'center' }]}>
+          <View style={{ flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center' }}>
+            <Text style={[styles.statusText2, {
+              fontSize: 12,
+              fontFamily: 'Pretendard-Regular',
+              color: '#1b1c1f',
+            }]}>
+              {'취득금액 '}
+            </Text>
+            <Text style={[styles.statusText2, {
+              fontSize: 10,
+              fontFamily: 'Pretendard-Medium',
+              color: '#1b1c1f',
+            }]}>
+              {'지분비율 ' + (Number(item?.userProportion ?? '0') * 100).toFixed(2) + '%'}
+            </Text>
+          </View>
+
+          <Text style={[styles.statusText2, {
+            fontSize: 13,
+            fontFamily: 'Pretendard-Medium',
+            color: '#a3a5a8',
+          }]}>
+            {Number(item?.buyPrice ?? '0')?.toLocaleString() + '원'}
+            </Text>
+        </View>
+
+        <View style={[styles.rowInfo, { marginBottom: 12, alignItems: 'center' }]}>
+          <Text style={[styles.statusText2, {
+            fontSize: 12,
+            fontFamily: 'Pretendard-Medium',
+            color: '#1b1c1f',
+          }]}>
+            {'필요경비'}
+          </Text>
+
+          <Text style={[styles.statusText2, {
+            fontSize: 13,
+            fontFamily: 'Pretendard-Medium',
+            color: '#a3a5a8',
+          }]}>
+            {Number(item?.necExpensePrice ?? '0')?.toLocaleString() + '원'}
+            </Text>
+        </View>
+
+        <View style={[styles.separator, { marginBottom: 12 }]} />
+
+        <View style={[styles.rowInfo, { marginBottom: 10, alignItems: 'center' }]}>
+          <View style={{ flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center' }}>
+            <Text style={[styles.statusText2, {
+              fontSize: 12,
+              fontFamily: 'Pretendard-Regular',
+              color: '#1b1c1f',
+            }]}>
+              {'양도차익 '}
+            </Text>
+
+          </View>
+
+          <Text style={[styles.statusText2, {
+            fontSize: 13,
+            fontFamily: 'Pretendard-Medium',
+            color: '#a3a5a8',
+          }]}>
+            {Number(item?.sellProfitPrice ?? '0')?.toLocaleString() + '원'}
+            </Text>
+        </View>
+
+        <View style={[styles.rowInfo, { marginBottom: 10, alignItems: 'center' }]}>
+          <View style={{ flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center' }}>
+            <Text style={[styles.statusText2, {
+              fontSize: 12,
+              fontFamily: 'Pretendard-Regular',
+              color: '#1b1c1f',
+            }]}>
+              {'비과세 대상 양도차익 '}
+            </Text>
+
+          </View>
+
+          <Text style={[styles.statusText2, {
+            fontSize: 13,
+            fontFamily: 'Pretendard-Medium',
+            color: '#a3a5a8',
+          }]}>
+            {Number(item?.nonTaxablePrice ?? '0')?.toLocaleString() + '원'}
+            </Text>
+        </View>
+
+        <View style={[styles.rowInfo, { marginBottom: 12, alignItems: 'center' }]}>
+          <Text style={[styles.statusText2, {
+            fontSize: 12,
+            fontFamily: 'Pretendard-Medium',
+            color: '#1b1c1f',
+          }]}>
+            {'과세 대상 양도차익'}
+          </Text>
+
+          <Text style={[styles.statusText2, {
+            fontSize: 13,
+            fontFamily: 'Pretendard-Medium',
+            color: '#a3a5a8',
+          }]}>
+            {Number(item?.taxablePrice ?? '0')?.toLocaleString() + '원'}
+            </Text>
+        </View>
+
+        <View style={[styles.separator, { marginBottom: 12 }]} />
+
+        <View style={[styles.rowInfo, { marginBottom: 10, alignItems: 'center' }]}>
+          <View style={{ flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center' }}>
+            <Text style={[styles.statusText2, {
+              fontSize: 12,
+              fontFamily: 'Pretendard-Regular',
+              color: '#1b1c1f',
+            }]}>
+              {'장기보유특별공제제 '}
+            </Text>
+
+          </View>
+
+          <Text style={[styles.statusText2, {
+            fontSize: 13,
+            fontFamily: 'Pretendard-Medium',
+            color: '#a3a5a8',
+          }]}>
+            {Number(item?.longDeductionPrice ?? '0')?.toLocaleString() + '원'}
+            </Text>
+        </View>
+
+        <View style={[styles.rowInfo, { marginBottom: 12, alignItems: 'center' }]}>
+          <Text style={[styles.statusText2, {
+            fontSize: 12,
+            fontFamily: 'Pretendard-Medium',
+            color: '#1b1c1f',
+          }]}>
+            {'양도소득금액'}
+          </Text>
+
+          <Text style={[styles.statusText2, {
+            fontSize: 13,
+            fontFamily: 'Pretendard-Medium',
+            color: '#a3a5a8',
+          }]}>
+            {Number(item?.sellIncomePrice ?? '0')?.toLocaleString() + '원'}
+            </Text>
+        </View>
+
+        <View style={[styles.separator, { marginBottom: 12 }]} />
+        <View style={[styles.rowInfo, { marginBottom: 10, alignItems: 'center' }]}>
+          <View style={{ flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center' }}>
+            <Text style={[styles.statusText2, {
+              fontSize: 12,
+              fontFamily: 'Pretendard-Regular',
+              color: '#1b1c1f',
+            }]}>
+              {'기본공제 '}
+            </Text>
+            <Text style={[styles.statusText2, {
+              fontSize: 10,
+              fontFamily: 'Pretendard-Medium',
+              color: '#1b1c1f',
+            }]}>
+              {'(납세의무자별)'}
+            </Text>
+          </View>
+
+          <Text style={[styles.statusText2, {
+            fontSize: 13,
+            fontFamily: 'Pretendard-Medium',
+            color: '#a3a5a8',
+          }]}>
+            {Number(item?.basicDeductionPrice ?? '0')?.toLocaleString() + '원'}
+            </Text>
+        </View>
+
+        <View style={[styles.rowInfo, { marginBottom: 12, alignItems: 'center' }]}>
+          <Text style={[styles.statusText2, {
+            fontSize: 12,
+            fontFamily: 'Pretendard-Medium',
+            color: '#1b1c1f',
+          }]}>
+            {'과세표준'}
+          </Text>
+
+          <Text style={[styles.statusText2, {
+            fontSize: 13,
+            fontFamily: 'Pretendard-Medium',
+            color: '#a3a5a8',
+          }]}>
+            {Number(item?.taxableStdPrice ?? '0')?.toLocaleString() + '원'}
+            </Text>
+        </View>
+        <View style={[styles.rowInfo, { marginBottom: 10, alignItems: 'center' }]}>
+          <View style={{ flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center' }}>
+            <Text style={[styles.statusText2, {
+              fontSize: 12,
+              fontFamily: 'Pretendard-Regular',
+              color: '#1b1c1f',
+            }]}>
+              {'세율'}
+            </Text>
+
+          </View>
+
+          <Text style={[styles.statusText2, {
+            fontSize: 13,
+            fontFamily: 'Pretendard-Medium',
+            color: '#a3a5a8',
+          }]}>
+            {Number(item?.sellTaxRate ?? '0')?.toLocaleString() + '원'}
+            </Text>
+        </View>
+
+        <View style={[styles.rowInfo, { marginBottom: 12, alignItems: 'center' }]}>
+          <Text style={[styles.statusText2, {
+            fontSize: 12,
+            fontFamily: 'Pretendard-Medium',
+            color: '#1b1c1f',
+          }]}>
+            {'누진공제'}
+          </Text>
+
+          <Text style={[styles.statusText2, {
+            fontSize: 13,
+            fontFamily: 'Pretendard-Medium',
+            color: '#a3a5a8',
+          }]}>
+            {Number(item?.progDeductionPrice ?? '0')?.toLocaleString() + '원'}
+            </Text>
+        </View>
+
+        <View style={[styles.separator, { marginBottom: 10 }]} />
+
+      </View>
+    );
+  }
+
   return <>
     <View style={[styles.inputSection]}>
       <View style={[styles.infoBox, { marginBottom: 20, }]}>
@@ -1666,366 +2046,17 @@ function InfoCalculationSelResult({ data }) {
       </View>
 
 
+      <FlatList
+        data={data?.list ?? []} // 서버에서 받은 list 데이터
+        renderItem={renderItem} // 함수 자체를 전달
+        keyExtractor={(item, index) => index.toString()} // 고유 키 설정
+        scrollEnabled={false} // FlatList 스크롤 비활성화
+      />
 
 
-      {/* 소유자 1 */}
-      <View style={[styles.infoBox, { marginBottom: 10 }]}>
-        <View style={[styles.rowInfo, { marginBottom: 10 }]}>
-          <View
-            style={{
-              width: 71,
-              marginBottom: 14,
-              borderRadius: 50,
-              paddingHorizontal: 10,
-              justifyContent: 'center', // 수직 가운데 정렬
-              alignItems: 'center', // 수평 가운데 정렬
-              height: 22,
-              backgroundColor:
-                '#2F87FF'
-            }}
-          >
-
-            <Text style={[styles.statusText2, {}]}>
-              {'소유자1'}
-            </Text>
-          </View>
-
-          <Text style={[styles.statusText2, {
-            fontSize: 13,
-            fontFamily: 'Pretendard-Bold',
-            color: '#2F87FF',
-          }]}>
-            {'지분율:50%'}
-          </Text>
-        </View>
-
-        <View style={[styles.infoBox, { marginBottom: 10 }]}>
-          <View style={[styles.rowInfo, { paddingVertical: 10, alignItems: 'center' }]}>
-            <Text style={[styles.statusText2, {
-              fontSize: 12,
-              fontFamily: 'Pretendard-Medium',
-              color: '#1b1c1f',
-            }]}>
-              {'총 납부세액'}
-            </Text>
-
-            <Text style={[styles.statusText2, {
-              fontSize: 13,
-              fontFamily: 'Pretendard-Bold',
-              color: '#2F87FF',
-            }]}>
-              {'0 원'}
-            </Text>
-          </View>
-
-        </View>
-
-        <View style={[styles.infoBox, { marginBottom: 10 }]}>
-          <View style={[styles.rowInfo, { paddingVertical: 10, alignItems: 'center' }]}>
-            <Text style={[styles.statusText2, {
-              fontSize: 12,
-              fontFamily: 'Pretendard-Medium',
-              color: '#1b1c1f',
-            }]}>
-              {'양도소득세'}
-            </Text>
-
-            <Text style={[styles.statusText2, {
-              fontSize: 13,
-              fontFamily: 'Pretendard-Bold',
-              color: '#1b1c1f',
-            }]}>
-              {'0 원'}
-            </Text>
-          </View>
-
-        </View>
-        <View style={[styles.infoBox, { marginBottom: 10 }]}>
-          <View style={[styles.rowInfo, { paddingVertical: 10, alignItems: 'center' }]}>
-            <Text style={[styles.statusText2, {
-              fontSize: 12,
-              fontFamily: 'Pretendard-Medium',
-              color: '#1b1c1f',
-            }]}>
-              {'지방소득세'}
-            </Text>
-
-            <Text style={[styles.statusText2, {
-              fontSize: 13,
-              fontFamily: 'Pretendard-Bold',
-              color: '#1b1c1f',
-            }]}>
-              {'0 원'}
-            </Text>
-          </View>
-
-        </View>
-
-        <View style={[styles.rowInfo, { marginBottom: 10, alignItems: 'center' }]}>
-          <View style={{ flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center' }}>
-            <Text style={[styles.statusText2, {
-              fontSize: 12,
-              fontFamily: 'Pretendard-Regular',
-              color: '#1b1c1f',
-            }]}>
-              {'양도금액 '}
-            </Text>
-            <Text style={[styles.statusText2, {
-              fontSize: 10,
-              fontFamily: 'Pretendard-Medium',
-              color: '#1b1c1f',
-            }]}>
-              {'지분비율 50%'}
-            </Text>
-          </View>
-
-          <Text style={[styles.statusText2, {
-            fontSize: 13,
-            fontFamily: 'Pretendard-Medium',
-            color: '#a3a5a8',
-          }]}>
-            {'0 원'}
-          </Text>
-        </View>
-
-        <View style={[styles.rowInfo, { marginBottom: 10, alignItems: 'center' }]}>
-          <View style={{ flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center' }}>
-            <Text style={[styles.statusText2, {
-              fontSize: 12,
-              fontFamily: 'Pretendard-Regular',
-              color: '#1b1c1f',
-            }]}>
-              {'취득금액 '}
-            </Text>
-            <Text style={[styles.statusText2, {
-              fontSize: 10,
-              fontFamily: 'Pretendard-Medium',
-              color: '#1b1c1f',
-            }]}>
-              {'지분비율 50%'}
-            </Text>
-          </View>
-
-          <Text style={[styles.statusText2, {
-            fontSize: 13,
-            fontFamily: 'Pretendard-Medium',
-            color: '#a3a5a8',
-          }]}>
-            {'0 원'}
-          </Text>
-        </View>
-
-        <View style={[styles.rowInfo, { marginBottom: 12, alignItems: 'center' }]}>
-          <Text style={[styles.statusText2, {
-            fontSize: 12,
-            fontFamily: 'Pretendard-Medium',
-            color: '#1b1c1f',
-          }]}>
-            {'필요경비'}
-          </Text>
-
-          <Text style={[styles.statusText2, {
-            fontSize: 13,
-            fontFamily: 'Pretendard-Medium',
-            color: '#a3a5a8',
-          }]}>
-            {'0 원'}
-          </Text>
-        </View>
-
-        <View style={[styles.separator, { marginBottom: 12 }]} />
-
-        <View style={[styles.rowInfo, { marginBottom: 10, alignItems: 'center' }]}>
-          <View style={{ flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center' }}>
-            <Text style={[styles.statusText2, {
-              fontSize: 12,
-              fontFamily: 'Pretendard-Regular',
-              color: '#1b1c1f',
-            }]}>
-              {'양도차익 '}
-            </Text>
-
-          </View>
-
-          <Text style={[styles.statusText2, {
-            fontSize: 13,
-            fontFamily: 'Pretendard-Medium',
-            color: '#a3a5a8',
-          }]}>
-            {'0 원'}
-          </Text>
-        </View>
-
-        <View style={[styles.rowInfo, { marginBottom: 10, alignItems: 'center' }]}>
-          <View style={{ flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center' }}>
-            <Text style={[styles.statusText2, {
-              fontSize: 12,
-              fontFamily: 'Pretendard-Regular',
-              color: '#1b1c1f',
-            }]}>
-              {'비과세 대상 양도차익 '}
-            </Text>
-
-          </View>
-
-          <Text style={[styles.statusText2, {
-            fontSize: 13,
-            fontFamily: 'Pretendard-Medium',
-            color: '#a3a5a8',
-          }]}>
-            {'0 원'}
-          </Text>
-        </View>
-
-        <View style={[styles.rowInfo, { marginBottom: 12, alignItems: 'center' }]}>
-          <Text style={[styles.statusText2, {
-            fontSize: 12,
-            fontFamily: 'Pretendard-Medium',
-            color: '#1b1c1f',
-          }]}>
-            {'과세 대상 양도차익'}
-          </Text>
-
-          <Text style={[styles.statusText2, {
-            fontSize: 13,
-            fontFamily: 'Pretendard-Medium',
-            color: '#a3a5a8',
-          }]}>
-            {'0 원'}
-          </Text>
-        </View>
-
-        <View style={[styles.separator, { marginBottom: 12 }]} />
-
-        <View style={[styles.rowInfo, { marginBottom: 10, alignItems: 'center' }]}>
-          <View style={{ flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center' }}>
-            <Text style={[styles.statusText2, {
-              fontSize: 12,
-              fontFamily: 'Pretendard-Regular',
-              color: '#1b1c1f',
-            }]}>
-              {'장기보유특별공제제 '}
-            </Text>
-
-          </View>
-
-          <Text style={[styles.statusText2, {
-            fontSize: 13,
-            fontFamily: 'Pretendard-Medium',
-            color: '#a3a5a8',
-          }]}>
-            {'0 원'}
-          </Text>
-        </View>
-
-        <View style={[styles.rowInfo, { marginBottom: 12, alignItems: 'center' }]}>
-          <Text style={[styles.statusText2, {
-            fontSize: 12,
-            fontFamily: 'Pretendard-Medium',
-            color: '#1b1c1f',
-          }]}>
-            {'양도소득금액'}
-          </Text>
-
-          <Text style={[styles.statusText2, {
-            fontSize: 13,
-            fontFamily: 'Pretendard-Medium',
-            color: '#a3a5a8',
-          }]}>
-            {'0 원'}
-          </Text>
-        </View>
-
-        <View style={[styles.separator, { marginBottom: 12 }]} />
-        <View style={[styles.rowInfo, { marginBottom: 10, alignItems: 'center' }]}>
-          <View style={{ flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center' }}>
-            <Text style={[styles.statusText2, {
-              fontSize: 12,
-              fontFamily: 'Pretendard-Regular',
-              color: '#1b1c1f',
-            }]}>
-              {'기본공제 '}
-            </Text>
-            <Text style={[styles.statusText2, {
-              fontSize: 10,
-              fontFamily: 'Pretendard-Medium',
-              color: '#1b1c1f',
-            }]}>
-              {'(납세의무자별)'}
-            </Text>
-          </View>
-
-          <Text style={[styles.statusText2, {
-            fontSize: 13,
-            fontFamily: 'Pretendard-Medium',
-            color: '#a3a5a8',
-          }]}>
-            {'0 원'}
-          </Text>
-        </View>
-
-        <View style={[styles.rowInfo, { marginBottom: 12, alignItems: 'center' }]}>
-          <Text style={[styles.statusText2, {
-            fontSize: 12,
-            fontFamily: 'Pretendard-Medium',
-            color: '#1b1c1f',
-          }]}>
-            {'과세표준'}
-          </Text>
-
-          <Text style={[styles.statusText2, {
-            fontSize: 13,
-            fontFamily: 'Pretendard-Medium',
-            color: '#a3a5a8',
-          }]}>
-            {'0 원'}
-          </Text>
-        </View>
-        <View style={[styles.rowInfo, { marginBottom: 10, alignItems: 'center' }]}>
-          <View style={{ flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center' }}>
-            <Text style={[styles.statusText2, {
-              fontSize: 12,
-              fontFamily: 'Pretendard-Regular',
-              color: '#1b1c1f',
-            }]}>
-              {'세유'}
-            </Text>
-
-          </View>
-
-          <Text style={[styles.statusText2, {
-            fontSize: 13,
-            fontFamily: 'Pretendard-Medium',
-            color: '#a3a5a8',
-          }]}>
-            {'0 원'}
-          </Text>
-        </View>
-
-        <View style={[styles.rowInfo, { marginBottom: 12, alignItems: 'center' }]}>
-          <Text style={[styles.statusText2, {
-            fontSize: 12,
-            fontFamily: 'Pretendard-Medium',
-            color: '#1b1c1f',
-          }]}>
-            {'누진공제'}
-          </Text>
-
-          <Text style={[styles.statusText2, {
-            fontSize: 13,
-            fontFamily: 'Pretendard-Medium',
-            color: '#a3a5a8',
-          }]}>
-            {'0 원'}
-          </Text>
-        </View>
-
-        <View style={[styles.separator, { marginBottom: 10 }]} />
-
-      </View>
 
       {/* 소유자 2 */}
-      <View style={[styles.infoBox, { marginBottom: 10 }]}>
+      {/* <View style={[styles.infoBox, { marginBottom: 10 }]}>
         <View style={[styles.rowInfo, { marginBottom: 10 }]}>
           <View
             style={{
@@ -2378,7 +2409,7 @@ function InfoCalculationSelResult({ data }) {
 
         <View style={[styles.separator, { marginBottom: 10 }]} />
 
-      </View>
+      </View> */}
     </View >
   </>
 }

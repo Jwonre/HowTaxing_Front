@@ -627,6 +627,7 @@ const ReservationList = () => {
                               const canProceed = await handleNetInfoChange(state);
                               if (canProceed) {
 
+                                console.log("log_id ", item.consultingReservationId);
                                 navigation.navigate('ReservationDetail', {
                                   consultingReservationId: item.consultingReservationId,
                                 });
