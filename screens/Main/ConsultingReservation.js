@@ -1274,9 +1274,21 @@ const ConsultingReservation = () => {
                       const state = await NetInfo.fetch();
                       const canProceed = await handleNetInfoChange(state);
                       if (canProceed) {
-                        navigation.navigate('PaymentScreen', {
+
+                        navigation.push(
+                          'PaymentScreen',
+                          {
+                            prevSheet: 'ReservationDetail',
+                            
                           consultantId:'1',consultingType:'01',consultingInflowPath:'01'
-                          ,calcHistoryId:2002,name: name, phone: phone, selectedDate: selectedDate, selectedList: selectedList});
+                          ,calcHistoryId:2002,name: name, phone: phone, selectedDate: selectedDate, selectedList: selectedList
+                          },
+                          'PaymentScreen',
+                        );
+                        // navigation.navigate('PaymentScreen', {
+                        //   consultantId:'1',consultingType:'01',consultingInflowPath:'01'
+                        //   ,calcHistoryId:2002,name: name, phone: phone, selectedDate: selectedDate, selectedList: selectedList});
+                        
                         //   onPaymentComplete: () => {
                         //     setCurrentPageIndex(4);
                         //   },

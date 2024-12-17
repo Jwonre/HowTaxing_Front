@@ -2008,6 +2008,15 @@ function InfoCalculationSelResult({ data }) {
               console.log('팝업 먼저 띄워야함');
               // setConsultingCancel(reservationDetail.consultingReservationId);
               // setIsTaxResultVisible(!isTaxResultVisible);
+
+              navigation.push(
+                'HouseDetail',
+                {
+                  prevSheet: 'ReservationDetail',
+                  item:reservationDetail,
+                },
+                'HouseDetail',
+              );
             }}
             style={{
               flexDirection: 'row',
