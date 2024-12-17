@@ -339,7 +339,9 @@ const ReservationList = () => {
   };
 
   const getReservationPaymentlist = async (page, consultingStatus) => {
-    const url = `${Config.APP_API_URL}payment/list?page=${page}&consultingStatus=${consultingStatus}`;
+    const url = `${Config.APP_API_URL}payment/list`;
+    // const url = `${Config.APP_API_URL}payment/list?page=${page}&consultingStatus=${consultingStatus}`;
+
     //const url = `https://devapp.how-taxing.com/consulting/availableSchedule?consultantId=${consultantId}&searchType="${searchType}"`;
     const headers = {
       'Content-Type': 'application/json',

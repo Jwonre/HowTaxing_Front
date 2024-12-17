@@ -603,6 +603,97 @@ const ConsultingReservation = () => {
       });
   };
 
+
+  const setPaymentTemp = async () => {
+    var NumTaxTypeList = taxTypeList.map(taxType => {
+      switch (taxType) {
+        case "취득세":
+          return "01";
+        case "양도소득세":
+          return "02";
+        case "상속세":
+          return "03";
+        case "증여세":
+          return "04";
+        default:
+          return "";
+      }
+    });
+    const year = selectedDate.getFullYear();
+    const month = String(selectedDate.getMonth() + 1).padStart(2, '0'); // 월은 0부터 시작하므로 1을 더해줍니다.
+    const day = String(selectedDate.getDate()).padStart(2, '0');
+    const accessToken = currentUser.accessToken;
+    // 요청 헤더
+    const headers = {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${accessToken}`
+    };
+
+    // 요청 바디
+    const data = {
+      consultantId: '1',
+      customerName: name ? name : '',
+      customerPhone: phone ? phone.replace(/-/g, "") : '',
+      reservationDate: selectedDate ? `${year}-${month}-${day}` : '',
+      reservationTime: selectedList ? selectedList[0] : '',
+      consultingType: NumTaxTypeList ? NumTaxTypeList.sort().join(",") : '',
+      consultingInflowPath: '00',
+      calcHistoryId: '',
+      consultingRequestContent: text ? text : '',
+    };
+    console.log('log_04', data.consultantId);
+    console.log('log_04', data.customerName);
+    console.log('log_04', data.customerPhone);
+    console.log('log_04', data.reservationDate);
+    console.log('log_04', data.reservationTime);
+    console.log('log_04', data.consultingType);
+    console.log('log_04', data.calcHistoryId);
+    console.log('log_04', data.consultingRequestContent);
+
+
+    setTimeout(async () => {
+   
+      await navigation.navigate('PaymentScreen', { prevSheet: 'ReservationDetail',
+        consultantId:'1',consultingType:'01',consultingInflowPath:'01'
+        ,calcHistoryId:2002,name: name, phone: phone, selectedDate: selectedDate, selectedList: selectedList});
+    }, 300);
+    // axios
+    //   .post(`${Config.APP_API_URL}payment/saveTemp`, data, { headers: headers })
+    //   .then(async response => {
+    //     if (response.data.errYn === 'Y') {
+    //       SheetManager.show('info', {
+    //         payload: {
+    //           type: 'error',
+    //           message: response.data.errMsg ? response.data.errMsg : '인증번호 검증에 실패했습니다..',
+    //           description: response.data.errMsgDtl ? response.data.errMsgDtl : '',
+    //           buttontext: '확인하기',
+    //         },
+    //       });
+    //       return;
+    //     } else {
+    //       const userData = response.data.data;
+    //       console.log("sendAuthMobile: ", userData.authKey);
+
+    //       findUserId(phoneNumber.replace(/-/g, ''), userData.authKey);
+
+    //     }
+    //     // 성공적인 응답 처리
+
+    //   })
+    //   .catch(error => {
+    //     // 오류 처리
+    //     SheetManager.show('info', {
+    //       payload: {
+    //         message: '인증번호 발송에 실패하였습니다.',
+    //         description: error?.message,
+    //         type: 'error',
+    //         buttontext: '확인하기',
+    //       }
+    //     });
+    //     console.error(error);
+    //   });
+  };
+
   const requestReservation = async () => {
     console.log('selectedDate', selectedDate);
     var NumTaxTypeList = taxTypeList.map(taxType => {
@@ -1135,7 +1226,7 @@ const ConsultingReservation = () => {
       <Container style={{ width: width }}>
         <ProgressSection>
         </ProgressSection>
-        <><FlatList
+        <FlatList
           ref={_scrollViewRef2}
           scrollEnabled={true}
           scrollEventThrottle={16}
@@ -1217,7 +1308,7 @@ const ConsultingReservation = () => {
             </>
           }
           ListFooterComponent={
-            <><ButtonSection>
+            <ButtonSection>
               <View
                 style={{
                   alignItems: 'center', // align-items를 camelCase로 변경
@@ -1274,17 +1365,32 @@ const ConsultingReservation = () => {
                       const state = await NetInfo.fetch();
                       const canProceed = await handleNetInfoChange(state);
                       if (canProceed) {
-
-                        navigation.push(
-                          'PaymentScreen',
-                          {
-                            prevSheet: 'ReservationDetail',
-                            
-                          consultantId:'1',consultingType:'01',consultingInflowPath:'01'
-                          ,calcHistoryId:2002,name: name, phone: phone, selectedDate: selectedDate, selectedList: selectedList
-                          },
-                          'PaymentScreen',
+                        navigation.dispatch(
+                          StackActions.replace('PaymentScreen', {
+                            consultantId:'1',consultingType:'01',consultingInflowPath:'01'
+                            ,calcHistoryId:2002,name: name, phone: phone, selectedDate: selectedDate, selectedList: selectedList
+                          })
                         );
+                        // setCurrentPageIndex(4);
+                        // const result = await setPaymentTemp();
+                        console.log('log_04', result);
+
+                       // if (result) {
+                          // dispatch(setCert({agreePrivacy: false}));
+                                   
+                      //  }
+
+                        console.log('log_04',selectedList.length);
+                        // navigation.push(
+                        //   'PaymentScreen',
+                        //   {
+                        //     prevSheet: 'ReservationDetail',
+                            
+                        //   consultantId:'1',consultingType:'01',consultingInflowPath:'01'
+                        //   ,calcHistoryId:2002,name: name, phone: phone, selectedDate: selectedDate, selectedList: selectedList
+                        //   },
+                        //   'PaymentScreen',
+                        // );
                         // navigation.navigate('PaymentScreen', {
                         //   consultantId:'1',consultingType:'01',consultingInflowPath:'01'
                         //   ,calcHistoryId:2002,name: name, phone: phone, selectedDate: selectedDate, selectedList: selectedList});
@@ -1334,9 +1440,9 @@ const ConsultingReservation = () => {
                   />
                 ))}
               </View>
-            </ButtonSection></>
+            </ButtonSection>
           }
-        /></>
+        />
       </Container>
       <ScrollView scrollEnabled={false} overScrollMode="never"><TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <Container style={{ width: width, height: height * 0.89 }}>

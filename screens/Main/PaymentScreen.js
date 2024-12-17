@@ -137,7 +137,7 @@ const PaymentScreen = props => {
   const [isModalVisible, setIsModalVisible] = useState(false); // 팝업 상태 관리
   const [phoneNumberOk, setPhoneNumberOk] = useState('1');
   const inputRef = useRef();
-  const [reservationProductInfo, setReservationProductInfo] = useState([]);
+  const [reservationProductInfo, setReservationProductInfo] = useState(null);
 
   const [agreePrivacy, setAgreePrivacy] = useState(false); // 팝업 상태 관리
 
@@ -188,12 +188,12 @@ const PaymentScreen = props => {
     // 인증번호 재전송 API 호출 로직 추가
   };
 
-   useFocusEffect(
-      useCallback(() => {
-        getProductInfo("1");
-      }, [selectedTab])
-    );
-
+   // 페이지 들어가자마자 호출
+   useEffect(() => {
+    if (props.route?.params.consultantId??'1') {
+      getProductInfo(props.route?.params.consultantId??'1');
+    }
+  }, [props.route?.params.consultantId??'1']); // consultantId가 바뀌면 다시 호출
 
 
 
@@ -454,25 +454,28 @@ const PaymentScreen = props => {
     });
   }, []);
 
-  const year = selectedDate.getFullYear();
-  const month = String(selectedDate.getMonth() + 1).padStart(2, '0'); // 월은 0부터 시작하므로 1을 더해줍니다.
-  const day = String(selectedDate.getDate()).padStart(2, '0');
+  // const year = selectedDate.getFullYear();
+  // const month = String(selectedDate.getMonth() + 1).padStart(2, '0'); // 월은 0부터 시작하므로 1을 더해줍니다.
+  // const day = String(selectedDate.getDate()).padStart(2, '0');
 
-  const default_date = `${year}-${month}-${day}`;
-  const date = new Date(default_date);
-  const dayNames = ['일', '월', '화', '수', '목', '금', '토'];
+  // const default_date = `${year}-${month}-${day}`;
+  // const date = new Date(default_date);
+  // const dayNames = ['일', '월', '화', '수', '목', '금', '토'];
 
-  const dayOfWeek = dayNames[date.getDay()];
+  // const dayOfWeek = dayNames[date.getDay()];
 
-  const time = props.route?.params?.selectedList ? props.route?.params?.selectedList[0] : '00:00'; // 시간
-  const [hours, minutes] = time.split(':').map(Number); // 시간과 분 분리
-  const isPM = hours >= 12; // 12 이상이면 오후
-  const formattedHours = isPM ? hours - 12 || 12 : hours || 12; // 12시간제로 변환
-  const period = isPM ? '오후' : '오전'; // 오전/오후 결정
+  // const time = props.route?.params?.selectedList ? props.route?.params?.selectedList[0] : '00:00'; // 시간
+  // const [hours, minutes] = time.split(':').map(Number); // 시간과 분 분리
+  // const isPM = hours >= 12; // 12 이상이면 오후
+  // const formattedHours = isPM ? hours - 12 || 12 : hours || 12; // 12시간제로 변환
+  // const period = isPM ? '오후' : '오전'; // 오전/오후 결정
 
-  const dateInfo = `${year}년 ${month}월 ${day}일 (${dayOfWeek})`;
-  const timeInfo = `(${period} ${formattedHours}시)`;
+  // const dateInfo = `${year}년 ${month}월 ${day}일 (${dayOfWeek})`;
+  // const timeInfo = `(${period} ${formattedHours}시)`;
 
+  const dateInfo = '';
+  const time = '';
+  const timeInfo = '';
   return (
     <View style={styles.rootContainer}>
       {/* 파란색 라인 */}
