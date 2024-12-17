@@ -2,6 +2,35 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+<key>CFBundleTypeRole</key>
+    <string>Editor</string>
+    <key>CFBundleURLName</key>
+    <string>naver</string>
+    <key>CFBundleURLSchemes</key>
+    <array>
+      <string>orG8AAE8iHfRSoiySAbv</string>
+    </array>
+   <key>CFBundleTypeRole</key>
+   <string>Editor</string>
+   <key>CFBundleURLSchemes</key>
+   <array>
+     <string>kakaofe69357976f38cd298eab638d110249c</string>
+   </array>
+ </dict>
+ </array>
+ <key>CFBundleVersion</key>
+ <string>1</string>
+ <key>KAKAO_APP_KEY</key>
+ <string>fe69357976f38cd298eab638d110249c</string>
+ <key>KAKAO_APP_SCHEME</key> // 선택 사항 멀티 플랫폼 앱 구현 시에만 추가하면 됩니다
+ <string>kakaofe69357976f38cd298eab638d110249c</string> // 선택 사항 
+ <key>LSApplicationQueriesSchemes</key>
+<!-- <array>-->
+<!--	<string>kakao0123456789</string>-->
+<!--   <string>kakaokompassauth</string>-->
+<!--   <string>storykompassauth</string>-->
+<!--   <string>kakaolink</string>-->
+<!-- </array>-->
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleDisplayName</key>
