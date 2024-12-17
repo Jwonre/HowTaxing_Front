@@ -212,7 +212,7 @@ const ReservationList = () => {
   const hasNavigatedBackRef = useRef(hasNavigatedBack);
   const currentUser = useSelector(state => state.currentUser.value);
   const [reservationList, setReservationList] = useState([]);
-  const [reservationPaymentList, setReservationPaymentList] = useState(FakeReservationData);
+  const [reservationPaymentList, setReservationPaymentList] = useState([]);
 
   const [selectedTab, setSelectedTab] = useState(0); // 탭 상태 관리
   const dayNames = ['일', '월', '화', '수', '목', '금', '토'];
@@ -226,7 +226,7 @@ const ReservationList = () => {
         getReservationlist();
 
       } else if (selectedTab === 1) {
-        setReservationPaymentList([...FakeReservationData]);
+        getReservationPaymentlist();
 
       }
     }, [selectedTab])
@@ -339,7 +339,7 @@ const ReservationList = () => {
   };
 
   const getReservationPaymentlist = async (page, consultingStatus) => {
-    const url = `${Config.APP_API_URL}consulting/reservationList?page=${page}&consultingStatus=${consultingStatus}`;
+    const url = `${Config.APP_API_URL}payment/list?page=${page}&consultingStatus=${consultingStatus}`;
     //const url = `https://devapp.how-taxing.com/consulting/availableSchedule?consultantId=${consultantId}&searchType="${searchType}"`;
     const headers = {
       'Content-Type': 'application/json',
@@ -701,12 +701,12 @@ const ReservationList = () => {
                         }}
                         key={index}>
                         {/* 프로필 이미지 */}
-                        <ProfileAvatar2 source={require('../../assets/images/Minjungum_Lee_consulting.png')} />
+                        <ProfileAvatar2 source={item.thumbImageUrl ?? require('../../assets/images/Minjungum_Lee_consulting.png')} />
 
                         {/* 상담 정보 */}
                         <InfoContainer>
                           <Text style={styles.regDatePayment}>
-                            {item.reservationDate} {item.reservationStartTime}
+                            {item.approvedDatetime}
                           </Text>
                           <Text style={styles.contentPayment}>
                             {'#' + `${item.consultingReservationId}`}
@@ -717,7 +717,7 @@ const ReservationList = () => {
                         {/* 가격 및 버튼 */}
                         <RightContainer>
                           <Text style={styles.pricePayment}>
-                            {item.price}
+                            {Number(item?.paymentAmount ?? '0')?.toLocaleString() + ' 원'}
                           </Text>
                           <HoustInfoBadge
                             onPress={async () => {
@@ -726,7 +726,7 @@ const ReservationList = () => {
                               if (canProceed) {
 
                                 navigation.navigate('PaymentDetail', {
-                                  consultingReservationId: item.consultingReservationId,
+                                  paymentHistoryId: item.paymentHistoryId,
                                 });
                               }
                             }}

@@ -130,23 +130,14 @@ const ProgressSection = styled.View`
 `;
 
 const ReservationDetail = props => {
-  const _scrollViewRef = useRef(null);
 
-  const actionSheetRef = useRef(null);
   const navigation = useNavigation();
   const { width, height } = useWindowDimensions();
   const [reservationDetail, setReservationDetail] = useState({});
   const dispatch = useDispatch();
   const currentUser = useSelector(state => state.currentUser.value);
   const [isExpanded, setIsExpanded] = useState(false);
-  const houseInfo = props?.route.params?.houseInfo;
 
-  const [phoneNumber, setPhoneNumber] = useState('');
-  const [authNum, setAuthNumber] = useState('');
-
-  const [step, setStep] = useState(1); // 현재 단계 상태 (1: 휴대폰 입력, 2: 인증번호 입력)
-  const [timer, setTimer] = useState(180); // 3분 = 180초
-  const [isTimerActive, setIsTimerActive] = useState(false);
   const [isConnected, setIsConnected] = useState(true);
   const [hasNavigatedBack, setHasNavigatedBack] = useState(false);
   const hasNavigatedBackRef = useRef(hasNavigatedBack);
@@ -155,10 +146,8 @@ const ReservationDetail = props => {
   const [isModalConsultingInputVisible, setIsModalConsultingInputVisible] = useState(false); // 팝업 상태 관리
 
   const [progressStatus, setProgressStatus] = useState(0);
-  const inputRef = useRef();
   const [isTaxResultVisible, setIsTaxResultVisible] = useState(false); // 팝업 상태 관리
 
-  const [agreePrivacy, setAgreePrivacy] = useState(false); // 팝업 상태 관리
 
 
   const openCancelTypeModal = () => {
