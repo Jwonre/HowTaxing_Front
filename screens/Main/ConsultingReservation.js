@@ -431,6 +431,8 @@ const ConsultingReservation = () => {
   const [dataList, setDataList] = useState([]);
   const [timeList, setTimeList] = useState([]);
   const [taxTypeList, setTaxTypeList] = useState([]);
+  const [keyboardShouldPersistTaps, setkeyboardShouldPersistTaps] = useState(true);
+
   const { certType, agreeCert, agreePrivacy } = useSelector(
     state => state.cert.value,
   );
@@ -867,9 +869,11 @@ const ConsultingReservation = () => {
         width: width,
       }}
       horizontal
+      onStartShouldSetResponder={() => false}
       keyboardShouldPersistTaps='always'
       showsHorizontalScrollIndicator={false}
       scrollEnabled={false}
+      keyboardDismissMode="on-drag"
       scrollEventThrottle={16}>
       <Container style={{ width: width }}>
         <ProgressSection>
@@ -968,6 +972,7 @@ const ConsultingReservation = () => {
                   const state = await NetInfo.fetch();
                   const canProceed = await handleNetInfoChange(state);
                   if (canProceed) {
+                    setkeyboardShouldPersistTaps(true);
                     setCurrentPageIndex(1);
 
                   }
@@ -1029,6 +1034,8 @@ const ConsultingReservation = () => {
                   const canProceed = await handleNetInfoChange(state);
                   if (canProceed) {
                     if (name.length > 0) {
+                      setkeyboardShouldPersistTaps(true);
+
                       setCurrentPageIndex(2);
                     }
                   }
@@ -1050,6 +1057,8 @@ const ConsultingReservation = () => {
                   const state = await NetInfo.fetch();
                   const canProceed = await handleNetInfoChange(state);
                   if (canProceed) {
+                    setkeyboardShouldPersistTaps(true);
+
                     setCurrentPageIndex(2);
                   }
                 }}>
@@ -1119,6 +1128,8 @@ const ConsultingReservation = () => {
                   const canProceed = await handleNetInfoChange(state);
                   if (canProceed) {
                     if (phone.length === 13) {
+                      setkeyboardShouldPersistTaps(true);
+
                       setCurrentPageIndex(3);
                     }
                   }
@@ -1150,6 +1161,8 @@ const ConsultingReservation = () => {
                     const state = await NetInfo.fetch();
                     const canProceed = await handleNetInfoChange(state);
                     if (canProceed) {
+                      setkeyboardShouldPersistTaps(true);
+
                       setCurrentPageIndex(1);
                     }
                   }}>
@@ -1184,6 +1197,8 @@ const ConsultingReservation = () => {
                     const canProceed = await handleNetInfoChange(state);
                     if (canProceed) {
                       if (phone.length > 12) {
+                        setkeyboardShouldPersistTaps(true);
+
                         setCurrentPageIndex(3);
                         Keyboard.dismiss();
                       }
@@ -1332,6 +1347,8 @@ const ConsultingReservation = () => {
                       const state = await NetInfo.fetch();
                       const canProceed = await handleNetInfoChange(state);
                       if (canProceed) {
+                        setkeyboardShouldPersistTaps(true);
+
                         setCurrentPageIndex(2);
                       }
                     }}>
@@ -1365,12 +1382,14 @@ const ConsultingReservation = () => {
                       const state = await NetInfo.fetch();
                       const canProceed = await handleNetInfoChange(state);
                       if (canProceed) {
-                        navigation.dispatch(
-                          StackActions.replace('PaymentScreen', {
-                            consultantId:'1',consultingType:'01',consultingInflowPath:'01'
-                            ,calcHistoryId:2002,name: name, phone: phone, selectedDate: selectedDate, selectedList: selectedList
-                          })
-                        );
+                        setkeyboardShouldPersistTaps(false);
+
+                         navigation.navigate('PaymentScreen', {
+                          consultantId:'1',consultingType:'01',consultingInflowPath:'01'
+                          ,calcHistoryId:2002,name: name, phone: phone, selectedDate: selectedDate, selectedList: selectedList,   onPaymentComplete: () => {
+                            setCurrentPageIndex(4);
+                          },
+                        });
                         // setCurrentPageIndex(4);
                         // const result = await setPaymentTemp();
                         console.log('log_04', result);
@@ -1395,10 +1414,7 @@ const ConsultingReservation = () => {
                         //   consultantId:'1',consultingType:'01',consultingInflowPath:'01'
                         //   ,calcHistoryId:2002,name: name, phone: phone, selectedDate: selectedDate, selectedList: selectedList});
                         
-                        //   onPaymentComplete: () => {
-                        //     setCurrentPageIndex(4);
-                        //   },
-                        // });
+                       
                       }
                     }}>
                     {/* onPress={async () => {
@@ -1582,6 +1598,8 @@ const ConsultingReservation = () => {
                       const state = await NetInfo.fetch();
                       const canProceed = await handleNetInfoChange(state);
                       if (canProceed) {
+                        setkeyboardShouldPersistTaps(true);
+
                         setCurrentPageIndex(3);
                         dispatch(setCert({agreePrivacy: false}));
                       }

@@ -317,12 +317,12 @@ const ReservationDetail = props => {
 
     if(text != null && text != ''){
       data = {
-        consultingReservationId: consultingReservationId ? props.route?.params?.consultingReservationId ?? '',
+        consultingReservationId: consultingReservationId ? props.route?.params?.consultingReservationId ?? '' :'',
         consultingRequestContent: text ? text : '',
       };
     }else{
       data = {
-        consultingReservationId: consultingReservationId ? props.route?.params?.consultingReservationId ?? '',
+        consultingReservationId: consultingReservationId ? props.route?.params?.consultingReservationId ?? '':'',
         consultingType: consultingType ?? '',
       };
     }

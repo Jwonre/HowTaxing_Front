@@ -447,6 +447,8 @@ const ConsultingReservation2 = props => {
   const { certType, agreeCert, agreePrivacy } = useSelector(
     state => state.cert.value,
   );
+    const [keyboardShouldPersistTaps, setkeyboardShouldPersistTaps] = useState(false);
+  
   const toggleExpand = () => {
     setIsExpanded(!isExpanded);
     console.log('props.route.params.isGainsTax', props.route.params.isGainsTax);
@@ -477,6 +479,7 @@ const ConsultingReservation2 = props => {
         },
       });
     } else {
+      setkeyboardShouldPersistTaps(true);
       setCurrentPageIndex(currentPageIndex - 1);
     }
     return true;
@@ -808,6 +811,8 @@ const ConsultingReservation2 = props => {
         width: width,
       }}
       horizontal
+      onStartShouldSetResponder={() => keyboardShouldPersistTaps}
+
       keyboardShouldPersistTaps='always'
       showsHorizontalScrollIndicator={false}
       scrollEnabled={false}
