@@ -27,6 +27,8 @@ import FastImage from 'react-native-fast-image';
 import CloseIcon from '../../assets/icons/close_button.svg';
 import StatusOffIcon from '../../assets/icons/progress_1.svg';
 import StatusOnIcon from '../../assets/icons/progress_2.svg';
+import StatusCancelIcon from '../../assets/icons/progress_3.svg';
+
 import ModifyIcon from '../../assets/icons/modify.svg';
 import BottomArrow from '../../assets/icons/bottom_arrow.svg';
 import BottomArrowUp from '../../assets/icons/bottom_arrow_up.svg';
@@ -229,30 +231,30 @@ const ReservationDetail = props => {
   };
 
 
-  const handleCancelRequest = async () => {
+  const handleCancelRequest = async (selectedType, cancelReason) => {
     const state = await NetInfo.fetch();
     const canProceed = await handleNetInfoChange(state);
     if (canProceed) {
-      // setConsultingCancel(reservationDetail.consultingReservationId);
+      setConsultingCancel(reservationDetail.consultingReservationId,cancelReason);
       closeCancelTypeModal();
     }
 
   };
 
-  const handleMultiSelectTaxRequest = async () => {
+  const handleMultiSelectTaxRequest = async (consultingType) => {
     const state = await NetInfo.fetch();
     const canProceed = await handleNetInfoChange(state);
     if (canProceed) {
-      // setConsultingCancel(reservationDetail.consultingReservationId);
+      reservationModify(reservationDetail.consultingReservationId,consultingType,null);
       closeTaxModal();
     }
 
   };
-  const handleInputRequest = async () => {
+  const handleInputRequest = async (content) => {
     const state = await NetInfo.fetch();
     const canProceed = await handleNetInfoChange(state);
     if (canProceed) {
-      // setConsultingCancel(reservationDetail.consultingReservationId);
+      reservationModify(reservationDetail.consultingReservationId,null,content);
       closeDetailInputModal();
     }
 
@@ -285,20 +287,75 @@ const ReservationDetail = props => {
   );
 
 
-  useEffect(() => {
-    let interval = null;
-    if (isTimerActive && timer > 0) {
-      interval = setInterval(() => {
-        setTimer((prev) => prev - 1);
-      }, 1000); // 1초마다 감소
-    } else if (timer === 0) {
-      clearInterval(interval); // 타이머 종료
+
+  const reservationModify = async (consultingReservationId,consultingType,text) => {
+    const accessToken = currentUser.accessToken;
+    // 요청 헤더
+    const headers = {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${accessToken}`
+    };
+
+    var NumTaxTypeList = taxTypeList.map(taxType => {
+      switch (taxType) {
+        case "취득세":
+          return "01";
+        case "양도소득세":
+          return "02";
+        case "상속세":
+          return "03";
+        case "증여세":
+          return "04";
+        default:
+          return "";
+      }
+    });
+
+    // 요청 바디
+    const data = { };
+
+
+    if(text != null && text != ''){
+      data = {
+        consultingReservationId: consultingReservationId ? props.route?.params?.consultingReservationId ?? '',
+        consultingRequestContent: text ? text : '',
+      };
+    }else{
+      data = {
+        consultingReservationId: consultingReservationId ? props.route?.params?.consultingReservationId ?? '',
+        consultingType: consultingType ?? '',
+      };
     }
-    return () => clearInterval(interval); // 컴포넌트 언마운트 시 정리
-  }, [isTimerActive, timer]);
-
-
-
+    
+     
+    console.log('data', data);
+    console.log('headers', headers);
+    try {
+      const response = await axios.post(`${Config.APP_API_URL}consulting/reservationModify`, data, { headers: headers });
+      console.log('response.data', response.data);
+      if (response.data.errYn === 'Y') {
+        await SheetManager.show('info', {
+          payload: {
+            type: 'error',
+            errorType: response.data.type,
+            message: response.data.errMsg ? response.data.errMsg : '상담 내용 변경 중 오류가 발생했어요.',
+            description: response.data.errMsgDtl ? response.data.errMsgDtl : '',
+            buttontext: '확인하기',
+          },
+        });
+      } else {
+        await handleHouseChange2(text, NumTaxTypeList.sort().join(","));
+      }
+    } catch (error) {
+      SheetManager.show('info', {
+        type: 'error',
+        message: error?.errMsg ? error?.errMsg : '상담 내용 변경 중 오류가 발생했어요.',
+        errorMessage: error?.errCode ? error?.errCode : 'error',
+        buttontext: '확인하기',
+      });
+      console.error(error ? error : 'error');
+    }
+  };
 
   // 버튼 클릭 핸들러
   const getReservationDetail = async (consultingReservationId) => {
@@ -360,8 +417,8 @@ const ReservationDetail = props => {
   };
 
 
-  const setConsultingCancel = async (consultingReservationId) => {
-    const url = `${Config.APP_API_URL}consulting/reservationCancel?consultingReservationId=${consultingReservationId}`;
+  const setConsultingCancel = async (consultingReservationId,cancelReason) => {
+    const url = `${Config.APP_API_URL}consulting/reservationCancel?consultingReservationId=${consultingReservationId}&cancelReason=${cancelReason}`;
     //const url = `https://devapp.how-taxing.com/consulting/availableSchedule?consultantId=${consultantId}&searchType="${searchType}"`;
     const headers = {
       'Content-Type': 'application/json',
@@ -376,7 +433,7 @@ const ReservationDetail = props => {
     // console.log('params', params);
     console.log('headers', headers);
     await axios
-      .delete(url,
+      .post(url,
         { headers: headers }
       )
       .then(response => {
@@ -397,9 +454,8 @@ const ReservationDetail = props => {
           if (result) {
             console.log('result:', result);
             //console.log('new Date(list[0]):', new Date(list[0]));
-            setReservationDetail({ ...result });
-
-            setProgressStatus(consultingStatusTypeIndexMap[response.data.data.consultingStatus])
+            const consultingReservationId = props.route?.params?.consultingReservationId;
+           getReservationDetail(consultingReservationId);
 
           }
         }
@@ -566,7 +622,7 @@ const ReservationDetail = props => {
             {/* 상태 아이콘 리스트 */}
 
             <View style={styles.progressContainer}>
-              {Array(progressStatus == 4 ? 2 : 4)
+              {Array(progressStatus === 4 ? 2 : 4)
                 .fill(0) // 5개의 `View`를 생성
                 .map((_, index) => (
                   <View key={index} style={styles.rowInfoProgress}>
@@ -574,17 +630,24 @@ const ReservationDetail = props => {
                     <View
                       style={{
                         position: 'relative',
-                        left:
-                          index + 1 === progressStatus + 1
-                            ? 0 // 현재 활성화된 상태면 위치 조정
-                            : 9, // 비활성화 상태면 다른 위치
+                        left: progressStatus === 4
+                          ? (index + 1 === 1 ? 9: 0) // progressStatus가 4일 때 분기 처리
+                          : ((index + 1 === progressStatus + 1) ? 0 : 9), // progressStatus가 4가 아닐 때 기존 로직
                         zIndex: 1,
                       }}
                     >
-                      {index + 1 === progressStatus + 1 ? (
-                        <StatusOnIcon /> // 활성화 상태
+                      {progressStatus === 4 ? (
+                        index +1 === 1 ? (
+                          <StatusOffIcon /> // 비활성화 상태
+                        ) : (
+                          <StatusCancelIcon /> // 활성화 상태
+                        )
                       ) : (
-                        <StatusOffIcon /> // 비활성화 상태
+                        index + 1 === progressStatus + 1 ? (
+                          <StatusOnIcon /> // 활성화 상태
+                        ) : (
+                          <StatusOffIcon /> // 비활성화 상태
+                        )
                       )}
                     </View>
 
@@ -631,7 +694,7 @@ const ReservationDetail = props => {
 
           </View>
 
-          <View style={styles.Line1} />
+          <View style={[styles.Line1,{marginBottom : 0}]} />
 
           {progressStatus === 0 && (
             <ConsultingWating data={reservationDetail} setInTaxSelectDialog={(value) => {
@@ -666,9 +729,13 @@ const ReservationDetail = props => {
             reservationDetail.calculationSellResultResponse != null) && (
               <TaxResultMore data={reservationDetail} isTaxResultVisible={isTaxResultVisible} setIsTaxResultVisible={setIsTaxResultVisible} />
             )}
+              {(reservationDetail.calculationBuyResultResponse === null ||
+            reservationDetail.calculationSellResultResponse === null) && (
+              <View style={[{marginBottom : 30}]} />
+            )}
           {/* 만료 메시지 */}
           {/* 만료 메시지와 재전송 버튼 */}
-
+        
         </View>
 
 
@@ -681,6 +748,7 @@ const ReservationDetail = props => {
             <Button
               style={{ backgroundColor: '#2F87FF' }}
               width={width}
+              active={true}
               onPress={() => {
                 navigation.goBack();
               }}
@@ -695,6 +763,7 @@ const ReservationDetail = props => {
         <ButtonRowSection>
 
           <ButtonRow
+          active={true}
             onPress={() => {
               console.log('팝업 먼저 띄워야함');
               // setConsultingCancel(reservationDetail.consultingReservationId);
@@ -716,6 +785,8 @@ const ReservationDetail = props => {
             </ButtonRowText>
           </ButtonRow>
           <ButtonRow
+                    active={true}
+
             onPress={() => {
               navigation.goBack();
             }}
@@ -782,7 +853,7 @@ function ConsultingWating({ data, setInTaxSelectDialog, setInConsultingInputDial
         {/* 할인 금액 */}
         <View style={styles.rowInfo}>
           <Text style={styles.labelInfo}>예약시간</Text>
-          <View style={{ flexDirection: 'row' }}>
+          <View style={{ flexDirection: 'row' ,alignItems: 'center',justifyContent: 'center'}}>
             <Text style={styles.valueIfno}>{data.reservationStartTime}</Text>
             <Text style={styles.valueIfno2}>{timeInfo}</Text>
           </View>
@@ -845,7 +916,7 @@ function CounsultingCancel({ data }) {
     '04': '증여세'
   };
 
-  const default_date = (data?.reservationDate ?? '').replace(/-/g, '.') ?? '0000.00.00';
+  const default_date = data?.reservationDate ?? '0000-00-00';
   const type = data?.consultingType ?? '';
   const date = new Date(default_date);
   const dayNames = ['일', '월', '화', '수', '목', '금', '토'];
@@ -903,7 +974,7 @@ function CounsultingCancel({ data }) {
         {/* 할인 금액 */}
         <View style={styles.rowInfo}>
           <Text style={styles.labelInfo}>예약시간</Text>
-          <View style={{ flexDirection: 'row' }}>
+          <View style={{ flexDirection: 'row',alignItems: 'center',justifyContent: 'center' }}>
             <Text style={styles.valueIfno}>{data.reservationStartTime}</Text>
             <Text style={styles.valueIfno2}>{timeInfo}</Text>
           </View>
@@ -973,7 +1044,7 @@ function ConsultingStart({ data }) {
         {/* 할인 금액 */}
         <View style={styles.rowInfo}>
           <Text style={styles.labelInfo}>예약시간</Text>
-          <View style={{ flexDirection: 'row' }}>
+          <View style={{ flexDirection: 'row' ,alignItems: 'center',justifyContent: 'center'}}>
             <Text style={styles.valueIfno}>{data.reservationStartTime}</Text>
             <Text style={styles.valueIfno2}>{timeInfo}</Text>
           </View>
@@ -1042,7 +1113,7 @@ function ConsultingEnd({ data }) {
         {/* 할인 금액 */}
         <View style={styles.rowInfo}>
           <Text style={styles.labelInfo}>예약시간</Text>
-          <View style={{ flexDirection: 'row' }}>
+          <View style={{ flexDirection: 'row' ,alignItems: 'center',justifyContent: 'center'}}>
             <Text style={styles.valueIfno}>{data.reservationStartTime}</Text>
             <Text style={styles.valueIfno2}>{timeInfo}</Text>
           </View>
@@ -1071,7 +1142,7 @@ function ConsultingEnd({ data }) {
 function TaxResultMore({ data, isTaxResultVisible, setIsTaxResultVisible }) {
   return <>
 
-    <View style={[styles.inputSection]}>
+    <View style={[styles.inputSection, { marginBottom: 20 }]}>
       <View style={[styles.separator, { marginTop: 20, marginBottom: 20 }]} />
 
       <View style={[styles.rowInfo, { height: 36 }]}>
@@ -2448,7 +2519,7 @@ const styles = StyleSheet.create({
   },
 
   progressStatusCanCel: {
-    height: 70,
+    height: 60,
     flexDirection: 'row',
   },
   verticalCanCelLine: {
@@ -2456,7 +2527,7 @@ const styles = StyleSheet.create({
     left: 13, // 라인의 위치
     top: 0,
     width: 2,
-    height: 70,
+    height: 40,
     marginTop: 10,
     marginBottom: 10,
     // height:180,
@@ -2638,17 +2709,7 @@ const styles = StyleSheet.create({
     color: '#717274',
     marginBottom: 4,
   },
-  nameText: {
-    fontSize: 17,
-    fontFamily: 'Pretendard-Bold',
-    color: '#1B1C1F',
-    marginBottom: 4,
-  },
-  addressText: {
-    fontSize: 13,
-    fontFamily: 'Pretendard-SemiBold',
-    color: '#a3a5a8', // 연회색
-  },
+
 
 
   contentPayment: {

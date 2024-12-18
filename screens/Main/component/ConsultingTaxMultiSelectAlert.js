@@ -7,6 +7,7 @@ import styled from 'styled-components';
 import InfoCircleIcon from '../../../assets/icons/info_circle.svg';
 import DropShadow from 'react-native-drop-shadow';
 import CloseIcon from '../../../assets/icons/close_button.svg';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 
 
 const ModalContainer = styled.View`
@@ -58,6 +59,7 @@ const ShadowContainer = styled(DropShadow)`
 const ConsultingTaxMultiSelectAlert = ({ visible, onClose, onTaxMultiSelect }) => {
   const [selectTaxType, setSelectTaxType] = useState(0);
   const [selectedItems, setSelectedItems] = useState([]); // 선택된 아이템 관리
+  const navigation = useNavigation();
 
   const taxTypes = [
     '취득세',
@@ -140,7 +142,7 @@ const ConsultingTaxMultiSelectAlert = ({ visible, onClose, onTaxMultiSelect }) =
                   <Text
                     style={{
                       fontSize: 15,
-                      color: '#fff',
+                      color: selectedItems.includes(taxTypesIndex[index]) ?'#fff':'#000',
                       fontFamily: 'Pretendard-SemiBold',
                     }}
                   >

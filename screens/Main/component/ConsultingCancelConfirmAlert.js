@@ -7,6 +7,7 @@ import styled from 'styled-components';
 import InfoCircleIcon from '../../../assets/icons/info_circle.svg';
 import DropShadow from 'react-native-drop-shadow';
 import CloseIcon from '../../../assets/icons/close_button.svg';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 
 
 const ModalContainer = styled.View`
@@ -66,6 +67,7 @@ const ShadowContainer = styled(DropShadow)`
 `;
 const ConsultingCancelConfirmAlert = ({ visible, onClose, onCancelRequest }) => {
   const [selectCancelType, setSelectCancelType] = useState(0);
+  const navigation = useNavigation();
 
   console.log('log_03', visible);
   const cancelTitle = [
@@ -116,7 +118,7 @@ const ConsultingCancelConfirmAlert = ({ visible, onClose, onCancelRequest }) => 
                 // ////console.log('after data', data);
               }}>
               <View style={{ borderRadius: 5, height: 40, alignItems: 'center', justifyContent: 'center', width: '100%', backgroundColor: selectCancelType === 0 ? '#2F87FF' : '#E8EAED' }}>
-                <Text style={{ fontSize: 15, color: '#fff', fontFamily: 'Pretendard-SemiBold' }}>{cancelTitle[0]}</Text>
+                <Text style={{ fontSize: 15, color: selectCancelType === 0 ?'#fff':'#000', fontFamily: 'Pretendard-SemiBold' }}>{cancelTitle[0]}</Text>
               </ View>
             </TouchableOpacity>
 
@@ -133,7 +135,7 @@ const ConsultingCancelConfirmAlert = ({ visible, onClose, onCancelRequest }) => 
                 // ////console.log('after data', data);
               }}>
               <View style={{ borderRadius: 5, height: 40, alignItems: 'center', justifyContent: 'center', width: '100%', backgroundColor: selectCancelType === 1 ? '#2F87FF' : '#E8EAED' }}>
-                <Text style={{ fontSize: 15, color: '#fff', fontFamily: 'Pretendard-SemiBold' }}>{cancelTitle[1]}</Text>
+                <Text style={{ fontSize: 15, color: selectCancelType === 1 ?'#fff':'#000', fontFamily: 'Pretendard-SemiBold' }}>{cancelTitle[1]}</Text>
               </ View>
             </TouchableOpacity>
 
@@ -151,7 +153,7 @@ const ConsultingCancelConfirmAlert = ({ visible, onClose, onCancelRequest }) => 
                 // ////console.log('after data', data);
               }}>
               <View style={{ borderRadius: 5, height: 40, alignItems: 'center', justifyContent: 'center', width: '100%', backgroundColor: selectCancelType === 2 ? '#2F87FF' : '#E8EAED' }}>
-                <Text style={{ fontSize: 15, color: '#fff', fontFamily: 'Pretendard-SemiBold' }}>{cancelTitle[2]}</Text>
+                <Text style={{ fontSize: 15, color:selectCancelType === 2 ?'#fff':'#000', fontFamily: 'Pretendard-SemiBold' }}>{cancelTitle[2]}</Text>
               </ View>
             </TouchableOpacity>
 
@@ -184,7 +186,7 @@ const ConsultingCancelConfirmAlert = ({ visible, onClose, onCancelRequest }) => 
                   onPress={() => {
                     onCancelRequest(selectCancelType, cancelTitle[selectCancelType]);
                   }}>
-                  <ButtonText >네</ButtonText>
+                  <ButtonText style ={{color : '#fff'}}>네</ButtonText>
                 </Button>
               </DropShadow>
               {/* <Button

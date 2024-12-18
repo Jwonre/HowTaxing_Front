@@ -373,8 +373,8 @@ const ReservationList = () => {
           });
         } else {
           console.log('response.data', response.data.data);
-          console.log('response.data.list', response.data.data.list);
-          const result = response === undefined ? [] : response.data.data.list;
+          console.log('response.data.list', response.data.data);
+          const result = response === undefined ? [] : response.data.data;
           if (result.length > 0) {
             console.log('result:', result);
             //console.log('new Date(list[0]):', new Date(list[0]));
@@ -711,7 +711,7 @@ const ReservationList = () => {
                             {item.approvedDatetime}
                           </Text>
                           <Text style={styles.contentPayment}>
-                            {'#' + `${item.consultingReservationId}`}
+                            {'#' + `${item.paymentHistoryId}`}
                           </Text>
                           <Text style={styles.namePayment}>{item.consultantName}</Text>
                         </InfoContainer>
@@ -752,7 +752,7 @@ const ReservationList = () => {
 
                   );
                 }}
-                keyExtractor={(item) => item.consultingReservationId.toString()}
+                keyExtractor={(item) => item.paymentHistoryId.toString()}
               />
             )}
           </>

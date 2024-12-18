@@ -6,6 +6,7 @@ import {
 import styled from 'styled-components';
 import InfoCircleIcon from '../../../assets/icons/info_circle.svg';
 import CloseIcon from '../../../assets/icons/close_button.svg';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 
 
 const ModalContainer = styled.View`
@@ -83,6 +84,7 @@ const ConsultingDetailInputAlert = ({ content, visible, onClose, onInputCallback
   const text = content ?? ''; // content가 undefined 또는 null이면 빈 문자열로 설정
   const inputRef = useRef(null);
     const width = Dimensions.get('window').width;
+    const navigation = useNavigation();
   
  useEffect(() => {
     const timer = setTimeout(() => {
