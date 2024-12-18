@@ -90,6 +90,7 @@ const ProgressSection = styled.View`
 
 const PaymentDetail = props => {
   const dispatch = useDispatch();
+  const currentUser = useSelector(state => state.currentUser.value);
 
   const navigation = useNavigation();
   const { width, height } = Dimensions.get('window');
@@ -115,6 +116,9 @@ const PaymentDetail = props => {
 
 
   const paymentHistoryId = props.route?.params?.paymentHistoryId || null;
+
+  console.log('log_id 1', paymentHistoryId);
+
   useFocusEffect(
 
     useCallback(() => {
@@ -128,9 +132,22 @@ const PaymentDetail = props => {
       }
     }, [props.route?.params?.paymentHistoryId])
   );
+
+
+  useEffect(() => {
+    const id = props.route?.params?.paymentHistoryId??'';
+    console.log('log_id 2', id);
+  
+    // id가 존재하고, 공백이 아닐 때만 실행
+    getReservationDetail(id);
+
+  }, [props.route?.params?.paymentHistoryId]);
+
+
   const getReservationDetail = async (paymentHistoryId) => {
     const url = `${Config.APP_API_URL}payment/detail?paymentHistoryId=${(paymentHistoryId ?? props.route?.params?.paymentHistoryId ?? '')}`;
     //const url = `https://devapp.how-taxing.com/consulting/availableSchedule?consultantId=${consultantId}&searchType="${searchType}"`;
+    console.log('log_id url', url);
     const headers = {
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${currentUser.accessToken}`
@@ -140,15 +157,15 @@ const PaymentDetail = props => {
       consultantId: consultantId,
       searchType: searchType,
     }*/
-    console.log('url', url);
+    console.log(' log_id url', url);
     // console.log('params', params);
-    console.log('headers', headers);
+    console.log('log_id headers', headers);
     await axios
       .get(url,
         { headers: headers }
       )
       .then(response => {
-        console.log('response.data', response.data);
+        console.log('log_id response.data', response.data);
         if (response.data.errYn === 'Y') {
           SheetManager.show('info', {
             payload: {
@@ -160,14 +177,14 @@ const PaymentDetail = props => {
             },
           });
         } else {
-          console.log('response.data', response.data.data);
-          const result = response === undefined ? [] : response.data.data;
+          console.log('log_id response.data', response.data.data);
+          const result = response === undefined ? false : response.data.data;
           if (result) {
-            console.log('result:', result);
+            console.log('log_id result:', result);
             //console.log('new Date(list[0]):', new Date(list[0]));
-            setReservationDetail({ ...result });
+            setPaymentDetail({ ...result });
 
-            setProgressStatus(consultingStatusTypeIndexMap[response.data.data.consultingStatus])
+            // setProgressStatus(consultingStatusTypeIndexMap[response.data.data.consultingStatus])
 
           }
         }
@@ -315,7 +332,7 @@ const PaymentDetail = props => {
             <View style={styles.rowInfo2}>
               <Text style={styles.labelInfo}>상품 금액</Text>
               <Text style={styles.valueIfno}>
-                {Number(item?.productPrice ?? '0')?.toLocaleString() + '원'}
+                {Number(paymentDetail?.productPrice ?? '0')?.toLocaleString() + '원'}
               </Text>
             </View>
 
@@ -323,20 +340,20 @@ const PaymentDetail = props => {
             <View style={styles.rowInfo}>
               <Text style={styles.labelInfo}>할인 금액</Text>
               <Text style={styles.valueIfno}>
-                {Number(item?.productDiscountPrice ?? '0')?.toLocaleString() + '원'}
+                {Number(paymentDetail?.productDiscountPrice ?? '0')?.toLocaleString() + '원'}
               </Text>
             </View>
             <View style={styles.separator} />
             <View style={styles.rowInfo2}>
               <Text style={styles.labelInfo}>결제 금액</Text>
               <Text style={styles.totalValue}>
-                {Number(item?.paymentAmount ?? '0')?.toLocaleString() + '원'}
+                {Number(paymentDetail?.paymentAmount ?? '0')?.toLocaleString() + '원'}
               </Text>
             </View>
             <View style={styles.separator} />
             <View style={styles.rowInfo2}>
               <Text style={styles.labelInfo}>결제 방식</Text>
-              <Text style={styles.valueIfno}>{item?.method}</Text>
+              <Text style={styles.valueIfno}>{paymentDetail?.method}</Text>
             </View>
           </View>
 
@@ -351,9 +368,10 @@ const PaymentDetail = props => {
         <ShadowContainer>
           <Button
             style={{ backgroundColor: '#2F87FF' }}
-
             width={width}
+            active={true} /* 버튼 활성화 */
             onPress={() => {
+              console.log('돌아가기');
               navigation.goBack();
 
             }}>
