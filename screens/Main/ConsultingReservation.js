@@ -402,7 +402,7 @@ const FirstCheckCircle = styled.TouchableOpacity.attrs(props => ({
 `;
 
 
-const ConsultingReservation = () => {
+const ConsultingReservation = props => {
   const _scrollViewRef = useRef(null);
   const _scrollViewRef2 = useRef(null);
   // const data = [{ key: 'dummy' }]; // FlatList에 필요한 데이터
@@ -508,7 +508,13 @@ const ConsultingReservation = () => {
     dispatch(setCert({ agreePrivacy: false }));
   }, []);
 
-
+  useEffect(() => {
+    if (props?.route?.params?.triggerCallback) {
+      setCurrentPageIndex(4); // 다음 이벤트 실행
+      navigation.setParams({ triggerCallback: false }); // 파라미터 초기화
+    }
+    //console.log('timeList', timeList);
+  }, [props?.route?.params?.triggerCallback]);
 
 
   useEffect(() => {
@@ -606,7 +612,17 @@ const ConsultingReservation = () => {
   };
 
 
- 
+  // useEffect(() => {
+  //   const unsubscribe = navigation.addListener('focus', () => {
+  //     // 페이지가 다시 포커스될 때 실행
+  //     if (route.params?.triggerCallback) {
+  //       // PaymentScreen에서 전달된 콜백 호출
+  //       setCurrentPageIndex(4);
+  //     }
+  //   });
+  
+  //   return unsubscribe; // 리스너 정리
+  // }, [navigation, route.params]);
 
   const requestReservation = async () => {
     console.log('selectedDate', selectedDate);
@@ -1298,10 +1314,14 @@ const ConsultingReservation = () => {
 
                          navigation.navigate('PaymentScreen', {
                           consultantId:'1',consultingInflowPath:'01'
-                          ,name: name, phone: phone, selectedDate: selectedDate, selectedList: selectedList,   onPaymentComplete: () => {
-                            setCurrentPageIndex(4);
-                          },
+                          ,name: name, phone: phone, selectedDate: selectedDate, selectedList: selectedList
                         });
+                        
+
+                        // ,   onPaymentComplete: () => {
+                        //   setCurrentPageIndex(4);
+                        // },
+                        
                         // setCurrentPageIndex(4);
                         // const result = await setPaymentTemp();
                         console.log('log_04', result);

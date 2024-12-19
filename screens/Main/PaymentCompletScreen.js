@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, Image, Dimensions } from 'react-native';
 import Svg, { Circle } from 'react-native-svg';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
+import styled from 'styled-components';
 
 const { width } = Dimensions.get('window'); // 화면의 가로 길이를 가져옴
 
@@ -43,12 +44,59 @@ const CircularProgress = ({ size, strokeWidth, progress, timer }) => {
     </View>
   );
 };
+const ModalContentSection = styled.View`
+  width: 100%;
+  height: 105%;
+  background-color: #fff;
+  align-items: center;
+  justify-content: center;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+`;
 
-const PaymentCompletScreen = props =>  {
+const AdBannerMainImage = styled.Image.attrs(props => ({
+  resizeMode: 'stretch',
+}))`
+  width: 100.3%;
+  height: 100%;
+`;
+
+
+const PaymentCompletScreen = props => {
   const [timer, setTimer] = useState(5);
   const [progress, setProgress] = useState(0);
   const navigation = useNavigation();
+  const [adBannerdata, SetBannerData] = useState(null);
 
+
+
+
+  const getAdBanner = async () => {
+    try {
+      const url = `${Config.APP_API_URL}main/mainPopup`;
+      const headers = {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${currentUser.accessToken}`,
+      };
+
+      const response = await axios.get(url, { headers });
+      const result = response.data;
+      const data = result.data !== undefined ? result.data : null;
+
+      SetBannerData(data);
+    } catch (error) {
+      console.error(error);
+      return null;
+    }
+  };
+
+  useFocusEffect(
+    useCallback(() => {
+      adBannerdata();
+      //dispatch(setAdBanner(true));
+
+    }, [])
+  );
   useEffect(() => {
     if (timer > 0) {
       const interval = setInterval(() => {
@@ -58,12 +106,21 @@ const PaymentCompletScreen = props =>  {
       return () => clearInterval(interval);
     } else if (timer === 0) {
       // 타이머가 0이 되었을 때 네비게이션 실행
-      if (props.route.params?.onPaymentComplete) {
-        props.route.params.onPaymentComplete(); // 콜백 호출
+      // A로 돌아가면서 스택 초기화
+      // A로 돌아가기
+
+      if(props?.route?.params?.consultingInflowPath){
+        navigation.navigate('ConsultingReservation2', {
+          triggerCallback: true, // A 페이지에서 사용할 파라미터
+        });
+      }else{
+        navigation.navigate('ConsultingReservation', {
+          triggerCallback: true, // A 페이지에서 사용할 파라미터
+        });
       }
-      navigation.goBack(); // 이전 화면으로 이동
+     
     }
-  }, [timer,navigation]);
+  }, [timer, navigation]);
 
 
   useEffect(() => {
@@ -84,11 +141,34 @@ const PaymentCompletScreen = props =>  {
       <View style={styles.progressContainer}>
         <CircularProgress size={50} strokeWidth={5} progress={progress} timer={timer} />
       </View>
-
-      <Image
+      {adBannerdata != null ? (
+        <ModalContentSection>
+          {adBannerdata.targetUrl && <TouchableOpacity style={{ width: '100%', height: '100%' }} activeOpacity={0.8}
+            hitSlop={{
+              top: 20,
+              bottom: 20,
+              left: 20,
+              right: 20,
+            }} onPress={async () => {
+              const state = await NetInfo.fetch();
+              const canProceed = await handleNetInfoChange(state);
+              if (canProceed) {
+                Linking.openURL(adBannerdata.targetUrl);
+              }
+            }
+            }>
+            <AdBannerMainImage source={{ uri: adBannerdata.imageUrl }} />
+          </TouchableOpacity>}
+          {!adBannerdata.targetUrl &&
+            <AdBannerMainImage source={{ uri: adBannerdata.imageUrl }} />
+          }
+        </ModalContentSection>
+      ) : (<Image
         source={require('../../assets/images/banner_15.jpg')}
         style={styles.bannerImage}
-      />
+      />)}
+
+
     </View>
   );
 };

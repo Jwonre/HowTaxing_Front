@@ -33,7 +33,6 @@ import Acquisition from '../screens/Main/Acquisition';
 import CheckTerms from '../screens/Main/CheckTerms';
 import GainsTax from '../screens/Main/GainsTax';
 import ConsultingReservation from '../screens/Main/ConsultingReservation';
-import ConsultingReservation2Screen from '../screens/Main/ConsultingReservation2Screen.js';
 import ConsultingReservation2 from '../screens/Main/ConsultingReservation2.js';
 import TossPaymentScreen from '../screens/Main/TossPaymentScreen.js';
 
@@ -242,6 +241,10 @@ const AppNavigator = () => {
               <Stack.Screen name="GainsTax" component={GainsTax} />
               <Stack.Screen name="ConsultingReservation" component={ConsultingReservation} />
               <Stack.Screen name="ConsultingReservation2" component={ConsultingReservation2} />
+              <Stack.Screen name="PaymentScreen" component={PaymentScreen} />
+              <Stack.Screen name="TossPaymentScreen" component={TossPaymentScreen} />
+
+              <Stack.Screen name="PaymentCompletScreen" component={PaymentCompletScreen} />
 
             
 
@@ -368,14 +371,10 @@ const AppNavigator = () => {
               <Stack.Screen name="PasswordReSettingScreen" component={PasswordReSettingScreen} />
               <Stack.Screen name="PasswordChangeScreen" component={PasswordChangeScreen} />
               <Stack.Screen name="PhoneAuthConfirmScreen" component={PhoneAuthConfirmScreen} />
-              <Stack.Screen name="PaymentScreen" component={PaymentScreen} />
-              <Stack.Screen name="PaymentCompletScreen" component={PaymentCompletScreen} />
+          
               <Stack.Screen name="ConsultingReservationDetail" component={ConsultingReservationDetail} />
               <Stack.Screen name="ConsultingReservationHistory" component={ConsultingReservationHistory} />
-              <Stack.Screen name="ConsultingReservation2Screen" component={ConsultingReservation2Screen} />
-              
-              <Stack.Screen name="TossPaymentScreen" component={TossPaymentScreen} />
-
+   
               <Stack.Screen
                 name="PaymentDetailScreen"
                 component={PaymentDetailScreen}

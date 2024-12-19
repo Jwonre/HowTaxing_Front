@@ -1317,19 +1317,63 @@ const ConsultingReservation2 = props => {
                       const state = await NetInfo.fetch();
                       const canProceed = await handleNetInfoChange(state);
                       if (canProceed) {
-                        // setCurrentPageIndex(4);
-                        // setTimeout(() => {
-                        //   navigation.navigate('PaymentScreen', {
-                        //     onPaymentComplete: () => {
-                        //       setCurrentPageIndex(4);
-                        //     },
-                        //   });
-                        // }, 100); // 100ms 딜레이 추가
-                        console.log('PaymentScreen', 'PaymentScreen');
-                        navigation.navigate('PaymentScreen', {
-                          consultantId:'1',consultingType:'01',consultingInflowPath:'01'
-                          ,calcHistoryId:2002,name: name, phone: phone, selectedDate: selectedDate, selectedList: selectedList});
-
+                        console.log('log_결제하기');
+                        const today = new Date(); // 현재 날짜와 시간
+          
+                        const orderId = `order_${today.getMilliseconds()}_${reservationProductInfo.productId}`
+                        console.log('log_결제하기', orderId);
+                        console.log('log_결제하기 productPrice', Number(reservationProductInfo?.productPrice ?? '0'));
+                        console.log('log_결제하기 productDiscountPrice', Number(reservationProductInfo?.productDiscountPrice ?? '0'));
+                        console.log('log_결제하기 paymentAmount', Number(reservationProductInfo?.paymentAmount ?? '0'));
+                        console.log('log_결제하기 id', id);
+                        console.log('log_결제하기 name', name);
+                        console.log('log_결제하기 phone', phone);
+                        console.log('log_결제하기 default_date',default_date);
+                        console.log('log_결제하기 consultingInflowPath',props?.route?.params?.consultingInflowPath ?? '');
+                        console.log('log_결제하기 calcHistoryId',props?.route?.params?.calcHistoryId ?? '');
+                        console.log('log_결제하기 orderId',orderId);
+                        console.log('log_결제하기 productName',productName);
+          
+                        const state = await NetInfo.fetch();
+                        const canProceed = await handleNetInfoChange(state);
+                        if (canProceed) {
+                          console.log('log_결제하기',canProceed);
+          
+                          navigation.navigate('TossPaymentScreen', {
+                            consultantId: id,
+                            customerName: name,
+                            customerPhone: phone,
+                            reservationDate: default_date,
+                            reservationTime: time,
+                            consultingInflowPath: props?.route?.params?.consultingInflowPath ?? '',
+                            calcHistoryId: props?.route?.params?.calcHistoryId ?? '',
+                            orderId: orderId,
+                            orderName: productName,
+                            productPrice: Number(reservationProductInfo?.productPrice ?? '0'),
+                            productDiscountPrice: Number(reservationProductInfo?.productDiscountPrice ?? '0'),
+                            paymentAmount: Number(reservationProductInfo?.paymentAmount ?? '0'),
+            
+                            productId: productId, // 고유 주문 ID
+                            productName: productName, // 주문 이름
+                          });
+                        }
+                        
+                        // Checkout 호출
+                        // await CheckoutPage({
+                        //   amount: 50000, // 결제 금액
+                        //   orderId: 'ORDER_ID_12345', // 고유 주문 ID
+                        //   orderName: 'JS회계법인 서비스', // 주문 이름
+                        //   successUrl: `${Config.APP_API_URL}payment/success`, // 결제 성공 리다이렉트 URL
+                        //   failUrl: `${Config.APP_API_URL}payment/fail`, // 결제 실패 리다이렉트 URL
+                        // });
+          
+                        // navigation.navigate('CheckoutPage', {
+                        //   amount: 50000,
+                        //   orderId: 'ORDER_ID_12345',
+                        //   orderName: 'JS회계법인 서비스',
+                        //   successUrl: `${Config.APP_API_URL}payment/success`,
+                        //   failUrl: `${Config.APP_API_URL}payment/fail`,
+                        // });
                       }
                     }}>
                     <ButtonText>다음으로</ButtonText>

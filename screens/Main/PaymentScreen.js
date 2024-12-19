@@ -493,11 +493,42 @@ const PaymentScreen = props => {
 
               const orderId = `order_${today.getMilliseconds()}_${reservationProductInfo.productId}`
               console.log('log_결제하기', orderId);
+              console.log('log_결제하기 productPrice', Number(reservationProductInfo?.productPrice ?? '0'));
+              console.log('log_결제하기 productDiscountPrice', Number(reservationProductInfo?.productDiscountPrice ?? '0'));
+              console.log('log_결제하기 paymentAmount', Number(reservationProductInfo?.paymentAmount ?? '0'));
+              console.log('log_결제하기 id', id);
+              console.log('log_결제하기 name', name);
+              console.log('log_결제하기 phone', phone);
+              console.log('log_결제하기 default_date',default_date);
+              console.log('log_결제하기 consultingInflowPath',props?.route?.params?.consultingInflowPath ?? '');
+              console.log('log_결제하기 calcHistoryId',props?.route?.params?.calcHistoryId ?? '');
+              console.log('log_결제하기 orderId',orderId);
+              console.log('log_결제하기 productName',reservationProductInfo?.productName);
 
+              const state = await NetInfo.fetch();
+              const canProceed = await handleNetInfoChange(state);
+              if (canProceed) {
+                console.log('log_결제하기',canProceed);
 
-              navigation.navigate('TossPaymentScreen', {
-                
-              });
+                navigation.navigate('TossPaymentScreen', {
+                  consultantId: id,
+                  customerName: name,
+                  customerPhone: phone,
+                  reservationDate: default_date,
+                  reservationTime: time,
+                  consultingInflowPath: props?.route?.params?.consultingInflowPath ?? '',
+                  calcHistoryId: props?.route?.params?.calcHistoryId ?? '',
+                  orderId: orderId,
+                  orderName: reservationProductInfo?.productNameproductName,
+                  productPrice: Number(reservationProductInfo?.productPrice ?? '0'),
+                  productDiscountPrice: Number(reservationProductInfo?.productDiscountPrice ?? '0'),
+                  paymentAmount: Number(reservationProductInfo?.paymentAmount ?? '0'),
+  
+                  productId: reservationProductInfo?.productId, // 고유 주문 ID
+                  productName: reservationProductInfo?.productName, // 주문 이름
+                });
+              }
+              
               // Checkout 호출
               // await CheckoutPage({
               //   amount: 50000, // 결제 금액
