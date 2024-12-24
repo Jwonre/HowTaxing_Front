@@ -244,6 +244,7 @@ const ReservationDetail = props => {
   const handleMultiSelectTaxRequest = async (consultingType) => {
     const state = await NetInfo.fetch();
     const canProceed = await handleNetInfoChange(state);
+    console.log('log_03',canProceed+ ' consultingType :' + consultingType + ' -id : ' + reservationDetail.consultingReservationId);
     if (canProceed) {
       reservationModify(reservationDetail.consultingReservationId,consultingType,null);
       closeTaxModal();
@@ -296,43 +297,28 @@ const ReservationDetail = props => {
       'Authorization': `Bearer ${accessToken}`
     };
 
-    var NumTaxTypeList = taxTypeList.map(taxType => {
-      switch (taxType) {
-        case "취득세":
-          return "01";
-        case "양도소득세":
-          return "02";
-        case "상속세":
-          return "03";
-        case "증여세":
-          return "04";
-        default:
-          return "";
-      }
-    });
+    console.log('log_5 data', consultingReservationId);
+    console.log('log_5 data', consultingType);
+    console.log('log_5 data', text);
+
 
     // 요청 바디
-    const data = { };
-
-
-    if(text != null && text != ''){
-      data = {
-        consultingReservationId: consultingReservationId ? props.route?.params?.consultingReservationId ?? '' :'',
-        consultingRequestContent: text ? text : '',
-      };
-    }else{
-      data = {
-        consultingReservationId: consultingReservationId ? props.route?.params?.consultingReservationId ?? '':'',
+    const data = text
+    ? {
+        consultingReservationId: consultingReservationId ?? props.route?.params?.consultingReservationId ?? '',
+        consultingRequestContent: text ?? '',
+      }
+    : {
+        consultingReservationId: consultingReservationId ?? props.route?.params?.consultingReservationId ?? '',
         consultingType: consultingType ?? '',
       };
-    }
     
      
-    console.log('data', data);
+    console.log('log_5 data', data);
     console.log('headers', headers);
     try {
       const response = await axios.post(`${Config.APP_API_URL}consulting/reservationModify`, data, { headers: headers });
-      console.log('response.data', response.data);
+      console.log('log_5  response.data 1', response.data);
       if (response.data.errYn === 'Y') {
         await SheetManager.show('info', {
           payload: {
@@ -344,7 +330,9 @@ const ReservationDetail = props => {
           },
         });
       } else {
-        await handleHouseChange2(text, NumTaxTypeList.sort().join(","));
+        console.log('log_5 data', data);
+        const consultingReservationId = props.route?.params?.consultingReservationId;
+        getReservationDetail(consultingReservationId);
       }
     } catch (error) {
       SheetManager.show('info', {
@@ -722,12 +710,13 @@ const ReservationDetail = props => {
             <ConsultingEnd data={reservationDetail} />
           )}
           {progressStatus === 4 && (
-            <CounsultingCancel data={reservationDetail} />
+            <CounsultingCancel data={reservationDetail}  />
           )}
 
           {(reservationDetail.calculationBuyResultResponse != null ||
             reservationDetail.calculationSellResultResponse != null) && (
-              <TaxResultMore data={reservationDetail} isTaxResultVisible={isTaxResultVisible} setIsTaxResultVisible={setIsTaxResultVisible} />
+              <TaxResultMore data={reservationDetail} isTaxResultVisible={isTaxResultVisible} 
+              setIsTaxResultVisible={setIsTaxResultVisible} navigation = {navigation} />
             )}
               {(reservationDetail.calculationBuyResultResponse === null ||
             reservationDetail.calculationSellResultResponse === null) && (
@@ -1139,7 +1128,7 @@ function ConsultingEnd({ data }) {
       </View>
     </View></>
 }
-function TaxResultMore({ data, isTaxResultVisible, setIsTaxResultVisible }) {
+function TaxResultMore({ data, isTaxResultVisible, setIsTaxResultVisible ,navigation}) {
   return <>
 
     <View style={[styles.inputSection, { marginBottom: 20 }]}>
@@ -1186,18 +1175,43 @@ function TaxResultMore({ data, isTaxResultVisible, setIsTaxResultVisible }) {
 
       {(isTaxResultVisible && data.calculationBuyResultResponse != null) && (
 
-        <InfoCalculationBuyResult data={data.calculationBuyResultResponse} />
+        <InfoCalculationBuyResult data={data.calculationBuyResultResponse}  houseInfo = {data.calculationBuyHouseResponse}  navigation = {navigation}/>
       )}
 
       {(isTaxResultVisible && data.calculationSellResultResponse != null) && (
-        <InfoCalculationSelResult data={data.calculationSellResultResponse} />
+        <InfoCalculationSelResult data={data.calculationSellResultResponse} houseInfo = {data.calculationSellHouseResponse} navigation = {navigation} />
 
       )}
     </View></>
 }
 
-function InfoCalculationBuyResult({ data }) {
-
+function InfoCalculationBuyResult({ data ,houseInfo,navigation}) {
+  const HOUSE_TYPE = [
+    {
+      id: '1',
+      name: '아파트',
+    },
+    {
+      id: '2',
+      name: '연립,다가구',
+    },
+    {
+      id: '3',
+      name: '입주권',
+    },
+    {
+      id: '4',
+      name: '단독주택,다세대',
+    },
+    {
+      id: '5',
+      name: '분양권(주택)',
+    },
+    {
+      id: '6',
+      name: '주택',
+    },
+  ];
   console.log('log_04', data);
   const renderItem = ({ item, index }) => {
     {/* 소유자 1 */ }
@@ -1431,15 +1445,24 @@ function InfoCalculationBuyResult({ data }) {
             >
 
               <Text style={[styles.statusText2, {}]}>
-                {'아파트'}
+              { HOUSE_TYPE.find(el => el.id === houseInfo?.houseType)
+                                        ?.name}
               </Text>
             </View>
-            <Text style={{ fontFamily: 'Pretendard-Bold', fontSize: 20, color: '#1b1c1f', marginBottom: 10 }}>반포 래미안웬베일리</Text>
-            <Text style={{ fontFamily: 'Pretendard-Regular', fontSize: 13, color: '#717274' }}>118동 1403호</Text>
+            <Text style={{ fontFamily: 'Pretendard-Bold', fontSize: 20, color: '#1b1c1f', marginBottom: 10 }}>{houseInfo?.houseName??''}</Text>
+            <Text style={{ fontFamily: 'Pretendard-Regular', fontSize: 13, color: '#717274' }}>{houseInfo?.detailAdr??''}</Text>
           </View>
           <ButtonRow
             onPress={() => {
               console.log('팝업 먼저 띄워야함');
+              navigation.navigate(
+                'HouseDetail',
+                {
+                  prevSheet: 'ReservationDetail',
+                  item:houseInfo,
+                },
+                'HouseDetail',
+              );
               // setConsultingCancel(reservationDetail.consultingReservationId);
               // setIsTaxResultVisible(!isTaxResultVisible);
             }}
@@ -1680,7 +1703,33 @@ function InfoCalculationBuyResult({ data }) {
     </View >
   </>
 }
-function InfoCalculationSelResult({ data }) {
+function InfoCalculationSelResult({ data,houseInfo,navigation }) {
+   const HOUSE_TYPE = [
+      {
+        id: '1',
+        name: '아파트',
+      },
+      {
+        id: '2',
+        name: '연립,다가구',
+      },
+      {
+        id: '3',
+        name: '입주권',
+      },
+      {
+        id: '4',
+        name: '단독주택,다세대',
+      },
+      {
+        id: '5',
+        name: '분양권(주택)',
+      },
+      {
+        id: '6',
+        name: '주택',
+      },
+    ];
   const renderItem = ({ item, index }) => {
     {/* 소유자 1 */ }
     console.log('log_04', item);
@@ -2068,11 +2117,12 @@ function InfoCalculationSelResult({ data }) {
             >
 
               <Text style={[styles.statusText2, {}]}>
-                {'아파트'}
+                { HOUSE_TYPE.find(el => el.id === houseInfo?.houseType)
+                                        ?.name}
               </Text>
             </View>
-            <Text style={{ fontFamily: 'Pretendard-Bold', fontSize: 20, color: '#1b1c1f', marginBottom: 10 }}>반포 래미안웬베일리</Text>
-            <Text style={{ fontFamily: 'Pretendard-Regular', fontSize: 13, color: '#717274' }}>118동 1403호</Text>
+            <Text style={{ fontFamily: 'Pretendard-Bold', fontSize: 20, color: '#1b1c1f', marginBottom: 10 }}>{houseInfo?.houseName??''}</Text>
+            <Text style={{ fontFamily: 'Pretendard-Regular', fontSize: 13, color: '#717274' }}>{houseInfo?.detailAdr??''}</Text>
           </View>
           <ButtonRow
             onPress={() => {
@@ -2080,11 +2130,11 @@ function InfoCalculationSelResult({ data }) {
               // setConsultingCancel(reservationDetail.consultingReservationId);
               // setIsTaxResultVisible(!isTaxResultVisible);
 
-              navigation.push(
+              navigation.navigate(
                 'HouseDetail',
                 {
                   prevSheet: 'ReservationDetail',
-                  item:reservationDetail,
+                  item:houseInfo,
                 },
                 'HouseDetail',
               );

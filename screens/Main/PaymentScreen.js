@@ -490,8 +490,13 @@ const PaymentScreen = props => {
             if (canProceed) {
               console.log('log_결제하기');
               const today = new Date(); // 현재 날짜와 시간
-
-              const orderId = `order_${today.getMilliseconds()}_${reservationProductInfo.productId}`
+              const year = selectedDate.getFullYear();
+              const month = String(selectedDate.getMonth() + 1).padStart(2, '0'); // 월은 0부터 시작하므로 1을 더해줍니다.
+              const day = String(selectedDate.getDate()).padStart(2, '0');
+            
+              const date = `${year}${month}${day}`;
+              const default_time = `${today.getHours()}${today.getMinutes()}${today.getSeconds()}`;
+              const orderId = `order_${date}${default_time}_${reservationProductInfo.productId}`
               console.log('log_결제하기', orderId);
               console.log('log_결제하기 productPrice', Number(reservationProductInfo?.productPrice ?? '0'));
               console.log('log_결제하기 productDiscountPrice', Number(reservationProductInfo?.productDiscountPrice ?? '0'));

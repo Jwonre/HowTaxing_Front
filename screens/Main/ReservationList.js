@@ -637,7 +637,7 @@ const ReservationList = () => {
                             }}
                             style={{
                               height: 30,
-                              width: 80,
+                              width: 100,
                               justifyContent: 'center',
                               alignItems: 'center',
                               backgroundColor: '#fff',

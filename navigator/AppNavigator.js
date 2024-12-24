@@ -371,10 +371,10 @@ const AppNavigator = () => {
               <Stack.Screen name="PasswordReSettingScreen" component={PasswordReSettingScreen} />
               <Stack.Screen name="PasswordChangeScreen" component={PasswordChangeScreen} />
               <Stack.Screen name="PhoneAuthConfirmScreen" component={PhoneAuthConfirmScreen} />
-          
+
               <Stack.Screen name="ConsultingReservationDetail" component={ConsultingReservationDetail} />
               <Stack.Screen name="ConsultingReservationHistory" component={ConsultingReservationHistory} />
-   
+
               <Stack.Screen
                 name="PaymentDetailScreen"
                 component={PaymentDetailScreen}

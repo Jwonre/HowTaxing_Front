@@ -1,4 +1,4 @@
-import React, { useCallback, useLayoutEffect, useState } from 'react';
+import React, { useCallback, useLayoutEffect, useState ,useRef} from 'react';
 import {
   View, Alert, StyleSheet, StatusBar, TouchableOpacity,
   Dimensions
@@ -18,6 +18,12 @@ import styled from 'styled-components';
 import CloseIcon from '../../assets/icons/close_button.svg';
 import BackIcon from '../../assets/icons/back_button.svg';
 import DropShadow from 'react-native-drop-shadow';
+import axios from 'axios';
+import Config from 'react-native-config'
+import ActionSheet, {
+  SheetManager,
+  useScrollHandlers,
+} from 'react-native-actions-sheet';
 
 
 const ButtonText = styled.Text`
@@ -62,6 +68,10 @@ function CheckoutPage(props, navigation) {
   const [agreementWidgetControl, setAgreementWidgetControl] = useState(null);
   const currentUser = useSelector(state => state.currentUser.value);
   const [paymentConfirmData, setPaymentConfirmData] = useState(null);
+    const [hasNavigatedBack, setHasNavigatedBack] = useState(false);
+  
+  const hasNavigatedBackRef = useRef(hasNavigatedBack);
+  const [isConnected, setIsConnected] = useState(true);
 
 
   const setPaymentTemp = async (consultantId, customerName, customerPhone, reservationDate, reservationTime,
@@ -88,8 +98,12 @@ function CheckoutPage(props, navigation) {
       'Authorization': `Bearer ${currentUser.accessToken}`
     };
     console.log("log_Request Data: ", data);
+    console.log("log_Request Data: ", headers);
+    console.log("log_Request Data: ", `${Config.APP_API_URL}payment/saveTemp`);
+
     try {
-      const response = await axios.post(`${Config.APP_API_URL}payment/saveTemp`, { headers: headers }, data);
+
+      const response = await axios.post(`${Config.APP_API_URL}payment/saveTemp`, data, { headers: headers });
       if (response.data.errYn === 'Y') {
         SheetManager.show('info', {
           payload: {
@@ -103,10 +117,10 @@ function CheckoutPage(props, navigation) {
       }
 
       const userData = response.data.data;
-      console.log("log_saveTemp: ", userData.paymentStatus);
+      console.log("log_saveTemp: ", userData);
 
       // 상태가 "DONE"인 경우에만 userData 반환
-      if (userData.paymentStatus === "DONE") {
+      if (userData.paymentStatus === "READY") {
         return true; // 성공 시 userData 반환
       } else {
         return false;
@@ -202,6 +216,9 @@ function CheckoutPage(props, navigation) {
 
   const handleNetInfoChange = (state) => {
     return new Promise((resolve, reject) => {
+      console.log('log_toss 22', !state.isConnected && isConnected)
+      console.log('log_toss 221', state.isConnected && !isConnected)
+
       if (!state.isConnected && isConnected) {
         setIsConnected(false);
         navigation.push('NetworkAlert', navigation);
@@ -298,12 +315,12 @@ function CheckoutPage(props, navigation) {
             const consultingInflowPath = props.route.params.consultingInflowPath;
             const calcHistoryId = props.route.params.calcHistoryId;
             const orderId = props.route.params.orderId;
-            const orderName = props.route.params.orderName;
+            const orderName = props.route.params.productName;
             const productPrice = props.route.params.productPrice;
             const productDiscountPrice = props.route.params.productDiscountPrice;
             const paymentAmount = props.route.params.paymentAmount;
             const productId = props.route.params.productId;
-            const productName = props.route.params.customerName;
+            const productName = props.route.params.productName;
 
 
             console.log('log_toss 2', props.route.params)
@@ -326,7 +343,7 @@ function CheckoutPage(props, navigation) {
                 const result1 = paymentWidgetControl.requestPayment({
                   amount: {
                     currency: 'KRW',
-                    value: paymentAmount,
+                    value: productDiscountPrice,
                   },
                   orderId: orderId,
                   orderName: orderName,
@@ -341,7 +358,7 @@ function CheckoutPage(props, navigation) {
                 const paymentKey = result1.paymentKey;
                 const paymentHistoryId = result1.paymentHistoryId;
 
-                await requestPaymentConfirm(paymentHistoryId, paymentKey, orderId, paymentAmount);
+                await requestPaymentConfirm(paymentHistoryId, paymentKey, orderId, productDiscountPrice);
 
                 console.log('log_result', result);
               } else {

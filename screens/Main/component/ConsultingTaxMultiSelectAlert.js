@@ -229,7 +229,7 @@ const ConsultingTaxMultiSelectAlert = ({ visible, onClose, onTaxMultiSelect }) =
 
                 const result = selectedItems.join(','); // 선택된 값을 ','로 구분된 문자열로 변환
 
-
+                console.log('최종 선택값:', result);
                 onTaxMultiSelect(result);
               }}
             >
