@@ -58,7 +58,6 @@ const ConsultingInput = styled.TextInput.attrs(props => ({
   width: 100%; 
   height: 120px;
   background-color: #f5f7fa;
-  padding: 15px; 
   font-size: 13px;
   font-family: Pretendard-Regular;
   color: #1b1c1f;
@@ -109,7 +108,8 @@ const ConsultingDetailInputAlert = ({ content, visible, onClose, onInputCallback
               activeOpacity={0.6}
               hitSlop={{ top: 20, bottom: 20, left: 20, right: 20 }}
               onPress={() => {
-                navigation.goBack();
+                onClose();
+                // navigation.goBack();
                 // dispatch(clearHouseInfo());
               }}>
               <CloseIcon />
@@ -170,8 +170,8 @@ const styles = StyleSheet.create({
     alignItems: 'center', // 세로 중앙 정렬
     borderRadius: 8,
     backgroundColor: '#F5F7FA',
-    paddingHorizontal: 15,
-    paddingVertical: 14,
+    paddingHorizontal: 10,
+    paddingVertical: 10,
     height: 120,
     marginBottom: 20,
   },

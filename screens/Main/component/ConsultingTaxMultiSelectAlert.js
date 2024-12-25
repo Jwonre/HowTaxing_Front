@@ -1,5 +1,5 @@
 
-import React, { useState, } from 'react';
+import React, { useEffect, useState, } from 'react';
 import {
   Modal, View, Text, Pressable, StyleSheet, Dimensions, TouchableOpacity,
 } from 'react-native';
@@ -56,7 +56,7 @@ const ShadowContainer = styled(DropShadow)`
   shadow-opacity: 0.2;
   shadow-radius: 3px;
 `;
-const ConsultingTaxMultiSelectAlert = ({ visible, onClose, onTaxMultiSelect }) => {
+const ConsultingTaxMultiSelectAlert = ({consultingType, visible, onClose, onTaxMultiSelect }) => {
   const [selectTaxType, setSelectTaxType] = useState(0);
   const [selectedItems, setSelectedItems] = useState([]); // 선택된 아이템 관리
   const navigation = useNavigation();
@@ -74,6 +74,19 @@ const ConsultingTaxMultiSelectAlert = ({ visible, onClose, onTaxMultiSelect }) =
     '04',
   ];
 
+  useEffect(() => {
+    console.log('consultingType', consultingType);
+    if(consultingType !== ''){
+      const consultingTypeList = consultingType.split(',');
+
+      for (let i = 0; i < consultingTypeList.length; i++) {
+        toggleSelect(consultingTypeList[i]);
+      }
+    }else{
+      setSelectedItems([]); 
+    }
+  }, [consultingType]);
+
   const toggleSelect = (item) => {
     setSelectedItems((prev) => {
       if (prev.includes(item)) {
@@ -86,11 +99,6 @@ const ConsultingTaxMultiSelectAlert = ({ visible, onClose, onTaxMultiSelect }) =
     });
   };
 
-  const saveSelection = () => {
-    const result = selectedItems.join(','); // 선택된 값을 ','로 구분된 문자열로 변환
-    console.log('최종 선택값:', result);
-    // 저장 로직 추가 가능
-  };
 
   return (
     <Modal
@@ -107,7 +115,8 @@ const ConsultingTaxMultiSelectAlert = ({ visible, onClose, onTaxMultiSelect }) =
                         activeOpacity={0.6}
                         hitSlop={{ top: 20, bottom: 20, left: 20, right: 20 }}
                         onPress={() => {
-                          navigation.goBack();
+                          onClose();
+                          // navigation.goBack();
                           // dispatch(clearHouseInfo());
                         }}>
                         <CloseIcon />
@@ -231,6 +240,7 @@ const ConsultingTaxMultiSelectAlert = ({ visible, onClose, onTaxMultiSelect }) =
 
                 console.log('최종 선택값:', result);
                 onTaxMultiSelect(result);
+                setSelectedItems([]); // 선택 초기화
               }}
             >
               <ButtonText style={styles.loginButtonText}>선택하기</ButtonText>

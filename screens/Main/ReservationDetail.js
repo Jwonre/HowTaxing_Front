@@ -796,7 +796,7 @@ const ReservationDetail = props => {
 
       <ConsultingCancelConfirmAlert visible={isModalCancelTypeVisible} onClose={closeCancelTypeModal} onCancelRequest={handleCancelRequest} />
       <ConsultingDetailInputAlert visible={isModalConsultingInputVisible} onClose={closeDetailInputModal} onInputCallback={handleInputRequest} />
-      <ConsultingTaxMultiSelectAlert visible={isModalTaxVisible} onClose={closeTaxModal} onTaxMultiSelect={handleMultiSelectTaxRequest} />
+      <ConsultingTaxMultiSelectAlert consultingType = {reservationDetail.consultingType??""} visible={isModalTaxVisible} onClose={closeTaxModal} onTaxMultiSelect={handleMultiSelectTaxRequest} />
 
       {/* 모달 */}
     </View >
