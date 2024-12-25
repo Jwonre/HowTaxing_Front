@@ -444,6 +444,8 @@ const ConsultingReservation2 = props => {
   const [timeList, setTimeList] = useState([]);
   const [isExpanded, setIsExpanded] = useState(false);
   const [taxTypeList, setTaxTypeList] = useState([]);
+  const [consultingReservationId, setConsultingReservationId] = useState('');
+
   const { certType, agreeCert, agreePrivacy } = useSelector(
     state => state.cert.value,
   );
@@ -660,6 +662,56 @@ const ConsultingReservation2 = props => {
       });
   };
 
+  const reservationAvailable = async (consultantId,reservationDate,reservationTime) => {
+    console.log('consultantId', consultantId);
+    console.log('reservationDate', reservationDate);
+    console.log('reservationTime', reservationTime);
+
+    
+    // 요청 헤더
+    const headers = {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${currentUser.accessToken}`
+    };
+
+    // 요청 바디
+    const data = {
+      consultantId: consultantId,
+      reservationDate: reservationDate ? reservationDate : '',
+      reservationTime: reservationTime ? reservationTime : '',
+      
+    };
+    console.log('data', data);
+    console.log('headers', headers);
+    try {
+      const response = await axios.post(`${Config.APP_API_URL}consulting/reservationAvailable`, data, { headers: headers });
+      if (response.data.errYn === 'Y') {
+         SheetManager.show('info', {
+          payload: {
+            type: 'error',
+            errorType: response.data.type,
+            message: response.data.errMsg ? response.data.errMsg : '선택한 날짜와 시간으로 상담 예약이 불가능해요.',
+            description: response.data.errMsgDtl ? response.data.errMsgDtl : '',
+            buttontext: '확인하기',
+          },
+        });
+        return false;
+      } else {
+        return true;
+      }
+    } catch (error) {
+       SheetManager.show('info', {
+        payload: {
+          type: 'error',
+          errorType: response.data.type,
+          message: response.data.errMsg ? response.data.errMsg : '선택한 날짜와 시간으로 상담 예약이 불가능해요.',
+          description: response.data.errMsgDtl ? response.data.errMsgDtl : '',
+          buttontext: '확인하기',
+        },
+      });
+      return false;
+    }
+  };
   const requestReservation = async () => {
     console.log('selectedDate', selectedDate);
     var NumTaxTypeList = taxTypeList.map(taxType => {
@@ -697,6 +749,7 @@ const ConsultingReservation2 = props => {
       consultingInflowPath: props?.route.params.isGainsTax ? '02' : '01',
       calcHistoryId: Pdata.calcHistoryId ? Pdata.calcHistoryId : '',
       consultingRequestContent: text ? text : '',
+      consultingReservationId: consultingReservationId ? consultingReservationId : '',
     };
     //console.log('ConsultingReservation22 data', data);
     //console.log('headers', headers);
@@ -1338,24 +1391,40 @@ const ConsultingReservation2 = props => {
                         const canProceed = await handleNetInfoChange(state);
                         if (canProceed) {
                           console.log('log_결제하기',canProceed);
-          
-                          navigation.navigate('TossPaymentScreen', {
-                            consultantId: id,
-                            customerName: name,
-                            customerPhone: phone,
-                            reservationDate: default_date,
-                            reservationTime: time,
-                            consultingInflowPath: props?.route?.params?.consultingInflowPath ?? '',
-                            calcHistoryId: props?.route?.params?.calcHistoryId ?? '',
-                            orderId: orderId,
-                            orderName: productName,
-                            productPrice: Number(reservationProductInfo?.productPrice ?? '0'),
-                            productDiscountPrice: Number(reservationProductInfo?.productDiscountPrice ?? '0'),
-                            paymentAmount: Number(reservationProductInfo?.paymentAmount ?? '0'),
-            
-                            productId: productId, // 고유 주문 ID
-                            productName: productName, // 주문 이름
-                          });
+                          const year = selectedDate.getFullYear();
+                          const month = String(selectedDate.getMonth() + 1).padStart(2, '0'); // 월은 0부터 시작하므로 1을 더해줍니다.
+                          const day = String(selectedDate.getDate()).padStart(2, '0');
+
+                          const default_date = `${year}-${month}-${day}`;
+                          const result = await reservationAvailable('1',default_date,selectedList[0]);
+
+                          if(result){
+                            navigation.navigate('TossPaymentScreen', {
+                              consultantId: id,
+                              customerName: name,
+                              customerPhone: phone,
+                              reservationDate: default_date,
+                              reservationTime: time,
+                              consultingInflowPath: props?.route?.params?.consultingInflowPath ?? '',
+                              calcHistoryId: props?.route?.params?.calcHistoryId ?? '',
+                              orderId: orderId,
+                              orderName: productName,
+                              productPrice: Number(reservationProductInfo?.productPrice ?? '0'),
+                              productDiscountPrice: Number(reservationProductInfo?.productDiscountPrice ?? '0'),
+                              paymentAmount: Number(reservationProductInfo?.paymentAmount ?? '0'),
+              
+                              productId: productId, // 고유 주문 ID
+                              productName: productName, // 주문 이름
+                              onPaymentComplete: (consultingReservationId) => {
+                                setConsultingReservationId(consultingReservationId);
+
+                                console.log('최신 상태:', { name, phone, selectedDate, selectedList });
+                                setCurrentPageIndex(4); // 특정 탭으로 이동
+                              },
+                            });
+                          }
+
+                          
                         }
                         
                         // Checkout 호출

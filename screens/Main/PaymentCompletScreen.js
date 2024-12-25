@@ -1,8 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect,useCallback } from 'react';
 import { View, Text, StyleSheet, Image, Dimensions } from 'react-native';
 import Svg, { Circle } from 'react-native-svg';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import styled from 'styled-components';
+import Config from 'react-native-config'
+import axios from 'axios';
+import { useDispatch, useSelector } from 'react-redux';
 
 const { width } = Dimensions.get('window'); // 화면의 가로 길이를 가져옴
 
@@ -67,6 +70,8 @@ const PaymentCompletScreen = props => {
   const [progress, setProgress] = useState(0);
   const navigation = useNavigation();
   const [adBannerdata, SetBannerData] = useState(null);
+  const { onPaymentComplete } = props.route.params; // 전달받은 콜백 함수
+  const currentUser = useSelector(state => state.currentUser.value);
 
 
 
@@ -92,7 +97,7 @@ const PaymentCompletScreen = props => {
 
   useFocusEffect(
     useCallback(() => {
-      adBannerdata();
+      getAdBanner();
       //dispatch(setAdBanner(true));
 
     }, [])
@@ -109,15 +114,29 @@ const PaymentCompletScreen = props => {
       // A로 돌아가면서 스택 초기화
       // A로 돌아가기
 
-      if(props?.route?.params?.consultingInflowPath){
-        navigation.navigate('ConsultingReservation2', {
-          triggerCallback: true, // A 페이지에서 사용할 파라미터
-        });
-      }else{
-        navigation.navigate('ConsultingReservation', {
-          triggerCallback: true, // A 페이지에서 사용할 파라미터
-        });
+      console.log('결제 완료');
+      console.log('onPaymentComplete', onPaymentComplete);
+      if (props.route.params.onPaymentComplete) {
+        console.log('onPaymentComplete is about to be called');
+        props.route.params.onPaymentComplete(props.route.params.consultingReservationId);
+        // 이전 화면으로 돌아가기
+        // if(props?.route?.params?.consultingInflowPath){
+        //   navigation.reset({
+        //     index: 0,
+        //     routes: [{ name: 'ConsultingReservation2' }], // 'A'를 초기 화면으로 설정
+        //   });
+        // }else{
+        //   navigation.reset({
+        //     index: 0,
+        //     routes: [{ name: 'ConsultingReservation' }], // 'A'를 초기 화면으로 설정
+        //   });
+        // }
+
+        navigation.goBack();
+      } else {
+        console.error('onPaymentComplete is not defined at this point');
       }
+      
      
     }
   }, [timer, navigation]);

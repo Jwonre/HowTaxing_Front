@@ -396,7 +396,7 @@ const Login = () => {
       id,
     };
 
-    console.log('네이버:',`${socialType} || ${accessToken} || ${id}`);
+    console.log('log_'+socialType,`${socialType} || ${accessToken} || ${id}`);
 
     console.log(`${Config.APP_API_URL}user/socialLogin}`);
     axios

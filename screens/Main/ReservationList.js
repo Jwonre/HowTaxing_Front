@@ -543,9 +543,9 @@ const ReservationList = () => {
                   const [year, month, day] = item.reservationDate.split('-');
                   const dateInfo = `${year}년 ${month}월 ${day}일 (${dayOfWeek})`;
                   const timeInfo = `(${period} ${formattedHours}시)`;
-                  const consultingTypeList = item.consultingType.split(',');
+                  const consultingTypeList =item.consultingType!= null ?  item.consultingType.split(',') :[];
 
-                  const consultingTypes = item.consultingType.split(',').map(type => consultingTypeMap[type]).join(', ');
+                  const consultingTypes = item.consultingType!= null  ?item.consultingType.split(',').map(type => consultingTypeMap[type]).join(', ') : '';
                   return (
 
                     <InfoContentSection overScrollMode="never" style={{ width: width, marginBottom: 10 }}>
@@ -557,7 +557,7 @@ const ReservationList = () => {
                         <View style={{ flexDirection: 'column', marginBottom: 10, marginEnd: 10, }}>
                           <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 10, marginEnd: 10, }}>
                             {/* 프로필 이미지 */}
-                            <ProfileAvatar2 source={require('../../assets/images/Minjungum_Lee_consulting.png')} />
+                            <ProfileAvatar2 source={item.thumbImageUrl ?? require('../../assets/images/Minjungum_Lee_consulting.png')} />
                             {/* 상담 정보 */}
                             <InfoContainer>
                               <Text style={styles.contentCounsulting}>

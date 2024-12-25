@@ -299,7 +299,6 @@ const ReservationDetail = props => {
 
     console.log('log_5 data', consultingReservationId);
     console.log('log_5 data', consultingType);
-    console.log('log_5 data', text);
 
 
     // 요청 바디
@@ -406,60 +405,65 @@ const ReservationDetail = props => {
 
 
   const setConsultingCancel = async (consultingReservationId,cancelReason) => {
-    const url = `${Config.APP_API_URL}consulting/reservationCancel?consultingReservationId=${consultingReservationId}&cancelReason=${cancelReason}`;
+    // const url = `${Config.APP_API_URL}consulting/reservationCancel?consultingReservationId=${consultingReservationId}&cancelReason=${cancelReason}`;
     //const url = `https://devapp.how-taxing.com/consulting/availableSchedule?consultantId=${consultantId}&searchType="${searchType}"`;
-    const headers = {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${currentUser.accessToken}`
-    };
+   
     /*
     const params = {
       consultantId: consultantId,
       searchType: searchType,
     }*/
-    console.log('url', url);
+  
+
+    const data = {
+      consultingReservationId,
+      cancelReason,
+    };
+
+    const headers = {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${currentUser.accessToken}`
+    };
+
     // console.log('params', params);
     console.log('headers', headers);
-    await axios
-      .post(url,
-        { headers: headers }
-      )
-      .then(response => {
-        console.log('response.data', response.data);
-        if (response.data.errYn === 'Y') {
-          SheetManager.show('info', {
-            payload: {
-              type: 'error',
-              errorType: response.data.type,
-              message: response.data.errMsg ? response.data.errMsg : '상담 예약 상세 내역을 불러오는데 문제가 발생했어요.',
-              description: response.data.errMsgDtl ? response.data.errMsgDtl : '',
-              buttontext: '확인하기',
-            },
-          });
-        } else {
-          console.log('response.data', response.data.data);
-          const result = response === undefined ? [] : response.data.data;
-          if (result) {
-            console.log('result:', result);
-            //console.log('new Date(list[0]):', new Date(list[0]));
-            const consultingReservationId = props.route?.params?.consultingReservationId;
-           getReservationDetail(consultingReservationId);
-
-          }
-        }
-
-      })
-      .catch(function (error) {
+    console.log("log_Request Data: ", data);
+    try {
+      const response = await axios.post(`${Config.APP_API_URL}consulting/reservationCancel`,data, { headers: headers });
+      if (response.data.errYn === 'Y') {
         SheetManager.show('info', {
           payload: {
-            message: '상담 예약 상세 내역을 불러오는데 문제가 발생했어요.',
-            description: error?.message ? error?.message : '오류가 발생했습니다.',
             type: 'error',
+            errorType: response.data.type,
+            message: response.data.errMsg ? response.data.errMsg : '상담 예약 상세 내역을 불러오는데 문제가 발생했어요.',
+            description: response.data.errMsgDtl ? response.data.errMsgDtl : '',
             buttontext: '확인하기',
-          }
+          },
         });
-        ////console.log(error ? error : 'error');
+        return null; // 실패 시 null 반환
+      }
+      console.log('response.data', response.data.data);
+      const result = response === undefined ? [] : response.data.data;
+      if (result) {
+        console.log('result:', result);
+        //console.log('new Date(list[0]):', new Date(list[0]));
+        const consultingReservationId = props.route?.params?.consultingReservationId;
+       getReservationDetail(consultingReservationId);
+
+      }
+    } catch (error) {
+      console.error("Error in setPaymentTemp:", error);
+      SheetManager.show('info', {
+        payload: {
+          message: '상담 예약 상세 내역을 불러오는데 문제가 발생했어요.',
+          description: error?.message ? error?.message : '오류가 발생했습니다.',
+          type: 'error',
+          buttontext: '확인하기',
+        }
       });
+      return false; // 예외 발생 시 null 반환
+    }
+     
   };
 
   const temp = (accessToken, refreshToken) => {
@@ -556,11 +560,11 @@ const ReservationDetail = props => {
         <View style={styles.inputSection}>
           {/* Label */}
           <HoustInfoSection style={{ paddingTop: 10, paddingBottom: 10 }}>
-            <ProfileAvatar2 source={require('../../assets/images/Minjungum_Lee_consulting.png')} />
-            <Text style={styles.contentPayment}>
+          <ProfileAvatar2 source={reservationDetail?.profileImageUrl ?? require('../../assets/images/Minjungum_Lee_consulting.png')} />
+          <Text style={styles.contentPayment}>
               {'#' + `${reservationDetail.consultingReservationId}`}
             </Text>
-            <Text style={styles.namePayment}>이민정음 세무사</Text>
+            <Text style={styles.namePayment}>{reservationDetail?.consultantName ?? ''}</Text>
 
             <View
               style={{
@@ -1190,26 +1194,37 @@ function InfoCalculationBuyResult({ data ,houseInfo,navigation}) {
     {
       id: '1',
       name: '아파트',
+      color: '#1FC9A8'
     },
     {
       id: '2',
       name: '연립,다가구',
+      color: '#A82BC6'
+
     },
     {
       id: '3',
       name: '입주권',
+      color: '#FF2C65'
+
     },
     {
       id: '4',
       name: '단독주택,다세대',
+      color: '#A2C62B'
+
     },
     {
       id: '5',
       name: '분양권(주택)',
+      color: '#FF2C65'
+
     },
     {
       id: '6',
       name: '주택',
+      color: '#FF7401'
+
     },
   ];
   console.log('log_04', data);
@@ -1440,7 +1455,8 @@ function InfoCalculationBuyResult({ data ,houseInfo,navigation}) {
                 alignItems: 'center', // 수평 가운데 정렬
                 height: 22,
                 backgroundColor:
-                  '#A2C62B'
+                HOUSE_TYPE.find(el => el.id === houseInfo?.houseType)
+                ?.color
               }}
             >
 
@@ -1708,26 +1724,37 @@ function InfoCalculationSelResult({ data,houseInfo,navigation }) {
       {
         id: '1',
         name: '아파트',
+        color: '#1FC9A8'
       },
       {
         id: '2',
         name: '연립,다가구',
+        color: '#A82BC6'
+
       },
       {
         id: '3',
         name: '입주권',
+        color: '#FF2C65'
+
       },
       {
         id: '4',
         name: '단독주택,다세대',
+        color: '#A2C62B'
+
       },
       {
         id: '5',
         name: '분양권(주택)',
+        color: '#FF2C65'
+
       },
       {
         id: '6',
         name: '주택',
+        color: '#FF7401'
+
       },
     ];
   const renderItem = ({ item, index }) => {
@@ -2112,7 +2139,8 @@ function InfoCalculationSelResult({ data,houseInfo,navigation }) {
                 alignItems: 'center', // 수평 가운데 정렬
                 height: 22,
                 backgroundColor:
-                  '#A2C62B'
+                HOUSE_TYPE.find(el => el.id === houseInfo?.houseType)
+                ?.color
               }}
             >
 

@@ -515,7 +515,7 @@ const PaymentScreen = props => {
               if (canProceed) {
                 console.log('log_결제하기',canProceed);
 
-                navigation.navigate('TossPaymentScreen', {
+                navigation.replace('TossPaymentScreen', {
                   consultantId: id,
                   customerName: name,
                   customerPhone: phone,
@@ -531,6 +531,7 @@ const PaymentScreen = props => {
   
                   productId: reservationProductInfo?.productId, // 고유 주문 ID
                   productName: reservationProductInfo?.productName, // 주문 이름
+                  onPaymentComplete: props?.route?.params?.onPaymentComplete,
                 });
               }
               

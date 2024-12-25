@@ -58,7 +58,8 @@ const Button = styled.TouchableOpacity.attrs(props => ({
   margin-bottom: 10px;
 `;
 
-function CheckoutPage(props, navigation) {
+function CheckoutPage(props) {
+  const { navigation } = props; // props에서 navigation을 명시적으로 추출
 
 
   console.log('log_CheckoutPage Context Data:', props.route.params);
@@ -69,7 +70,7 @@ function CheckoutPage(props, navigation) {
   const currentUser = useSelector(state => state.currentUser.value);
   const [paymentConfirmData, setPaymentConfirmData] = useState(null);
     const [hasNavigatedBack, setHasNavigatedBack] = useState(false);
-  
+  const [paymentHistoryId, setPaymentHistoryId] = useState('');
   const hasNavigatedBackRef = useRef(hasNavigatedBack);
   const [isConnected, setIsConnected] = useState(true);
 
@@ -118,12 +119,24 @@ function CheckoutPage(props, navigation) {
 
       const userData = response.data.data;
       console.log("log_saveTemp: ", userData);
+      console.log("log_saveTemp 1: ", userData.paymentHistoryId);
 
+      if (userData.paymentHistoryId){
+        console.log("log_saveTemp 2: ", userData.paymentHistoryId);
+
+        setPaymentHistoryId(userData.paymentHistoryId);
+      }
       // 상태가 "DONE"인 경우에만 userData 반환
       if (userData.paymentStatus === "READY") {
-        return true; // 성공 시 userData 반환
+        return {
+          result: true,
+          paymentHistoryId: userData.paymentHistoryId, // 업데이트된 값을 직접 반환
+        };
       } else {
-        return false;
+        return {
+          result: false,
+          paymentHistoryId: '', // 실패 시 null로 반환
+        };
       }
     } catch (error) {
       console.error("Error in setPaymentTemp:", error);
@@ -135,8 +148,10 @@ function CheckoutPage(props, navigation) {
           buttontext: '확인하기',
         },
       });
-      return false; // 예외 발생 시 null 반환
-    }
+      return {
+        result: false,
+        paymentHistoryId: '', // 실패 시 null로 반환
+      };    }
 
 
   };
@@ -156,7 +171,10 @@ function CheckoutPage(props, navigation) {
     };
     console.log("log_Request Data: ", data);
     try {
-      const response = await axios.post(`${Config.APP_API_URL}payment/saveTemp`, { headers: headers }, data);
+      const response = await axios.post(`${Config.APP_API_URL}payment/confirm`,data, { headers: headers });
+
+      console.log("log_Request Data 2: ", response);
+
       if (response.data.errYn === 'Y') {
         SheetManager.show('info', {
           payload: {
@@ -176,7 +194,7 @@ function CheckoutPage(props, navigation) {
       // 상태가 "DONE"인 경우에만 userData 반환
       if (userData.paymentStatus === "DONE") {
 
-        navigation.push('PaymentCompletScreen', {
+        navigation.replace('PaymentCompletScreen', {
           consultantId: props?.route.params?.consultantId,
           customerName: props?.route.params?.customerName,
           customerPhone: props?.route.params?.customerPhone,
@@ -185,13 +203,15 @@ function CheckoutPage(props, navigation) {
           consultingInflowPath: props?.route?.params?.consultingInflowPath ?? '',
           calcHistoryId: props?.route?.params?.calcHistoryId ?? '',
           orderId: props?.route.params?.orderId,
-          orderName: props?.route.params?.orderName,
+          orderName: props?.route.params?.productName,
           productPrice: props?.route.params?.productPrice,
           productDiscountPrice: props?.route.params?.productDiscountPrice,
           paymentAmount: props?.route.params?.paymentAmount,
-
-          productId: productId, // 고유 주문 ID
-          productName: productName, // 주문 이름
+          paymentHistoryId: userData.paymentHistoryId, // 업데이트된 값을 직접 반환
+          consultingReservationId: userData.consultingReservationId,
+          productId: props?.route.params?.productId, // 고유 주문 ID
+          productName: props?.route.params?.productName, // 주문 이름
+          onPaymentComplete: props?.route.params?.onPaymentComplete,
         });
 
         return true; // 성공 시 userData 반환
@@ -334,33 +354,65 @@ function CheckoutPage(props, navigation) {
 
               const result = await setPaymentTemp(id, customerName, customerPhone, reservationDate, reservationTime,
                 consultingInflowPath, calcHistoryId,
-                orderId, orderName, productPrice, productDiscountPrice,
+                orderId, productName, productPrice, productDiscountPrice,
                 paymentAmount, productId, productName,
               );
               console.log('log_toss 4', result)
 
-              if (result) {
-                const result1 = paymentWidgetControl.requestPayment({
+              if (result.result) {
+                const result1 = await paymentWidgetControl.requestPayment({
                   amount: {
                     currency: 'KRW',
-                    value: productDiscountPrice,
+                    value: paymentAmount,
                   },
                   orderId: orderId,
-                  orderName: orderName,
+                  orderName: productName,
                   // successUrl: window.location.origin + '/success.html',
                   // failUrl: window.location.origin + '/fail.html',
                   // customerEmail: 'customer123@gmail.com',
                   customerName: customerName,
-                  customerMobilePhone: customerPhone,
+                  customerMobilePhone: customerPhone.replace(/-/g, ''),
                 });
                 console.log('log_toss 5', result1)
 
-                const paymentKey = result1.paymentKey;
-                const paymentHistoryId = result1.paymentHistoryId;
+                // 결제 실패 처리
+                  if (result1.fail) {
+                    console.error('결제 실패:', result1.fail);
 
-                await requestPaymentConfirm(paymentHistoryId, paymentKey, orderId, productDiscountPrice);
+                    // 실패 정보를 사용자에게 알림
+                    SheetManager.show('info', {
+                      payload: {
+                        type: 'error',
+                        message: result1.fail.message || '결제 요청 중 오류가 발생했습니다.',
+                        description: `오류 코드: ${result1.fail.code}`,
+                        buttontext: '확인하기',
+                      },
+                    });
+                    return; // 실패 시 더 이상 진행하지 않음
+                  }
 
-                console.log('log_result', result);
+
+//                   log_toss 5', { success: 
+//                   { additionalParameters: {},
+//                     paymentType: 'NORMAL',
+//                     orderId: 'order_2024122816583_1',
+//                     paymentKey: 'tgen_202412241658064ehQ2',
+//                     amount: 9900 } }
+// 2024-12-24 16:58:21.184 17409-17503 ReactNativeJS           com.xmonster.howtaxingapp            I  'log_Request Data: ', { paymentHistoryId: undefined,
+//                  paymentKey: undefined,
+//                  orderId: 'order_2024122816583_1',
+//                  paymentAmount: 40100 }
+
+                  // 결제 성공 처리
+                // const orderId = props.route.params.orderId;
+
+                  const paymentKey = result1.success.paymentKey;
+
+                  const historyId  = result.paymentHistoryId;
+                  await requestPaymentConfirm(paymentHistoryId != '' ? paymentHistoryId : historyId, paymentKey, orderId, paymentAmount);
+                  console.log('결제 승인 완료');
+                
+
               } else {
                 navigation.goBack();
               }
