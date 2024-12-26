@@ -49,7 +49,7 @@ const CircularProgress = ({ size, strokeWidth, progress, timer }) => {
 };
 const ModalContentSection = styled.View`
   width: 100%;
-  height: 105%;
+  height: 10%;
   background-color: #fff;
   align-items: center;
   justify-content: center;
@@ -60,8 +60,8 @@ const ModalContentSection = styled.View`
 const AdBannerMainImage = styled.Image.attrs(props => ({
   resizeMode: 'stretch',
 }))`
-  width: 100.3%;
-  height: 100%;
+  width: 375px;
+  height: 375px;
 `;
 
 
@@ -160,7 +160,7 @@ const PaymentCompletScreen = props => {
       <View style={styles.progressContainer}>
         <CircularProgress size={50} strokeWidth={5} progress={progress} timer={timer} />
       </View>
-      {adBannerdata != null ? (
+      {/* {adBannerdata != null ? (
         <ModalContentSection>
           {adBannerdata.targetUrl && <TouchableOpacity style={{ width: '100%', height: '100%' }} activeOpacity={0.8}
             hitSlop={{
@@ -176,18 +176,22 @@ const PaymentCompletScreen = props => {
               }
             }
             }>
-            <AdBannerMainImage source={{ uri: adBannerdata.imageUrl }} />
+            <AdBannerMainImage   style={styles.bannerImage} source={{ uri: adBannerdata.imageUrl }} />
           </TouchableOpacity>}
           {!adBannerdata.targetUrl &&
-            <AdBannerMainImage source={{ uri: adBannerdata.imageUrl }} />
+            <AdBannerMainImage  style={styles.bannerImage} source={{ uri: adBannerdata.imageUrl }} />
           }
         </ModalContentSection>
-      ) : (<Image
+      ) :
+       (<Image
         source={require('../../assets/images/banner_15.jpg')}
         style={styles.bannerImage}
-      />)}
+      />)} */}
 
-
+<Image
+        source={require('../../assets/images/banner_15.jpg')}
+        style={styles.bannerImage}
+      />
     </View>
   );
 };
