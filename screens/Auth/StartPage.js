@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, View } from 'react-native';
 import LottieView from 'lottie-react-native';
+import { useSelector, useDispatch } from 'react-redux';
+import { setStartPage } from '../../redux/startPageSlice.js';
 
-
-export default function SplashScreen({ navigation }) {
-
+export default function SplashScreen(props) {
+  const dispatch = useDispatch();
+  const { navigation } = props;
   useEffect(() => {
     navigation.setOptions({
       headerShown: false,
@@ -18,10 +20,7 @@ export default function SplashScreen({ navigation }) {
         autoPlay
         loop={false}
         onAnimationFinish={() => {
-          navigation.reset({
-            index: 0,
-            routes: [{ name: 'Login' }],
-          });
+          dispatch(setStartPage(false));
         }}
         style={{ width: '100%', height: '100%' }}
       />

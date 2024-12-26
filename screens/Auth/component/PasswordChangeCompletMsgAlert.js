@@ -84,16 +84,15 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'center',
     width: '100%',
-    marginTop: 20,
   },
   button: {
     height: 50,
     borderRadius: 25,
     justifyContent: 'center',
     alignItems: 'center',
-    width: '48%', // 버튼 간격 자동 조정
+    width: '100%', // 버튼 간격 자동 조정
   },
   resetButton: {
     backgroundColor: '#fff',

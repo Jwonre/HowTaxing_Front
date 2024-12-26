@@ -9,6 +9,8 @@ import CloseIcon from '../../assets/icons/close_button.svg';
 import DropShadow from 'react-native-drop-shadow';
 import { useNavigation } from '@react-navigation/native';
 import InfoCircleIcon from '../../assets/icons/info_circle.svg';
+import { setStartPage } from '../../redux/startPageSlice.js';
+import { useDispatch } from 'react-redux';
 
 const SheetContainer = styled.View`
   background-color: #fff;
@@ -89,6 +91,7 @@ const LogOutSheet = props => {
   const actionSheetRef = useRef(null);
   const { width, height } = useWindowDimensions();
   const [errorMessage, setErrorMessage] = useState('');
+  const dispatch = useDispatch();
   // ////console.log('props', props);
 
   return (
@@ -168,6 +171,7 @@ const LogOutSheet = props => {
               onPress={() => {
                 // actionSheetRef.current?.hide();
                 ////console.log('YES');
+                dispatch(setStartPage(false));
                 props.payload.onPress.handlePress('YES');
                 actionSheetRef.current?.hide();
               }}>

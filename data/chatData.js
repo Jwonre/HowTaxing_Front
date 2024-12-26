@@ -129,7 +129,7 @@ export const acquisitionTax = [
     id: 'ownHouse',
     type: 'system',
     message: '보유 주택 수를 어떻게 가져올까요?',
-    progress: 4,
+    progress: 7,
     select: [
       {
         id: 'no',
@@ -147,7 +147,7 @@ export const acquisitionTax = [
   {
     id: 'certType',
     type: 'system',
-    progress: 5,
+    progress: 7,
     message: '공공기관에서 여러 인증방식을 제공해요. 인증방식을 선택해주세요.\n청약통장이 없다면 인증이 어려우므로 보유 중인 주택들을 직접 등록해주세요.',
     select: [
       {
@@ -177,7 +177,7 @@ export const acquisitionTax = [
     id: 'moreHouse',
     type: 'system',
     message: '취득하실 주택 외 보유 중인 주택이 있나요?',
-    progress: 3,
+    progress: 5,
     select: [
       {
         id: 'yes',
@@ -196,7 +196,7 @@ export const acquisitionTax = [
     type: 'system',
     message:
       '취득하실 주택의 취득세를 계산하기\n위해 보유 주택 수가 필요해요.\n공공기관에서 불러오거나\n직접 입력할 수 있어요.',
-    progress: 3,
+    progress: 6,
   },
   {
     id: 'aquiAmountSystem',
@@ -209,7 +209,7 @@ export const acquisitionTax = [
     id: 'allHouse1',
     type: 'system',
     message: '보유 중인 주택을 모두 불러왔어요.',
-    progress: 5,
+    progress: 7,
     select: [
       {
         id: 'ok',
@@ -223,7 +223,7 @@ export const acquisitionTax = [
     id: 'allHouse2',
     type: 'system',
     message: '보유 중인 주택을 모두 불러왔어요.',
-    progress: 5,
+    progress: 7,
     select: [
       {
         id: 'ok',
@@ -238,7 +238,7 @@ export const acquisitionTax = [
     type: 'system',
     message: '혹시 공동 소유 예정인가요?',
     questionId: 'apartment',
-    progress: 3,
+    progress: 4,
     select: [
       {
         id: 'only',
@@ -259,7 +259,7 @@ export const acquisitionTax = [
     type: 'system',
     message:
       '잠깐!\n불러온 주택 중 입주권이 있다면 입주권이라고 반드시 알려주셔야 해요.',
-    progress: 5,
+    progress: 7,
     select: [
       {
         id: 'ok',
@@ -274,7 +274,7 @@ export const acquisitionTax = [
     type: 'system',
     message:
       '잠깐!\n불러온 주택 중 입주권이 있다면 입주권이라고 반드시 알려주셔야 해요.',
-    progress: 5,
+    progress: 7,
     select: [
       {
         id: 'ok',
@@ -288,12 +288,12 @@ export const acquisitionTax = [
     id: 'getInfoDone',
     type: 'system',
     message: '취득세 계산에 필요한 정보들을 모두 수집했어요.',
-    progress: 6,
+    progress: 8,
   },
   {
     id: 'getInfoConfirm',
     type: 'system',
-    progress: 7,
+    progress: 8,
     message:
       '잘못된 정보들로 취득세를 계산하면 정확한 결과가 나오지 않을 수 있어요. 모든 정보들이 맞는지 확인해볼까요?',
   },
@@ -302,7 +302,7 @@ export const acquisitionTax = [
     type: 'system',
     message:
       '계산하는 중이에요.\n서비스를 종료하지 마시고, 조금만 기다려주세요.',
-    progress: 8,
+    progress: 9,
   },
   {
     id: 'cta',
@@ -321,7 +321,7 @@ export const acquisitionTax = [
     id: 'additionalQuestion',
     type: 'system',
     message: '',
-    progress: 6,
+    progress: 8,
     select: [
       {
         id: 'additionalQuestionY',
@@ -374,7 +374,7 @@ export const gainTax = [
     type: 'system',
     message: '혹시 공동 소유 예정인가요?',
     questionId: 'apartment',
-    progress: 3,
+    progress: 4,
     select: [
       {
         id: 'only',
@@ -574,13 +574,13 @@ export const gainTax = [
     id: 'ExpenseInquiry',
     type: 'system',
     message: '지금 양도하려는 이 주택을 취득할 때 소요된 필요 경비에 따라 양도소득세가 달라질 수 있어요.',
-    progress: 5,
+    progress: 7,
   },
   {
     id: 'ExpenseAnswer',
     type: 'system',
     message: '필요경비를 입력해주세요.',
-    progress: 5,
+    progress: 7,
     select: [
       {
         id: 'ExpenseAmount',

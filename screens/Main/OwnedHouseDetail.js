@@ -227,6 +227,7 @@ const OwnedHouseDetail = props => {
 
 */
   const handleHouseChange = async (target, newMoveInRight) => {
+    console.log('[OwnedHouseDetail]handleHouseChange target:', target);
     //////console.log('[OwnedHouseDetail]onValueChange Yn', newMoveInRight);
     //////console.log('[OwnedHouseDetail]handleHouseChange tempMovingInRight:', tempMovingInRight);
     //const MIR = (newMoveInRight === null ? tempMovingInRight : newMoveInRight);
@@ -262,7 +263,7 @@ const OwnedHouseDetail = props => {
     // ////console.log('edit own house list', ownHouseList);
     //////console.log('MIR', MIR);
     //target.isMoveInRight = MIR;
-    //////console.log('target', target);
+   console.log('target', target);
     setData(target);
     //await 
     /* if (data?.houseId !== '222') {      }*/
@@ -336,6 +337,7 @@ const OwnedHouseDetail = props => {
       ownerCnt: (data?.ownerCnt === undefined || data?.ownerCnt === null) ? 1 : data?.ownerCnt,
       userProportion: (data?.userProportion === undefined || data?.userProportion === null) ? 100 : data?.userProportion,
       isMoveInRight: newMoveInRight === undefined ? '' : newMoveInRight,
+      isRequiredDataMissing: data?.isRequiredDataMissing
     };
 
     //console.log('[OwnedHouseDetail]headers:', headers);
@@ -413,7 +415,7 @@ const OwnedHouseDetail = props => {
         return;
 
       } else {
-        const houseDetails = response.data.data;
+        const houseDetails = {...response.data.data, isRequiredDataMissing: props.route?.params?.isRequiredDataMissing};
         //console.log('houseDetails', houseDetails);
         await getAPTLocation(houseDetails.roadAddr);
         setData(houseDetails);
@@ -652,91 +654,39 @@ const OwnedHouseDetail = props => {
           activeOpacity={0.6}
           hitSlop={{ top: 20, bottom: 20, left: 20, right: 20 }}
           onPress={() => {
+            let isRequiredDataMissing;
             //  ////console.log('초기 data', data)
             if ((data?.houseType === '' || data?.houseType === null || data?.houseType === undefined)) {
-              SheetManager.show('info', {
-                payload: {
-                  type: 'info',
-                  message: '주택유형을 입력해 주세요.',
-                  buttontext: '확인하기',
-
-                },
-              }); return;
+              isRequiredDataMissing = true;
             }
             else if ((data?.roadAddr === '' || data?.roadAddr === null || data?.roadAddr === undefined)) {
-              SheetManager.show('info', {
-                payload: {
-                  type: 'info',
-                  message: '주소를 검색해 주세요.',
-                  buttontext: '확인하기',
-                },
-              }); return;
+              isRequiredDataMissing = true;
             }
             else if ((data?.detailAdr === '' || data?.detailAdr === null || data?.detailAdr === undefined)) {
-              SheetManager.show('info', {
-                payload: {
-                  type: 'info',
-                  message: '상세주소를 입력해 주세요.',
-                  buttontext: '확인하기',
-                },
-              }); return;
+              isRequiredDataMissing = true;
             }
             else if ((data?.jibunAddr === '' || data?.jibunAddr === null || data?.jibunAddr === undefined)) {
-              SheetManager.show('info', {
-                payload: {
-                  type: 'info',
-                  message: '지번주소가 없어요.\n주소를 다시 검색해 주세요.',
-                  buttontext: '확인하기',
-                },
-              }); return;
+              isRequiredDataMissing = true;
             }
             else if ((data?.roadAddr === '' || data?.roadAddr === null || data?.roadAddr === undefined)) {
-              SheetManager.show('info', {
-                payload: {
-                  type: 'info',
-                  message: '도로명주소가 없어요.\n주소를 다시 검색해 주세요.',
-                  buttontext: '확인하기',
-                },
-              }); return;
+              isRequiredDataMissing = true;
             }
             else if ((data?.bdMgtSn === '' || data?.bdMgtSn === null || data?.bdMgtSn === undefined)) {
-              SheetManager.show('info', {
-                payload: {
-                  type: 'info',
-                  message: '건물관리번호가 없어요.\n주소를 다시 검색해 주세요.',
-                  buttontext: '확인하기',
-                },
-              }); return;
+              isRequiredDataMissing = true;
             }
             else if ((props.route.params?.prevSheet == 'own2') && (data?.contractDate === '' || data?.contractDate === null || data?.contractDate === undefined)) {
-              SheetManager.show('info', {
-                payload: {
-                  type: 'info',
-                  message: '취득계약일자를 입력해 주세요.',
-                  buttontext: '확인하기',
-                },
-              }); return;
+              isRequiredDataMissing = true;
             }
             else if ((props.route.params?.prevSheet == 'own2') && (data?.buyDate === '' || data?.buyDate === null || data?.buyDate === undefined)) {
-              SheetManager.show('info', {
-                payload: {
-                  type: 'info',
-                  message: '취득일자를 입력해 주세요.',
-                  buttontext: '확인하기',
-                },
-              }); return;
+              isRequiredDataMissing = true;
             }
             else if ((props.route.params?.prevSheet == 'own2') && (data?.buyPrice === '' || data?.buyPrice === null || data?.buyPrice === undefined || data?.buyPrice === undefined || data?.buyPrice === 0)) {
-              SheetManager.show('info', {
-                payload: {
-                  type: 'info',
-                  message: '취득금액을 입력해 주세요.',
-                  buttontext: '확인하기',
-                },
-              }); return;
+              isRequiredDataMissing = true;
+            } else {
+              isRequiredDataMissing = false;
             }
             if (ownHouseList?.find(item => item.houseId === data?.houseId)) {
-              dispatch(editOwnHouseList({ ...item, houseName: data?.houseName, detailAdr: data?.detailAdr, houseType: data?.houseType, isMoveInRight: data?.isMoveInRight, isRequiredDataMissing: false }));
+              dispatch(editOwnHouseList({ ...item, houseName: data?.houseName, detailAdr: data?.detailAdr, houseType: data?.houseType, isMoveInRight: data?.isMoveInRight, isRequiredDataMissing }));
             }
 
 
@@ -807,90 +757,39 @@ const OwnedHouseDetail = props => {
 
   // 하드웨어 백 버튼 핸들러 정의
   const handleBackPress = () => {
+    let isRequiredDataMissing;
+    //  ////console.log('초기 data', data)
     if ((data?.houseType === '' || data?.houseType === null || data?.houseType === undefined)) {
-      SheetManager.show('info', {
-        payload: {
-          type: 'info',
-          message: '주택유형을 입력해 주세요.',
-          buttontext: '확인하기',
-        },
-      }); return true;
+      isRequiredDataMissing = true;
     }
     else if ((data?.roadAddr === '' || data?.roadAddr === null || data?.roadAddr === undefined)) {
-      SheetManager.show('info', {
-        payload: {
-          type: 'info',
-          message: '주소를 검색해 주세요.',
-          buttontext: '확인하기',
-        },
-      }); return true;
+      isRequiredDataMissing = true;
     }
     else if ((data?.detailAdr === '' || data?.detailAdr === null || data?.detailAdr === undefined)) {
-      SheetManager.show('info', {
-        payload: {
-          type: 'info',
-          message: '상세주소를 입력해 주세요.',
-          buttontext: '확인하기',
-        },
-      }); return true;
+      isRequiredDataMissing = true;
     }
     else if ((data?.jibunAddr === '' || data?.jibunAddr === null || data?.jibunAddr === undefined)) {
-      SheetManager.show('info', {
-        payload: {
-          type: 'info',
-          message: '지번주소가 없어요.\n주소를 다시 검색해 주세요.',
-          buttontext: '확인하기',
-        },
-      }); return true;
+      isRequiredDataMissing = true;
     }
     else if ((data?.roadAddr === '' || data?.roadAddr === null || data?.roadAddr === undefined)) {
-      SheetManager.show('info', {
-        payload: {
-          type: 'info',
-          message: '도로명주소가 없어요.\n주소를 다시 검색해 주세요.',
-          buttontext: '확인하기',
-        },
-      }); return true;
+      isRequiredDataMissing = true;
     }
     else if ((data?.bdMgtSn === '' || data?.bdMgtSn === null || data?.bdMgtSn === undefined)) {
-      SheetManager.show('info', {
-        payload: {
-          type: 'info',
-          message: '건물관리번호가 없어요.\n주소를 다시 검색해 주세요.',
-          buttontext: '확인하기',
-        },
-      }); return true;
+      isRequiredDataMissing = true;
     }
     else if ((props.route.params?.prevSheet == 'own2') && (data?.contractDate === '' || data?.contractDate === null || data?.contractDate === undefined)) {
-      SheetManager.show('info', {
-        payload: {
-          type: 'info',
-          message: '취득계약일자를 입력해 주세요.',
-          buttontext: '확인하기',
-        },
-      }); return true;
+      isRequiredDataMissing = true;
     }
     else if ((props.route.params?.prevSheet == 'own2') && (data?.buyDate === '' || data?.buyDate === null || data?.buyDate === undefined)) {
-      SheetManager.show('info', {
-        payload: {
-          type: 'info',
-          message: '취득일자를 입력해 주세요.',
-          buttontext: '확인하기',
-        },
-      }); return true;
+      isRequiredDataMissing = true;
     }
     else if ((props.route.params?.prevSheet == 'own2') && (data?.buyPrice === '' || data?.buyPrice === null || data?.buyPrice === undefined || data?.buyPrice === undefined || data?.buyPrice === 0)) {
-      SheetManager.show('info', {
-        payload: {
-          type: 'info',
-          message: '취득금액을 입력해 주세요.',
-          buttontext: '확인하기',
-        },
-      }); return true;
+      isRequiredDataMissing = true;
+    } else {
+      isRequiredDataMissing = false;
     }
-
     if (ownHouseList?.find(item => item.houseId === data?.houseId)) {
-      dispatch(editOwnHouseList({ ...item, houseName: data?.houseName, detailAdr: data?.detailAdr, houseType: data?.houseType, isMoveInRight: data?.isMoveInRight, isRequiredDataMissing: false }));
+      dispatch(editOwnHouseList({ ...item, houseName: data?.houseName, detailAdr: data?.detailAdr, houseType: data?.houseType, isMoveInRight: data?.isMoveInRight, isRequiredDataMissing }));
     }
     navigation.goBack();
     if (!props.route.params?.prevSheet) return true;

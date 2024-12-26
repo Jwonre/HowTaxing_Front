@@ -1689,7 +1689,7 @@ const AcquisitionChat = () => {
                     const state = await NetInfo.fetch();
                     const canProceed = await handleNetInfoChange(state);
                     if (canProceed) {
-                      navigation.push('ConsultingReservation');
+                      navigation.push('CounselorList', {isGainsTax: false});
                     }
                   }}>
                   <KakaoButtonText >상담 예약하기</KakaoButtonText>

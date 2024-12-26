@@ -1,6 +1,6 @@
 // 홈 페이지
 
-import { useWindowDimensions, StatusBar, StyleSheet, BackHandler, Linking } from 'react-native';
+import { useWindowDimensions, StatusBar, StyleSheet, BackHandler, Linking, AppState } from 'react-native';
 import React, { useLayoutEffect, useEffect, useState, useCallback, useRef } from 'react';
 import styled from 'styled-components';
 import DropShadow from 'react-native-drop-shadow';
@@ -15,6 +15,7 @@ import ChanelTalkIcon from '../../assets/icons/chaneltalk.svg';
 import AppInformationIcon from '../../assets/icons/appinformaion_circle.svg'
 import { ChannelIO } from 'react-native-channel-plugin';
 import NetInfo from '@react-native-community/netinfo';
+import Toast from 'react-native-root-toast';
 import { useDispatch, useSelector } from 'react-redux';
 import { setChatDataList } from '../../redux/chatDataListSlice';
 import { setHouseInfo } from '../../redux/houseInfoSlice';
@@ -27,6 +28,7 @@ import axios from 'axios';
 import { setAddHouseList } from '../../redux/addHouseListSlice';
 import { setFixHouseList } from '../../redux/fixHouseListSlice';
 import { setAdBanner } from '../../redux/adBannerSlice';
+import { setStartPage } from '../../redux/startPageSlice.js';
 
 const Container = styled.View`
   flex: 1;
@@ -178,11 +180,78 @@ const Home = () => {
   const [unreadCount, setUnreadCount] = useState(0);
   const [hasNavigatedBack, setHasNavigatedBack] = useState(false);
   const hasNavigatedBackRef = useRef(hasNavigatedBack);
-  const handleBackPress = () => {
-    ////console.log('LogOut!');
-    goLogout();
-    return true;
-  }
+  const [backPressCount, setBackPressCount] = useState(0);
+  const [toastVisible, setToastVisible] = useState(false);
+  const [appState, setAppState] = useState(AppState.currentState);
+  const [hasExited, setHasExited] = useState(false);
+  const startLaunch = useSelector(state => state.startPage.value);
+  const [toast, setToast] = useState(null);
+
+  useEffect(() => {
+    const checkExitFlag = async () => {
+      console.log('appState', appState);
+      const exitFlag = await AsyncStorage.getItem('exitFlag');
+      console.log('exitFlag', exitFlag);
+      if (exitFlag === 'true') {
+        setHasExited(true);
+        await AsyncStorage.removeItem('exitFlag');
+      }
+    };
+    checkExitFlag();
+    console.log('startLaunch', startLaunch);
+    const subscription = AppState.addEventListener('change', handleAppStateChange);
+    return () => subscription.remove();
+  }, [appState]);
+
+  const handleAppStateChange = async (nextAppState) => {
+    console.log('hasExited', hasExited);
+    console.log('nextAppState', nextAppState);
+    if (appState.match(/inactive|background/) && nextAppState === 'active') {
+      if (hasExited) {
+        console.log('앱이 exitApp() 후 다시 실행되었습니다.');
+        dispatch(setStartPage(true));
+        setHasExited(false);
+      }
+      else {
+        console.log('앱이 백그라운드에서 다시 불러와졌습니다.');
+        dispatch(setStartPage(false));
+
+      }
+    }
+    setAppState(nextAppState);
+
+  };
+
+
+  const handleBackPress = async () => {
+    if (toastVisible) { // 토스트가 떠 있을 때는 앱 종료 
+      Toast.hide(toast);
+      setToast(null); // 상태 초기화 
+      setToastVisible(false);
+      setHasExited(true);
+      await AsyncStorage.setItem('exitFlag', 'true');
+      BackHandler.exitApp();
+    } else {
+      // 토스트가 떠 있지 않을 때는 토스트 메시지 표시 
+      const newtoast = Toast.show('뒤로가기 버튼을 한번 더 누르시면\n앱이 종료됩니다.',
+        {
+          duration: Toast.durations.LONG,
+          position: height * 0.72,
+          shadow: true,
+          animation: true,
+          hideOnPress: true,
+          delay: 0,
+        });
+      setToast(newtoast); // 토스트 인스턴스 저장 
+      setToastVisible(true);
+      setTimeout(() => {
+        Toast.hide(newtoast);
+        setToastVisible(false);
+      }, 2000);
+
+
+    } return true;
+  };
 
   useEffect(() => {
     BackHandler.addEventListener('hardwareBackPress', handleBackPress);
@@ -190,7 +259,7 @@ const Home = () => {
       BackHandler.removeEventListener('hardwareBackPress', handleBackPress);
     }
 
-  }, [handleBackPress]);
+  }, [toastVisible]);
 
 
 
@@ -412,7 +481,10 @@ const Home = () => {
     const state = await NetInfo.fetch();
     const canProceed = await handleNetInfoChange(state);
     if (canProceed) {
-      navigation.push('Acquisition');
+      Toast.hide(toast); // 토스트 인스턴스를 사용하여 숨김 처리 
+      setToast(null); // 상태 초기화 
+      setToastVisible(false);
+      navigation.navigate('Acquisition');
     }
   };
 
@@ -420,7 +492,12 @@ const Home = () => {
     const state = await NetInfo.fetch();
     const canProceed = await handleNetInfoChange(state);
     if (canProceed) {
-      navigation.push('GainsTax');
+      if (toast) {
+        Toast.hide(toast); // 토스트 인스턴스를 사용하여 숨김 처리 
+        setToast(null); // 상태 초기화 
+        setToastVisible(false);
+      }
+      navigation.navigate('GainsTax');
     }
   };
 
@@ -428,37 +505,25 @@ const Home = () => {
     const state = await NetInfo.fetch();
     const canProceed = await handleNetInfoChange(state);
     if (canProceed) {
-      navigation.push('ConsultingReservation');
+      if (toast) {
+        Toast.hide(toast); // 토스트 인스턴스를 사용하여 숨김 처리 
+        setToast(null); // 상태 초기화 
+        setToastVisible(false);
+      }
+      navigation.navigate('CounselorList');
       // SheetManager.show('Consulting', { payload: { navigation } });
     }
   };
 
-  const goLogout = () => {
-    SheetManager.show('logout', {
-      payload: {
-        type: 'error',
-        message: '로그아웃을 하시겠어요?',
-        onPress: { handlePress },
-      },
-    });
-
-    return;
-  };
-
   const goAppInformation = () => {
     // SheetManager.show('InfoAppinformation');
+    if (toast) {
+      Toast.hide(toast); // 토스트 인스턴스를 사용하여 숨김 처리 
+      setToast(null); // 상태 초기화 
+      setToastVisible(false);
+    }
     navigation.navigate('Information');
     return;
-  };
-
-  const handlePress = async buttonIndex => {
-    if (buttonIndex === 'YES') {
-      const logout = await handleWithLogout(currentUser.accessToken);
-      console.log('logout', logout);
-      if (logout) {
-        dispatch(setCurrentUser(null));
-      }
-    }
   };
 
   return (
@@ -536,8 +601,15 @@ const Home = () => {
             shadowRadius: 10,
           }}>
           <ChanelTalkIconFloatButton
-            onPress={() => Linking.openURL('http://pf.kakao.com/_sxdxdxgG')}>
-            <ChanelTalkIcon/>
+            onPress={() => {
+              if (toast) {
+                Toast.hide(toast); // 토스트 인스턴스를 사용하여 숨김 처리 
+                setToast(null); // 상태 초기화 
+                setToastVisible(false);
+              }
+              Linking.openURL('http://pf.kakao.com/_sxdxdxgG')
+            }}>
+            <ChanelTalkIcon />
           </ChanelTalkIconFloatButton>
         </DropShadow>
       </ChanelTalkIconFloatContainer>
@@ -581,7 +653,7 @@ const Home = () => {
               ////console.log('AppInformation');
               goAppInformation();
             }}>
-            <AppInformationIcon/>
+            <AppInformationIcon />
           </AppInformationIconFloatButton>
         </DropShadow>
       </AppInformationIconFloatContainer>

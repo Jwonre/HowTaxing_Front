@@ -282,6 +282,7 @@ const CertificationAcq = props => {
   const handleBackPress = () => {
     const newChatDataList = chatDataList.slice(0, props?.route?.params?.index + 1);
     dispatch(setChatDataList(newChatDataList));
+    dispatch(setCert({ agreePrivacy: false }));
     navigation.goBack();
     return true;
   }
@@ -718,6 +719,7 @@ const CertificationAcq = props => {
           onPress={() => {
             const newChatDataList = chatDataList.slice(0, props?.route?.params?.index + 1);
             dispatch(setChatDataList(newChatDataList));
+            dispatch(setCert({ agreePrivacy: false }));
             navigation.goBack();
 
           }}>
