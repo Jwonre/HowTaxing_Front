@@ -9,6 +9,7 @@ import { SheetManager } from 'react-native-actions-sheet';
 import { useDispatch, useSelector } from 'react-redux';
 import { setCurrentUser } from '../../redux/currentUserSlice';
 import { setAdBanner } from '../../redux/adBannerSlice';
+import VersionCheck from 'react-native-version-check';
 import NetInfo from '@react-native-community/netinfo';
 import axios from 'axios';
 import Config from 'react-native-config'
@@ -115,6 +116,7 @@ const Information = props => {
   const [hasNavigatedBack, setHasNavigatedBack] = useState(false);
   const hasNavigatedBackRef = useRef(hasNavigatedBack);
   const [isConnected, setIsConnected] = useState(true);
+  const currentVersion = VersionCheck.getCurrentVersion();
 
   const handleBackPress = () => {
     navigation.goBack();
@@ -260,13 +262,15 @@ const Information = props => {
           <OptionText onPress={async () => {
             const state = await NetInfo.fetch();
             const canProceed = await handleNetInfoChange(state);
-            if (canProceed) { navigation.navigate('ReservationList') }
+            if (canProceed) { 
+              navigation.navigate('ReservationList') 
+            }
           }}>마이페이지</OptionText>
         </Option>
         <Divider />
         <Option style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
           <OptionText >버전정보</OptionText>
-          <OptionDetailText >v1.0.0</OptionDetailText>
+          <OptionDetailText >v1.0.{Number(currentVersion)}</OptionDetailText>
         </Option>
         <Divider />
         {/*<Option style={{ flexDirection: 'row', justifyContent: 'space-between' }}>

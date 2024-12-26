@@ -181,10 +181,6 @@ const App = () => {
     </>
   );
 };
-const styles = StyleSheet.create({
-  container: {
-      flex: 1,
-      backgroundColor: '#FFFFFF', // 원하는 색상
-  },
-});
+
+
 export default App;

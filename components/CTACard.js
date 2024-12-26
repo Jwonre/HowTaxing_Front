@@ -119,13 +119,16 @@ const CTACard = props => {
   };
   const openKakaoLink = async () => {
     console.log('props', props);
+    console.log('props?.IsGainTax', props?.IsGainTax);
+
     const state = await NetInfo.fetch();
     const canProceed = await handleNetInfoChange(state);
     if (canProceed) {
-      navigation.push('ConsultingReservation2', {
+      navigation.push('CounselorList', {
         isGainsTax: props?.IsGainTax,
         houseInfo: props?.houseInfo,
         Pdata: props?.Pdata,
+        state: 'calculatefinish'
       });
     }
   };

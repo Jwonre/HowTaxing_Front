@@ -322,6 +322,7 @@ const StakeSheetGains = props => {
         type: 'my',
         message: value + '%',
         questionId: 'apartment',
+        progress: 6,
       };
       console.log('chat6', chat6);
       const additionalQuestion = await getadditionalQuestion('', '', houseInfo?.houseId, houseInfo?.sellDate, houseInfo?.sellAmount);

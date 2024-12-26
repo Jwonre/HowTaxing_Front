@@ -12,6 +12,7 @@ import { setCurrentUser } from '../../redux/currentUserSlice';
 import axios from 'axios';
 import NetInfo from "@react-native-community/netinfo"
 import Config from 'react-native-config'
+import { setStartPage } from '../../redux/startPageSlice.js';
 
 const SheetContainer = styled.View`
   background-color: #fff;
@@ -287,6 +288,7 @@ const InfoHandleWithDraw = props => {
               }}>
               <Button
                 onPress={() => {
+                  dispatch(setStartPage(false));
                   handleWithDraw(currentUser.accessToken);
                 }}>
                 <ButtonText >네</ButtonText>

@@ -268,12 +268,14 @@ const JointSheetGain = props => {
                     type: 'my',
                     message: `${personCount}명`,
                     questionId: 'apartment',
+                    progress: 5,
                   };
                   const chat2 = {
                     id: 'stake',
                     type: 'system',
                     message: '지분을 입력해주세요.',
                     questionId: 'apartment',
+                    progress: 5,
                   };
                   dispatch(
                     setChatDataList([...chatDataList, chat, chat1, chat2]),

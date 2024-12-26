@@ -261,7 +261,7 @@ const InfoAlert = props => {
                   if (canProceed) {
                     console.log('push');
                     actionSheetRef.current?.hide();
-                    await navigation.push('ConsultingReservation');
+                    await navigation.push('CounselorList');
                   }
                 }}>
                 <ConsultingButtonText >상담 예약하기</ConsultingButtonText>
