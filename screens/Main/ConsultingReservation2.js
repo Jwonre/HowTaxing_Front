@@ -442,11 +442,15 @@ const ConsultingReservation2 = props => {
   const [timeList, setTimeList] = useState([]);
   const [isExpanded, setIsExpanded] = useState(false);
   const [taxTypeList, setTaxTypeList] = useState([]);
+  const [consultingReservationId, setConsultingReservationId] = useState('');
+
   const { prevChoice, CounselorData, houseInfo, Pdata, isGainsTax, prevSheet } = props.route?.params ? props.route?.params : [];
   const { certType, agreeCert, agreePrivacy } = useSelector(
     state => state.cert.value,
   );
   const [counselorDetailData, setCounselorDetailData] = useState({});
+
+    const [keyboardShouldPersistTaps, setkeyboardShouldPersistTaps] = useState(false);
 
   const toggleExpand = () => {
     setIsExpanded(!isExpanded);
@@ -669,7 +673,56 @@ const ConsultingReservation2 = props => {
         ////console.log(error ? error : 'error');
       });
   };
+const reservationAvailable = async (consultantId,reservationDate,reservationTime) => {
+    console.log('consultantId', consultantId);
+    console.log('reservationDate', reservationDate);
+    console.log('reservationTime', reservationTime);
 
+
+    // 요청 헤더
+    const headers = {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${currentUser.accessToken}`
+    };
+
+    // 요청 바디
+    const data = {
+      consultantId: consultantId,
+      reservationDate: reservationDate ? reservationDate : '',
+      reservationTime: reservationTime ? reservationTime : '',
+
+    };
+    console.log('data', data);
+    console.log('headers', headers);
+    try {
+      const response = await axios.post(`${Config.APP_API_URL}consulting/reservationAvailable`, data, { headers: headers });
+      if (response.data.errYn === 'Y') {
+         SheetManager.show('info', {
+          payload: {
+            type: 'error',
+            errorType: response.data.type,
+            message: response.data.errMsg ? response.data.errMsg : '선택한 날짜와 시간으로 상담 예약이 불가능해요.',
+            description: response.data.errMsgDtl ? response.data.errMsgDtl : '',
+            buttontext: '확인하기',
+          },
+        });
+        return false;
+      } else {
+        return true;
+      }
+    } catch (error) {
+       SheetManager.show('info', {
+        payload: {
+          type: 'error',
+          errorType: response.data.type,
+          message: response.data.errMsg ? response.data.errMsg : '선택한 날짜와 시간으로 상담 예약이 불가능해요.',
+          description: response.data.errMsgDtl ? response.data.errMsgDtl : '',
+          buttontext: '확인하기',
+        },
+      });
+      return false;
+    }
+  };
   const getCounselorDetail = async () => {
     var consultantId = CounselorData.consultantId;
     const url = `${Config.APP_API_URL}consulting/consultantDetail?consultantId=${consultantId}`;
@@ -769,6 +822,7 @@ const ConsultingReservation2 = props => {
       consultingInflowPath: isGainsTax ? '02' : '01',
       calcHistoryId: Pdata.calcHistoryId ? Pdata.calcHistoryId : '',
       consultingRequestContent: text ? text : '',
+      consultingReservationId: consultingReservationId ? consultingReservationId : '',
     };
     //console.log('ConsultingReservation22 data', data);
     //console.log('headers', headers);
@@ -893,6 +947,8 @@ const ConsultingReservation2 = props => {
         width: width,
       }}
       horizontal
+      onStartShouldSetResponder={() => false}
+      keyboardDismissMode="on-drag"
       keyboardShouldPersistTaps='always'
       showsHorizontalScrollIndicator={false}
       scrollEnabled={false}
@@ -1398,18 +1454,41 @@ const ConsultingReservation2 = props => {
                     onPress={async () => {
                       const state = await NetInfo.fetch();
                       const canProceed = await handleNetInfoChange(state);
+
                       if (canProceed) {
-                        setCurrentPageIndex(4);
-                        // setTimeout(() => {
-                        //   navigation.navigate('PaymentScreen', {
-                        //     onPaymentComplete: () => {
-                        //       setCurrentPageIndex(4);
-                        //     },
-                        //   });
-                        // }, 100); // 100ms 딜레이 추가
-                        console.log('PaymentScreen', 'PaymentScreen');
+                        setkeyboardShouldPersistTaps(false);
+                        console.log('log_03', '클릭');
+
+                        const year = selectedDate.getFullYear();
+                          const month = String(selectedDate.getMonth() + 1).padStart(2, '0'); // 월은 0부터 시작하므로 1을 더해줍니다.
+                          const day = String(selectedDate.getDate()).padStart(2, '0');
+
+                          const default_date = `${year}-${month}-${day}`;
+                        const result = await reservationAvailable('1',default_date,selectedList[0]);
+
+                        console.log('log_03', result);
+                        if(result){
+                          navigation.navigate('PaymentScreen', {
+                           consultantId: CounselorData.consultantId ? CounselorData.consultantId : '',
+                           consultingInflowPath: isGainsTax ? '02' : '01',
+                           calcHistoryId : Pdata.calcHistoryId ? Pdata.calcHistoryId : ''
+                            ,name: name, phone: phone, selectedDate: selectedDate, selectedList: selectedList,
+                            onPaymentComplete: (consultingReservationId) => {
+                              setConsultingReservationId(consultingReservationId);
+                              console.log('최신 상태:', { name, phone, selectedDate, selectedList });
+                              setCurrentPageIndex(4); // 특정 탭으로 이동
+                            },
+                          });
+                        }
+
+                        console.log('log_04', result);
+
+                        console.log('log_04',selectedList.length);
+
 
                       }
+
+
                     }}>
                     <ButtonText>다음으로</ButtonText>
                   </Button>

@@ -872,7 +872,8 @@ const ConsultingReservation = props => {
   }, [currentPageIndex]);
 
   return (
-    <ScrollView
+    <ScrollView                    disabled={selectedList.length < 1}
+
       ref={_scrollViewRef}
       pagingEnabled
       style={{
