@@ -1,47 +1,44 @@
 source 'https://github.com/CocoaPods/Specs.git'
 
-# Resolve react_native_pods.rb with node to allow for hoisting
-require Pod::Executable.execute_command('node', ['-p',
-  'require.resolve(
-    "react-native/scripts/react_native_pods.rb",
-    {paths: [process.argv[1]]},
-  )', __dir__]).strip
+require_relative '../node_modules/react-native/scripts/react_native_pods'
+require_relative '../node_modules/@react-native-community/cli-platform-ios/native_modules'
 
-platform :ios, '15.1' # iOS 버전 확인 후 최소 지원 버전 지정
+platform :ios, '12.0'
+
 prepare_react_native_project!
 
-linkage = ENV['USE_FRAMEWORKS']
-if linkage != nil
-  Pod::UI.puts "Configuring Pod with #{linkage}ally linked Frameworks".green
-  use_frameworks! :linkage => linkage.to_sym
-end
+use_frameworks! :linkage => :dynamic
 
 target 'HowTaxingRelease' do
   config = use_native_modules!
 
   use_react_native!(
     :path => config[:reactNativePath],
-    # An absolute path to your application root.
+    :hermes_enabled => false, # Hermes 활성화
     :app_path => "#{Pod::Config.instance.installation_root}/.."
   )
+# pod 'KakaoOpenSDK',https://devrepo.kakao.com/nexus/content/groups/public/com/kakao/sdk/KakaoOpenSDK/1.21.1/KakaoOpenSDK-1.21.1.zip'
 
-  # ChannelIO SDK와 react-native-channel-plugin 추가
   pod 'ChannelIOSDK', podspec: 'https://mobile-static.channel.io/ios/latest/xcframework.podspec'
   pod 'RNChannelIO', :path => '../node_modules/react-native-channel-plugin'
-  # pod 'GoogleSignIn', '7.0.0'
+  pod 'NMapsMap', '~> 3.20.0'
+pod 'RNSVG', :path => '../node_modules/react-native-svg'
+pod 'KakaoSDK', '~> 2.0'
+pod 'react-native-safe-area-context', :path => '../node_modules/react-native-safe-area-context'
+pod 'Alamofire', '~> 5.7'
+
 
   target 'HowTaxingReleaseTests' do
     inherit! :complete
-    # Pods for testing
   end
 
   post_install do |installer|
-    # https://github.com/facebook/react-native/blob/main/packages/react-native/scripts/react_native_pods.rb#L197-L202
-    react_native_post_install(
-      installer,
-      config[:reactNativePath],
-      :mac_catalyst_enabled => false,
-      # :ccache_enabled => true
-    )
-  end
+      react_native_post_install(installer)
+
+      installer.pods_project.targets.each do |target|
+        target.build_configurations.each do |config|
+          config.build_settings['HEADER_SEARCH_PATHS'] ||= ['$(inherited)']
+        end
+      end
+    end
 end
