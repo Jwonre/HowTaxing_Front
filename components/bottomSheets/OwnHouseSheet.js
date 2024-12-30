@@ -558,7 +558,8 @@ const OwnHouseSheet = props => {
                               item: item, prevSheet: 'own',
                               index: props.payload.index,
                               data: props?.payload?.data,
-                              chungYackYn: props?.payload?.chungYackYn
+                              chungYackYn: props?.payload?.chungYackYn,
+                              isRequiredDataMissing: item.isRequiredDataMissing
                             },
                           );
                           //////console.log('detail item', item);
@@ -567,6 +568,8 @@ const OwnHouseSheet = props => {
                           dispatch(setChatDataList(newChatDataList));
                           actionSheetRef.current?.hide();
                         }
+
+                        dispatch(setCert({ agreePrivacy: false }));
                       }}>
                       <CardButtonText >자세히 보기</CardButtonText>
                     </CardButton>
@@ -633,6 +636,7 @@ const OwnHouseSheet = props => {
                     dispatch(setChatDataList(newChatDataList));
                     actionSheetRef.current?.hide();
                   }
+                  dispatch(setCert({ agreePrivacy: false }));
                 }}>
                 <AddCircleIcon />
                 <AddButtonText >직접 등록하기</AddButtonText>
@@ -691,6 +695,7 @@ const OwnHouseSheet = props => {
                         dispatch(setChatDataList(newChatDataList));
                         actionSheetRef.current?.hide();
                       }
+                      dispatch(setCert({ agreePrivacy: false }));
                     }} style={{ margin: 20 }}></AddHouseCircleIcon>
                   <EmptyTitle >
                     {'보유하신 주택이 없으시거나 불러오지 못했어요.'}
@@ -729,6 +734,7 @@ const OwnHouseSheet = props => {
                     dispatch(setChatDataList(newChatDataList));
                     actionSheetRef.current?.hide();
                   }
+                  dispatch(setCert({ agreePrivacy: false }));
                 }}>
                 <AddCircleIcon />
                 <AddButtonText >직접 등록하기</AddButtonText>

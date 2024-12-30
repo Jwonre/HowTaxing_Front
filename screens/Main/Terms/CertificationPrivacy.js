@@ -68,6 +68,8 @@ const CertificationPrivacy = props => {
       index: props.route?.params?.index,
       houseInfo: props?.route.params?.houseInfo,
       Pdata: props?.route.params?.Pdata,
+      CounselorData: props?.route.params?.CounselorData,
+      prevChoice: props.route?.params?.prevChoice,
   });
     return true;
   }
@@ -96,6 +98,8 @@ const CertificationPrivacy = props => {
               index: props.route?.params?.index,
               houseInfo: props?.route.params?.houseInfo,
               Pdata: props?.route.params?.Pdata,
+              CounselorData: props?.route.params?.CounselorData,
+              prevChoice: props.route?.params?.prevChoice,
           });
           }}>
           <CloseIcon />
@@ -163,6 +167,8 @@ const CertificationPrivacy = props => {
                 index: props.route?.params?.index,
                 houseInfo: props?.route.params?.houseInfo,
                 Pdata: props?.route.params?.Pdata,
+                CounselorData: props?.route.params?.CounselorData,
+                prevChoice: props.route?.params?.prevChoice,
             });
             }
             }>

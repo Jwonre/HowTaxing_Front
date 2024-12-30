@@ -9,6 +9,7 @@ import certSlice from './certSlice';
 import directRegisterSlice from './directRegisterSlice';
 import resendSlice from './resendSlice';
 import adBannerSlice from './adBannerSlice';
+import startPageSlice from './startPageSlice';
 
 export const store = configureStore({
   reducer: {
@@ -22,6 +23,7 @@ export const store = configureStore({
     directRegister: directRegisterSlice,
     resend: resendSlice,
     adBanner: adBannerSlice,
+    startPage: startPageSlice,
   },
   middleware: getDefaultMiddleware =>
     getDefaultMiddleware({

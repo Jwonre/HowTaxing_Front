@@ -19,6 +19,7 @@ import { setAdBanner } from '../../redux/adBannerSlice';
 import CheckOnIcon from '../../assets/icons/check_on.svg';
 import { setCert } from '../../redux/certSlice';
 
+
 const Container = styled.View`
   flex: 1.0;
   background-color: #fff;
@@ -403,6 +404,7 @@ const FirstCheckCircle = styled.TouchableOpacity.attrs(props => ({
 
 
 const ConsultingReservation = props => {
+  const CounselorData = props.route?.params?.CounselorData ? props.route?.params?.CounselorData : {};
   const _scrollViewRef = useRef(null);
   const _scrollViewRef2 = useRef(null);
   // const data = [{ key: 'dummy' }]; // FlatList에 필요한 데이터
@@ -410,7 +412,6 @@ const ConsultingReservation = props => {
   const currentPageIndexList = [0, 1, 2, 3, 4];
   const currentUser = useSelector(state => state.currentUser.value);
   const [isKeyboardVisible, setKeyboardVisible] = useState(false);
-
   const navigation = useNavigation();
   const width = Dimensions.get('window').width;
   const height = Dimensions.get('window').height;
@@ -422,7 +423,7 @@ const ConsultingReservation = props => {
   const [phone, setPhone] = useState('');
   const [hasNavigatedBack, setHasNavigatedBack] = useState(false);
   const hasNavigatedBackRef = useRef(hasNavigatedBack);
-  const [selectedDate, setSelectedDate] = useState();
+  const [selectedDate, setSelectedDate] = useState(new Date());
   const [selectedList, setSelectedList] = useState([]);
   const ConsultingList = ['취득세', '양도소득세', '상속세', '증여세'];
   const morningTimes = [];
@@ -437,6 +438,7 @@ const ConsultingReservation = props => {
   const { certType, agreeCert, agreePrivacy } = useSelector(
     state => state.cert.value,
   );
+  const [counselorDetailData, setCounselorDetailData] = useState({});
 
 
   for (let i = 9; i <= 11; i++) {
@@ -454,17 +456,31 @@ const ConsultingReservation = props => {
   }
 
   const handleBackPress = () => {
-    if (currentPageIndex === 0) {
-      SheetManager.show('InfoConsultingCancel', {
-        payload: {
-          type: 'info',
-          message: '상담 예약을 다음에 하시겠어요?',
-          onPress: { handlePress },
-        },
-      });
+    if (props.route.params?.prevChoice) {
+      if (props.route.params?.prevChoice === 'CounselorChoice') {
+        if (currentPageIndex === 1) {
+          navigation.goBack();
+        } else {
+          Keyboard.dismiss();
+          setCurrentPageIndex(currentPageIndex - 1);
+        }
+      } else {
+        if (currentPageIndex === 0) {
+          navigation.goBack();
+        } else {
+          Keyboard.dismiss();
+          setCurrentPageIndex(currentPageIndex - 1);
+        }
+      }
     } else {
-      setCurrentPageIndex(currentPageIndex - 1);
+      if (currentPageIndex === 0) {
+        navigation.goBack();
+      } else {
+        Keyboard.dismiss();
+        setCurrentPageIndex(currentPageIndex - 1);
+      }
     }
+
     return true;
   }
   useFocusEffect(
@@ -497,14 +513,40 @@ const ConsultingReservation = props => {
   };
 
 
-  useEffect(() => {
-    if (currentPageIndex === 0) {
-      getDateTimelist('1', '');
-    }
 
+
+  useEffect(() => {
+    const focusInput = () => {
+      if (currentPageIndex === 1 && input1.current) {
+        input1.current.focus();
+      } else if (currentPageIndex === 2 && input2.current) {
+        input2.current.focus();
+      } else if (currentPageIndex === 4 && input3.current) {
+        input3.current.focus();
+      };
+    }
+    _scrollViewRef.current?.scrollTo({
+      x: width * currentPageIndex,
+      y: 0, animated: true,
+    });
+
+    setTimeout(() => {
+      focusInput();
+      if (currentPageIndex === 2) {
+        getDateTimelist('1', '');
+      }
+    }, 200)
   }, [currentPageIndex]);
 
+
   useEffect(() => {
+    if (props.route?.params?.currentPageIndex) {
+      if (props.route?.params?.currentPageIndex !== 0) {
+        setCurrentPageIndex(props.route.params.currentPageIndex);
+      }
+    } else {
+      getCounselorDetail();
+    }
     dispatch(setAdBanner(false));
     dispatch(setCert({ agreePrivacy: false }));
   }, []);
@@ -518,7 +560,7 @@ const ConsultingReservation = props => {
     //     }
     //   }, [props?.route?.params])
     // );
-  
+
     // useEffect(() => {
     //   if (triggerCallback) {
     //     setCurrentPageIndex(4); // 특정 탭으로 이동
@@ -537,8 +579,9 @@ const ConsultingReservation = props => {
   }, [selectedDate, currentPageIndex]);
 
   const getDateTimelist = async (searchType, selectedDate) => {
-    var consultantId = 1;
-    const url = searchType === '1' ? `${Config.APP_API_URL}consulting/availableSchedule?consultantId=${consultantId}&searchType=${searchType}` : `${Config.APP_API_URL}consulting/availableSchedule?consultantId=${consultantId}&searchType=${searchType}&searchDate=${selectedDate ? selectedDate.getFullYear() : new Date().getFullYear()}-${(selectedDate ? selectedDate.getMonth() + 1 : new Date().getMonth() + 1).toString().padStart(2, '0')}-${(selectedDate ? selectedDate : new Date()).getDate().toString().padStart(2, '0')}`;
+    console.log('getDateTimelist CounselorData', CounselorData);
+    var consultantId = CounselorData.consultantId;
+    const url = searchType === '1' ? `${Config.APP_API_URL}consulting/availableSchedule?consultantId=${consultantId}&searchType=${searchType}` : `${Config.APP_API_URL}consulting/availableSchedule?consultantId=${CounselorData.consultantId}&searchType=${searchType}&searchDate=${selectedDate ? selectedDate.getFullYear() : new Date().getFullYear()}-${(selectedDate ? selectedDate.getMonth() + 1 : new Date().getMonth() + 1).toString().padStart(2, '0')}-${(selectedDate ? selectedDate : new Date()).getDate().toString().padStart(2, '0')}`;
     //const url = `https://devapp.how-taxing.com/consulting/availableSchedule?consultantId=${consultantId}&searchType="${searchType}"`;
     const headers = {
       'Content-Type': 'application/json',
@@ -557,6 +600,7 @@ const ConsultingReservation = props => {
         { headers: headers }
       )
       .then(async response => {
+        //console.log('response', response ? response : []);
         console.log('response.data.dateList', response.data.dateList ? response.data.dateList : []);
         if (response.data.errYn === 'Y') {
           SheetManager.show('info', {
@@ -577,7 +621,6 @@ const ConsultingReservation = props => {
               const list = result
                 .filter(item => item.isReservationAvailable)
                 .map(item => item.consultingDate);
-
               console.log('Datelist:', list);
               console.log('new Date(list[0]):', new Date(list[0]));
               setDataList([...list]);
@@ -622,17 +665,68 @@ const ConsultingReservation = props => {
   };
 
 
-  // useEffect(() => {
-  //   const unsubscribe = navigation.addListener('focus', () => {
-  //     // 페이지가 다시 포커스될 때 실행
-  //     if (route.params?.triggerCallback) {
-  //       // PaymentScreen에서 전달된 콜백 호출
-  //       setCurrentPageIndex(4);
-  //     }
-  //   });
-  
-  //   return unsubscribe; // 리스너 정리
-  // }, [navigation, route.params]);
+  const getCounselorDetail = async () => {
+    var consultantId = CounselorData.consultantId;
+    const url = `${Config.APP_API_URL}consulting/consultantDetail?consultantId=${consultantId}`;
+    //const url = `https://devapp.how-taxing.com/consulting/availableSchedule?consultantId=${consultantId}&searchType="${searchType}"`;
+    const headers = {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${currentUser.accessToken}`
+    };
+    /*
+    const params = {
+      consultantId: consultantId,
+      searchType: searchType,
+    }*/
+
+    // console.log('params', params);
+
+    await axios
+      .get(url,
+        { headers: headers }
+      )
+      .then(async response => {
+        console.log('response', response ? response : []);
+        console.log('response.data.data', response.data.data ? response.data.data : []);
+        if (response.data.errYn === 'Y') {
+          SheetManager.show('info', {
+            payload: {
+              type: 'error',
+              errorType: response.data.type,
+              message: response.data.errMsg ? response.data.errMsg : '상담자 상세정보를 불러오는데 문제가 발생했어요.',
+              description: response.data.errMsgDtl ? response.data.errMsgDtl : '',
+              buttontext: '확인하기',
+            },
+          });
+        } else {
+
+          //console.log('response.data', response.data.data);
+          //console.log('response.data.dateList', response.data.data.dateList);
+          const result = response === undefined ? [] : response.data.data;
+
+          console.log('result:', result);
+          setCounselorDetailData(result);
+
+
+
+        }
+
+      })
+      .catch(function (error) {
+        SheetManager.show('info', {
+          payload: {
+            message: '상담자 상세정보를 불러오는데 문제가 발생했어요.',
+            description: error?.message ? error?.message : '오류가 발생했습니다.',
+            type: 'error',
+            buttontext: '확인하기',
+          }
+        });
+        ////console.log(error ? error : 'error');
+      });
+  };
+
+
+
 
   const requestReservation = async () => {
     console.log('selectedDate', selectedDate);
@@ -662,8 +756,9 @@ const ConsultingReservation = props => {
 
     // 요청 바디
     const data = {
-      consultingReservationId: consultingReservationId ? consultingReservationId : '',
-      consultantId: '1',
+          consultingReservationId: consultingReservationId ? consultingReservationId : '',
+
+      consultantId: CounselorData.consultantId ? CounselorData.consultantId : '',
       customerName: name ? name : '',
       customerPhone: phone ? phone.replace(/-/g, "") : '',
       reservationDate: selectedDate ? `${year}-${month}-${day}` : '',
@@ -673,8 +768,7 @@ const ConsultingReservation = props => {
       calcHistoryId: '',
       consultingRequestContent: text ? text : '',
     };
-    console.log('data', data);
-    console.log('headers', headers);
+
     try {
       const response = await axios.post(`${Config.APP_API_URL}consulting/reservationApply`, data, { headers: headers });
       if (response.data.errYn === 'Y') {
@@ -742,7 +836,7 @@ const ConsultingReservation = props => {
     console.log('reservationDate', reservationDate);
     console.log('reservationTime', reservationTime);
 
-    
+
     // 요청 헤더
     const headers = {
       'Content-Type': 'application/json',
@@ -754,13 +848,13 @@ const ConsultingReservation = props => {
       consultantId: consultantId,
       reservationDate: reservationDate ? reservationDate : '',
       reservationTime: reservationTime ? reservationTime : '',
-      
+
     };
     console.log('data', data);
     console.log('headers', headers);
     try {
       const response = await axios.post(`${Config.APP_API_URL}consulting/reservationAvailable`, data, { headers: headers });
-     
+
       if (response.data.errYn === 'Y') {
          SheetManager.show('info', {
           payload: {
@@ -796,26 +890,6 @@ const ConsultingReservation = props => {
   };
 
 
-  useEffect(() => {
-    const focusInput = () => {
-      if (currentPageIndex === 1 && input1.current) {
-        input1.current.focus();
-      } else if (currentPageIndex === 2 && input2.current) {
-        input2.current.focus();
-      } else if (currentPageIndex === 4 && input3.current) {
-        input3.current.focus();
-      };
-    }
-    _scrollViewRef.current?.scrollTo({
-      x: width * currentPageIndex,
-      y: 0, animated: true,
-    });
-
-    setTimeout(() => {
-      focusInput();
-    }, 200)
-  }, [currentPageIndex]);
-
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -825,16 +899,33 @@ const ConsultingReservation = props => {
           activeOpacity={0.6}
           hitSlop={{ top: 20, bottom: 20, left: 20, right: 20 }}
           onPress={() => {
-            console.log('currentPageIndex', currentPageIndex);
-            SheetManager.show('InfoConsultingCancel', {
-              payload: {
-                type: 'info',
-                message: '상담 예약을 다음에 하시겠어요?',
-                onPress: { handlePress },
-              },
-            });
+            if (props.route.params?.prevChoice) {
+              if (props.route.params?.prevChoice === 'CounselorChoice') {
+                if (currentPageIndex === 1) {
+                  navigation.goBack();
+                } else {
+                  Keyboard.dismiss();
+                  setCurrentPageIndex(currentPageIndex - 1);
+                }
+              } else {
+                if (currentPageIndex === 0) {
+                  navigation.goBack();
+                } else {
+                  Keyboard.dismiss();
+                  setCurrentPageIndex(currentPageIndex - 1);
+                }
+              }
+            } else {
+              if (currentPageIndex === 0) {
+                navigation.goBack();
+              } else {
+                Keyboard.dismiss();
+                setCurrentPageIndex(currentPageIndex - 1);
+              }
+            }
+
           }}>
-          <CloseIcon />
+          <BackIcon />
         </TouchableOpacity>
       ),
       headerTitleAlign: 'center',
@@ -854,7 +945,8 @@ const ConsultingReservation = props => {
   }, [currentPageIndex]);
 
   return (
-    <ScrollView
+    <ScrollView                    disabled={selectedList.length < 1}
+
       ref={_scrollViewRef}
       pagingEnabled
       style={{
@@ -873,7 +965,9 @@ const ConsultingReservation = props => {
 
         <><IntroSection>
           <ProfileAvatar
-            source={require('../../assets/images/Minjungum_Lee_consulting.png')} />
+            source={{ uri: counselorDetailData.profileImageUrl }} />
+          {/*<ProfileAvatar
+            source={{ uri: CounselorData.thumbImageUrl }} />*/}
         </IntroSection>
           <View style={{
             marginLeft: '5%',
@@ -890,9 +984,9 @@ const ConsultingReservation = props => {
               borderBottomWidth: 0,
               marginLeft: 0
             }}>
-              <ProfileTitle>이민정음 세무사</ProfileTitle>
-              <ProfileSubTitle>JS회계법인</ProfileSubTitle>
-              <ProfileSubTitle2>세무사, 공인중개사 전문가</ProfileSubTitle2>
+              <ProfileTitle>{counselorDetailData.consultantName ? counselorDetailData.consultantName : '' + ' ' + counselorDetailData.jobTitle ? counselorDetailData.jobTitle : ''}</ProfileTitle>
+              <ProfileSubTitle>{counselorDetailData.company ? counselorDetailData.company : ''}</ProfileSubTitle>
+              <ProfileSubTitle2>{counselorDetailData.qualification ? counselorDetailData.qualification : ''}</ProfileSubTitle2>
             </ProfileSection>
             <ProfileSection style={{
               flexDirection: 'column',
@@ -922,8 +1016,7 @@ const ConsultingReservation = props => {
             </ProfileSection>
           </View>
           <ProfileSection>
-            <ProfileSubTitle3>1,000건 이상의 재산제세 경험을 바탕으로 양도, 증여, 상속에 관한
-              전문적인 상담 및 컨설팅 진행 도와드리겠습니다.{'\n'}감사합니다.</ProfileSubTitle3>
+            <ProfileSubTitle3>{counselorDetailData.consultantIntroduction}</ProfileSubTitle3>
           </ProfileSection>
           <ProfileSection style={{
             borderBottomWidth: 0, marginTop: 10, flexDirection: 'row', justifyContent: 'space-between'
@@ -937,10 +1030,10 @@ const ConsultingReservation = props => {
               width: '50%',
             }}>
               <ProfileTitle style={{ marginBottom: 10 }}>전문분야</ProfileTitle>
-              <ProfileSubTitle2>• 양도/상속/증여세 신고{'\n'}
-                • 자금출처조사{'\n'}
-                • 부동산 관련 절세{'\n'}
-                • 상속 및 가업승계</ProfileSubTitle2>
+              {counselorDetailData.specialtyList ? counselorDetailData.specialtyList.map((item, index) =>
+              (<ProfileSubTitle2 style={{ marginBottom: 0 }} key={index}>
+                • {item}
+              </ProfileSubTitle2>)) : null}
             </View>
             <View style={{
               flexDirection: 'column',
@@ -951,9 +1044,10 @@ const ConsultingReservation = props => {
               width: '50%',
             }}>
               <ProfileTitle style={{ marginBottom: 10 }}>주요경력</ProfileTitle>
-              <ProfileSubTitle2>• 텍스온세무법인 2021{'\n'}
-                • 신승세무법인 2021{'\n'}
-                • JS세무회계 2023</ProfileSubTitle2>
+              {counselorDetailData.majorExperienceList ? counselorDetailData.majorExperienceList.map((item, index) =>
+              (<ProfileSubTitle2 style={{ marginBottom: 0 }} key={index}>
+                • {item}
+              </ProfileSubTitle2>)) : null}
             </View>
           </ProfileSection>
           <ButtonSection>
@@ -969,7 +1063,7 @@ const ConsultingReservation = props => {
 
                   }
                 }}>
-                <ButtonText >다음으로</ButtonText>
+                <ButtonText >선택하기</ButtonText>
               </Button>
             </ShadowContainer>
             <View
@@ -1172,7 +1266,7 @@ const ConsultingReservation = props => {
               }}>
                 <Button
                   style={{
-                    backgroundColor: phone.length < 11 ? '#E8EAED' : '#2F87FF',
+                    backgroundColor: phone.length < 13 ? '#E8EAED' : '#2F87FF',
                     color: phone.length < 13 ? '#1b1c1f' : '#FFFFFF',
                     width: '100%',
                     height: 50, // height 값을 숫자로 변경하고 단위 제거
@@ -1387,7 +1481,9 @@ const ConsultingReservation = props => {
                         console.log('log_03', result);
                         if(result){
                           navigation.navigate('PaymentScreen', {
-                            consultantId:'1',consultingInflowPath:'01'
+                           consultantId: CounselorData.consultantId ? CounselorData.consultantId : '',
+                            consultingInflowPath:'01'
+
                             ,name: name, phone: phone, selectedDate: selectedDate, selectedList: selectedList,
                             onPaymentComplete: (consultingReservationId) => {
                               setConsultingReservationId(consultingReservationId);
@@ -1396,19 +1492,19 @@ const ConsultingReservation = props => {
                             },
                           });
                         }
-                        
+
 
                         // ,   onPaymentComplete: () => {
                         //   setCurrentPageIndex(4);
                         // },
-                        
+
                         // setCurrentPageIndex(4);
                         // const result = await setPaymentTemp();
                         console.log('log_04', result);
 
                        // if (result) {
                           // dispatch(setCert({agreePrivacy: false}));
-                                   
+
                       //  }
 
                         console.log('log_04',selectedList.length);
@@ -1416,7 +1512,7 @@ const ConsultingReservation = props => {
                         //   'PaymentScreen',
                         //   {
                         //     prevSheet: 'ReservationDetail',
-                            
+
                         //   consultantId:'1',consultingType:'01',consultingInflowPath:'01'
                         //   ,calcHistoryId:2002,name: name, phone: phone, selectedDate: selectedDate, selectedList: selectedList
                         //   },
@@ -1425,8 +1521,8 @@ const ConsultingReservation = props => {
                         // navigation.navigate('PaymentScreen', {
                         //   consultantId:'1',consultingType:'01',consultingInflowPath:'01'
                         //   ,calcHistoryId:2002,name: name, phone: phone, selectedDate: selectedDate, selectedList: selectedList});
-                        
-                       
+
+
                       }
                     }}>
                     {/* onPress={async () => {
@@ -1434,7 +1530,7 @@ const ConsultingReservation = props => {
                        const canProceed = await handleNetInfoChange(state);
                       if (canProceed) {
                         setCurrentPageIndex(4);
-                                         
+
                       }
                     }}> */}
                     <ButtonText>다음으로</ButtonText>
@@ -1566,6 +1662,8 @@ const ConsultingReservation = props => {
                     //console.log('개인정보 수집 및 이용');
                     navigation.navigate('CertificationPrivacy', {
                       prevSheet: 'ConsultingReservation',
+                      CounselorData: CounselorData,
+                      prevChoice: props?.route.params.prevChoice,
                     });
                   }}>
                   <FirstItemTitle style={{ color: '#2F87FF', textDecorationLine: 'underline' }}>개인정보 수집 및 이용</FirstItemTitle>
@@ -1613,7 +1711,7 @@ const ConsultingReservation = props => {
                         setkeyboardShouldPersistTaps(true);
 
                         setCurrentPageIndex(3);
-                        dispatch(setCert({agreePrivacy: false}));
+                        dispatch(setCert({ agreePrivacy: false }));
                       }
                     }}>
                     <ButtonText style={{ color: '#717274' }}>이전으로</ButtonText>
@@ -1641,7 +1739,7 @@ const ConsultingReservation = props => {
                         const result = await requestReservation();
                         console.log('result', result);;
                         if (result) {
-                          dispatch(setCert({agreePrivacy: false}));
+                          dispatch(setCert({ agreePrivacy: false }));
                           navigation.navigate('Home');
                         }
                       }

@@ -301,6 +301,7 @@ const OwnHouseSheet2 = props => {
           isGainsTax: true
         },
       })
+      console.log('[OwnHouseSheet2] selectedList:',ownHouseList);
     }
   }, [])
 
@@ -507,10 +508,10 @@ const OwnHouseSheet2 = props => {
                           const canProceed = await handleNetInfoChange(state);
                           if (canProceed) {
                             actionSheetRef.current?.hide();
-
+                            console.log('props.payload?.data', props.payload?.data);
                             props.payload.navigation.push(
                               'OwnedHouseDetail',
-                              { item: item, prevSheet: 'own2', index: props.payload.index, data: props.payload?.data, chungYackYn: props.payload?.chungYackYn },
+                              { isRequiredDataMissing: item.isRequiredDataMissing, item: item, prevSheet: 'own2', index: props.payload.index, data: props.payload?.data, chungYackYn: props.payload?.chungYackYn },
                               'OwnedHouseDetail',
                             );
                           } else {
@@ -518,6 +519,7 @@ const OwnHouseSheet2 = props => {
                             dispatch(setChatDataList(newChatDataList));
                             actionSheetRef.current?.hide();
                           }
+                          dispatch(setCert({ agreePrivacy: false }));
                         }}>
                         <CardButtonText >자세히 보기</CardButtonText>
                       </CardButton>
@@ -582,6 +584,8 @@ const OwnHouseSheet2 = props => {
                     dispatch(setChatDataList(newChatDataList));
                     actionSheetRef.current?.hide();
                   }
+
+                  dispatch(setCert({ agreePrivacy: false }));
                 }}>
                 <AddCircleIcon />
                 <AddButtonText >직접 등록하기</AddButtonText>
@@ -638,6 +642,7 @@ const OwnHouseSheet2 = props => {
                         dispatch(setChatDataList(newChatDataList));
                         actionSheetRef.current?.hide();
                       }
+                      dispatch(setCert({ agreePrivacy: false }));
                     }} style={{ margin: 20 }}></AddHouseCircleIcon>
                   <EmptyTitle >
                     {'불러오지 못한 주택이 있을 수 있어요.'}
@@ -676,6 +681,7 @@ const OwnHouseSheet2 = props => {
                     dispatch(setChatDataList(newChatDataList));
                     actionSheetRef.current?.hide();
                   }
+                  dispatch(setCert({ agreePrivacy: false }));
                 }}>
                 <AddCircleIcon />
                 <AddButtonText >직접 등록하기</AddButtonText>
@@ -742,7 +748,7 @@ const OwnHouseSheet2 = props => {
               const state = await NetInfo.fetch();
               const canProceed = await handleNetInfoChange(state);
               if (canProceed) {
-                ////console.log('[OwnHouseSheet2] selectedList:',
+                console.log('[OwnHouseSheet2] selectedList:',ownHouseList);
                 //   ownHouseList?.find(
                 //</DropShadow>     item => item.houseId === selectedList[0].houseId,
                 //</SheetContainer>   ),

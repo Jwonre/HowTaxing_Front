@@ -3,6 +3,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { PixelRatio } from 'react-native';
 
+
 // Screens
 import StartPage from '../screens/Auth/StartPage';
 import Login from '../screens/Auth/Login';
@@ -21,6 +22,7 @@ import ConsultingReservationHistory from '../screens/Main/ConsultingReservationH
 import ConsultingReservationDetail from '../screens/Main/ConsultingReservationDetail';
 import PaymentDetailScreen from '../screens/Main/PaymentDetailScreen.js';
 import ReservationList from '../screens/Main/ReservationList.js';
+import CounselorList from '../screens/Main/CounselorList';
 
 import ReservationDetail from '../screens/Main/ReservationDetail';
 import PaymentDetail from '../screens/Main/PaymentDetail';
@@ -28,6 +30,7 @@ import PaymentDetail from '../screens/Main/PaymentDetail';
 
 // Redux
 import { useSelector, useDispatch } from 'react-redux';
+
 
 import Acquisition from '../screens/Main/Acquisition';
 import CheckTerms from '../screens/Main/CheckTerms';
@@ -137,9 +140,9 @@ import UpdateConsultingContentAlert from '../components/bottomSheets/UpdateConsu
 const Stack = createNativeStackNavigator();
 
 const AppNavigator = () => {
-  const fontSizeBase = 18;
+  const fontSizeBase = 8;
   const currentUser = useSelector(state => state.currentUser?.value);
-  const [firstLaunch, setFirstLaunch] = useState(true);
+  const startLaunch = useSelector(state => state.startPage.value);
   const horizontalAnimation = {
     gestureDirection: 'horizontal',
     cardStyleInterpolator: ({ current, layouts }) => {
@@ -157,6 +160,8 @@ const AppNavigator = () => {
       };
     },
   };
+
+
 
   useEffect(() => {
     registerSheet('mapViewList', MapViewListSheet);
@@ -219,12 +224,22 @@ const AppNavigator = () => {
 
   }, []);
 
+
+
+
+
   return (
     <NavigationContainer>
       <SheetProvider>
         <Stack.Navigator screenOptions={horizontalAnimation}>
-          {currentUser ? (
-            <Stack.Group>
+          {startLaunch === true ? (
+            <Stack.Screen
+              name="StartPage"
+              component={StartPage}
+              options={{ headerShown: false }}
+            />
+          ) : currentUser ? (
+            <Stack.Group >
               <Stack.Screen
                 name="Home"
                 component={Home}
@@ -239,6 +254,7 @@ const AppNavigator = () => {
               />
               <Stack.Screen name="Acquisition" component={Acquisition} />
               <Stack.Screen name="GainsTax" component={GainsTax} />
+              <Stack.Screen name="CounselorList" component={CounselorList} />
               <Stack.Screen name="ConsultingReservation" component={ConsultingReservation} />
               <Stack.Screen name="ConsultingReservation2" component={ConsultingReservation2} />
               <Stack.Screen name="PaymentScreen" component={PaymentScreen} />
@@ -246,7 +262,6 @@ const AppNavigator = () => {
 
               <Stack.Screen name="PaymentCompletScreen" component={PaymentCompletScreen} />
 
-            
 
               <Stack.Screen name="FamilyHouse" component={FamilyHouse} />
               <Stack.Screen
@@ -348,20 +363,6 @@ const AppNavigator = () => {
             </Stack.Group>
           ) : (
             <Stack.Group>
-              {firstLaunch ? (
-                <Stack.Screen
-                  name="StartPage"
-                  component={StartPage}
-                  listeners={{
-                    transitionEnd: () => {
-                      // StartPage로의 이동이 끝나면 일정 시간 후에 firstLaunch를 false로 설정
-                      setTimeout(() => {
-                        setFirstLaunch(false);
-                      }, 6800);  // 1000ms = 1초 딜레이
-                    },
-                  }}
-                />
-              ) : null}
               <Stack.Screen name="Login" component={Login} />
               <Stack.Screen name="Login_ID" component={Login_ID} />
               <Stack.Screen name="AddMembership" component={AddMembership} />
@@ -395,7 +396,7 @@ const AppNavigator = () => {
           )}
         </Stack.Navigator>
       </SheetProvider>
-    </NavigationContainer>
+    </NavigationContainer >
   );
 };
 

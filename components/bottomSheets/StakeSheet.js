@@ -244,6 +244,7 @@ const StakeSheet = props => {
         type: 'my',
         message: value + '%',
         questionId: 'apartment',
+        progress: 6,
       };
       const chat2 = acquisitionTax.find(el => el.id === 'moreHouse');
       dispatch(
