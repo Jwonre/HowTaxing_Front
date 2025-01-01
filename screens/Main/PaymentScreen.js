@@ -31,6 +31,9 @@ import CheckOnIcon from '../../assets/icons/check_on.svg';
 
 import CheckIcon from '../../assets/icons/check_circle.svg';
 import ImpossibleIcon from '../../assets/icons/impossible_circle.svg';
+
+import CheckoutPage from '../payment/Checkout';
+
 const ProgressSection = styled.View`
     flex-direction: row;
   width: 100%;
@@ -71,6 +74,37 @@ const ListItem = styled.View`
   padding-bottom: 12px;
 
 `;
+
+const FirstItem = styled.View`
+  flex-direction: row; 
+  justify-content: flex-end;
+  align-items: center;
+  margin-bottom: 40px;
+  padding: 0 10px;
+`;
+
+const FirstItemTitle = styled.Text`
+  font-size: 13px;
+  font-family: Pretendard-Bold;
+  color: #1b1c1f;
+  line-height: 18px;
+`;
+
+
+const FirstCheckCircle = styled.TouchableOpacity.attrs(props => ({
+  activeOpacity: 0.8,
+}))`
+    width: 20px;
+    height: 20px;
+    border-radius: 5px;  
+    background-color: #fff;
+    border: 2px solid #BAC7D5;  
+    align-items: center;
+    justify-content: center;
+    margin-right: 15px;
+    margin-left: 10;
+`;
+
 const CheckCircle = styled.TouchableOpacity.attrs(props => ({
   activeOpacity: 0.8,
 }))`
@@ -113,13 +147,13 @@ const Button = styled.TouchableOpacity.attrs(props => ({
 const ButtonText = styled.Text`
   font-size: 17px;
   font-family: Pretendard-Bold;
-  color: ${props => (props.active ? '#fff' : '#a3a5a8')};
   line-height: 20px;
   color: #fff;
 `;
 
 const PaymentScreen = props => {
   const dispatch = useDispatch();
+  const currentUser = useSelector(state => state.currentUser.value);
 
   const [phoneNumber, setPhoneNumber] = useState('');
   const [authNum, setAuthNumber] = useState('');
@@ -135,230 +169,92 @@ const PaymentScreen = props => {
   const [isModalVisible, setIsModalVisible] = useState(false); // 팝업 상태 관리
   const [phoneNumberOk, setPhoneNumberOk] = useState('1');
   const inputRef = useRef();
+  const [reservationProductInfo, setReservationProductInfo] = useState(null);
 
   const [agreePrivacy, setAgreePrivacy] = useState(false); // 팝업 상태 관리
 
+  const id = props.route?.params.consultantId;
+  console.log('log_1', id);
+
+  // 페이지 들어가자마자 호출
+
   useEffect(() => {
-    const timer = setTimeout(() => {
-      if (inputRef.current) {
-        inputRef.current.focus();
-      }
-    }, 500); // 딜레이 추가
-    return () => clearTimeout(timer);
-  }, []);
-  const openModal = () => {
-    setIsModalVisible(true); // 팝업 열기
-  };
 
-  const closeModal = () => {
-    setIsModalVisible(false); // 팝업 닫기
-  };
-  useEffect(() => {
-    let interval = null;
-    if (isTimerActive && timer > 0) {
-      interval = setInterval(() => {
-        setTimer((prev) => prev - 1);
-      }, 1000); // 1초마다 감소
-    } else if (timer === 0) {
-      clearInterval(interval); // 타이머 종료
-    }
-    return () => clearInterval(interval); // 컴포넌트 언마운트 시 정리
-  }, [isTimerActive, timer]);
+    const id = props.route?.params.consultantId ?? '1';
+    console.log('log_id 2', id);
 
-  const formatTime = (time) => {
-    const minutes = Math.floor(time / 60); // 분
-    const seconds = time % 60; // 초
-    console.log("남은시간 : ", `${minutes}:${seconds < 10 ? `0${seconds}` : seconds}`);
-    return `${minutes}:${seconds < 10 ? `0${seconds}` : seconds}`; // "분:초" 형식
-  };
-  const handleResendAuth = async () => {
-    setTimer(180); // 타이머를 3분으로 초기화
-    setIsTimerActive(false); // 타이머 활성화
-    setAuthNumber('');
-    const state = await NetInfo.fetch();
-    const canProceed = await handleNetInfoChange(state);
-    if (canProceed) {
-      console.log("sendAuthMobile", `${props.route?.params?.authType}`);
-      sendAuthMobile(phoneNumber.replace(/-/g, ''), props.route?.params?.authType, props?.route?.params?.id);
-    }
-    console.log('인증번호 재전송');
-    // 인증번호 재전송 API 호출 로직 추가
-  };
-
-  // 버튼 클릭 핸들러
-  const handleNextStep = async () => {
-    if (step === 1) {
-      console.log("sendAuthMobile:", '팝업');
-
-      const state = await NetInfo.fetch();
-      const canProceed = await handleNetInfoChange(state);
-      console.log("test:", `state :$state [${canProceed}]`);
-
-      if (canProceed) {
-        sendAuthMobile(phoneNumber.replace(/-/g, ''), props.route?.params?.authType, props?.route?.params?.id);
-
-      }
-
-
-    } else {
-      const state = await NetInfo.fetch();
-      const canProceed = await handleNetInfoChange(state);
-      if (canProceed) {
-        sendAuthMobileConfirm(phoneNumber.replace(/-/g, ''), props.route?.params?.authType, authNum);
-      }
-      // // 두 번째 단계에서 확인 버튼 클릭
-      // console.log('인증번호 확인:', authNum);
-      // // 여기서 인증번호 검증 로직 추가
-      // navigation.navigate('NextScreen'); // 다음 화면으로 이동
-    }
-  };
-
-
-
-
-  const sendAuthMobile = async (phoneNumber, authType, id = null) => {
-    console.log("sendAuthMobile:", `${phoneNumber} || ${authType}`);
-    const data = {
-      phoneNumber,
-      authType,
-    };
-
+    // id가 존재하고, 공백이 아닐 때만 실행
     if (id) {
-      data.id = id;
+      console.log('log_Calling getProductInfo with id:', id);
+      getProductInfo(id);
+    } else {
+      console.warn('log_Consultant ID is missing!');
     }
 
-    axios
-      .post(`${Config.APP_API_URL}sms/sendAuthCode`, data)
-      .then(async response => {
-        if (response.data.errYn === 'Y') {
-          SheetManager.show('info', {
-            payload: {
-              type: 'error',
-              message: response.data.errMsg ? response.data.errMsg : '인증번호 발송에 실패하였습니다.',
-              description: response.data.errMsgDtl ? response.data.errMsgDtl : '',
-              buttontext: '확인하기',
-            },
-          });
-          return;
-        } else {
-          const userData = response.data.data;
-          setStep(2);
-          setIsTimerActive(true); // 타이머 활성화
-        }
-        // 성공적인 응답 처리
+  }, [props.route?.params?.consultantId]);
 
-      })
-      .catch(error => {
-        // 오류 처리
-        SheetManager.show('info', {
-          payload: {
-            message: '인증번호 발송에 실패하였습니다.',
-            description: error?.message,
-            type: 'error',
-            buttontext: '확인하기',
-          }
-        });
-        console.error(error);
-      });
-  };
-  const sendAuthMobileConfirm = async (phoneNumber, authType, authCode) => {
-    const data = {
-      phoneNumber,
-      authType,
-      authCode,
+  console.log('log_currentUser:', currentUser);
 
+  const getProductInfo = async (consultantId) => {
+    const url = `${Config.APP_API_URL}product/productInfo?consultantId=${consultantId}`;
+    //const url = `https://devapp.how-taxing.com/consulting/availableSchedule?consultantId=${consultantId}&searchType="${searchType}"`;
+    const headers = {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${currentUser.accessToken}`
     };
-
-    console.log("sendAuthMobile: ", data.phoneNumber);
-    console.log("sendAuthMobile: ", data.authCode);
-    console.log("sendAuthMobile: ", data.authType);
-
-
-    axios
-      .post(`${Config.APP_API_URL}sms/checkAuthCode`, data)
-      .then(async response => {
+    /*
+    const params = {
+      consultantId: consultantId,
+      searchType: searchType,
+    }*/
+    console.log('log_url', url);
+    // console.log('params', params);
+    console.log('log_headers', headers);
+    await axios
+      .get(url,
+        { headers: headers }
+      )
+      .then(response => {
+        console.log('log_response.data', response.data);
         if (response.data.errYn === 'Y') {
           SheetManager.show('info', {
             payload: {
               type: 'error',
-              message: response.data.errMsg ? response.data.errMsg : '인증번호 검증에 실패했습니다..',
+              errorType: response.data.type,
+              message: response.data.errMsg ? response.data.errMsg : '상품 정보를 불러오는데 문제가 발생했어요.',
               description: response.data.errMsgDtl ? response.data.errMsgDtl : '',
               buttontext: '확인하기',
             },
           });
-          return;
         } else {
-          const userData = response.data.data;
-          console.log("sendAuthMobile: ", userData.authKey);
+          console.log('log_response.data', response.data.data);
 
-          findUserId(phoneNumber.replace(/-/g, ''), userData.authKey);
+          const result = response === undefined ? null : response.data.data;
+          if (result != null) {
+            console.log('result:', result);
+            //console.log('new Date(list[0]):', new Date(list[0]));
+            setReservationProductInfo(result);
+
+          }
 
         }
-        // 성공적인 응답 처리
 
       })
-      .catch(error => {
-        // 오류 처리
+      .catch(function (error) {
         SheetManager.show('info', {
           payload: {
-            message: '인증번호 발송에 실패하였습니다.',
-            description: error?.message,
+            message: '상품 정보를 불러오는데 문제가 발생했어요.',
+            description: error?.message ? error?.message : '오류가 발생했습니다.',
             type: 'error',
             buttontext: '확인하기',
           }
         });
-        console.error(error);
+        ////console.log(error ? error : 'error');
       });
   };
 
 
-  const findUserId = async (phoneNumber, authKey) => {
-    const data = {
-      phoneNumber,
-      authKey,
 
-    };
-
-    console.log("sendAuthMobile:22 ", data.authCode);
-
-
-    axios
-      .post(`${Config.APP_API_URL}user/findUserId`, data)
-      .then(async response => {
-        if (response.data.errYn === 'Y') {
-          SheetManager.show('info', {
-            payload: {
-              type: 'error',
-              message: response.data.errMsg ? response.data.errMsg : '아이디 찾기에 실패했습니다..',
-              description: response.data.errMsgDtl ? response.data.errMsgDtl : '',
-              buttontext: '확인하기',
-            },
-          });
-          return;
-        } else {
-          const userData = response.data.data;
-          openModal();
-        }
-        // 성공적인 응답 처리
-
-      })
-      .catch(error => {
-        // 오류 처리
-        SheetManager.show('info', {
-          payload: {
-            message: '아이디 찾기에 실패하였습니다.',
-            description: error?.message,
-            type: 'error',
-            buttontext: '확인하기',
-          }
-        });
-        console.error(error);
-      });
-  };
-
-  const temp = (accessToken, refreshToken) => {
-    return [accessToken, refreshToken];
-  }
 
 
   /**
@@ -392,24 +288,7 @@ const PaymentScreen = props => {
       }
     });
   };
-  const validatePhoneNum = (phoneNumber) => {
-    const cleaned = phoneNumber.replace(/\D/g, '');
-    return /^(\d{3})(\d{3,4})(\d{4})$/.test(cleaned);
-  };
 
-  const handleResetPassword = () => {
-    console.log('비밀번호 재설정 로직 실행');
-    navigation.push('PasswordReSettingScreen', { authType: 'RESET_PW', LoginAcessType: 'IDPASS' });
-    closeModal();
-
-  };
-
-  const handleLogin = () => {
-    console.log('로그인 로직 실행');
-    closeModal();
-    navigation.goBack();
-
-  };
   const handleBackPress = () => {
     navigation.goBack();
     return true;
@@ -459,6 +338,38 @@ const PaymentScreen = props => {
     });
   }, []);
 
+  const selectedDate = props.route?.params?.selectedDate;
+  const selectedList = props.route?.params?.selectedList;
+
+  const year = selectedDate.getFullYear();
+  const month = String(selectedDate.getMonth() + 1).padStart(2, '0'); // 월은 0부터 시작하므로 1을 더해줍니다.
+  const day = String(selectedDate.getDate()).padStart(2, '0');
+
+  const default_date = `${year}-${month}-${day}`;
+  const date = new Date(default_date);
+  const dayNames = ['일', '월', '화', '수', '목', '금', '토'];
+
+  const dayOfWeek = dayNames[date.getDay()];
+
+  const time = selectedList ? selectedList[0] : '00:00'; // 시간
+  const [hours, minutes] = time.split(':').map(Number); // 시간과 분 분리
+  const isPM = hours >= 12; // 12 이상이면 오후
+  const formattedHours = isPM ? hours - 12 || 12 : hours || 12; // 12시간제로 변환
+  const period = isPM ? '오후' : '오전'; // 오전/오후 결정
+
+  const dateInfo = `${year}년 ${month}월 ${day}일 (${dayOfWeek})`;
+  const timeInfo = `(${period} ${formattedHours}시)`;
+
+  const productPrice = Number(reservationProductInfo?.productPrice ?? '0')?.toLocaleString();
+  const productDiscountPrice = Number(reservationProductInfo?.productDiscountPrice ?? '0')?.toLocaleString();
+  const paymentAmount = Number(reservationProductInfo?.paymentAmount ?? '0')?.toLocaleString();
+  const name = props?.route?.params?.name;
+  const phone = props?.route?.params?.phone;
+
+  console.log('log_reservationProductInfo', reservationProductInfo);
+  console.log('log_reservationProductInfo_productPrice', productPrice);
+  console.log('log_reservationProductInfo_productDiscountPrice', productDiscountPrice);
+  console.log('log_reservationProductInfo_paymentAmount', paymentAmount);
   return (
     <View style={styles.rootContainer}>
       {/* 파란색 라인 */}
@@ -476,10 +387,10 @@ const PaymentScreen = props => {
           <ProfileInfoSection>
 
             <LeftContainer>
-              <Text style={styles.dateText}>2024년 5월 7일 (수)</Text>
+              <Text style={styles.dateText}>{dateInfo}</Text>
               <Text style={styles.timeText}>
-                <Text style={styles.timeHighlight}>13:00</Text>
-                <Text style={styles.timeSubtext}> (오후 1시)</Text>
+                <Text style={styles.timeHighlight}>{time}</Text>
+                <Text style={styles.timeSubtext}> {timeInfo}</Text>
               </Text>
             </LeftContainer>
             <RightContainer>
@@ -496,13 +407,13 @@ const PaymentScreen = props => {
             {/* 고객명 */}
             <View style={styles.rowInfo}>
               <Text style={styles.labelInfo}>고객명</Text>
-              <Text style={styles.valueIfno}>홍길동</Text>
+              <Text style={styles.valueIfno}>{name}</Text>
             </View>
 
             {/* 할인 금액 */}
             <View style={styles.rowInfo}>
               <Text style={styles.labelInfo}>전화번호</Text>
-              <Text style={styles.valueIfno}>010-0000-0000</Text>
+              <Text style={styles.valueIfno}>{phone}</Text>
             </View>
 
 
@@ -514,22 +425,22 @@ const PaymentScreen = props => {
             {/* 상품 금액 */}
             <View style={styles.rowInfo}>
               <Text style={styles.labelInfo}>상품 금액</Text>
-              <Text style={styles.valueIfno}>50,000 원</Text>
+              <Text style={styles.valueIfno}>{productPrice} 원</Text>
             </View>
 
             {/* 할인 금액 */}
             <View style={styles.rowInfo}>
               <Text style={styles.labelInfo}>할인 금액</Text>
-              <Text style={styles.valueIfno}>0 원</Text>
+              <Text style={styles.valueIfno}>{productDiscountPrice} 원</Text>
             </View>
 
             {/* 구분선 */}
             <View style={styles.separator} />
 
             {/* 결제 금액 */}
-            <View style={styles.rowInfo}>
+            <View style={styles.rowInfo2}>
               <Text style={styles.labelInfo}>결제 금액</Text>
-              <Text style={styles.totalValue}>50,000 원</Text>
+              <Text style={styles.valueIfno}>{paymentAmount} 원</Text>
             </View>
           </View>
 
@@ -538,12 +449,15 @@ const PaymentScreen = props => {
           <ListItem style={{ marginTop: 0 }}>
             <View style={{ flexDirection: 'row' }}>
               <TouchableOpacity
-                onPress={() => {
-                  navigation.navigate('Privacy2', { agreePrivacy: agreePrivacy, navigation: navigation, tokens: props?.route?.params?.tokens ? props?.route?.params?.tokens : null, id: props?.route?.params?.id ? props?.route?.params?.id : null, password: props?.route?.params?.password ? props?.route?.params?.password : null });
-                }} >
-                <ListItemTitle style={{ color: '#2F87FF', textDecorationLine: 'underline' }}>개인정보 수집 및 이용</ListItemTitle>
+                onPress={async () => {
+                  //console.log('개인정보 수집 및 이용');
+                  navigation.navigate('CertificationPrivacy', {
+                    prevSheet: 'ConsultingReservation',
+                  });
+                }}>
+                <FirstItemTitle style={{ color: '#2F87FF', textDecorationLine: 'underline' }}>개인정보 수집 및 이용</FirstItemTitle>
               </TouchableOpacity>
-              <ListItemTitle>에 대하여 동의하시나요?</ListItemTitle>
+              <FirstItemTitle>에 대하여 동의하시나요?</FirstItemTitle>
             </View>
             <CheckCircle
               onPress={() => {
@@ -560,42 +474,95 @@ const PaymentScreen = props => {
           {/* 만료 메시지 */}
           {/* 만료 메시지와 재전송 버튼 */}
 
-          
+
         </View>
 
-   
+
       </ScrollView>
       <ButtonSection>
         <Button
-        style={{ backgroundColor: agreePrivacy ? '#2F87FF' : '#E8EAED' }}
-         active={agreePrivacy} // agreePrivacy 값에 따라 버튼 활성화
+          style={{ backgroundColor: agreePrivacy ? '#2F87FF' : '#E8EAED' }}
+          active={agreePrivacy} // agreePrivacy 값에 따라 버튼 활성화
           width={width}
-          onPress={async() => {
+          onPress={async () => {
             const state = await NetInfo.fetch();
             const canProceed = await handleNetInfoChange(state);
             if (canProceed) {
-                console.log('결제하기');
-                navigation.push('PaymentCompletScreen',);
-                navigation.navigate('PaymentCompletScreen', {
-                  onPaymentComplete: () => {
-                    if (props.route.params?.onPaymentComplete) {
-                      props.route.params.onPaymentComplete(); // 콜백 호출
-                    }
-                    navigation.goBack(); // 이전 화면으로 이동
-                  },
+              console.log('log_결제하기');
+              const today = new Date(); // 현재 날짜와 시간
+              const year = selectedDate.getFullYear();
+              const month = String(selectedDate.getMonth() + 1).padStart(2, '0'); // 월은 0부터 시작하므로 1을 더해줍니다.
+              const day = String(selectedDate.getDate()).padStart(2, '0');
+            
+              const date = `${year}${month}${day}`;
+              const default_time = `${today.getHours()}${today.getMinutes()}${today.getSeconds()}`;
+              const orderId = `order_${date}${default_time}_${reservationProductInfo.productId}`
+              console.log('log_결제하기', orderId);
+              console.log('log_결제하기 productPrice', Number(reservationProductInfo?.productPrice ?? '0'));
+              console.log('log_결제하기 productDiscountPrice', Number(reservationProductInfo?.productDiscountPrice ?? '0'));
+              console.log('log_결제하기 paymentAmount', Number(reservationProductInfo?.paymentAmount ?? '0'));
+              console.log('log_결제하기 id', id);
+              console.log('log_결제하기 name', name);
+              console.log('log_결제하기 phone', phone);
+              console.log('log_결제하기 default_date',default_date);
+              console.log('log_결제하기 consultingInflowPath',props?.route?.params?.consultingInflowPath ?? '');
+              console.log('log_결제하기 calcHistoryId',props?.route?.params?.calcHistoryId ?? '');
+              console.log('log_결제하기 orderId',orderId);
+              console.log('log_결제하기 productName',reservationProductInfo?.productName);
+
+              const state = await NetInfo.fetch();
+              const canProceed = await handleNetInfoChange(state);
+              if (canProceed) {
+                console.log('log_결제하기',canProceed);
+
+                navigation.replace('TossPaymentScreen', {
+                  consultantId: id,
+                  customerName: name,
+                  customerPhone: phone,
+                  reservationDate: default_date,
+                  reservationTime: time,
+                  consultingInflowPath: props?.route?.params?.consultingInflowPath ?? '',
+                  calcHistoryId: props?.route?.params?.calcHistoryId ?? '',
+                  orderId: orderId,
+                  orderName: reservationProductInfo?.productNameproductName,
+                  productPrice: Number(reservationProductInfo?.productPrice ?? '0'),
+                  productDiscountPrice: Number(reservationProductInfo?.productDiscountPrice ?? '0'),
+                  paymentAmount: Number(reservationProductInfo?.paymentAmount ?? '0'),
+  
+                  productId: reservationProductInfo?.productId, // 고유 주문 ID
+                  productName: reservationProductInfo?.productName, // 주문 이름
+                  onPaymentComplete: props?.route?.params?.onPaymentComplete,
                 });
-               
+              }
+              
+              // Checkout 호출
+              // await CheckoutPage({
+              //   amount: 50000, // 결제 금액
+              //   orderId: 'ORDER_ID_12345', // 고유 주문 ID
+              //   orderName: 'JS회계법인 서비스', // 주문 이름
+              //   successUrl: `${Config.APP_API_URL}payment/success`, // 결제 성공 리다이렉트 URL
+              //   failUrl: `${Config.APP_API_URL}payment/fail`, // 결제 실패 리다이렉트 URL
+              // });
+
+              // navigation.navigate('CheckoutPage', {
+              //   amount: 50000,
+              //   orderId: 'ORDER_ID_12345',
+              //   orderName: 'JS회계법인 서비스',
+              //   successUrl: `${Config.APP_API_URL}payment/success`,
+              //   failUrl: `${Config.APP_API_URL}payment/fail`,
+              // });
             }
           }
             // 동의하기 버튼 클릭 시 redux에 저장
           }>
           <ButtonText
-          active={agreePrivacy}>{'결제하기'}</ButtonText>
+            style={{ color: agreePrivacy ? '#fff' : '#a3a5a8' }}
+            active={agreePrivacy}>{'결제하기'}</ButtonText>
         </Button>
-       
+
       </ButtonSection>
       {/* 모달 */}
-    </View>
+    </View >
 
   );
 };
@@ -665,6 +632,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 10, // 각 행 간 간격
   },
+  rowInfo2: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginTop: 10, // 각 행 간 간격
+    marginBottom: 10, // 각 행 간 간격
+  },
 
   labelInfo: {
     fontSize: 13,
@@ -702,14 +676,14 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     paddingBottom: 80, // 버튼 공간 확보
-    paddingHorizontal:20,
-    paddingTop:20,
+    paddingHorizontal: 20,
+    paddingTop: 20,
   },
   secondContent: {
     marginTop: 20,
   },
   inputSection: {
-    marginTop: 22,
+    marginTop: 2,
   },
   Line1: {
     height: 1, // 라인 두께
