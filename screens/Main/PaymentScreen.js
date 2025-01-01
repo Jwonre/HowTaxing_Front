@@ -431,7 +431,7 @@ const PaymentScreen = props => {
             {/* 할인 금액 */}
             <View style={styles.rowInfo}>
               <Text style={styles.labelInfo}>할인 금액</Text>
-              <Text style={styles.valueIfno}>{paymentAmount} 원</Text>
+              <Text style={styles.valueIfno}>{productDiscountPrice} 원</Text>
             </View>
 
             {/* 구분선 */}
@@ -440,7 +440,7 @@ const PaymentScreen = props => {
             {/* 결제 금액 */}
             <View style={styles.rowInfo2}>
               <Text style={styles.labelInfo}>결제 금액</Text>
-              <Text style={styles.valueIfno}>{productDiscountPrice} 원</Text>
+              <Text style={styles.valueIfno}>{paymentAmount} 원</Text>
             </View>
           </View>
 
