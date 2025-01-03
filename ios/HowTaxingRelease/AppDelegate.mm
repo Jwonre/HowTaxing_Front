@@ -1,7 +1,10 @@
 #import "AppDelegate.h"
 
+#import <React/RCTBridge.h>
 #import <React/RCTBundleURLProvider.h>
-#import <RNKakaoLogins.h>
+#import <React/RCTRootView.h>
+#import "RNKakaoLogins.h"
+#import <NaverThirdPartyLogin/NaverThirdPartyLoginConnection.h>
 
 @implementation AppDelegate
 
@@ -12,7 +15,7 @@
   
   // naver
     if ([url.scheme isEqualToString:@"{{ CUSTOM URL SCHEME }}"]) {
-      return [[NaverThirdPartyLoginConnection getSharedInstance] application:app openURL:url options:options];
+      return [[NaverThirdPartyLoginConnection getSharedInstance] application:application openURL:url options:options];
     }
   
   //kakao

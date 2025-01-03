@@ -18,12 +18,6 @@
 		BE06C8E72D26C262008F48B7 /* main.jsbundle in Resources */ = {isa = PBXBuildFile; fileRef = BE06C8E52D26B3B3008F48B7 /* main.jsbundle */; };
 		BE4714552D264CF00010FDD3 /* ChannelIOFront.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = BE4714542D264CF00010FDD3 /* ChannelIOFront.xcframework */; };
 		BE4714562D264CF00010FDD3 /* ChannelIOFront.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = BE4714542D264CF00010FDD3 /* ChannelIOFront.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		BE4714592D264E300010FDD3 /* NMapsGeometry.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = BE4714582D264E300010FDD3 /* NMapsGeometry.xcframework */; };
-		BE47145A2D264E300010FDD3 /* NMapsGeometry.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = BE4714582D264E300010FDD3 /* NMapsGeometry.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		BE47145C2D264E610010FDD3 /* NMapsMap.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = BE47145B2D264E610010FDD3 /* NMapsMap.xcframework */; };
-		BE47145D2D264E610010FDD3 /* NMapsMap.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = BE47145B2D264E610010FDD3 /* NMapsMap.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		BE47145F2D264E8D0010FDD3 /* NaverThirdPartyLogin.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = BE47145E2D264E8D0010FDD3 /* NaverThirdPartyLogin.xcframework */; };
-		BE4714602D264E8D0010FDD3 /* NaverThirdPartyLogin.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = BE47145E2D264E8D0010FDD3 /* NaverThirdPartyLogin.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -44,9 +38,6 @@
 			dstSubfolderSpec = 10;
 			files = (
 				BE4714562D264CF00010FDD3 /* ChannelIOFront.xcframework in Embed Frameworks */,
-				BE47145A2D264E300010FDD3 /* NMapsGeometry.xcframework in Embed Frameworks */,
-				BE4714602D264E8D0010FDD3 /* NaverThirdPartyLogin.xcframework in Embed Frameworks */,
-				BE47145D2D264E610010FDD3 /* NMapsMap.xcframework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -73,10 +64,11 @@
 		89C6BE57DB24E9ADA2F236DE /* Pods-HowTaxingRelease-HowTaxingReleaseTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-HowTaxingRelease-HowTaxingReleaseTests.release.xcconfig"; path = "Target Support Files/Pods-HowTaxingRelease-HowTaxingReleaseTests/Pods-HowTaxingRelease-HowTaxingReleaseTests.release.xcconfig"; sourceTree = "<group>"; };
 		BE06C8E52D26B3B3008F48B7 /* main.jsbundle */ = {isa = PBXFileReference; lastKnownFileType = text; name = main.jsbundle; path = ios/main.jsbundle; sourceTree = "<group>"; };
 		BE4714542D264CF00010FDD3 /* ChannelIOFront.xcframework */ = {isa = PBXFileReference; expectedSignature = "AppleDeveloperProgram:8278Q64QFC:Channel Corp."; lastKnownFileType = wrapper.xcframework; name = ChannelIOFront.xcframework; path = Pods/ChannelIOSDK/ChannelIOFront/ChannelIOFront.xcframework; sourceTree = "<group>"; };
-		BE4714582D264E300010FDD3 /* NMapsGeometry.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = NMapsGeometry.xcframework; path = Pods/NMapsGeometry/framework/NMapsGeometry.xcframework; sourceTree = "<group>"; };
-		BE47145B2D264E610010FDD3 /* NMapsMap.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = NMapsMap.xcframework; path = Pods/NMapsMap/framework/NMapsMap.xcframework; sourceTree = "<group>"; };
-		BE47145E2D264E8D0010FDD3 /* NaverThirdPartyLogin.xcframework */ = {isa = PBXFileReference; expectedSignature = "AppleDeveloperProgram:U6VV7FMD97:NHN Corporation"; lastKnownFileType = wrapper.xcframework; name = NaverThirdPartyLogin.xcframework; path = "Pods/naveridlogin-sdk-ios/NaverThirdPartyLogin.xcframework"; sourceTree = "<group>"; };
 		BE4A527A2D276B98003CD9FD /* hermes.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = hermes.xcframework; path = "Pods/hermes-engine/destroot/Library/Frameworks/universal/hermes.xcframework"; sourceTree = "<group>"; };
+		BE6735062D280A6E00A8AFA7 /* HowTaxingRelease-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "HowTaxingRelease-Bridging-Header.h"; sourceTree = "<group>"; };
+		BE6735072D280A8600A8AFA7 /* RCTAppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RCTAppDelegate.h; sourceTree = "<group>"; };
+		BE6735082D280A8600A8AFA7 /* RCTRootViewFactory.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RCTRootViewFactory.h; sourceTree = "<group>"; };
+		BE6735092D280A8600A8AFA7 /* RNKakaoLogins.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNKakaoLogins.h; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
@@ -93,10 +85,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				BE47145C2D264E610010FDD3 /* NMapsMap.xcframework in Frameworks */,
 				0C80B921A6F3F58F76C31292 /* libPods-HowTaxingRelease.a in Frameworks */,
-				BE4714592D264E300010FDD3 /* NMapsGeometry.xcframework in Frameworks */,
-				BE47145F2D264E8D0010FDD3 /* NaverThirdPartyLogin.xcframework in Frameworks */,
 				BE4714552D264CF00010FDD3 /* ChannelIOFront.xcframework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -124,6 +113,10 @@
 		13B07FAE1A68108700A75B9A /* HowTaxingRelease */ = {
 			isa = PBXGroup;
 			children = (
+				BE6735072D280A8600A8AFA7 /* RCTAppDelegate.h */,
+				BE6735082D280A8600A8AFA7 /* RCTRootViewFactory.h */,
+				BE6735092D280A8600A8AFA7 /* RNKakaoLogins.h */,
+				BE6735062D280A6E00A8AFA7 /* HowTaxingRelease-Bridging-Header.h */,
 				13B07FAF1A68108700A75B9A /* AppDelegate.h */,
 				13B07FB01A68108700A75B9A /* AppDelegate.mm */,
 				13B07FB51A68108700A75B9A /* Images.xcassets */,
@@ -139,9 +132,6 @@
 			isa = PBXGroup;
 			children = (
 				BE4A527A2D276B98003CD9FD /* hermes.xcframework */,
-				BE47145E2D264E8D0010FDD3 /* NaverThirdPartyLogin.xcframework */,
-				BE47145B2D264E610010FDD3 /* NMapsMap.xcframework */,
-				BE4714582D264E300010FDD3 /* NMapsGeometry.xcframework */,
 				BE4714542D264CF00010FDD3 /* ChannelIOFront.xcframework */,
 				ED297162215061F000B7C4FE /* JavaScriptCore.framework */,
 				5DCACB8F33CDC322A6C60F78 /* libPods-HowTaxingRelease.a */,
@@ -523,12 +513,9 @@
 					"$(inherited)",
 					"\"${PODS_ROOT}/ChannelIOSDK/ChannelIOFront\"",
 					"\"${PODS_ROOT}/NMapsGeometry/framework\"",
-					"\"${PODS_ROOT}/NMapsMap/framework\"",
 					"\"${PODS_ROOT}/hermes-engine/destroot/Library/Frameworks/universal\"",
 					"\"${PODS_ROOT}/naveridlogin-sdk-ios\"",
 					"\"${PODS_XCFRAMEWORKS_BUILD_DIR}/ChannelIOSDK\"",
-					"\"${PODS_XCFRAMEWORKS_BUILD_DIR}/NMapsGeometry\"",
-					"\"${PODS_XCFRAMEWORKS_BUILD_DIR}/NMapsMap\"",
 					"\"${PODS_XCFRAMEWORKS_BUILD_DIR}/hermes-engine/Pre-built\"",
 					"\"${PODS_XCFRAMEWORKS_BUILD_DIR}/naveridlogin-sdk-ios\"",
 					"\"$(PODS_ROOT)/ChannelIOSDK/**\"",
@@ -570,13 +557,9 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"${PODS_ROOT}/ChannelIOSDK/ChannelIOFront\"",
-					"\"${PODS_ROOT}/NMapsGeometry/framework\"",
-					"\"${PODS_ROOT}/NMapsMap/framework\"",
 					"\"${PODS_ROOT}/hermes-engine/destroot/Library/Frameworks/universal\"",
 					"\"${PODS_ROOT}/naveridlogin-sdk-ios\"",
 					"\"${PODS_XCFRAMEWORKS_BUILD_DIR}/ChannelIOSDK\"",
-					"\"${PODS_XCFRAMEWORKS_BUILD_DIR}/NMapsGeometry\"",
-					"\"${PODS_XCFRAMEWORKS_BUILD_DIR}/NMapsMap\"",
 					"\"${PODS_XCFRAMEWORKS_BUILD_DIR}/hermes-engine/Pre-built\"",
 					"\"${PODS_XCFRAMEWORKS_BUILD_DIR}/naveridlogin-sdk-ios\"",
 					"\"$(PODS_ROOT)/ChannelIOSDK/**\"",
