@@ -32,7 +32,6 @@ import CheckOnIcon from '../../assets/icons/check_on.svg';
 import CheckIcon from '../../assets/icons/check_circle.svg';
 import ImpossibleIcon from '../../assets/icons/impossible_circle.svg';
 
-import CheckoutPage from '../payment/Checkout';
 
 const ProgressSection = styled.View`
     flex-direction: row;

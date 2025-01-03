@@ -77,3 +77,12 @@ To learn more about React Native, take a look at the following resources:
 - [Learn the Basics](https://reactnative.dev/docs/getting-started) - a **guided tour** of the React Native **basics**.
 - [Blog](https://reactnative.dev/blog) - read the latest official React Native **Blog** posts.
 - [`@facebook/react-native`](https://github.com/facebook/react-native) - the Open Source; GitHub **repository** for React Native.
+
+
+#ios 셋팅
+#import <NMapsMap/NMGLatLng.h>  에러가 발생할 경우  해당 파일들을 찾은후에 #import <NMapsGeometry/NMGLatLng.h> 로 변경  
+#네이버 맵뷰에서 몇몇 파일들을 참조 못하는경우가 발생 
+
+RNDeviceInfo-RNDeviceInfoPrivacyInfo 에서 빌드시에 에러 ios Deployment Target 9.0 으로 되어 있기때문에 버전안맞는경우 에러 발생 
+
+

@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 54;
+	objectVersion = 60;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -14,6 +14,16 @@
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
 		7699B88040F8A987B510C191 /* libPods-HowTaxingRelease-HowTaxingReleaseTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 19F6CBCC0A4E27FBF8BF4A61 /* libPods-HowTaxingRelease-HowTaxingReleaseTests.a */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
+		9EBE0A5C14B8FC5AA5E8FD28 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB81A68108700A75B9A /* PrivacyInfo.xcprivacy */; };
+		BE06C8E72D26C262008F48B7 /* main.jsbundle in Resources */ = {isa = PBXBuildFile; fileRef = BE06C8E52D26B3B3008F48B7 /* main.jsbundle */; };
+		BE4714552D264CF00010FDD3 /* ChannelIOFront.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = BE4714542D264CF00010FDD3 /* ChannelIOFront.xcframework */; };
+		BE4714562D264CF00010FDD3 /* ChannelIOFront.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = BE4714542D264CF00010FDD3 /* ChannelIOFront.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		BE4714592D264E300010FDD3 /* NMapsGeometry.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = BE4714582D264E300010FDD3 /* NMapsGeometry.xcframework */; };
+		BE47145A2D264E300010FDD3 /* NMapsGeometry.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = BE4714582D264E300010FDD3 /* NMapsGeometry.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		BE47145C2D264E610010FDD3 /* NMapsMap.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = BE47145B2D264E610010FDD3 /* NMapsMap.xcframework */; };
+		BE47145D2D264E610010FDD3 /* NMapsMap.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = BE47145B2D264E610010FDD3 /* NMapsMap.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		BE47145F2D264E8D0010FDD3 /* NaverThirdPartyLogin.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = BE47145E2D264E8D0010FDD3 /* NaverThirdPartyLogin.xcframework */; };
+		BE4714602D264E8D0010FDD3 /* NaverThirdPartyLogin.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = BE47145E2D264E8D0010FDD3 /* NaverThirdPartyLogin.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -25,6 +35,23 @@
 			remoteInfo = HowTaxingRelease;
 		};
 /* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		BE4714572D264CF00010FDD3 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				BE4714562D264CF00010FDD3 /* ChannelIOFront.xcframework in Embed Frameworks */,
+				BE47145A2D264E300010FDD3 /* NMapsGeometry.xcframework in Embed Frameworks */,
+				BE4714602D264E8D0010FDD3 /* NaverThirdPartyLogin.xcframework in Embed Frameworks */,
+				BE47145D2D264E610010FDD3 /* NMapsMap.xcframework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		00E356EE1AD99517003FC87E /* HowTaxingReleaseTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = HowTaxingReleaseTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -44,6 +71,12 @@
 		5DCACB8F33CDC322A6C60F78 /* libPods-HowTaxingRelease.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-HowTaxingRelease.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = HowTaxingRelease/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		89C6BE57DB24E9ADA2F236DE /* Pods-HowTaxingRelease-HowTaxingReleaseTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-HowTaxingRelease-HowTaxingReleaseTests.release.xcconfig"; path = "Target Support Files/Pods-HowTaxingRelease-HowTaxingReleaseTests/Pods-HowTaxingRelease-HowTaxingReleaseTests.release.xcconfig"; sourceTree = "<group>"; };
+		BE06C8E52D26B3B3008F48B7 /* main.jsbundle */ = {isa = PBXFileReference; lastKnownFileType = text; name = main.jsbundle; path = ios/main.jsbundle; sourceTree = "<group>"; };
+		BE4714542D264CF00010FDD3 /* ChannelIOFront.xcframework */ = {isa = PBXFileReference; expectedSignature = "AppleDeveloperProgram:8278Q64QFC:Channel Corp."; lastKnownFileType = wrapper.xcframework; name = ChannelIOFront.xcframework; path = Pods/ChannelIOSDK/ChannelIOFront/ChannelIOFront.xcframework; sourceTree = "<group>"; };
+		BE4714582D264E300010FDD3 /* NMapsGeometry.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = NMapsGeometry.xcframework; path = Pods/NMapsGeometry/framework/NMapsGeometry.xcframework; sourceTree = "<group>"; };
+		BE47145B2D264E610010FDD3 /* NMapsMap.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = NMapsMap.xcframework; path = Pods/NMapsMap/framework/NMapsMap.xcframework; sourceTree = "<group>"; };
+		BE47145E2D264E8D0010FDD3 /* NaverThirdPartyLogin.xcframework */ = {isa = PBXFileReference; expectedSignature = "AppleDeveloperProgram:U6VV7FMD97:NHN Corporation"; lastKnownFileType = wrapper.xcframework; name = NaverThirdPartyLogin.xcframework; path = "Pods/naveridlogin-sdk-ios/NaverThirdPartyLogin.xcframework"; sourceTree = "<group>"; };
+		BE4A527A2D276B98003CD9FD /* hermes.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = hermes.xcframework; path = "Pods/hermes-engine/destroot/Library/Frameworks/universal/hermes.xcframework"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
@@ -60,7 +93,11 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BE47145C2D264E610010FDD3 /* NMapsMap.xcframework in Frameworks */,
 				0C80B921A6F3F58F76C31292 /* libPods-HowTaxingRelease.a in Frameworks */,
+				BE4714592D264E300010FDD3 /* NMapsGeometry.xcframework in Frameworks */,
+				BE47145F2D264E8D0010FDD3 /* NaverThirdPartyLogin.xcframework in Frameworks */,
+				BE4714552D264CF00010FDD3 /* ChannelIOFront.xcframework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -101,6 +138,11 @@
 		2D16E6871FA4F8E400B85C8A /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				BE4A527A2D276B98003CD9FD /* hermes.xcframework */,
+				BE47145E2D264E8D0010FDD3 /* NaverThirdPartyLogin.xcframework */,
+				BE47145B2D264E610010FDD3 /* NMapsMap.xcframework */,
+				BE4714582D264E300010FDD3 /* NMapsGeometry.xcframework */,
+				BE4714542D264CF00010FDD3 /* ChannelIOFront.xcframework */,
 				ED297162215061F000B7C4FE /* JavaScriptCore.framework */,
 				5DCACB8F33CDC322A6C60F78 /* libPods-HowTaxingRelease.a */,
 				19F6CBCC0A4E27FBF8BF4A61 /* libPods-HowTaxingRelease-HowTaxingReleaseTests.a */,
@@ -118,6 +160,7 @@
 		83CBB9F61A601CBA00E9B192 = {
 			isa = PBXGroup;
 			children = (
+				BE06C8E52D26B3B3008F48B7 /* main.jsbundle */,
 				13B07FAE1A68108700A75B9A /* HowTaxingRelease */,
 				832341AE1AAA6A7D00B99B32 /* Libraries */,
 				00E356EF1AD99517003FC87E /* HowTaxingReleaseTests */,
@@ -185,6 +228,7 @@
 				00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */,
 				00EEFC60759A1932668264C0 /* [CP] Embed Pods Frameworks */,
 				E235C05ADACE081382539298 /* [CP] Copy Pods Resources */,
+				BE4714572D264CF00010FDD3 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
@@ -243,8 +287,10 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
+				BE06C8E72D26C262008F48B7 /* main.jsbundle in Resources */,
+				81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */,
+				9EBE0A5C14B8FC5AA5E8FD28 /* PrivacyInfo.xcprivacy in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -253,7 +299,7 @@
 /* Begin PBXShellScriptBuildPhase section */
 		00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */ = {
 			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
+			buildActionMask = 8;
 			files = (
 			);
 			inputPaths = (
@@ -263,13 +309,13 @@
 			name = "Bundle React Native code and images";
 			outputPaths = (
 			);
-			runOnlyForDeploymentPostprocessing = 0;
+			runOnlyForDeploymentPostprocessing = 1;
 			shellPath = /bin/sh;
 			shellScript = "set -e\n\nWITH_ENVIRONMENT=\"$REACT_NATIVE_PATH/scripts/xcode/with-environment.sh\"\nREACT_NATIVE_XCODE=\"$REACT_NATIVE_PATH/scripts/react-native-xcode.sh\"\n\n/bin/sh -c \"$WITH_ENVIRONMENT $REACT_NATIVE_XCODE\"\n";
 		};
 		00EEFC60759A1932668264C0 /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
+			buildActionMask = 8;
 			files = (
 			);
 			inputFileListPaths = (
@@ -279,7 +325,7 @@
 			outputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-HowTaxingRelease/Pods-HowTaxingRelease-frameworks-${CONFIGURATION}-output-files.xcfilelist",
 			);
-			runOnlyForDeploymentPostprocessing = 0;
+			runOnlyForDeploymentPostprocessing = 1;
 			shellPath = /bin/sh;
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-HowTaxingRelease/Pods-HowTaxingRelease-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
@@ -467,8 +513,27 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "";
+				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = RNG43XHWL3;
 				ENABLE_BITCODE = NO;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"${PODS_ROOT}/ChannelIOSDK/ChannelIOFront\"",
+					"\"${PODS_ROOT}/NMapsGeometry/framework\"",
+					"\"${PODS_ROOT}/NMapsMap/framework\"",
+					"\"${PODS_ROOT}/hermes-engine/destroot/Library/Frameworks/universal\"",
+					"\"${PODS_ROOT}/naveridlogin-sdk-ios\"",
+					"\"${PODS_XCFRAMEWORKS_BUILD_DIR}/ChannelIOSDK\"",
+					"\"${PODS_XCFRAMEWORKS_BUILD_DIR}/NMapsGeometry\"",
+					"\"${PODS_XCFRAMEWORKS_BUILD_DIR}/NMapsMap\"",
+					"\"${PODS_XCFRAMEWORKS_BUILD_DIR}/hermes-engine/Pre-built\"",
+					"\"${PODS_XCFRAMEWORKS_BUILD_DIR}/naveridlogin-sdk-ios\"",
+					"\"$(PODS_ROOT)/ChannelIOSDK/**\"",
+					"$(PROJECT_DIR)/../node_modules/react-native/sdks/hermes",
+				);
 				INFOPLIST_FILE = HowTaxingRelease/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -481,8 +546,10 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)";
+				PRODUCT_BUNDLE_IDENTIFIER = com.xmonster.howtaxing;
 				PRODUCT_NAME = HowTaxingRelease;
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "HowTaxing Dev Profile";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
@@ -495,7 +562,26 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
+				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "";
+				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = RNG43XHWL3;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"${PODS_ROOT}/ChannelIOSDK/ChannelIOFront\"",
+					"\"${PODS_ROOT}/NMapsGeometry/framework\"",
+					"\"${PODS_ROOT}/NMapsMap/framework\"",
+					"\"${PODS_ROOT}/hermes-engine/destroot/Library/Frameworks/universal\"",
+					"\"${PODS_ROOT}/naveridlogin-sdk-ios\"",
+					"\"${PODS_XCFRAMEWORKS_BUILD_DIR}/ChannelIOSDK\"",
+					"\"${PODS_XCFRAMEWORKS_BUILD_DIR}/NMapsGeometry\"",
+					"\"${PODS_XCFRAMEWORKS_BUILD_DIR}/NMapsMap\"",
+					"\"${PODS_XCFRAMEWORKS_BUILD_DIR}/hermes-engine/Pre-built\"",
+					"\"${PODS_XCFRAMEWORKS_BUILD_DIR}/naveridlogin-sdk-ios\"",
+					"\"$(PODS_ROOT)/ChannelIOSDK/**\"",
+					"$(PROJECT_DIR)/../node_modules/react-native/sdks/hermes",
+				);
 				INFOPLIST_FILE = HowTaxingRelease/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -508,8 +594,10 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)";
+				PRODUCT_BUNDLE_IDENTIFIER = com.xmonster.howtaxing;
 				PRODUCT_NAME = HowTaxingRelease;
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "HowTaxing Dist App Store Connect Profile";
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
 			};
@@ -549,6 +637,8 @@
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = "";
+				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)/../node_modules/react-native/sdks/hermes";
+				"FRAMEWORK_SEARCH_PATHS[arch=*]" = "";
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -584,7 +674,11 @@
 					"-DFOLLY_CFG_NO_COROUTINES=1",
 					"-DFOLLY_HAVE_CLOCK_GETTIME=1",
 				);
+				OTHER_LDFLAGS = "$(inherited)  ";
+				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) DEBUG";
+				USE_HERMES = false;
 			};
 			name = Debug;
 		};
@@ -622,6 +716,7 @@
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = "";
+				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)/../node_modules/react-native/sdks/hermes";
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
@@ -649,7 +744,10 @@
 					"-DFOLLY_CFG_NO_COROUTINES=1",
 					"-DFOLLY_HAVE_CLOCK_GETTIME=1",
 				);
+				OTHER_LDFLAGS = "$(inherited)  ";
+				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
+				USE_HERMES = false;
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;

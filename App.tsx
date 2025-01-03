@@ -116,9 +116,9 @@ const App = () => {
   console.log('NativeModules:', NativeModules); // 모든 네이티브 모듈 출력
 
 
-  KeyHashModule.getKeyHash()
-  .then((hash: any) => console.log('Hash Key:', hash))
-  .catch((err: any) => console.error('Error fetching Key Hash:', err));
+//   KeyHashModule.getKeyHash()
+//   .then((hash: any) => console.log('Hash Key:', hash))
+//   .catch((err: any) => console.error('Error fetching Key Hash:', err));
 
   useEffect(() => {
     naverLogin.initialize({
