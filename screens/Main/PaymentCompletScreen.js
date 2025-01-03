@@ -65,7 +65,7 @@ const AdBannerMainImage = styled.Image.attrs(props => ({
 `;
 
 
-const PaymentCompletScreen = props =>  {
+const PaymentCompletScreen = props => {
   const [timer, setTimer] = useState(5);
   const [progress, setProgress] = useState(0);
   const navigation = useNavigation();
@@ -136,8 +136,8 @@ const PaymentCompletScreen = props =>  {
       } else {
         console.error('onPaymentComplete is not defined at this point');
       }
-      
-     
+
+
     }
   }, [timer, navigation]);
 

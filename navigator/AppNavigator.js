@@ -20,11 +20,14 @@ import PaymentScreen from '../screens/Main/PaymentScreen';
 import PaymentCompletScreen from '../screens/Main/PaymentCompletScreen';
 import ConsultingReservationHistory from '../screens/Main/ConsultingReservationHistory';
 import ConsultingReservationDetail from '../screens/Main/ConsultingReservationDetail';
-import ReservationListScreen from '../screens/Main/ReservationListScreen.js';
+import PaymentDetailScreen from '../screens/Main/PaymentDetailScreen.js';
 import ReservationList from '../screens/Main/ReservationList.js';
 import CounselorList from '../screens/Main/CounselorList';
 
 import ReservationDetail from '../screens/Main/ReservationDetail';
+import PaymentDetail from '../screens/Main/PaymentDetail';
+
+
 // Redux
 import { useSelector, useDispatch } from 'react-redux';
 
@@ -33,8 +36,8 @@ import Acquisition from '../screens/Main/Acquisition';
 import CheckTerms from '../screens/Main/CheckTerms';
 import GainsTax from '../screens/Main/GainsTax';
 import ConsultingReservation from '../screens/Main/ConsultingReservation';
-import ConsultingReservation2Screen from '../screens/Main/ConsultingReservation2Screen.js';
 import ConsultingReservation2 from '../screens/Main/ConsultingReservation2.js';
+import TossPaymentScreen from '../screens/Main/TossPaymentScreen.js';
 
 
 import FixedHouse from '../screens/Main/FixedHouse';
@@ -254,6 +257,10 @@ const AppNavigator = () => {
               <Stack.Screen name="CounselorList" component={CounselorList} />
               <Stack.Screen name="ConsultingReservation" component={ConsultingReservation} />
               <Stack.Screen name="ConsultingReservation2" component={ConsultingReservation2} />
+              <Stack.Screen name="PaymentScreen" component={PaymentScreen} />
+              <Stack.Screen name="TossPaymentScreen" component={TossPaymentScreen} />
+
+              <Stack.Screen name="PaymentCompletScreen" component={PaymentCompletScreen} />
 
 
               <Stack.Screen name="FamilyHouse" component={FamilyHouse} />
@@ -315,6 +322,10 @@ const AppNavigator = () => {
                 name="ReservationDetail"
                 component={ReservationDetail}
               />
+                 <Stack.Screen
+                name="PaymentDetail"
+                component={PaymentDetail}
+              />
               <Stack.Screen
                 name="FixedHouseDetail"
                 component={FixedHouseDetail}
@@ -361,14 +372,13 @@ const AppNavigator = () => {
               <Stack.Screen name="PasswordReSettingScreen" component={PasswordReSettingScreen} />
               <Stack.Screen name="PasswordChangeScreen" component={PasswordChangeScreen} />
               <Stack.Screen name="PhoneAuthConfirmScreen" component={PhoneAuthConfirmScreen} />
-              <Stack.Screen name="PaymentScreen" component={PaymentScreen} />
-              <Stack.Screen name="PaymentCompletScreen" component={PaymentCompletScreen} />
+
               <Stack.Screen name="ConsultingReservationDetail" component={ConsultingReservationDetail} />
               <Stack.Screen name="ConsultingReservationHistory" component={ConsultingReservationHistory} />
-              <Stack.Screen name="ConsultingReservation2Screen" component={ConsultingReservation2Screen} />
+
               <Stack.Screen
-                name="ReservationListScreen"
-                component={ReservationListScreen}
+                name="PaymentDetailScreen"
+                component={PaymentDetailScreen}
               />
               <Stack.Group screenOptions={{ presentation: 'modal' }}>
                 <Stack.Screen name="Cert2" component={Cert2} />

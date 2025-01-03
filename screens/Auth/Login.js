@@ -12,6 +12,7 @@ import Config from 'react-native-config'
 import platformToKorean from '../../utils/platformUtils';
 import kakaoAuthManager from '../../screens/Auth/KakaoAuthManager';
 import NaverAuthManager from '../../screens/Auth/NaverAuthManager';
+import AppleAuthManager from '../../screens/Auth/AppleAuthManager';
 
 
 const Container = styled.ImageBackground.attrs(props => ({
@@ -244,8 +245,10 @@ const Login = () => {
     const state = await NetInfo.fetch();
     const canProceed = await handleNetInfoChange(state);
     if (canProceed) {
+
+      const token = await AppleAuthManager.signIn();
       setSocialType('APPLE');
-      socialLogin('NAVER', '');
+      socialLogin('APPLE',token.identityToken??'');
 
       // navigation.navigate('LoginWebview', { onWebViewMessage: handleWebViewMessage, 'socialType': 'naver', });
     }
@@ -393,7 +396,7 @@ const Login = () => {
       id,
     };
 
-    console.log('네이버:',`${socialType} || ${accessToken} || ${id}`);
+    console.log('log_'+socialType,`${socialType} || ${accessToken} || ${id}`);
 
     console.log(`${Config.APP_API_URL}user/socialLogin}`);
     axios
