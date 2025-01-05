@@ -86,3 +86,8 @@ To learn more about React Native, take a look at the following resources:
 RNDeviceInfo-RNDeviceInfoPrivacyInfo 에서 빌드시에 에러 ios Deployment Target 9.0 으로 되어 있기때문에 버전안맞는경우 에러 발생 
 
 
+ npm run build:ios
+또는 
+npx react-native bundle --platform ios --dev false --entry-file index.js --bundle-output ios/main.jsbundle --assets-dest ios
+
+

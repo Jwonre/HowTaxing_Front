@@ -140,9 +140,16 @@ import UpdateConsultingContentAlert from '../components/bottomSheets/UpdateConsu
 const Stack = createNativeStackNavigator();
 
 const AppNavigator = () => {
+
+
+
   const fontSizeBase = 8;
   const currentUser = useSelector(state => state.currentUser?.value);
   const startLaunch = useSelector(state => state.startPage.value);
+
+  console.log('startLaunch 상태:', startLaunch);
+  console.log('currentUser 상태:', currentUser);
+  
   const horizontalAnimation = {
     gestureDirection: 'horizontal',
     cardStyleInterpolator: ({ current, layouts }) => {
@@ -227,6 +234,8 @@ const AppNavigator = () => {
 
 
 
+
+  console.log('startLaunch', startLaunch);
 
   return (
     <NavigationContainer>

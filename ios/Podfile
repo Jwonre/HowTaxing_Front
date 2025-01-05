@@ -24,10 +24,12 @@ pod 'RNChannelIO', :path => '../node_modules/react-native-channel-plugin'
 #  pod 'NMapsMap', '~> 3.20.0'
  pod 'RNSVG', :path => '../node_modules/react-native-svg'
  pod 'KakaoSDK', '~> 2.0'
+#  pod 'NaverThirdPartyLogin', :path => '../node_modules/@react-native-seoul/naver-login'
+
   # pod 'GoogleSignIn', '7.0.0'
   use_react_native!(
     :path => config[:reactNativePath],
-        :hermes_enabled => false,
+                    :hermes_enabled => true,
     # An absolute path to your application root.
     :app_path => "#{Pod::Config.instance.installation_root}/.."
   )
