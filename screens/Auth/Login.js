@@ -248,7 +248,7 @@ const Login = () => {
 
       const token = await AppleAuthManager.signIn();
       setSocialType('APPLE');
-      socialLogin('APPLE',token.identityToken??'');
+      socialLogin('APPLE',token.identityToken??'','');
 
       // navigation.navigate('LoginWebview', { onWebViewMessage: handleWebViewMessage, 'socialType': 'naver', });
     }
@@ -393,7 +393,8 @@ const Login = () => {
     const data = {
       socialType,
       accessToken,
-      id,
+      ...(id ? { id } : {}), // id가 truthy인 경우에만 추가
+
     };
 
     console.log('log_'+socialType,`${socialType} || ${accessToken} || ${id}`);

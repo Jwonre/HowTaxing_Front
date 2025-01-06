@@ -145,6 +145,10 @@ const App = () => {
       serviceUrlSchemeIOS,
       disableNaverAppAuthIOS: true,
     });
+    console.log('naverLogin:', appName);
+    console.log('naverLogin:', consumerKey);
+    console.log('naverLogin:', consumerSecret);
+    console.log('naverLogin:', serviceUrlSchemeIOS);
 
     console.log('naverLogin:', naverLogin);
   }, []);
