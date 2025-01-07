@@ -76,7 +76,7 @@ const ListItem = styled.View`
 `;
 
 const FirstItem = styled.View`
-  flex-direction: row; 
+  flex-direction: row;
   justify-content: flex-end;
   align-items: center;
   margin-bottom: 40px;
@@ -96,9 +96,9 @@ const FirstCheckCircle = styled.TouchableOpacity.attrs(props => ({
 }))`
     width: 20px;
     height: 20px;
-    border-radius: 5px;  
+    border-radius: 5px;
     background-color: #fff;
-    border: 2px solid #BAC7D5;  
+    border: 2px solid #BAC7D5;
     align-items: center;
     justify-content: center;
     margin-right: 15px;
@@ -493,7 +493,7 @@ const PaymentScreen = props => {
               const year = selectedDate.getFullYear();
               const month = String(selectedDate.getMonth() + 1).padStart(2, '0'); // 월은 0부터 시작하므로 1을 더해줍니다.
               const day = String(selectedDate.getDate()).padStart(2, '0');
-            
+
               const date = `${year}${month}${day}`;
               const default_time = `${today.getHours()}${today.getMinutes()}${today.getSeconds()}`;
               const orderId = `order_${date}${default_time}_${reservationProductInfo.productId}`
@@ -528,13 +528,13 @@ const PaymentScreen = props => {
                   productPrice: Number(reservationProductInfo?.productPrice ?? '0'),
                   productDiscountPrice: Number(reservationProductInfo?.productDiscountPrice ?? '0'),
                   paymentAmount: Number(reservationProductInfo?.paymentAmount ?? '0'),
-  
+
                   productId: reservationProductInfo?.productId, // 고유 주문 ID
                   productName: reservationProductInfo?.productName, // 주문 이름
                   onPaymentComplete: props?.route?.params?.onPaymentComplete,
                 });
               }
-              
+
               // Checkout 호출
               // await CheckoutPage({
               //   amount: 50000, // 결제 금액

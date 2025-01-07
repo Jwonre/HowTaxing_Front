@@ -246,9 +246,13 @@ const Login = () => {
     const canProceed = await handleNetInfoChange(state);
     if (canProceed) {
 
+console.log("하우택싱 애플로그인 시도 ")
       const token = await AppleAuthManager.signIn();
+
+      console.log("하우택싱 애플로그인 시도 token : ${token} ", token)
+
       setSocialType('APPLE');
-      socialLogin('APPLE',token.identityToken??'');
+      applesocialLogin('APPLE',token.identityToken??'');
 
       // navigation.navigate('LoginWebview', { onWebViewMessage: handleWebViewMessage, 'socialType': 'naver', });
     }
@@ -389,11 +393,79 @@ const Login = () => {
     };
     */
   // 소셜 로그인
+  const applesocialLogin = async (socialType, identityToken) => {
+
+    console.log("applesocialLogin ",`${socialType} : ${identityToken}`);
+
+      const data = {
+        socialType,
+        identityToken,
+
+      };
+
+      console.log('log_'+socialType,`${socialType} || ${identityToken}`);
+
+      console.log(`${Config.APP_API_URL}user/socialLogin}`);
+      axios
+        .post(`${Config.APP_API_URL}user/socialLogin`, data)
+        .then(async response => {
+          if (response.data.errYn === 'Y') {
+            SheetManager.show('info', {
+              payload: {
+                type: 'error',
+                errorType: response.data.type,
+                message: response.data.errMsg ? response.data.errMsg : '소셜 로그인에 실패했어요.',
+                description: response.data.errMsgDtl ? response.data.errMsgDtl : '',
+                buttontext: '확인하기',
+              },
+            });
+            return;
+          } else {
+            const userData = response.data.data;
+            console.log(`${response.data.role}`);
+            console.log(`${userData}`);
+
+            const { role, accessToken, refreshToken } = userData;
+            console.log("profile ",`role : ${role}`);
+            console.log("profile ",`accessToken : ${accessToken}`);
+            console.log("profile ",`refreshToken : ${refreshToken}`);
+
+
+            if (role === 'USER') {
+               //console.log('Login token:', tokens[0]);
+               const tokenObject = { 'accessToken': accessToken, 'refreshToken': refreshToken };
+               console.log('Login tokenObject:', tokenObject);
+               dispatch(setCurrentUser(tokenObject));
+
+
+            } else {
+              await navigation.push('CheckTerms', { accessToken : accessToken ,refreshToken:refreshToken, authType : 'JOIN',LoginAcessType : 'SOCIAL',id:id});
+              //약관확인 화면으로 이동 후 약관 동의 완료시 handleSignUp 진행
+            }
+          }
+          // 성공적인 응답 처리
+
+        })
+        .catch(error => {
+          // 오류 처리
+          SheetManager.show('info', {
+            payload: {
+              message: '로그인에 실패했습니다.',
+              description: error?.message,
+              type: 'error',
+              buttontext: '확인하기',
+            }
+          });
+          console.error(error);
+        });
+    };
+
   const socialLogin = async (socialType, accessToken,id) => {
     const data = {
       socialType,
       accessToken,
-      id,
+      ...(id ? { id } : {}), // id가 truthy인 경우에만 추가
+
     };
 
     console.log('log_'+socialType,`${socialType} || ${accessToken} || ${id}`);
@@ -560,6 +632,8 @@ const Login = () => {
       <ButtonSection>
         <IntroSection>
           <LogoGroup>
+          {/* {Platform.OS === 'ios' ? <LogoImage source={require('app/assets/assets/images/logo.png')} /> : <LogoImage source={require('../../assets/images/logo.png')} />} */}
+
             <LogoImage source={require('../../assets/images/logo.png')} />
           </LogoGroup>
           <View styled={{ height: 'auto', minHeight: 40 }}>

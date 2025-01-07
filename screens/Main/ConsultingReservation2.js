@@ -1484,11 +1484,13 @@ const reservationAvailable = async (consultantId,reservationDate,reservationTime
                         console.log('log_04', result);
 
                         console.log('log_04',selectedList.length);
-              
+
 
                       }
 
-                      
+
+
+
                     }}>
                     <ButtonText>다음으로</ButtonText>
                   </Button>

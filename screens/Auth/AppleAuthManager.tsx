@@ -26,7 +26,7 @@ class AppleAuthManager {
         email,
         fullName,
         identityToken,
-      });
+      })
 
       if (identityToken) {
         // 성공적으로 토큰을 받아온 경우

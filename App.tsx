@@ -97,28 +97,45 @@ const serviceUrlSchemeIOS = 'howtaxingrelease';
 const App = () => {
   const [UpdateCheck, setUpdateCheck] = useState(false);
 
-  const checkForUpdate = async () => {
-    const currentVersion = VersionCheck.getCurrentVersion();
-    const latestVersion = await VersionCheck.getLatestVersion();
+  try{
+    const checkForUpdate = async () => {
+      const currentVersion = VersionCheck.getCurrentVersion();
+      const latestVersion = await VersionCheck.getLatestVersion() ;
+      console.log('latestVersion:', latestVersion, '타입:', typeof latestVersion);
 
-    console.log('currentVersion', currentVersion);
-    console.log('latestVersion', latestVersion);
-    if (currentVersion < latestVersion) {
-      setUpdateCheck(false);
-    } else {
-      setUpdateCheck(false);
-    }
-  };
+      if (typeof latestVersion === 'undefined') {
+        console.log('latestVersion is undefined');
+        setUpdateCheck(false);
+      } else {
+        console.log('currentVersion:', currentVersion);
+        console.log('latestVersion:', latestVersion);
+        if (currentVersion < latestVersion) {
+          setUpdateCheck(true); // 업데이트 필요
+        } else {
+          setUpdateCheck(false); // 업데이트 불필요
+        }
+      }
+  
+    
+  
+    console.log('updateCheck:', UpdateCheck);
+      
+    };
+  
+    useEffect(() => {
+      checkForUpdate();
+    }, []);
+  
+  }catch(e){
+    setUpdateCheck(false);
 
-  useEffect(() => {
-    checkForUpdate();
-  }, []);
-  console.log('NativeModules:', NativeModules); // 모든 네이티브 모듈 출력
+    console.log('error', e);
+  }
+  
 
-
-  KeyHashModule.getKeyHash()
-  .then((hash: any) => console.log('Hash Key:', hash))
-  .catch((err: any) => console.error('Error fetching Key Hash:', err));
+//   KeyHashModule.getKeyHash()
+//   .then((hash: any) => console.log('Hash Key:', hash))
+//   .catch((err: any) => console.error('Error fetching Key Hash:', err));
 
   useEffect(() => {
     naverLogin.initialize({
@@ -128,7 +145,14 @@ const App = () => {
       serviceUrlSchemeIOS,
       disableNaverAppAuthIOS: true,
     });
+    console.log('naverLogin:', appName);
+    console.log('naverLogin:', consumerKey);
+    console.log('naverLogin:', consumerSecret);
+    console.log('naverLogin:', serviceUrlSchemeIOS);
+
+    console.log('naverLogin:', naverLogin);
   }, []);
+  console.log('UpdateCheck 11:', UpdateCheck);
 
   return (
     <><Provider store={store}>
@@ -138,44 +162,48 @@ const App = () => {
           backgroundColor="transparent"
           barStyle={'dark-content'}
           translucent={true} />
-        {!UpdateCheck ? (<AppNavigator />) : (
-          <Modal isVisible={UpdateCheck} backdropColor="#000" // 원하는 색으로 설정
-            backdropOpacity={0.4}>
-            <SheetContainer style={{ borderRadius: 10, height: '35%' }}>
-              <ModalContentSection>
-                <InfoCircleIcon
-                  style={{
-                    color: '#FF7401',
-                    marginTop: 30,
-                    marginBottom: 15,
-                    alignSelf: 'center'
-                  }} />
-                <ModalTitle>최신 버전의 앱이 있어요.</ModalTitle>
 
-                <FirstItem style={{ marginTop: 10, marginBottom: 10 }}>
-                  <FirstItemTitle>더 편리하고 유용한 하우택싱을 이용하시려면{'\n'}최신 버전으로 앱을 업데이트해주세요.</FirstItemTitle>
-                </FirstItem>
-                <ButtonSection style={{
-                  borderBottomLeftRadius: 10,
-                  borderBottomRightRadius: 10,
-                  paddingTop: 10,
-                  paddingBottom: 10,
-                  paddingRight: 20,
-                  paddingLeft: 20
-                }}>
-                  <Button
-                    onPress={() => {
-                      Linking.openURL(Platform.OS === 'ios'
-                        ? 'https://apps.apple.com/app/idYOUR_APP_ID'
-                        : 'https://play.google.com/store/apps/details?id=com.xmonster.howtaxingapp'
-                      );
+          {Platform.OS === 'ios'  ? (<AppNavigator />) : (
+            !UpdateCheck ? (<AppNavigator />) : (
+              <Modal isVisible={UpdateCheck} backdropColor="#000" // 원하는 색으로 설정
+                backdropOpacity={0.4}>
+                <SheetContainer style={{ borderRadius: 10, height: '35%' }}>
+                  <ModalContentSection>
+                    <InfoCircleIcon
+                      style={{
+                        color: '#FF7401',
+                        marginTop: 30,
+                        marginBottom: 15,
+                        alignSelf: 'center'
+                      }} />
+                    <ModalTitle>최신 버전의 앱이 있어요.</ModalTitle>
+    
+                    <FirstItem style={{ marginTop: 10, marginBottom: 10 }}>
+                      <FirstItemTitle>더 편리하고 유용한 하우택싱을 이용하시려면{'\n'}최신 버전으로 앱을 업데이트해주세요.</FirstItemTitle>
+                    </FirstItem>
+                    <ButtonSection style={{
+                      borderBottomLeftRadius: 10,
+                      borderBottomRightRadius: 10,
+                      paddingTop: 10,
+                      paddingBottom: 10,
+                      paddingRight: 20,
+                      paddingLeft: 20
                     }}>
-                    <ButtonText>업데이트하기</ButtonText>
-                  </Button>
-                </ButtonSection>
-              </ModalContentSection>
-            </SheetContainer>
-          </Modal>)}
+                      <Button
+                        onPress={() => {
+                          Linking.openURL(Platform.OS === 'ios'
+                            ? 'https://apps.apple.com/app/idYOUR_APP_ID'
+                            : 'https://play.google.com/store/apps/details?id=com.xmonster.howtaxingapp'
+                          );
+                        }}>
+                        <ButtonText>업데이트하기</ButtonText>
+                      </Button>
+                    </ButtonSection>
+                  </ModalContentSection>
+                </SheetContainer>
+              </Modal>)
+          )}
+        
       </GestureHandlerRootView>
     </Provider>
     </>

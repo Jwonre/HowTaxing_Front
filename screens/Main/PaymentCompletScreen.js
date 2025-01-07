@@ -136,8 +136,8 @@ const PaymentCompletScreen = props => {
       } else {
         console.error('onPaymentComplete is not defined at this point');
       }
-      
-     
+
+
     }
   }, [timer, navigation]);
 
@@ -160,7 +160,7 @@ const PaymentCompletScreen = props => {
       <View style={styles.progressContainer}>
         <CircularProgress size={50} strokeWidth={5} progress={progress} timer={timer} />
       </View>
-      {/* {adBannerdata != null ? (
+      {adBannerdata != null ? (
         <ModalContentSection>
           {adBannerdata.targetUrl && <TouchableOpacity style={{ width: '100%', height: '100%' }} activeOpacity={0.8}
             hitSlop={{
@@ -176,22 +176,18 @@ const PaymentCompletScreen = props => {
               }
             }
             }>
-            <AdBannerMainImage   style={styles.bannerImage} source={{ uri: adBannerdata.imageUrl }} />
+            <AdBannerMainImage source={{ uri: adBannerdata.imageUrl }} />
           </TouchableOpacity>}
           {!adBannerdata.targetUrl &&
-            <AdBannerMainImage  style={styles.bannerImage} source={{ uri: adBannerdata.imageUrl }} />
+            <AdBannerMainImage source={{ uri: adBannerdata.imageUrl }} />
           }
         </ModalContentSection>
-      ) :
-       (<Image
+      ) : (<Image
         source={require('../../assets/images/banner_15.jpg')}
         style={styles.bannerImage}
-      />)} */}
+      />)}
 
-<Image
-        source={require('../../assets/images/banner_15.jpg')}
-        style={styles.bannerImage}
-      />
+
     </View>
   );
 };
