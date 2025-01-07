@@ -21,7 +21,7 @@ import getFontSize from '../../utils/getFontSize';
 import CloseIcon from '../../assets/icons/close_button.svg';
 import SerchIcon from '../../assets/icons/search_map.svg';
 import WheelPicker from 'react-native-wheely';
-//import NaverMapView, { Marker } from 'react-native-nmap';
+import NaverMapView, { Marker } from 'react-native-nmap';
 import DropShadow from 'react-native-drop-shadow';
 import Geolocation from '@react-native-community/geolocation';
 import LocationIcon from '../../assets/icons/my_location_ico.svg';
@@ -793,7 +793,7 @@ const MapViewListSheet = props => {
                       </Text>
                     </View>
                   ) : (
-                    /*<NaverMapView
+                    <NaverMapView
                       ref={mapRef}
                       style={{
                         flex: 1,
@@ -833,8 +833,8 @@ const MapViewListSheet = props => {
                           />
                         );
                       })}
-                    </NaverMapView>*/
-                    <View></View>
+                    </NaverMapView>
+                    
                   )}
                   <DropShadow style={styles.shadow}>
                     <MyLocationButton

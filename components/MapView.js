@@ -2,7 +2,7 @@ import {View, Text, useWindowDimensions, StyleSheet} from 'react-native';
 import React, {useRef} from 'react';
 import {useDispatch} from 'react-redux';
 import {useNavigation} from '@react-navigation/native';
-//import NaverMapView, {Marker} from 'react-native-nmap';
+import NaverMapView, {Marker} from 'react-native-nmap';
 
 import DropShadow from 'react-native-drop-shadow';
 
@@ -69,8 +69,7 @@ const MapView = props => {
   );
 
   return (
-  <View></View>
-    /*<NaverMapView
+    <NaverMapView
       ref={mapRef}
       style={{
         flex: 1,
@@ -114,7 +113,7 @@ const MapView = props => {
           />
         );
       })}
-    </NaverMapView>*/
+    </NaverMapView>
   );
 };
 

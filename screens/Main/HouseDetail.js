@@ -15,7 +15,7 @@ import styled from 'styled-components';
 import DropShadow from 'react-native-drop-shadow';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import getFontSize from '../../utils/getFontSize';
-//import NaverMapView, { Marker } from 'react-native-nmap';
+import NaverMapView, { Marker } from 'react-native-nmap';
 import Switch from 'react-native-draggable-switch';
 import { useDispatch, useSelector } from 'react-redux';
 import { SheetManager } from 'react-native-actions-sheet';
@@ -326,7 +326,7 @@ const HouseDetail = props => {
               <HoustInfoText ellipsizeMode='tail' numberOfLines={1} style={{ flex: 1, textAlign: 'left' }}>{item?.houseDetailName}</HoustInfoText>
             </HoustInfoSection>
             <MapContainer>
-              /*<NaverMapView
+              <NaverMapView
                 style={{
                   flex: 1,
                   width: width - 40,
@@ -369,7 +369,7 @@ const HouseDetail = props => {
                     </DropShadow>
                   </View>
                 </Marker>
-              </NaverMapView>*/
+              </NaverMapView>
             </MapContainer>
           </HouseSection>
           <InfoContentSection>
