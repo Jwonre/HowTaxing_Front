@@ -14,9 +14,10 @@
      options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options {
   
   // naver
-    if ([url.scheme isEqualToString:@"{{ CUSTOM URL SCHEME }}"]) {
+  if ([url.scheme isEqualToString:@"howtaxingrelease"]) {
       return [[NaverThirdPartyLoginConnection getSharedInstance] application:application openURL:url options:options];
-    }
+  }
+
   
   //kakao
  if([RNKakaoLogins isKakaoTalkLoginUrl:url]) {

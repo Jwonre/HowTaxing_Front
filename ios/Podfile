@@ -40,12 +40,21 @@ pod 'RNChannelIO', :path => '../node_modules/react-native-channel-plugin'
   end
 
   post_install do |installer|
-    # https://github.com/facebook/react-native/blob/main/packages/react-native/scripts/react_native_pods.rb#L197-L202
+    installer.pods_project.targets.each do |target|
+      if ['hermes', 'ChannelIOSDK', 'NaverThirdPartyLogin'].include?(target.name)
+        target.build_phases.each do |phase|
+          if phase.respond_to?(:name) && phase.name == '[CP] Embed Pods Frameworks'
+            target.build_phases.delete(phase)
+          end
+        end
+      end
+    end
+
+    # React Native 기본 설정
     react_native_post_install(
       installer,
       config[:reactNativePath],
-      :mac_catalyst_enabled => false,
-      # :ccache_enabled => true
+      :mac_catalyst_enabled => false
     )
   end
 end
