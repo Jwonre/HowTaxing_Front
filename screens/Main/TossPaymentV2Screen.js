@@ -1,14 +1,18 @@
 import React, { useEffect,useCallback, useLayoutEffect, useState ,useRef} from 'react';
+
+import { loadPaymentWidget, ANONYMOUS } from "@tosspayments/payment-widget-sdk";
+import { nanoid } from "nanoid";
+
 import {
   View, Alert, StyleSheet, StatusBar, TouchableOpacity,
   Dimensions
 } from 'react-native';
-import {
-  PaymentWidgetProvider,
-  usePaymentWidget,
-  PaymentMethodWidget,
-  AgreementWidget,
-} from '@tosspayments/widget-sdk-react-native';
+// import {
+//   PaymentWidgetProvider,
+//   usePaymentWidget,
+//   PaymentMethodWidget,
+//   AgreementWidget,
+// } from '@tosspayments/widget-sdk-react-native';
 import 'react-native-get-random-values'; // Random Values 지원
 import { v4 as uuidv4 } from 'uuid'; // UUID 생성 라이브러리
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
@@ -69,10 +73,13 @@ const Button = styled.TouchableOpacity.attrs(props => ({
 function CheckoutPage(props) {
     const clientKey = 'test_ck_Gv6LjeKD8ajaAWpZ5vN03wYxAdXy'; // 클라이언트 키
     const customerKey = uuidv4(); // 고유 고객 키
-    const paymentAmount = props?.route.params?.paymentAmount;
+    const paymentAmount = props?.route.params?.paymentAmount??0;
     console.log('log_paymentAmount ', paymentAmount);
 
-    
+    const [paymentWidget, setPaymentWidget] = useState(null);
+    const paymentMethodsWidgetRef = useRef(null);
+    const [price, setPrice] = useState(paymentAmount);
+
     const [amount, setAmount] = useState({
         currency: "KRW",
         value: paymentAmount,
@@ -100,39 +107,123 @@ function CheckoutPage(props) {
       
 
       useEffect(() => {
-        async function renderPaymentWidgets() {
-          if (widgets == null) {
-            return;
-          }
-          // ------ 주문의 결제 금액 설정 ------
-          await widgets.setAmount(amount);
-      
-          await Promise.all([
-            // ------  결제 UI 렌더링 ------
-            widgets.renderPaymentMethods({
-              selector: "#payment-method",
-              variantKey: "DEFAULT",
-            }),
-            // ------  이용약관 UI 렌더링 ------
-            widgets.renderAgreement({
-              selector: "#agreement",
-              variantKey: "AGREEMENT",
-            }),
-          ]);
-      
-          setReady(true);
-        }
-      
-        renderPaymentWidgets();
-      }, [amount, widgets]);
-
-      useEffect(() => {
-        if (widgets == null) {
+        if (paymentWidget == null) {
           return;
         }
-      
-        widgets.setAmount(amount);
-      }, [widgets, amount]);
+    
+        const paymentMethodsWidget = paymentWidget.renderPaymentMethods(
+          "#payment-widget",
+          { value: price },
+          { variantKey: "DEFAULT" }
+        );
+    
+        paymentWidget.renderAgreement(
+          "#agreement",
+          { variantKey: "AGREEMENT" }
+        );
+    
+        paymentMethodsWidgetRef.current = paymentMethodsWidget;
+      }, [paymentWidget, price]);
+
+
+
+     useEffect(() => {
+    const paymentMethodsWidget = paymentMethodsWidgetRef.current;
+
+    if (paymentMethodsWidget == null) {
+      return;
+    }
+
+    paymentMethodsWidget.updateAmount(price);
+  }, [price]);
+
+  const handlePaymentRequest = async () => {
+    // 결제를 요청하기 전에 orderId, amount를 서버에 저장하세요.
+    // 결제 과정에서 악의적으로 결제 금액이 바뀌는 것을 확인하는 용도입니다.
+    try {
+      const id = props.route.params.consultantId;
+            const customerName = props.route.params.customerName;
+            const customerPhone = props.route.params.customerPhone;
+            const reservationDate = props.route.params.reservationDate;
+            const reservationTime = props.route.params.reservationTime;
+            const consultingInflowPath = props.route.params.consultingInflowPath;
+            const calcHistoryId = props.route.params.calcHistoryId;
+            const orderId = props.route.params.orderId;
+            const orderName = props.route.params.productName;
+            const productPrice = props.route.params.productPrice;
+            const productDiscountPrice = props.route.params.productDiscountPrice;
+            const paymentAmount = props.route.params.paymentAmount;
+            const productId = props.route.params.productId;
+            const productName = props.route.params.productName;
+
+
+            console.log('log_toss 2', props.route.params)
+
+            const state = await NetInfo.fetch();
+            const canProceed = await handleNetInfoChange(state);
+            console.log('log_toss 3-1', canProceed)
+
+            if (canProceed) {
+              console.log('log_toss 3', canProceed)
+
+              const result = await setPaymentTemp(id, customerName, customerPhone, reservationDate, reservationTime,
+                consultingInflowPath, calcHistoryId,
+                orderId, productName, productPrice, productDiscountPrice,
+                paymentAmount, productId, productName,
+              );
+              console.log('log_toss 4', result)
+
+              if (result.result) {
+                const result1 = await paymentWidgetControl.requestPayment({
+                  amount: {
+                    currency: 'KRW',
+                    value: paymentAmount,
+                  },
+                  orderId: orderId,
+                  orderName: productName,
+                  // successUrl: window.location.origin + '/success.html',
+                  // failUrl: window.location.origin + '/fail.html',
+                  // customerEmail: 'customer123@gmail.com',
+                  customerName: customerName,
+                  customerMobilePhone: customerPhone.replace(/-/g, ''),
+                });
+                console.log('log_toss 5', result1)
+
+                // 결제 실패 처리
+                  if (result1.fail) {
+                    console.error('결제 실패:', result1.fail);
+
+                    // 실패 정보를 사용자에게 알림
+                    SheetManager.show('info', {
+                      payload: {
+                        type: 'error',
+                        message: result1.fail.message || '결제 요청 중 오류가 발생했습니다.',
+                        description: `오류 코드: ${result1.fail.code}`,
+                        buttontext: '확인하기',
+                      },
+                    });
+                    return; // 실패 시 더 이상 진행하지 않음
+                  }
+
+
+
+
+                  const paymentKey = result1.success.paymentKey;
+
+                  const historyId  = result.paymentHistoryId;
+                  await requestPaymentConfirm(paymentHistoryId != '' ? paymentHistoryId : historyId, paymentKey, orderId, paymentAmount);
+                  console.log('결제 승인 완료');
+                
+
+              } else {
+                navigation.goBack();
+              }
+
+            }
+    } catch (error) {
+      console.error("Error requesting payment:", error);
+    }
+  };
       
   const { navigation } = props; // props에서 navigation을 명시적으로 추출
 
@@ -331,174 +422,143 @@ function CheckoutPage(props) {
   };
   const width = Dimensions.get('window').width;
 
-  return (
-    <>
-      <PaymentMethodWidget
-        selector="payment-methods"
-        onLoadEnd={() => {
-          paymentWidgetControl
-            .renderPaymentMethods(
-              'payment-methods',
-              { value: paymentAmount }, // 결제 금액 설정
-              { variantKey: 'DEFAULT' }
-            )
-            .then((control) => {
-              setPaymentMethodWidgetControl(control);
-            });
-        }}
-      />
-      <AgreementWidget
-        selector="agreement"
-        onLoadEnd={() => {
-          paymentWidgetControl
-            .renderAgreement('agreement', { variantKey: 'DEFAULT' })
-            .then((control) => {
-              setAgreementWidgetControl(control);
-            });
-        }}
-      />
+  return(
+      <div>
+        
+        {/* 결제 UI, 이용약관 UI 영역 */}
+        <div id="payment-widget" />
+        <div id="agreement" />
+        {/* 결제하기 버튼 */}
+       {/* <ShadowContainer style={{ width: '100%', height: 50 }}>
+         <Button
+           style={{
+             backgroundColor: '#2F87FF',
+             color: '#FFFFFF',
+             width: '100%',
+             height: 50, // height 값을 숫자로 변경하고 단위 제거
+             alignItems: 'center', // align-items를 camelCase로 변경
+             justifyContent: 'center', // justify-content를 camelCase로 변경
+             borderWidth: 1, // border-width를 camelCase로 변경하고 단위 제거
+             borderColor: '#E8EAED',
+           }}
+           active={true}
+           width={width}
+           onPress={async () => {
+             if (!paymentWidgetControl || !agreementWidgetControl) {
+               SheetManager.show('info', {
+                 payload: {
+                   message: '주문 정보가 초기화되지 않았습니다.',
+                   description: error?.message,
+                   type: 'error',
+                   buttontext: '확인하기',
+                 }
+               });
+               // Alert.alert('주문 정보가 초기화되지 않았습니다.');
+               return;
+             }
 
-      <ShadowContainer style={{ width: '100%', height: 50 }}>
-        <Button
-          style={{
-            backgroundColor: '#2F87FF',
-            color: '#FFFFFF',
-            width: '100%',
-            height: 50, // height 값을 숫자로 변경하고 단위 제거
-            alignItems: 'center', // align-items를 camelCase로 변경
-            justifyContent: 'center', // justify-content를 camelCase로 변경
-            borderWidth: 1, // border-width를 camelCase로 변경하고 단위 제거
-            borderColor: '#E8EAED',
-          }}
-          active={true}
-          width={width}
-          onPress={async () => {
-            if (!paymentWidgetControl || !agreementWidgetControl) {
-              SheetManager.show('info', {
-                payload: {
-                  message: '주문 정보가 초기화되지 않았습니다.',
-                  description: error?.message,
-                  type: 'error',
-                  buttontext: '확인하기',
-                }
-              });
-              // Alert.alert('주문 정보가 초기화되지 않았습니다.');
-              return;
-            }
+             const agreement = await agreementWidgetControl.getAgreementStatus();
+             if (!agreement.agreedRequiredTerms) {
+               SheetManager.show('info', {
+                 payload: {
+                   message: '약관에 동의하지 않았습니다.',
+                   description: error?.message,
+                   type: 'error',
+                   buttontext: '확인하기',
+                 }
+               });
+               // Alert.alert('약관에 동의하지 않았습니다.');
+               return;
+             }
 
-            const agreement = await agreementWidgetControl.getAgreementStatus();
-            if (!agreement.agreedRequiredTerms) {
-              SheetManager.show('info', {
-                payload: {
-                  message: '약관에 동의하지 않았습니다.',
-                  description: error?.message,
-                  type: 'error',
-                  buttontext: '확인하기',
-                }
-              });
-              // Alert.alert('약관에 동의하지 않았습니다.');
-              return;
-            }
-
-            const id = props.route.params.consultantId;
-            const customerName = props.route.params.customerName;
-            const customerPhone = props.route.params.customerPhone;
-            const reservationDate = props.route.params.reservationDate;
-            const reservationTime = props.route.params.reservationTime;
-            const consultingInflowPath = props.route.params.consultingInflowPath;
-            const calcHistoryId = props.route.params.calcHistoryId;
-            const orderId = props.route.params.orderId;
-            const orderName = props.route.params.productName;
-            const productPrice = props.route.params.productPrice;
-            const productDiscountPrice = props.route.params.productDiscountPrice;
-            const paymentAmount = props.route.params.paymentAmount;
-            const productId = props.route.params.productId;
-            const productName = props.route.params.productName;
-
-
-            console.log('log_toss 2', props.route.params)
-
-            const state = await NetInfo.fetch();
-            const canProceed = await handleNetInfoChange(state);
-            console.log('log_toss 3-1', canProceed)
-
-            if (canProceed) {
-              console.log('log_toss 3', canProceed)
-
-              const result = await setPaymentTemp(id, customerName, customerPhone, reservationDate, reservationTime,
-                consultingInflowPath, calcHistoryId,
-                orderId, productName, productPrice, productDiscountPrice,
-                paymentAmount, productId, productName,
-              );
-              console.log('log_toss 4', result)
-
-              if (result.result) {
-                const result1 = await paymentWidgetControl.requestPayment({
-                  amount: {
-                    currency: 'KRW',
-                    value: paymentAmount,
-                  },
-                  orderId: orderId,
-                  orderName: productName,
-                  // successUrl: window.location.origin + '/success.html',
-                  // failUrl: window.location.origin + '/fail.html',
-                  // customerEmail: 'customer123@gmail.com',
-                  customerName: customerName,
-                  customerMobilePhone: customerPhone.replace(/-/g, ''),
-                });
-                console.log('log_toss 5', result1)
-
-                // 결제 실패 처리
-                  if (result1.fail) {
-                    console.error('결제 실패:', result1.fail);
-
-                    // 실패 정보를 사용자에게 알림
-                    SheetManager.show('info', {
-                      payload: {
-                        type: 'error',
-                        message: result1.fail.message || '결제 요청 중 오류가 발생했습니다.',
-                        description: `오류 코드: ${result1.fail.code}`,
-                        buttontext: '확인하기',
-                      },
-                    });
-                    return; // 실패 시 더 이상 진행하지 않음
-                  }
-
-
-//                   log_toss 5', { success: 
-//                   { additionalParameters: {},
-//                     paymentType: 'NORMAL',
-//                     orderId: 'order_2024122816583_1',
-//                     paymentKey: 'tgen_202412241658064ehQ2',
-//                     amount: 9900 } }
-// 2024-12-24 16:58:21.184 17409-17503 ReactNativeJS           com.xmonster.howtaxingapp            I  'log_Request Data: ', { paymentHistoryId: undefined,
-//                  paymentKey: undefined,
-//                  orderId: 'order_2024122816583_1',
-//                  paymentAmount: 40100 }
-
-                  // 결제 성공 처리
-                // const orderId = props.route.params.orderId;
-
-                  const paymentKey = result1.success.paymentKey;
-
-                  const historyId  = result.paymentHistoryId;
-                  await requestPaymentConfirm(paymentHistoryId != '' ? paymentHistoryId : historyId, paymentKey, orderId, paymentAmount);
-                  console.log('결제 승인 완료');
-                
-
-              } else {
-                navigation.goBack();
-              }
-
-            }
-          }}>
-          <ButtonText>결제 요청</ButtonText>
-        </Button>
-      </ShadowContainer>
-
-
-    </>
+             handlePaymentRequest();
+           }}>
+           <ButtonText>결제 요청</ButtonText>
+         </Button>
+       </ShadowContainer> */}
+        <button onClick={handlePaymentRequest}>결제하기</button>
+      </div>
+    
   );
+
+  // return (
+  //   <>
+  //     <PaymentMethodWidget
+  //       selector="payment-methods"
+  //       onLoadEnd={() => {
+  //         paymentWidgetControl
+  //           .renderPaymentMethods(
+  //             'payment-methods',
+  //             { value: paymentAmount }, // 결제 금액 설정
+  //             { variantKey: 'DEFAULT' }
+  //           )
+  //           .then((control) => {
+  //             setPaymentMethodWidgetControl(control);
+  //           });
+  //       }}
+  //     />
+  //     <AgreementWidget
+  //       selector="agreement"
+  //       onLoadEnd={() => {
+  //         paymentWidgetControl
+  //           .renderAgreement('agreement', { variantKey: 'DEFAULT' })
+  //           .then((control) => {
+  //             setAgreementWidgetControl(control);
+  //           });
+  //       }}
+  //     />
+
+  //     <ShadowContainer style={{ width: '100%', height: 50 }}>
+  //       <Button
+  //         style={{
+  //           backgroundColor: '#2F87FF',
+  //           color: '#FFFFFF',
+  //           width: '100%',
+  //           height: 50, // height 값을 숫자로 변경하고 단위 제거
+  //           alignItems: 'center', // align-items를 camelCase로 변경
+  //           justifyContent: 'center', // justify-content를 camelCase로 변경
+  //           borderWidth: 1, // border-width를 camelCase로 변경하고 단위 제거
+  //           borderColor: '#E8EAED',
+  //         }}
+  //         active={true}
+  //         width={width}
+  //         onPress={async () => {
+  //           if (!paymentWidgetControl || !agreementWidgetControl) {
+  //             SheetManager.show('info', {
+  //               payload: {
+  //                 message: '주문 정보가 초기화되지 않았습니다.',
+  //                 description: error?.message,
+  //                 type: 'error',
+  //                 buttontext: '확인하기',
+  //               }
+  //             });
+  //             // Alert.alert('주문 정보가 초기화되지 않았습니다.');
+  //             return;
+  //           }
+
+  //           const agreement = await agreementWidgetControl.getAgreementStatus();
+  //           if (!agreement.agreedRequiredTerms) {
+  //             SheetManager.show('info', {
+  //               payload: {
+  //                 message: '약관에 동의하지 않았습니다.',
+  //                 description: error?.message,
+  //                 type: 'error',
+  //                 buttontext: '확인하기',
+  //               }
+  //             });
+  //             // Alert.alert('약관에 동의하지 않았습니다.');
+  //             return;
+  //           }
+
+  //           handlePaymentRequest();
+  //         }}>
+  //         <ButtonText>결제 요청</ButtonText>
+  //       </Button>
+  //     </ShadowContainer>
+
+
+  //   </>
+  // );
 }
 
 const TossPaymentV2Screen = props => {
@@ -543,14 +603,12 @@ const TossPaymentV2Screen = props => {
   }, []);
 
   return (
-        <View style={styles.container}>
-        <Checkout/>
+
+    <PaymentWidgetProvider clientKey={clientKey} customerKey={customerKey}>
+      <View style={styles.container}>
+        <CheckoutPage {...props} navigation={navigation} />
       </View>
-    // <PaymentWidgetProvider clientKey={clientKey} customerKey={customerKey}>
-    //   <View style={styles.container}>
-    //     <CheckoutPage {...props} navigation={navigation} />
-    //   </View>
-    // </PaymentWidgetProvider>
+    </PaymentWidgetProvider>
   );
 };
 

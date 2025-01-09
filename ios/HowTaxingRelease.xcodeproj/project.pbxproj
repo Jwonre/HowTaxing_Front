@@ -14,10 +14,10 @@
 		773A304C83582C8552505CA2 /* libPods-HowTaxingRelease-HowTaxingReleaseTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0226E1A39D4BA5BEA3A05952 /* libPods-HowTaxingRelease-HowTaxingReleaseTests.a */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
 		9EBE0A5C14B8FC5AA5E8FD28 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB81A68108700A75B9A /* PrivacyInfo.xcprivacy */; };
-		BE64FEDD2D2CCC3600DF3AE2 /* main.jsbundle in Resources */ = {isa = PBXBuildFile; fileRef = BE64FEDC2D2CCC3600DF3AE2 /* main.jsbundle */; };
 		BE64FF042D2D0D5B00DF3AE2 /* hermes.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = BE4A527A2D276B98003CD9FD /* hermes.xcframework */; };
 		BE64FF052D2D0DCA00DF3AE2 /* ChannelIOFront.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = BE4714542D264CF00010FDD3 /* ChannelIOFront.xcframework */; };
 		BE64FF062D2D0DCA00DF3AE2 /* NaverThirdPartyLogin.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = BE67350E2D28295000A8AFA7 /* NaverThirdPartyLogin.xcframework */; };
+		BE64FFA62D2DF01D00DF3AE2 /* main.jsbundle in Resources */ = {isa = PBXBuildFile; fileRef = BE64FFA52D2DF01D00DF3AE2 /* main.jsbundle */; };
 		EE353F8C5022FBB7B547900A /* libPods-HowTaxingRelease.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 105E6E26A1C6C8F17595A1B1 /* libPods-HowTaxingRelease.a */; };
 /* End PBXBuildFile section */
 
@@ -64,7 +64,6 @@
 		BE4714542D264CF00010FDD3 /* ChannelIOFront.xcframework */ = {isa = PBXFileReference; expectedSignature = "AppleDeveloperProgram:8278Q64QFC:Channel Corp."; lastKnownFileType = wrapper.xcframework; name = ChannelIOFront.xcframework; path = Pods/ChannelIOSDK/ChannelIOFront/ChannelIOFront.xcframework; sourceTree = "<group>"; };
 		BE4A527A2D276B98003CD9FD /* hermes.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = hermes.xcframework; path = "Pods/hermes-engine/destroot/Library/Frameworks/universal/hermes.xcframework"; sourceTree = "<group>"; };
 		BE64FCF32D2B550300DF3AE2 /* HowTaxingRelease.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = HowTaxingRelease.entitlements; path = HowTaxingRelease/HowTaxingRelease.entitlements; sourceTree = "<group>"; };
-		BE64FEDC2D2CCC3600DF3AE2 /* main.jsbundle */ = {isa = PBXFileReference; lastKnownFileType = text; path = main.jsbundle; sourceTree = "<group>"; };
 		BE64FEDE2D2CCC4B00DF3AE2 /* kakao_logo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = kakao_logo.png; sourceTree = "<group>"; };
 		BE64FEDF2D2CCC4B00DF3AE2 /* kb_logo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = kb_logo.png; sourceTree = "<group>"; };
 		BE64FEE02D2CCC4B00DF3AE2 /* naver_logo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = naver_logo.png; sourceTree = "<group>"; };
@@ -93,6 +92,7 @@
 		BE64FEFB2D2CCC4B00DF3AE2 /* back-icon-mask.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "back-icon-mask.png"; sourceTree = "<group>"; };
 		BE64FEFC2D2CCC4B00DF3AE2 /* back-icon@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "back-icon@2x.png"; sourceTree = "<group>"; };
 		BE64FEFD2D2CCC4B00DF3AE2 /* back-icon@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "back-icon@3x.png"; sourceTree = "<group>"; };
+		BE64FFA52D2DF01D00DF3AE2 /* main.jsbundle */ = {isa = PBXFileReference; lastKnownFileType = text; path = main.jsbundle; sourceTree = "<group>"; };
 		BE6735062D280A6E00A8AFA7 /* HowTaxingRelease-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "HowTaxingRelease-Bridging-Header.h"; sourceTree = "<group>"; };
 		BE6735072D280A8600A8AFA7 /* RCTAppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RCTAppDelegate.h; sourceTree = "<group>"; };
 		BE6735082D280A8600A8AFA7 /* RCTRootViewFactory.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RCTRootViewFactory.h; sourceTree = "<group>"; };
@@ -183,8 +183,8 @@
 		83CBB9F61A601CBA00E9B192 = {
 			isa = PBXGroup;
 			children = (
+				BE64FFA52D2DF01D00DF3AE2 /* main.jsbundle */,
 				BE64FF032D2CCC4B00DF3AE2 /* assets */,
-				BE64FEDC2D2CCC3600DF3AE2 /* main.jsbundle */,
 				BE6735062D280A6E00A8AFA7 /* HowTaxingRelease-Bridging-Header.h */,
 				13B07FAE1A68108700A75B9A /* HowTaxingRelease */,
 				832341AE1AAA6A7D00B99B32 /* Libraries */,
@@ -419,7 +419,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				BE64FEDD2D2CCC3600DF3AE2 /* main.jsbundle in Resources */,
+				BE64FFA62D2DF01D00DF3AE2 /* main.jsbundle in Resources */,
 				81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				9EBE0A5C14B8FC5AA5E8FD28 /* PrivacyInfo.xcprivacy in Resources */,
