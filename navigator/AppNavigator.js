@@ -38,7 +38,6 @@ import GainsTax from '../screens/Main/GainsTax';
 import ConsultingReservation from '../screens/Main/ConsultingReservation';
 import ConsultingReservation2 from '../screens/Main/ConsultingReservation2.js';
 import TossPaymentScreen from '../screens/Main/TossPaymentScreen.js';
-import TossPaymentV2Screen from '../screens/Main/TossPaymentV2Screen.js';
 
 
 import FixedHouse from '../screens/Main/FixedHouse';
@@ -269,7 +268,6 @@ const AppNavigator = () => {
               <Stack.Screen name="ConsultingReservation2" component={ConsultingReservation2} />
               <Stack.Screen name="PaymentScreen" component={PaymentScreen} />
               <Stack.Screen name="TossPaymentScreen" component={TossPaymentScreen} />
-              <Stack.Screen name="TossPaymentV2Screen" component={TossPaymentV2Screen} />
 
               
               <Stack.Screen name="PaymentCompletScreen" component={PaymentCompletScreen} />

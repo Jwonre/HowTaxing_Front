@@ -432,7 +432,7 @@ function CheckoutPage(props) {
 
 const TossPaymentScreen = props => {
 //test : test_gck_docs_Ovk5rk1EwkEbP0W43n07xlzm
-  const clientKey = 'test_ck_Gv6LjeKD8ajaAWpZ5vN03wYxAdXy'; // 클라이언트 키
+  const clientKey = 'test_gck_docs_Ovk5rk1EwkEbP0W43n07xlzm'; // 클라이언트 키
   const customerKey = uuidv4(); // 고유 고객 키
   const navigation = useNavigation();
 

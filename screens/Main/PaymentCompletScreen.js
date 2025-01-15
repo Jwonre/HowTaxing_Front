@@ -1,5 +1,5 @@
 import React, { useState, useEffect,useCallback } from 'react';
-import { View, Text, StyleSheet, Image, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, Image, Dimensions ,TouchableOpacity} from 'react-native';
 import Svg, { Circle } from 'react-native-svg';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import styled from 'styled-components';
@@ -49,19 +49,19 @@ const CircularProgress = ({ size, strokeWidth, progress, timer }) => {
 };
 const ModalContentSection = styled.View`
   width: 100%;
-  height: 10%;
+  height: 100%;
   background-color: #fff;
   align-items: center;
   justify-content: center;
-  border-top-left-radius: 10px;
-  border-top-right-radius: 10px;
+
 `;
 
 const AdBannerMainImage = styled.Image.attrs(props => ({
-  resizeMode: 'stretch',
+  resizeMode: 'contain',
 }))`
-  width: 375px;
-  height: 375px;
+   width: 100%; // 화면 가로 크기에 맞춤
+  height: ${width / BANNER_ASPECT_RATIO}px; // 비율에 맞춰 높이 설정
+  resize-mode: contain; // 비율 유지
 `;
 
 
@@ -150,45 +150,48 @@ const PaymentCompletScreen = props => {
   }, [navigation]);
   return (
     <View style={styles.container}>
-      <View style={styles.topSection}>
-        <Text style={styles.completeText}>결제가 완료되었어요.</Text>
-        <Text style={styles.descriptionText}>
-          잠시 후 상담 상세내용을 자세하게 알려주세요.
-        </Text>
-      </View>
+  {/* 상단 텍스트 섹션 */}
+  <View style={styles.topSection}>
+    <Text style={styles.completeText}>결제가 완료되었어요.</Text>
+    <Text style={styles.descriptionText}>
+      잠시 후 상담 상세내용을 자세하게 알려주세요.
+    </Text>
+  </View>
 
-      <View style={styles.progressContainer}>
-        <CircularProgress size={50} strokeWidth={5} progress={progress} timer={timer} />
-      </View>
-      {adBannerdata != null ? (
-        <ModalContentSection>
-          {adBannerdata.targetUrl && <TouchableOpacity style={{ width: '100%', height: '100%' }} activeOpacity={0.8}
-            hitSlop={{
-              top: 20,
-              bottom: 20,
-              left: 20,
-              right: 20,
-            }} onPress={async () => {
-              const state = await NetInfo.fetch();
+  {/* Progress 타이머 */}
+  <View style={styles.progressContainer}>
+    <CircularProgress size={50} strokeWidth={5} progress={progress} timer={timer} />
+  </View>
+
+  {/* 배너 */}
+  {adBannerdata ? (
+    <View style={styles.bannerContainer}>
+      <TouchableOpacity
+        style={styles.bannerTouchable}
+        activeOpacity={0.8}
+        onPress={async () => {
+          const state = await NetInfo.fetch();
               const canProceed = await handleNetInfoChange(state);
-              if (canProceed) {
+              if (canProceed && adBannerdata.targetUrl) {
                 Linking.openURL(adBannerdata.targetUrl);
               }
-            }
-            }>
-            <AdBannerMainImage source={{ uri: adBannerdata.imageUrl }} />
-          </TouchableOpacity>}
-          {!adBannerdata.targetUrl &&
-            <AdBannerMainImage source={{ uri: adBannerdata.imageUrl }} />
-          }
-        </ModalContentSection>
-      ) : (<Image
-        source={require('../../assets/images/banner_15.jpg')}
-        style={styles.bannerImage}
-      />)}
-
-
+              
+          
+        }}
+      >
+         <Image
+      source={{ uri: adBannerdata.imageUrl }}
+      style={styles.bannerImage}
+    />
+      </TouchableOpacity>
     </View>
+  ) : (
+    <Image
+      source={require('../../assets/images/banner_15.jpg')}
+      style={styles.bannerImage}
+    />
+  )}
+</View>
   );
 };
 
@@ -196,12 +199,12 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
-    justifyContent: 'space-between',
   },
   topSection: {
     alignItems: 'flex-start',
-    marginTop: 150,
+    justifyContent: 'flex-start',
     paddingHorizontal: 20,
+    marginTop: 150,
   },
   completeText: {
     fontSize: 25,
@@ -213,27 +216,31 @@ const styles = StyleSheet.create({
     fontFamily: 'Pretendard-Regular',
     color: '#717274',
     marginTop: 10,
+    marginBottom: '35%',
   },
   progressContainer: {
     alignItems: 'flex-end',
-    marginTop: 60,
+    justifyContent: 'flex-end',
+    marginVertical: 30,
+    flex: 0, // 배너 위에 위치하도록 공간 사용 안 함
     marginRight: 20,
+
   },
-  progressWrapper: {
-    position: 'relative',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  timerText: {
+
+
+  bannerContainer: {
     position: 'absolute',
-    fontSize: 16,
-    fontFamily: 'Pretendard-Bold',
-    color: '#333',
+    bottom: 0, // 화면 하단에 고정
+    width: '100%',
+    height: width / BANNER_ASPECT_RATIO, // 비율에 맞게 배너 높이 조정
+  },
+  bannerTouchable: {
+    width: '100%',
+    height: '100%',
   },
   bannerImage: {
-    width: width, // 화면 가로 길이에 맞춤
-    height: width / BANNER_ASPECT_RATIO, // 가로 길이에 맞춰 비율로 높이 계산
-    alignSelf: 'center',
+    width: '100%',
+    height: '100%',
     resizeMode: 'contain', // 비율 유지
   },
 });
