@@ -20,7 +20,7 @@ export default function SplashScreen(props) {
       const timer = setTimeout(() => {
         console.log('Animation Finished via Timer (iOS)');
         dispatch(setStartPage(false));
-      }, 3000); // 애니메이션 길이에 맞춰 설정
+      }, 2000); // 애니메이션 길이에 맞춰 설정
       return () => clearTimeout(timer); // 컴포넌트 언마운트 시 타이머 클리어
     }
   }, [dispatch]);
