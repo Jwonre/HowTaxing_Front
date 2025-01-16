@@ -560,7 +560,7 @@ const ReservationDetail = props => {
         <View style={styles.inputSection}>
           {/* Label */}
           <HoustInfoSection style={{ paddingTop: 10, paddingBottom: 10 }}>
-          <ProfileAvatar2 source={reservationDetail?.profileImageUrl ?? require('../../assets/images/Minjungum_Lee_consulting.png')} />
+          <ProfileAvatar2 source={{uri : reservationDetail?.profileImageUrl }} />
           <Text style={styles.contentPayment}>
               {'#' + `${reservationDetail.consultingReservationId}`}
             </Text>

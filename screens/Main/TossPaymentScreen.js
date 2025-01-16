@@ -1,7 +1,7 @@
 import React, { useCallback, useLayoutEffect, useState ,useRef} from 'react';
 import {
   View, Alert, StyleSheet, StatusBar, TouchableOpacity,
-  Dimensions
+  Dimensions,ScrollView
 } from 'react-native';
 import {
   PaymentWidgetProvider,
@@ -262,7 +262,8 @@ function CheckoutPage(props) {
   console.log('log_paymentAmount ', paymentAmount);
   return (
     <>
-      <PaymentMethodWidget
+    <ScrollView style={{ flex: 1 }}>
+    <PaymentMethodWidget
         selector="payment-methods"
         onLoadEnd={() => {
           paymentWidgetControl
@@ -424,6 +425,8 @@ function CheckoutPage(props) {
           <ButtonText>결제 요청</ButtonText>
         </Button>
       </ShadowContainer>
+      </ScrollView>
+      
 
 
     </>

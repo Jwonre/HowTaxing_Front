@@ -252,7 +252,7 @@ console.log("하우택싱 애플로그인 시도 ")
       console.log("하우택싱 애플로그인 시도 token : ${token} ", token)
 
       setSocialType('APPLE');
-      applesocialLogin('APPLE',token.identityToken??'');
+      applesocialLogin('APPLE',token.identityToken??'', token.user.toString());
 
       // navigation.navigate('LoginWebview', { onWebViewMessage: handleWebViewMessage, 'socialType': 'naver', });
     }
@@ -393,14 +393,14 @@ console.log("하우택싱 애플로그인 시도 ")
     };
     */
   // 소셜 로그인
-  const applesocialLogin = async (socialType, identityToken) => {
+  const applesocialLogin = async (socialType, identityToken,id) => {
 
-    console.log("applesocialLogin ",`${socialType} : ${identityToken}`);
+    console.log("applesocialLogin ",`${socialType} : ${identityToken} ,${id}`);
 
       const data = {
         socialType,
         identityToken,
-
+        id
       };
 
       console.log('log_'+socialType,`${socialType} || ${identityToken}`);
@@ -439,7 +439,7 @@ console.log("하우택싱 애플로그인 시도 ")
 
 
             } else {
-              await navigation.push('CheckTerms', { accessToken : accessToken ,refreshToken:refreshToken, authType : 'JOIN',LoginAcessType : 'SOCIAL',id:id});
+            await navigation.push('CheckTerms', { accessToken : accessToken ,refreshToken:refreshToken, authType : 'JOIN',LoginAcessType : 'SOCIAL',id:id});
               //약관확인 화면으로 이동 후 약관 동의 완료시 handleSignUp 진행
             }
           }

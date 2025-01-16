@@ -557,7 +557,8 @@ const ReservationList = () => {
                         <View style={{ flexDirection: 'column', marginBottom: 10, marginEnd: 10, }}>
                           <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 10, marginEnd: 10, }}>
                             {/* 프로필 이미지 */}
-                            <ProfileAvatar2 source={item.thumbImageUrl ?? require('../../assets/images/Minjungum_Lee_consulting.png')} />
+                            
+                            <ProfileAvatar2 source={{uri: item.thumbImageUrl }} />
                             {/* 상담 정보 */}
                             <InfoContainer>
                               <Text style={styles.contentCounsulting}>
@@ -694,6 +695,8 @@ const ReservationList = () => {
                 </ListFooterButton>
               )*/<View></View>}
                 renderItem={({ item, index }) => {
+                  console.log('item', item);
+                  console.log('item', item.thumbImageUrl);
 
                   return (
                     <InfoContentSection overScrollMode="never" style={{ width: width, marginBottom: 10 }}>
@@ -703,7 +706,7 @@ const ReservationList = () => {
                         }}
                         key={index}>
                         {/* 프로필 이미지 */}
-                        <ProfileAvatar2 source={item.thumbImageUrl ?? require('../../assets/images/Minjungum_Lee_consulting.png')} />
+                        <ProfileAvatar2 source={{uri : item.thumbImageUrl}} />
 
                         {/* 상담 정보 */}
                         <InfoContainer>

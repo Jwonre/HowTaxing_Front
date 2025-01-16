@@ -302,7 +302,7 @@ const PaymentDetail = props => {
         <View style={styles.inputSection}>
           {/* Label */}
           <HoustInfoSection style={{ paddingTop: 10, paddingBottom: 10 }}>
-          <ProfileAvatar2 source={paymentDetail?.profileImageUrl ?? require('../../assets/images/Minjungum_Lee_consulting.png')} />
+          <ProfileAvatar2 source={{uri: paymentDetail?.profileImageUrl}} />
           <Text style={styles.contentPayment}>
               {'#' + `${'3272'}`}
             </Text>

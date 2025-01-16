@@ -204,7 +204,7 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
     justifyContent: 'flex-start',
     paddingHorizontal: 20,
-    marginTop: 150,
+    marginTop: 130,
   },
   completeText: {
     fontSize: 25,
@@ -216,7 +216,7 @@ const styles = StyleSheet.create({
     fontFamily: 'Pretendard-Regular',
     color: '#717274',
     marginTop: 10,
-    marginBottom: '35%',
+    marginBottom: '30%',
   },
   progressContainer: {
     alignItems: 'flex-end',
@@ -227,7 +227,11 @@ const styles = StyleSheet.create({
 
   },
 
-
+  progressWrapper: {
+    position: 'relative',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   bannerContainer: {
     position: 'absolute',
     bottom: 0, // 화면 하단에 고정
