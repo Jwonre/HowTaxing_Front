@@ -23,7 +23,7 @@ import Bottompolygon from '../../assets/icons/blue_bottom_polygon.svg';
 
 const Container = styled.View`
   flex: 1.0;
-  background-color: #fff;
+  background-color: #FFF;
 `;
 
 const IntroSection2 = styled.View`

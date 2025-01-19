@@ -19,7 +19,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { setCert } from '../../../redux/certSlice';
 const Container = styled.View`
   flex: 1;
-  background-color: #fff;
+  background-color: #FFF;
 `;
 
 const Title = styled.Text`
@@ -177,7 +177,7 @@ const Third = props => {
         <Title >(필수) 개인정보 제3자 제공 동의</Title>
         <SubTitle >
           [필수]{' '}
-          {certType === 'KB' ? 'KB' : certType === 'naver' ? '네이버' : '토스'}{' '}
+          {certType === 'KB' ? 'KB' : certType === 'naver' ? '네이버' : certType === 'kakao' ? '카카오' : '토스'}{' '}
           개인정보 제3자 정보제공 동의서
         </SubTitle>
         <ContentText >

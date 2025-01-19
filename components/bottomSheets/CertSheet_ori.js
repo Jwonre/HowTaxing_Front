@@ -491,7 +491,7 @@ const CertSheet_ori = props => {
     //////console.log('@@@@@@@@@headers:', headers);
 
     const data = {
-      certOrg: props.payload?.data === 'KB' ? 'kb' : props.payload?.data === 'naver' ? 'naver' : 'toss',
+      certOrg: props.payload?.data === 'KB' ? 'kb' : props.payload?.data === 'naver' ? 'naver' : props.payload?.data === 'kakao' ? 'kakao' : 'toss',
       userNm: name,
       mobileNo: phone,
       rlno: residentNumber,

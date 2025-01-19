@@ -15,7 +15,7 @@ import { setAdBanner } from '../../redux/adBannerSlice';
 
 const Container = styled.View`
   flex: 1;
-  background-color: #fff;
+  background-color: #FFF;
 `;
 
 const IntroSection = styled.View`

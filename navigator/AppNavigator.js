@@ -38,7 +38,7 @@ import GainsTax from '../screens/Main/GainsTax';
 import ConsultingReservation from '../screens/Main/ConsultingReservation';
 import ConsultingReservation2 from '../screens/Main/ConsultingReservation2.js';
 import TossPaymentScreen from '../screens/Main/TossPaymentScreen.js';
-
+import GainTaxRefund from '../screens/Main/GainTaxRefund';
 
 import FixedHouse from '../screens/Main/FixedHouse';
 import AddHouse from '../screens/Main/AddHouse';
@@ -82,6 +82,7 @@ import InfoFixHouseDelete from '../components/bottomSheets/InfoFixHouseDelete';
 import InfoAddHouseDelete from '../components/bottomSheets/InfoAddHouseDelete';
 import InfoConsulting from '../components/bottomSheets/InfoConsulting';
 import InfoConsultingCancel from '../components/bottomSheets/InfoConsultingCancel';
+import InfoRefundingCancel from '../components/bottomSheets/InfoRefundingCancel';
 import InfoDeleteHouse from '../components/bottomSheets/InfoDeleteHouse';
 import InfoOwnHouse from '../components/bottomSheets/InfoOwnHouse';
 import InfoBuyPrice from '../components/bottomSheets/InfoBuyPrice';
@@ -187,6 +188,7 @@ const AppNavigator = () => {
     registerSheet('infoCertification', InfoCertification);
     registerSheet('InfoConsulting', InfoConsulting);
     registerSheet('InfoConsultingCancel', InfoConsultingCancel);
+    registerSheet('InfoRefundingCancel', InfoRefundingCancel);
     registerSheet('InfoDeleteHouse', InfoDeleteHouse);
     registerSheet('InfoOwnHouse', InfoOwnHouse);
     registerSheet('InfoFixHouseDelete', InfoFixHouseDelete);
@@ -271,7 +273,7 @@ const AppNavigator = () => {
 
               
               <Stack.Screen name="PaymentCompletScreen" component={PaymentCompletScreen} />
-
+              <Stack.Screen name="GainTaxRefund" component={GainTaxRefund} />
 
               <Stack.Screen name="FamilyHouse" component={FamilyHouse} />
               <Stack.Screen

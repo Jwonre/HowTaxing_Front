@@ -151,6 +151,11 @@ export const acquisitionTax = [
     message: '공공기관에서 여러 인증방식을 제공해요. 인증방식을 선택해주세요.\n청약통장이 없다면 인증이 어려우므로 보유 중인 주택들을 직접 등록해주세요.',
     select: [
       {
+        id: 'kakao',
+        name: '카카오 간편인증',
+        icon: <KakaoICon />,
+      },
+      {
         id: 'KB',
         name: 'KB 간편인증',
         icon: <KBICon />,
@@ -471,6 +476,11 @@ export const gainTax = [
     message: '공공기관에서 여러 인증방식을 제공해요. 인증방식을 선택해주세요.\n청약통장이 없다면 인증이 어려우므로 보유 중인 주택들을 직접 등록해주세요.',
     select: [
       {
+        id: 'kakao',
+        name: '카카오 간편인증',
+        icon: <KakaoICon />,
+      },
+      {
         id: 'KB',
         name: 'KB 간편인증',
         icon: <KBICon />,
@@ -498,6 +508,11 @@ export const gainTax = [
     progress: 3,
     message: '공공기관에서 여러 인증방식을 제공해요. 인증방식을 선택해주세요.\n청약통장이 없다면 인증이 어려우므로 보유 중인 주택들을 직접 등록해주세요.',
     select: [
+      {
+        id: 'kakao',
+        name: '카카오 간편인증',
+        icon: <KakaoICon />,
+      },
       {
         id: 'KB',
         name: 'KB 간편인증',

@@ -382,7 +382,7 @@ const ButtonText = styled.Text`
 `;
 
 
-const ConsultingReservationDetail = props => {
+const PaymentComplet = props => {
   const _scrollViewRef = useRef(null);
   const _scrollViewRef2 = useRef(null);
   const _scrollViewRef3 = useRef(null);
@@ -640,7 +640,7 @@ const ConsultingReservationDetail = props => {
       calcHistoryId: Pdata.calcHistoryId ? Pdata.calcHistoryId : '',
       consultingRequestContent: text ? text : '',
     };
-    //console.log('ConsultingReservationDetail2 data', data);
+    //console.log('PaymentComplet2 data', data);
     //console.log('headers', headers);
     try {
       const response = await axios.post(`${Config.APP_API_URL}consulting/reservationApply`, data, { headers: headers });
@@ -1521,4 +1521,4 @@ const ConsultingReservationDetail = props => {
   )
 };
 
-export default ConsultingReservationDetail;
+export default PaymentComplet;

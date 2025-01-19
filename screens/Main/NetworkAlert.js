@@ -10,7 +10,7 @@ import NetworkError from '../../assets/icons/network_error.svg';
 
 const Container = styled.View`
   flex: 1;
-  background-color: #fff;
+  background-color: #FFF;
 `;
 
 const Wrapper = styled.View`

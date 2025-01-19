@@ -1,5 +1,3 @@
-// 양도소득세 홈페이지
-
 import { TouchableOpacity, useWindowDimensions, BackHandler, View, ScrollView, Animated, Text, TextInput } from 'react-native';
 import { FlatList } from 'react-native-gesture-handler';
 import React, { useRef, useLayoutEffect, useState, useCallback, useEffect } from 'react';
@@ -23,6 +21,8 @@ import TaxInfoCard2 from '../../components/TaxInfoCard2';
 import HouseInfo from '../../components/HouseInfo';
 import CalculationWarningCard from '../../components/CalculationWarning';
 
+
+// 배너 이미지의 원본 비율
 const Container = styled.View`
   flex: 1.0;
   background-color: #FFF;
@@ -382,7 +382,7 @@ const ButtonText = styled.Text`
 `;
 
 
-const ConsultingReservationDetail = props => {
+const ConsultingReservation2Screen = props =>  {
   const _scrollViewRef = useRef(null);
   const _scrollViewRef2 = useRef(null);
   const _scrollViewRef3 = useRef(null);
@@ -505,7 +505,7 @@ const ConsultingReservationDetail = props => {
   }, []);
 
   useEffect(() => {
-    if (currentPageIndex === 2) {
+    if (currentPageIndex === 0) {
       getDateTimelist('1', '');
     }
   }, [currentPageIndex]);
@@ -560,23 +560,36 @@ const ConsultingReservationDetail = props => {
           SheetManager.show('info', {
             payload: {
               type: 'error',
+              errorType: response.data.type,
               message: response.data.errMsg ? response.data.errMsg : '상담 가능 일정을 불러오는데 문제가 발생했어요.',
               description: response.data.errMsgDtl ? response.data.errMsgDtl : '',
               buttontext: '확인하기',
             },
           });
-          return;
         } else {
           if (searchType === "1") {
-            //console.log('response.data', response.data.data);
-            //console.log('response.data.dateList', response.data.data.dateList);
             const result = response === undefined ? [] : response.data.data.dateList;
-            const list = result
-              .filter(item => item.isReservationAvailable)
-              .map(item => item.consultingDate);
+            if (result.length > 0) {
+              const list = result
+                .filter(item => item.isReservationAvailable)
+                .map(item => item.consultingDate);
 
-            console.log('list:', list);
-            setDataList([...list]);
+              console.log('Datelist:', list);
+              console.log('new Date(list[0]):', new Date(list[0]));
+              setDataList([...list]);
+            } else {
+              setTimeout(async () => {
+                await SheetManager.show('info', {
+                  payload: {
+                    type: 'info',
+                    errorType: 1,
+                    message: '앗, 현재 예약가능한 날짜가 없어요.\n나중에 다시 시도해주세요.',
+                    buttontext: '확인하기',
+                  },
+                });
+                navigation.goBack();
+              }, 300);
+            }
           } else if (searchType === "2") {
             const result = response === undefined ? [] : response.data.data.timeList;
             const list = result
@@ -632,7 +645,7 @@ const ConsultingReservationDetail = props => {
     const data = {
       consultantId: '1',
       customerName: name ? name : '',
-      customerPhone: phone ? phone : '',
+      customerPhone: phone ? phone.replace(/-/g, "") : '',
       reservationDate: selectedDate ? `${year}-${month}-${day}` : '',
       reservationTime: selectedList ? selectedList[0] : '',
       consultingType: NumTaxTypeList ? NumTaxTypeList.sort().join(",") : '',
@@ -640,7 +653,7 @@ const ConsultingReservationDetail = props => {
       calcHistoryId: Pdata.calcHistoryId ? Pdata.calcHistoryId : '',
       consultingRequestContent: text ? text : '',
     };
-    //console.log('ConsultingReservationDetail2 data', data);
+    //console.log('ConsultingReservation2 data', data);
     //console.log('headers', headers);
     try {
       const response = await axios.post(`${Config.APP_API_URL}consulting/reservationApply`, data, { headers: headers });
@@ -654,6 +667,7 @@ const ConsultingReservationDetail = props => {
               await SheetManager.show('info', {
                 payload: {
                   type: 'info',
+                  errorType: 1,
                   message: '앗, 현재 모든 예약이 완료되었어요.\n나중에 다시 시도해주세요.',
                   buttontext: '확인하기',
                 },
@@ -668,6 +682,7 @@ const ConsultingReservationDetail = props => {
           await SheetManager.show('info', {
             payload: {
               type: 'error',
+              errorType: response.data.type,
               message: response.data.errMsg ? response.data.errMsg : '상담 예약 중 오류가 발생했어요.',
               description: response.data.errMsgDtl ? response.data.errMsgDtl : '',
               buttontext: '확인하기',
@@ -676,7 +691,7 @@ const ConsultingReservationDetail = props => {
         }
         return false;
       } else {
-        if (response.data.data && response.data.data.isApplyComplete === true) {
+        if (response.data.data && response.data.data.isApplyComplete) {
           const result = response.data.data;
           await SheetManager.show('InfoConsulting', {
             payload: {
@@ -791,7 +806,6 @@ const ConsultingReservationDetail = props => {
               width: '50%',
               marginLeft: 0,
               borderBottomWidth: 0,
-              marginLeft: 0
             }}>
               <View style={{
                 flexDirection: 'row',
@@ -986,18 +1000,26 @@ const ConsultingReservationDetail = props => {
                 autoFocus={currentPageIndex === 2}
                 placeholder="전화번호를 입력해주세요."
                 value={phone}
-                onChangeText={setPhone}
-                maxLength={11}
+                onChangeText={async (phone) => {
+                  const filteredPhone = phone.replace(/[^0-9]/g, '');
+                  let formattedPhone = filteredPhone;
+                  if (filteredPhone.length > 3 && filteredPhone.length <= 7) {
+                    formattedPhone = `${filteredPhone.slice(0, 3)}-${filteredPhone.slice(3)}`;
+                  } else if (filteredPhone.length > 7) {
+                    formattedPhone = `${filteredPhone.slice(0, 3)}-${filteredPhone.slice(3, 7)}-${filteredPhone.slice(7, 11)}`;
+                  }
+                  setPhone(formattedPhone);
+                }}
+                maxLength={13}
                 keyboardType="phone-pad"
                 autoCompleteType="tel"
                 onSubmitEditing={async () => {
                   const state = await NetInfo.fetch();
                   const canProceed = await handleNetInfoChange(state);
                   if (canProceed) {
-                    if (phone.length > 10) {
+                    if (phone.length === 13) {
                       setCurrentPageIndex(3);
                     }
-
                   }
                 }}
               />
@@ -1044,8 +1066,8 @@ const ConsultingReservationDetail = props => {
               }}>
                 <Button
                   style={{
-                    backgroundColor: phone.length < 11 ? '#E8EAED' : '#2F87FF',
-                    color: phone.length < 11 ? '#1b1c1f' : '#FFFFFF',
+                    backgroundColor: phone.length < 13 ? '#E8EAED' : '#2F87FF',
+                    color: phone.length < 13 ? '#1b1c1f' : '#FFFFFF',
                     width: '100%',
                     height: 50, // height 값을 숫자로 변경하고 단위 제거
                     alignItems: 'center', // align-items를 camelCase로 변경
@@ -1053,14 +1075,16 @@ const ConsultingReservationDetail = props => {
                     borderWidth: 1, // border-width를 camelCase로 변경하고 단위 제거
                     borderColor: '#E8EAED',
                   }}
-                  disabled={phone.length < 11}
-                  active={phone.length > 10}
+                  disabled={phone.length < 13}
+                  active={phone.length > 12}
                   width={width}
                   onPress={async () => {
                     const state = await NetInfo.fetch();
                     const canProceed = await handleNetInfoChange(state);
                     if (canProceed) {
-                      setCurrentPageIndex(3);
+                      if (phone.length > 12) {
+                        setCurrentPageIndex(3);
+                      }
                     }
                   }}>
                   <ButtonText >다음으로</ButtonText>
@@ -1521,4 +1545,6 @@ const ConsultingReservationDetail = props => {
   )
 };
 
-export default ConsultingReservationDetail;
+
+
+export default ConsultingReservation2Screen;
