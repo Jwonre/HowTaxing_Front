@@ -17,7 +17,7 @@ import AddCircleIcon from '../../assets/icons/add_circle.svg';
 const Container = styled.View`
   flex: 1;
   width: 100%;
-  background-color: #fff;
+  background-color: #FFF;
 `;
 
 const IntroSection = styled.View`

@@ -159,25 +159,30 @@ const InfoCertification = props => {
       // let isKBInstalled = checkAppPackageInstalled('kb-auth://');
       // let isTossInstalled = checkAppPackageInstalled('tossauth://');
       // let isNaverInstalled = checkAppPackageInstalled('naverlogin://');
+      // let isKakaoInstalled = checkAppPackageInstalled('');
 
       // if (Platform.OS === 'android') {
       //   isKBInstalled = checkAppPackageInstalled('com.kbstar.kbbank'); // Android 패키지명 확인
       //   isTossInstalled = checkAppPackageInstalled('vn.toss');
       //   isNaverInstalled = checkAppPackageInstalled('com.nhn.android.search');
+      //   isKakaoInstalled = await Linking.canOpenURL('com.kakao.talk');
       // }
       let isKBInstalled = false;
       let isTossInstalled = false;
       let isNaverInstalled = false;
+      let isKakaoInstalled = false;
       // if (Platform.OS === 'ios') {
       // iOS에서 URL 스키마 확인
       isKBInstalled = await Linking.canOpenURL('kbbank://');
       isTossInstalled = await Linking.canOpenURL('supertoss://');
       isNaverInstalled = await Linking.canOpenURL('naversearchapp://');
+      isKakaoInstalled = await Linking.canOpenURL('kakaolink://');
       // } else if (Platform.OS === 'android') {
       //   // Android에서 URL 스키마 확인
       //   isKBInstalled = await Linking.canOpenURL('com.kbstar.kbbank');
       //   isTossInstalled = await Linking.canOpenURL('vn.toss');
       //   isNaverInstalled = await Linking.canOpenURL('com.nhn.android.search');
+      //   isKakaoInstalled = await Linking.canOpenURL('com.kakao.talk');
       // }
 
       console.log("install_status : ", `${isKBInstalled} `);
@@ -185,10 +190,14 @@ const InfoCertification = props => {
       console.log("install_status : ", isTossInstalled);
 
       console.log("install_status : ", isNaverInstalled);
+
+      console.log("install_status : ", isKakaoInstalled);
+
       setAppStatus({
         kb: isKBInstalled,
         toss: isTossInstalled,
         naver: isNaverInstalled,
+        kakao: isKakaoInstalled
       });
     } catch (error) {
       console.error('앱 확인 중 오류 발생:', error);
@@ -210,6 +219,10 @@ const InfoCertification = props => {
     toss: {
       ios: 'https://apps.apple.com/kr/app/id839333328',
       android: 'market://details?id=viva.republica.toss&hl=ko&gl=US',
+    },
+    kakao: {
+      ios: 'https://apps.apple.com/kr/app/id362057947',
+      android: 'market://details?id=com.kakao.talk',
     },
   };
 
@@ -609,9 +622,9 @@ const InfoCertification = props => {
               } else if (getEtcHouseReturn === 'getEtcHouseFailed') {
                 return false;
               }
-          } else {
-            return false;
-          }
+            } else {
+              return false;
+            }
 
           }
 
@@ -655,7 +668,7 @@ const InfoCertification = props => {
     //////console.log('@@@@@@@@@headers:', headers);
 
     const data = {
-      certOrg: certType === 'KB' ? 'kb' : certType === 'naver' ? 'naver' : 'toss',
+      certOrg: certType === 'KB' ? 'kb' : certType === 'naver' ? 'naver' : certType === 'kakao' ? 'kakao' : 'toss',
       userNm: name,
       mobileNo: phone,
       rlno: residentNumber,
@@ -887,7 +900,7 @@ const InfoCertification = props => {
       if (appStatus.toss === true) {
         await Linking.openURL(url); // KB 인증서 앱 실행
       } else {
-        console.log('KB 인증서 앱을 실행할 수 없습니다.');
+        console.log('Toss 인증서 앱을 실행할 수 없습니다.');
         downloadApp(certType.toLowerCase());
       }
     } catch (error) {
@@ -907,13 +920,35 @@ const InfoCertification = props => {
       if (appStatus.naver === true) {
         await Linking.openURL(url); // KB 인증서 앱 실행
       } else {
-        console.log('KB 인증서 앱을 실행할 수 없습니다.');
+        console.log('Naver 인증서 앱을 실행할 수 없습니다.');
         downloadApp(certType.toLowerCase());
       }
     } catch (error) {
       console.error('오류 발생:', error);
     }
   };
+
+  const openKakaoAuthApp = async () => {
+    try {
+      const callbackUrl = encodeURIComponent('howtaxingrelease://auth');
+
+      let url = 'kakaolink://';
+
+      // url = 'naversearchapp://default?version=1';
+      console.log('Generated URL:', `appStatus.kakao:${appStatus.kakao} ${url}`);
+
+      if (appStatus.kakao === true) {
+        await Linking.openURL(url); // KB 인증서 앱 실행
+      } else {
+        console.log('Kakao 인증서 앱을 실행할 수 없습니다.');
+        downloadApp(certType.toLowerCase());
+      }
+    } catch (error) {
+      console.error('오류 발생:', error);
+    }
+  };
+
+
   return (
     <ActionSheet
       ref={actionSheetRef}
@@ -999,6 +1034,12 @@ const InfoCertification = props => {
             <ModalTitle >{props?.payload?.message}</ModalTitle>
           )}
 
+          {certType === 'kakao' && (
+            // <ModalTitle >{appStatus.naver ?
+            //   props?.payload?.message : '인증 앱을 해당 기기에서 찾을 수 없어요.\n먼저 인증하실 서비스를 설치해주세요.'}</ModalTitle>
+            <ModalTitle >{props?.payload?.message}</ModalTitle>
+          )}
+
 
 
           {(certType !== 'KB') && <ModalContent >신속한 인증을 원하시면 인증 앱으로 바로가기를 누르신 후 직접 인증을 부탁드려요. </ModalContent>}
@@ -1045,19 +1086,19 @@ const InfoCertification = props => {
                 }
               }}
               style={{
-                width: certType ==='KB' ?'100%' :'49%', // 버튼 너비를 부모 View의 45%로 설정
+                width: certType === 'KB' ? '100%' : '49%', // 버튼 너비를 부모 View의 45%로 설정
                 // backgroundColor: ActiveYN ? '#2f87ff' : '#FFF',
                 // borderColor: ActiveYN ? '#2f87ff' : '#E8EAED',
                 backgroundColor: '#FFF',
-                borderColor:'#E8EAED',
+                borderColor: '#E8EAED',
               }}
-              // active={ActiveYN}
-              // disabled={!ActiveYN}
+            // active={ActiveYN}
+            // disabled={!ActiveYN}
             >
               {/* <ButtonText active={ActiveYN} style={{ color: ActiveYN ? '#fff' : '#717274' }}>
                 다시 보내기
               </ButtonText> */}
-               <ButtonText active={ActiveYN} style={{ color: '#717274' }}>
+              <ButtonText active={ActiveYN} style={{ color: '#717274' }}>
                 다시 보내기
               </ButtonText>
             </Button>
@@ -1081,7 +1122,7 @@ const InfoCertification = props => {
                   style={{
                     // backgroundColor: !ActiveYN ? '#2f87ff' : '#E8EAED',
                     // borderColor: !ActiveYN ? '#2f87ff' : '#E8EAED',
-                    backgroundColor:'#2f87ff',
+                    backgroundColor: '#2f87ff',
                     borderColor: '#2f87ff',
                   }}
                   onPress={async () => {
@@ -1090,6 +1131,7 @@ const InfoCertification = props => {
                     if (canProceed) {
                       if (certType === 'toss') opeToassAuthApp();
                       else if (certType === 'naver') openNaverAuthApp();
+                      else if (certType === 'kakao') openKakaoAuthApp();
                     } else {
                       actionSheetRef.current?.hide();
                     }
@@ -1098,7 +1140,7 @@ const InfoCertification = props => {
                   {/* <ButtonText style={{ color: !ActiveYN ? '#fff' : '#717274' }}>
                     앱 바로가기
                   </ButtonText> */}
-                   <ButtonText style={{ color: '#fff' }}>
+                  <ButtonText style={{ color: '#fff' }}>
                     앱으로 바로가기
                   </ButtonText>
                 </Button>

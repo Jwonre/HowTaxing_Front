@@ -16,7 +16,7 @@ import NetInfo from "@react-native-community/netinfo";
 const Container = styled.View`
   flex: 1;
   width: 100%;
-  background-color: #fff;
+  background-color: #FFF;
   padding: 25px;
 `;
 

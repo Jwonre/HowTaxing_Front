@@ -9,7 +9,7 @@ import { WebView } from 'react-native-webview';
 
 const Container = styled.View`
   flex: 1;
-  background-color: #fff;
+  background-color: #FFF;
 `;
 
 const ProgressSection = styled.View`

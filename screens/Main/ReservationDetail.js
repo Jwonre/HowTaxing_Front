@@ -22,7 +22,7 @@ import EditButtom from '../../assets/icons/edit_Reservation.svg';
 
 const Container = styled.View`
   flex: 1.0;
-  background-color: #fff;
+  background-color: #FFF;
   padding: 0 20px;
 `;
 
