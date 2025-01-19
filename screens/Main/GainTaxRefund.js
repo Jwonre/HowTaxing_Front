@@ -263,7 +263,6 @@ const GainTaxRefund = props => {
         });
       } else {
         if (response.data.data && response.data.data.isApplyComplete) {
-          const result = response.data.data;
           await SheetManager.show('InfoConsulting', {
             payload: {
               message: '양도소득세 환급액 조회 신청이 완료되었어요.',
