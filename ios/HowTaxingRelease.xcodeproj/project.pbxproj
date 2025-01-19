@@ -3,17 +3,22 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 54;
+	objectVersion = 60;
 	objects = {
 
 /* Begin PBXBuildFile section */
 		00E356F31AD99517003FC87E /* HowTaxingReleaseTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 00E356F21AD99517003FC87E /* HowTaxingReleaseTests.m */; };
-		0C80B921A6F3F58F76C31292 /* libPods-HowTaxingRelease.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5DCACB8F33CDC322A6C60F78 /* libPods-HowTaxingRelease.a */; };
 		13B07FBC1A68108700A75B9A /* AppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.mm */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
-		7699B88040F8A987B510C191 /* libPods-HowTaxingRelease-HowTaxingReleaseTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 19F6CBCC0A4E27FBF8BF4A61 /* libPods-HowTaxingRelease-HowTaxingReleaseTests.a */; };
+		773A304C83582C8552505CA2 /* libPods-HowTaxingRelease-HowTaxingReleaseTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0226E1A39D4BA5BEA3A05952 /* libPods-HowTaxingRelease-HowTaxingReleaseTests.a */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
+		9EBE0A5C14B8FC5AA5E8FD28 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB81A68108700A75B9A /* PrivacyInfo.xcprivacy */; };
+		BE64FF042D2D0D5B00DF3AE2 /* hermes.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = BE4A527A2D276B98003CD9FD /* hermes.xcframework */; };
+		BE64FF052D2D0DCA00DF3AE2 /* ChannelIOFront.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = BE4714542D264CF00010FDD3 /* ChannelIOFront.xcframework */; };
+		BE64FF062D2D0DCA00DF3AE2 /* NaverThirdPartyLogin.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = BE67350E2D28295000A8AFA7 /* NaverThirdPartyLogin.xcframework */; };
+		BEA808772D38C82F00FA6D48 /* main.jsbundle in Resources */ = {isa = PBXBuildFile; fileRef = BEA808762D38C82F00FA6D48 /* main.jsbundle */; };
+		EE353F8C5022FBB7B547900A /* libPods-HowTaxingRelease.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 105E6E26A1C6C8F17595A1B1 /* libPods-HowTaxingRelease.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -26,10 +31,25 @@
 		};
 /* End PBXContainerItemProxy section */
 
+/* Begin PBXCopyFilesBuildPhase section */
+		BE4714572D264CF00010FDD3 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
 		00E356EE1AD99517003FC87E /* HowTaxingReleaseTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = HowTaxingReleaseTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		00E356F11AD99517003FC87E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		00E356F21AD99517003FC87E /* HowTaxingReleaseTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = HowTaxingReleaseTests.m; sourceTree = "<group>"; };
+		0226E1A39D4BA5BEA3A05952 /* libPods-HowTaxingRelease-HowTaxingReleaseTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-HowTaxingRelease-HowTaxingReleaseTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		105E6E26A1C6C8F17595A1B1 /* libPods-HowTaxingRelease.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-HowTaxingRelease.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07F961A680F5B00A75B9A /* HowTaxingRelease.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = HowTaxingRelease.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07FAF1A68108700A75B9A /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppDelegate.h; path = HowTaxingRelease/AppDelegate.h; sourceTree = "<group>"; };
 		13B07FB01A68108700A75B9A /* AppDelegate.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = AppDelegate.mm; path = HowTaxingRelease/AppDelegate.mm; sourceTree = "<group>"; };
@@ -37,14 +57,49 @@
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = HowTaxingRelease/Info.plist; sourceTree = "<group>"; };
 		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = HowTaxingRelease/main.m; sourceTree = "<group>"; };
 		13B07FB81A68108700A75B9A /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = PrivacyInfo.xcprivacy; path = HowTaxingRelease/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
-		19F6CBCC0A4E27FBF8BF4A61 /* libPods-HowTaxingRelease-HowTaxingReleaseTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-HowTaxingRelease-HowTaxingReleaseTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		3B4392A12AC88292D35C810B /* Pods-HowTaxingRelease.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-HowTaxingRelease.debug.xcconfig"; path = "Target Support Files/Pods-HowTaxingRelease/Pods-HowTaxingRelease.debug.xcconfig"; sourceTree = "<group>"; };
-		5709B34CF0A7D63546082F79 /* Pods-HowTaxingRelease.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-HowTaxingRelease.release.xcconfig"; path = "Target Support Files/Pods-HowTaxingRelease/Pods-HowTaxingRelease.release.xcconfig"; sourceTree = "<group>"; };
-		5B7EB9410499542E8C5724F5 /* Pods-HowTaxingRelease-HowTaxingReleaseTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-HowTaxingRelease-HowTaxingReleaseTests.debug.xcconfig"; path = "Target Support Files/Pods-HowTaxingRelease-HowTaxingReleaseTests/Pods-HowTaxingRelease-HowTaxingReleaseTests.debug.xcconfig"; sourceTree = "<group>"; };
-		5DCACB8F33CDC322A6C60F78 /* libPods-HowTaxingRelease.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-HowTaxingRelease.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		1D78A1190A52AF0815C549C3 /* Pods-HowTaxingRelease.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-HowTaxingRelease.release.xcconfig"; path = "Target Support Files/Pods-HowTaxingRelease/Pods-HowTaxingRelease.release.xcconfig"; sourceTree = "<group>"; };
+		2EE215AF56ED23811628F5BA /* Pods-HowTaxingRelease.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-HowTaxingRelease.debug.xcconfig"; path = "Target Support Files/Pods-HowTaxingRelease/Pods-HowTaxingRelease.debug.xcconfig"; sourceTree = "<group>"; };
+		6F2818C2DEAB9B094ADC0596 /* Pods-HowTaxingRelease-HowTaxingReleaseTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-HowTaxingRelease-HowTaxingReleaseTests.release.xcconfig"; path = "Target Support Files/Pods-HowTaxingRelease-HowTaxingReleaseTests/Pods-HowTaxingRelease-HowTaxingReleaseTests.release.xcconfig"; sourceTree = "<group>"; };
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = HowTaxingRelease/LaunchScreen.storyboard; sourceTree = "<group>"; };
-		89C6BE57DB24E9ADA2F236DE /* Pods-HowTaxingRelease-HowTaxingReleaseTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-HowTaxingRelease-HowTaxingReleaseTests.release.xcconfig"; path = "Target Support Files/Pods-HowTaxingRelease-HowTaxingReleaseTests/Pods-HowTaxingRelease-HowTaxingReleaseTests.release.xcconfig"; sourceTree = "<group>"; };
+		BE4714542D264CF00010FDD3 /* ChannelIOFront.xcframework */ = {isa = PBXFileReference; expectedSignature = "AppleDeveloperProgram:8278Q64QFC:Channel Corp."; lastKnownFileType = wrapper.xcframework; name = ChannelIOFront.xcframework; path = Pods/ChannelIOSDK/ChannelIOFront/ChannelIOFront.xcframework; sourceTree = "<group>"; };
+		BE4A527A2D276B98003CD9FD /* hermes.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = hermes.xcframework; path = "Pods/hermes-engine/destroot/Library/Frameworks/universal/hermes.xcframework"; sourceTree = "<group>"; };
+		BE64FCF32D2B550300DF3AE2 /* HowTaxingRelease.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = HowTaxingRelease.entitlements; path = HowTaxingRelease/HowTaxingRelease.entitlements; sourceTree = "<group>"; };
+		BE64FEDE2D2CCC4B00DF3AE2 /* kakao_logo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = kakao_logo.png; sourceTree = "<group>"; };
+		BE64FEDF2D2CCC4B00DF3AE2 /* kb_logo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = kb_logo.png; sourceTree = "<group>"; };
+		BE64FEE02D2CCC4B00DF3AE2 /* naver_logo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = naver_logo.png; sourceTree = "<group>"; };
+		BE64FEE12D2CCC4B00DF3AE2 /* pass_logo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = pass_logo.png; sourceTree = "<group>"; };
+		BE64FEE22D2CCC4B00DF3AE2 /* payco_logo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = payco_logo.png; sourceTree = "<group>"; };
+		BE64FEE32D2CCC4B00DF3AE2 /* samsung_logo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = samsung_logo.png; sourceTree = "<group>"; };
+		BE64FEE42D2CCC4B00DF3AE2 /* toss_logo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = toss_logo.png; sourceTree = "<group>"; };
+		BE64FEE62D2CCC4B00DF3AE2 /* apple_ico.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = apple_ico.png; sourceTree = "<group>"; };
+		BE64FEE72D2CCC4B00DF3AE2 /* kakao_ico.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = kakao_ico.png; sourceTree = "<group>"; };
+		BE64FEE82D2CCC4B00DF3AE2 /* naver_ico.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = naver_ico.png; sourceTree = "<group>"; };
+		BE64FEEA2D2CCC4B00DF3AE2 /* addmembership_finish.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = addmembership_finish.png; sourceTree = "<group>"; };
+		BE64FEEB2D2CCC4B00DF3AE2 /* BackGroundLogin2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = BackGroundLogin2.png; sourceTree = "<group>"; };
+		BE64FEEC2D2CCC4B00DF3AE2 /* banner_15.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = banner_15.jpg; sourceTree = "<group>"; };
+		BE64FEED2D2CCC4B00DF3AE2 /* informationlogo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = informationlogo.png; sourceTree = "<group>"; };
+		BE64FEEE2D2CCC4B00DF3AE2 /* logo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = logo.png; sourceTree = "<group>"; };
+		BE64FEEF2D2CCC4B00DF3AE2 /* manAvatar.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = manAvatar.png; sourceTree = "<group>"; };
+		BE64FEF02D2CCC4B00DF3AE2 /* map_area_ico.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = map_area_ico.png; sourceTree = "<group>"; };
+		BE64FEF12D2CCC4B00DF3AE2 /* member.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = member.png; sourceTree = "<group>"; };
+		BE64FEF22D2CCC4B00DF3AE2 /* Minjungum_Lee.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Minjungum_Lee.png; sourceTree = "<group>"; };
+		BE64FEF32D2CCC4B00DF3AE2 /* Minjungum_Lee_consulting.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Minjungum_Lee_consulting.png; sourceTree = "<group>"; };
+		BE64FEF42D2CCC4B00DF3AE2 /* questionmark.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = questionmark.png; sourceTree = "<group>"; };
+		BE64FEF52D2CCC4B00DF3AE2 /* request_family_property_img.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = request_family_property_img.png; sourceTree = "<group>"; };
+		BE64FEF62D2CCC4B00DF3AE2 /* slider.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = slider.png; sourceTree = "<group>"; };
+		BE64FEF72D2CCC4B00DF3AE2 /* womanAvatar.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = womanAvatar.png; sourceTree = "<group>"; };
+		BE64FEFA2D2CCC4B00DF3AE2 /* back-icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "back-icon.png"; sourceTree = "<group>"; };
+		BE64FEFB2D2CCC4B00DF3AE2 /* back-icon-mask.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "back-icon-mask.png"; sourceTree = "<group>"; };
+		BE64FEFC2D2CCC4B00DF3AE2 /* back-icon@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "back-icon@2x.png"; sourceTree = "<group>"; };
+		BE64FEFD2D2CCC4B00DF3AE2 /* back-icon@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "back-icon@3x.png"; sourceTree = "<group>"; };
+		BE6735062D280A6E00A8AFA7 /* HowTaxingRelease-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "HowTaxingRelease-Bridging-Header.h"; sourceTree = "<group>"; };
+		BE6735072D280A8600A8AFA7 /* RCTAppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RCTAppDelegate.h; sourceTree = "<group>"; };
+		BE6735082D280A8600A8AFA7 /* RCTRootViewFactory.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RCTRootViewFactory.h; sourceTree = "<group>"; };
+		BE6735092D280A8600A8AFA7 /* RNKakaoLogins.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNKakaoLogins.h; sourceTree = "<group>"; };
+		BE67350E2D28295000A8AFA7 /* NaverThirdPartyLogin.xcframework */ = {isa = PBXFileReference; expectedSignature = "AppleDeveloperProgram:U6VV7FMD97:NHN Corporation"; lastKnownFileType = wrapper.xcframework; name = NaverThirdPartyLogin.xcframework; path = "Pods/naveridlogin-sdk-ios/NaverThirdPartyLogin.xcframework"; sourceTree = "<group>"; };
+		BEA808762D38C82F00FA6D48 /* main.jsbundle */ = {isa = PBXFileReference; lastKnownFileType = text; path = main.jsbundle; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
+		EDF902302F103C4081FD912F /* Pods-HowTaxingRelease-HowTaxingReleaseTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-HowTaxingRelease-HowTaxingReleaseTests.debug.xcconfig"; path = "Target Support Files/Pods-HowTaxingRelease-HowTaxingReleaseTests/Pods-HowTaxingRelease-HowTaxingReleaseTests.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -52,7 +107,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				7699B88040F8A987B510C191 /* libPods-HowTaxingRelease-HowTaxingReleaseTests.a in Frameworks */,
+				773A304C83582C8552505CA2 /* libPods-HowTaxingRelease-HowTaxingReleaseTests.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -60,7 +115,10 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0C80B921A6F3F58F76C31292 /* libPods-HowTaxingRelease.a in Frameworks */,
+				BE64FF052D2D0DCA00DF3AE2 /* ChannelIOFront.xcframework in Frameworks */,
+				BE64FF062D2D0DCA00DF3AE2 /* NaverThirdPartyLogin.xcframework in Frameworks */,
+				BE64FF042D2D0D5B00DF3AE2 /* hermes.xcframework in Frameworks */,
+				EE353F8C5022FBB7B547900A /* libPods-HowTaxingRelease.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -87,6 +145,10 @@
 		13B07FAE1A68108700A75B9A /* HowTaxingRelease */ = {
 			isa = PBXGroup;
 			children = (
+				BE64FCF32D2B550300DF3AE2 /* HowTaxingRelease.entitlements */,
+				BE6735072D280A8600A8AFA7 /* RCTAppDelegate.h */,
+				BE6735082D280A8600A8AFA7 /* RCTRootViewFactory.h */,
+				BE6735092D280A8600A8AFA7 /* RNKakaoLogins.h */,
 				13B07FAF1A68108700A75B9A /* AppDelegate.h */,
 				13B07FB01A68108700A75B9A /* AppDelegate.mm */,
 				13B07FB51A68108700A75B9A /* Images.xcassets */,
@@ -101,9 +163,12 @@
 		2D16E6871FA4F8E400B85C8A /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				BE67350E2D28295000A8AFA7 /* NaverThirdPartyLogin.xcframework */,
+				BE4A527A2D276B98003CD9FD /* hermes.xcframework */,
+				BE4714542D264CF00010FDD3 /* ChannelIOFront.xcframework */,
 				ED297162215061F000B7C4FE /* JavaScriptCore.framework */,
-				5DCACB8F33CDC322A6C60F78 /* libPods-HowTaxingRelease.a */,
-				19F6CBCC0A4E27FBF8BF4A61 /* libPods-HowTaxingRelease-HowTaxingReleaseTests.a */,
+				105E6E26A1C6C8F17595A1B1 /* libPods-HowTaxingRelease.a */,
+				0226E1A39D4BA5BEA3A05952 /* libPods-HowTaxingRelease-HowTaxingReleaseTests.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -118,6 +183,9 @@
 		83CBB9F61A601CBA00E9B192 = {
 			isa = PBXGroup;
 			children = (
+				BEA808762D38C82F00FA6D48 /* main.jsbundle */,
+				BE64FF032D2CCC4B00DF3AE2 /* assets */,
+				BE6735062D280A6E00A8AFA7 /* HowTaxingRelease-Bridging-Header.h */,
 				13B07FAE1A68108700A75B9A /* HowTaxingRelease */,
 				832341AE1AAA6A7D00B99B32 /* Libraries */,
 				00E356EF1AD99517003FC87E /* HowTaxingReleaseTests */,
@@ -142,12 +210,119 @@
 		BBD78D7AC51CEA395F1C20DB /* Pods */ = {
 			isa = PBXGroup;
 			children = (
-				3B4392A12AC88292D35C810B /* Pods-HowTaxingRelease.debug.xcconfig */,
-				5709B34CF0A7D63546082F79 /* Pods-HowTaxingRelease.release.xcconfig */,
-				5B7EB9410499542E8C5724F5 /* Pods-HowTaxingRelease-HowTaxingReleaseTests.debug.xcconfig */,
-				89C6BE57DB24E9ADA2F236DE /* Pods-HowTaxingRelease-HowTaxingReleaseTests.release.xcconfig */,
+				2EE215AF56ED23811628F5BA /* Pods-HowTaxingRelease.debug.xcconfig */,
+				1D78A1190A52AF0815C549C3 /* Pods-HowTaxingRelease.release.xcconfig */,
+				EDF902302F103C4081FD912F /* Pods-HowTaxingRelease-HowTaxingReleaseTests.debug.xcconfig */,
+				6F2818C2DEAB9B094ADC0596 /* Pods-HowTaxingRelease-HowTaxingReleaseTests.release.xcconfig */,
 			);
 			path = Pods;
+			sourceTree = "<group>";
+		};
+		BE64FEE52D2CCC4B00DF3AE2 /* certLogo */ = {
+			isa = PBXGroup;
+			children = (
+				BE64FEDE2D2CCC4B00DF3AE2 /* kakao_logo.png */,
+				BE64FEDF2D2CCC4B00DF3AE2 /* kb_logo.png */,
+				BE64FEE02D2CCC4B00DF3AE2 /* naver_logo.png */,
+				BE64FEE12D2CCC4B00DF3AE2 /* pass_logo.png */,
+				BE64FEE22D2CCC4B00DF3AE2 /* payco_logo.png */,
+				BE64FEE32D2CCC4B00DF3AE2 /* samsung_logo.png */,
+				BE64FEE42D2CCC4B00DF3AE2 /* toss_logo.png */,
+			);
+			path = certLogo;
+			sourceTree = "<group>";
+		};
+		BE64FEE92D2CCC4B00DF3AE2 /* socialIcon */ = {
+			isa = PBXGroup;
+			children = (
+				BE64FEE62D2CCC4B00DF3AE2 /* apple_ico.png */,
+				BE64FEE72D2CCC4B00DF3AE2 /* kakao_ico.png */,
+				BE64FEE82D2CCC4B00DF3AE2 /* naver_ico.png */,
+			);
+			path = socialIcon;
+			sourceTree = "<group>";
+		};
+		BE64FEF82D2CCC4B00DF3AE2 /* images */ = {
+			isa = PBXGroup;
+			children = (
+				BE64FEE52D2CCC4B00DF3AE2 /* certLogo */,
+				BE64FEE92D2CCC4B00DF3AE2 /* socialIcon */,
+				BE64FEEA2D2CCC4B00DF3AE2 /* addmembership_finish.png */,
+				BE64FEEB2D2CCC4B00DF3AE2 /* BackGroundLogin2.png */,
+				BE64FEEC2D2CCC4B00DF3AE2 /* banner_15.jpg */,
+				BE64FEED2D2CCC4B00DF3AE2 /* informationlogo.png */,
+				BE64FEEE2D2CCC4B00DF3AE2 /* logo.png */,
+				BE64FEEF2D2CCC4B00DF3AE2 /* manAvatar.png */,
+				BE64FEF02D2CCC4B00DF3AE2 /* map_area_ico.png */,
+				BE64FEF12D2CCC4B00DF3AE2 /* member.png */,
+				BE64FEF22D2CCC4B00DF3AE2 /* Minjungum_Lee.png */,
+				BE64FEF32D2CCC4B00DF3AE2 /* Minjungum_Lee_consulting.png */,
+				BE64FEF42D2CCC4B00DF3AE2 /* questionmark.png */,
+				BE64FEF52D2CCC4B00DF3AE2 /* request_family_property_img.png */,
+				BE64FEF62D2CCC4B00DF3AE2 /* slider.png */,
+				BE64FEF72D2CCC4B00DF3AE2 /* womanAvatar.png */,
+			);
+			path = images;
+			sourceTree = "<group>";
+		};
+		BE64FEF92D2CCC4B00DF3AE2 /* assets */ = {
+			isa = PBXGroup;
+			children = (
+				BE64FEF82D2CCC4B00DF3AE2 /* images */,
+			);
+			path = assets;
+			sourceTree = "<group>";
+		};
+		BE64FEFE2D2CCC4B00DF3AE2 /* assets */ = {
+			isa = PBXGroup;
+			children = (
+				BE64FEFA2D2CCC4B00DF3AE2 /* back-icon.png */,
+				BE64FEFB2D2CCC4B00DF3AE2 /* back-icon-mask.png */,
+				BE64FEFC2D2CCC4B00DF3AE2 /* back-icon@2x.png */,
+				BE64FEFD2D2CCC4B00DF3AE2 /* back-icon@3x.png */,
+			);
+			path = assets;
+			sourceTree = "<group>";
+		};
+		BE64FEFF2D2CCC4B00DF3AE2 /* src */ = {
+			isa = PBXGroup;
+			children = (
+				BE64FEFE2D2CCC4B00DF3AE2 /* assets */,
+			);
+			path = src;
+			sourceTree = "<group>";
+		};
+		BE64FF002D2CCC4B00DF3AE2 /* elements */ = {
+			isa = PBXGroup;
+			children = (
+				BE64FEFF2D2CCC4B00DF3AE2 /* src */,
+			);
+			path = elements;
+			sourceTree = "<group>";
+		};
+		BE64FF012D2CCC4B00DF3AE2 /* @react-navigation */ = {
+			isa = PBXGroup;
+			children = (
+				BE64FF002D2CCC4B00DF3AE2 /* elements */,
+			);
+			path = "@react-navigation";
+			sourceTree = "<group>";
+		};
+		BE64FF022D2CCC4B00DF3AE2 /* node_modules */ = {
+			isa = PBXGroup;
+			children = (
+				BE64FF012D2CCC4B00DF3AE2 /* @react-navigation */,
+			);
+			path = node_modules;
+			sourceTree = "<group>";
+		};
+		BE64FF032D2CCC4B00DF3AE2 /* assets */ = {
+			isa = PBXGroup;
+			children = (
+				BE64FEF92D2CCC4B00DF3AE2 /* assets */,
+				BE64FF022D2CCC4B00DF3AE2 /* node_modules */,
+			);
+			path = assets;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -157,12 +332,12 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 00E357021AD99517003FC87E /* Build configuration list for PBXNativeTarget "HowTaxingReleaseTests" */;
 			buildPhases = (
-				A55EABD7B0C7F3A422A6CC61 /* [CP] Check Pods Manifest.lock */,
+				CEF8E2D2A623C99D2AEFD06A /* [CP] Check Pods Manifest.lock */,
 				00E356EA1AD99517003FC87E /* Sources */,
 				00E356EB1AD99517003FC87E /* Frameworks */,
 				00E356EC1AD99517003FC87E /* Resources */,
-				C59DA0FBD6956966B86A3779 /* [CP] Embed Pods Frameworks */,
-				F6A41C54EA430FDDC6A6ED99 /* [CP] Copy Pods Resources */,
+				B536A5BACEDF2393594F6005 /* [CP] Embed Pods Frameworks */,
+				9411A649B34136DD52C9B815 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -178,13 +353,14 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "HowTaxingRelease" */;
 			buildPhases = (
-				C38B50BA6285516D6DCD4F65 /* [CP] Check Pods Manifest.lock */,
+				763AD48A701D75E590EB134E /* [CP] Check Pods Manifest.lock */,
 				13B07F871A680F5B00A75B9A /* Sources */,
 				13B07F8C1A680F5B00A75B9A /* Frameworks */,
 				13B07F8E1A680F5B00A75B9A /* Resources */,
 				00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */,
-				00EEFC60759A1932668264C0 /* [CP] Embed Pods Frameworks */,
-				E235C05ADACE081382539298 /* [CP] Copy Pods Resources */,
+				BE4714572D264CF00010FDD3 /* Embed Frameworks */,
+				8797BC00DC16E319B8E9B597 /* [CP] Embed Pods Frameworks */,
+				A2D940619F3F0F51E9CE859C /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -213,7 +389,7 @@
 				};
 			};
 			buildConfigurationList = 83CBB9FA1A601CBA00E9B192 /* Build configuration list for PBXProject "HowTaxingRelease" */;
-			compatibilityVersion = "Xcode 12.0";
+			compatibilityVersion = "Xcode 15.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -243,8 +419,10 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BEA808772D38C82F00FA6D48 /* main.jsbundle in Resources */,
 				81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
+				9EBE0A5C14B8FC5AA5E8FD28 /* PrivacyInfo.xcprivacy in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -253,7 +431,7 @@
 /* Begin PBXShellScriptBuildPhase section */
 		00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */ = {
 			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
+			buildActionMask = 12;
 			files = (
 			);
 			inputPaths = (
@@ -267,46 +445,7 @@
 			shellPath = /bin/sh;
 			shellScript = "set -e\n\nWITH_ENVIRONMENT=\"$REACT_NATIVE_PATH/scripts/xcode/with-environment.sh\"\nREACT_NATIVE_XCODE=\"$REACT_NATIVE_PATH/scripts/react-native-xcode.sh\"\n\n/bin/sh -c \"$WITH_ENVIRONMENT $REACT_NATIVE_XCODE\"\n";
 		};
-		00EEFC60759A1932668264C0 /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-HowTaxingRelease/Pods-HowTaxingRelease-frameworks-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-HowTaxingRelease/Pods-HowTaxingRelease-frameworks-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-HowTaxingRelease/Pods-HowTaxingRelease-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		A55EABD7B0C7F3A422A6CC61 /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
-				"${PODS_ROOT}/Manifest.lock",
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-HowTaxingRelease-HowTaxingReleaseTests-checkManifestLockResult.txt",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
-		C38B50BA6285516D6DCD4F65 /* [CP] Check Pods Manifest.lock */ = {
+		763AD48A701D75E590EB134E /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -328,24 +467,41 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
-		C59DA0FBD6956966B86A3779 /* [CP] Embed Pods Frameworks */ = {
+		8797BC00DC16E319B8E9B597 /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-HowTaxingRelease-HowTaxingReleaseTests/Pods-HowTaxingRelease-HowTaxingReleaseTests-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+				"${PODS_ROOT}/Target Support Files/Pods-HowTaxingRelease/Pods-HowTaxingRelease-frameworks-${CONFIGURATION}-input-files.xcfilelist",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-HowTaxingRelease-HowTaxingReleaseTests/Pods-HowTaxingRelease-HowTaxingReleaseTests-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+				"${PODS_ROOT}/Target Support Files/Pods-HowTaxingRelease/Pods-HowTaxingRelease-frameworks-${CONFIGURATION}-output-files.xcfilelist",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-HowTaxingRelease-HowTaxingReleaseTests/Pods-HowTaxingRelease-HowTaxingReleaseTests-frameworks.sh\"\n";
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-HowTaxingRelease/Pods-HowTaxingRelease-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
-		E235C05ADACE081382539298 /* [CP] Copy Pods Resources */ = {
+		9411A649B34136DD52C9B815 /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-HowTaxingRelease-HowTaxingReleaseTests/Pods-HowTaxingRelease-HowTaxingReleaseTests-resources-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Copy Pods Resources";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-HowTaxingRelease-HowTaxingReleaseTests/Pods-HowTaxingRelease-HowTaxingReleaseTests-resources-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-HowTaxingRelease-HowTaxingReleaseTests/Pods-HowTaxingRelease-HowTaxingReleaseTests-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		A2D940619F3F0F51E9CE859C /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -362,21 +518,43 @@
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-HowTaxingRelease/Pods-HowTaxingRelease-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
-		F6A41C54EA430FDDC6A6ED99 /* [CP] Copy Pods Resources */ = {
+		B536A5BACEDF2393594F6005 /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-HowTaxingRelease-HowTaxingReleaseTests/Pods-HowTaxingRelease-HowTaxingReleaseTests-resources-${CONFIGURATION}-input-files.xcfilelist",
+				"${PODS_ROOT}/Target Support Files/Pods-HowTaxingRelease-HowTaxingReleaseTests/Pods-HowTaxingRelease-HowTaxingReleaseTests-frameworks-${CONFIGURATION}-input-files.xcfilelist",
 			);
-			name = "[CP] Copy Pods Resources";
+			name = "[CP] Embed Pods Frameworks";
 			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-HowTaxingRelease-HowTaxingReleaseTests/Pods-HowTaxingRelease-HowTaxingReleaseTests-resources-${CONFIGURATION}-output-files.xcfilelist",
+				"${PODS_ROOT}/Target Support Files/Pods-HowTaxingRelease-HowTaxingReleaseTests/Pods-HowTaxingRelease-HowTaxingReleaseTests-frameworks-${CONFIGURATION}-output-files.xcfilelist",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-HowTaxingRelease-HowTaxingReleaseTests/Pods-HowTaxingRelease-HowTaxingReleaseTests-resources.sh\"\n";
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-HowTaxingRelease-HowTaxingReleaseTests/Pods-HowTaxingRelease-HowTaxingReleaseTests-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		CEF8E2D2A623C99D2AEFD06A /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-HowTaxingRelease-HowTaxingReleaseTests-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
@@ -412,7 +590,7 @@
 /* Begin XCBuildConfiguration section */
 		00E356F61AD99517003FC87E /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 5B7EB9410499542E8C5724F5 /* Pods-HowTaxingRelease-HowTaxingReleaseTests.debug.xcconfig */;
+			baseConfigurationReference = EDF902302F103C4081FD912F /* Pods-HowTaxingRelease-HowTaxingReleaseTests.debug.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				GCC_PREPROCESSOR_DEFINITIONS = (
@@ -439,7 +617,7 @@
 		};
 		00E356F71AD99517003FC87E /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 89C6BE57DB24E9ADA2F236DE /* Pods-HowTaxingRelease-HowTaxingReleaseTests.release.xcconfig */;
+			baseConfigurationReference = 6F2818C2DEAB9B094ADC0596 /* Pods-HowTaxingRelease-HowTaxingReleaseTests.release.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				COPY_PHASE_STRIP = NO;
@@ -463,12 +641,24 @@
 		};
 		13B07F941A680F5B00A75B9A /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 3B4392A12AC88292D35C810B /* Pods-HowTaxingRelease.debug.xcconfig */;
+			baseConfigurationReference = 2EE215AF56ED23811628F5BA /* Pods-HowTaxingRelease.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_ENTITLEMENTS = HowTaxingRelease/HowTaxingRelease.entitlements;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "";
+				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = RNG43XHWL3;
 				ENABLE_BITCODE = NO;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"${PODS_ROOT}/hermes-engine/destroot/Library/Frameworks/universal\"",
+					"\"${PODS_ROOT}/naveridlogin-sdk-ios\"",
+					"\"$(PODS_ROOT)/ChannelIOSDK/**\"",
+					"$(PROJECT_DIR)/../node_modules/react-native/sdks/hermes",
+				);
 				INFOPLIST_FILE = HowTaxingRelease/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -481,8 +671,10 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)";
+				PRODUCT_BUNDLE_IDENTIFIER = com.xmonster.howtaxing;
 				PRODUCT_NAME = HowTaxingRelease;
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "HowTaxing Dev Profile";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
@@ -491,11 +683,24 @@
 		};
 		13B07F951A680F5B00A75B9A /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 5709B34CF0A7D63546082F79 /* Pods-HowTaxingRelease.release.xcconfig */;
+			baseConfigurationReference = 1D78A1190A52AF0815C549C3 /* Pods-HowTaxingRelease.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_ENTITLEMENTS = HowTaxingRelease/HowTaxingRelease.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
+				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "";
+				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = RNG43XHWL3;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"${PODS_ROOT}/hermes-engine/destroot/Library/Frameworks/universal\"",
+					"\"${PODS_ROOT}/naveridlogin-sdk-ios\"",
+					"\"$(PODS_ROOT)/ChannelIOSDK/**\"",
+					"$(PROJECT_DIR)/../node_modules/react-native/sdks/hermes",
+				);
 				INFOPLIST_FILE = HowTaxingRelease/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -508,8 +713,10 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)";
+				PRODUCT_BUNDLE_IDENTIFIER = com.xmonster.howtaxing;
 				PRODUCT_NAME = HowTaxingRelease;
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "HowTaxing Dist App Store Connect Profile";
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
 			};
@@ -549,6 +756,7 @@
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = "";
+				"FRAMEWORK_SEARCH_PATHS[arch=*]" = "";
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -584,7 +792,11 @@
 					"-DFOLLY_CFG_NO_COROUTINES=1",
 					"-DFOLLY_HAVE_CLOCK_GETTIME=1",
 				);
+				OTHER_LDFLAGS = "$(inherited)  ";
+				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) DEBUG";
+				USE_HERMES = true;
 			};
 			name = Debug;
 		};
@@ -649,7 +861,10 @@
 					"-DFOLLY_CFG_NO_COROUTINES=1",
 					"-DFOLLY_HAVE_CLOCK_GETTIME=1",
 				);
+				OTHER_LDFLAGS = "$(inherited)  ";
+				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
+				USE_HERMES = true;
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;

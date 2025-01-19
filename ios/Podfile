@@ -5,7 +5,7 @@ require Pod::Executable.execute_command('node', ['-p',
     {paths: [process.argv[1]]},
   )', __dir__]).strip
 
-platform :ios, min_ios_version_supported
+platform :ios, '15.1'
 prepare_react_native_project!
 
 linkage = ENV['USE_FRAMEWORKS']
@@ -16,9 +16,20 @@ end
 
 target 'HowTaxingRelease' do
   config = use_native_modules!
+  # ChannelIO SDK와 react-native-channel-plugin 추가
+  pod 'ChannelIOSDK', podspec: 'https://mobile-static.channel.io/ios/latest/xcframework.podspec'
+#   pod 'RNChannelIO', :path => '../node_modules/react-native-channel-plugin'
+#   pod 'ChannelIOSDK', '~> 10.3.1'
+pod 'RNChannelIO', :path => '../node_modules/react-native-channel-plugin'
+#  pod 'NMapsMap', '~> 3.20.0'
+ pod 'RNSVG', :path => '../node_modules/react-native-svg'
+ pod 'KakaoSDK', '~> 2.0'
+#  pod 'NaverThirdPartyLogin', :path => '../node_modules/@react-native-seoul/naver-login'
 
+  # pod 'GoogleSignIn', '7.0.0'
   use_react_native!(
     :path => config[:reactNativePath],
+                    :hermes_enabled => true,
     # An absolute path to your application root.
     :app_path => "#{Pod::Config.instance.installation_root}/.."
   )
@@ -29,12 +40,21 @@ target 'HowTaxingRelease' do
   end
 
   post_install do |installer|
-    # https://github.com/facebook/react-native/blob/main/packages/react-native/scripts/react_native_pods.rb#L197-L202
+    installer.pods_project.targets.each do |target|
+      if ['hermes', 'ChannelIOSDK', 'NaverThirdPartyLogin'].include?(target.name)
+        target.build_phases.each do |phase|
+          if phase.respond_to?(:name) && phase.name == '[CP] Embed Pods Frameworks'
+            target.build_phases.delete(phase)
+          end
+        end
+      end
+    end
+
+    # React Native 기본 설정
     react_native_post_install(
       installer,
       config[:reactNativePath],
-      :mac_catalyst_enabled => false,
-      # :ccache_enabled => true
+      :mac_catalyst_enabled => false
     )
   end
 end

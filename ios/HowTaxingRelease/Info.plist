@@ -20,20 +20,181 @@
 	<string>$(MARKETING_VERSION)</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLName</key>
+			<string>naver</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>howtaxingrelease</string>
+			</array>
+		</dict>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLName</key>
+			<string>kakao</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>kakaofe69357976f38cd298eab638d110249c</string>
+			</array>
+		</dict>
+	</array>
 	<key>CFBundleVersion</key>
 	<string>$(CURRENT_PROJECT_VERSION)</string>
+	<key>KAKAO_APP_KEY</key>
+	<string>fe69357976f38cd298eab638d110249c</string>
+	<key>KAKAO_APP_SCHEME</key>
+	<string>kakaofe69357976f38cd298eab638d110249c</string>
+  <key>LSApplicationCategoryType</key>
+  <string></string>
+	<key>LSApplicationQueriesSchemes</key>
+	<array>
+		<string>kakao0123456789</string>
+		<string>kakaokompassauth</string>
+		<string>storykompassauth</string>
+		<string>kakaolink</string>
+		<string>naversearchapp</string>
+		<string>naversearchthirdlogin</string>
+    <string>com.wooricard.wcard</string>
+    <string>itmss</string>
+    <string>itms-appss</string>
+    <string>itms</string>
+    <string>itms-apps</string>
+    <string>shinhan-sr-ansimclick-payco</string>
+    <string>shinhan-sr-ansimclick-naverpay</string>
+    <string>hanaskcardmobileportal</string>
+    <string>kpay</string>
+    <string>ispmobile</string>
+    <string>paypin</string>
+    <string>tswansimclick</string>
+    <string>lpayapp</string>
+    <string>kakaotalk</string>
+    <string>shinsegaeeasypayment</string>
+    <string>kftc-bankpay</string>
+    <string>bankwallet</string>
+    <string>uppay</string>
+    <string>banka</string>
+    <string>iphoneSbank</string>
+    <string>tauthlink</string>
+    <string>lguthepay</string>
+    <string>lguthepay-xpay</string>
+    <string>smartxpay-transfer</string>
+    <string>nhappcash-acp</string>
+    <string>SmartBank2WIB</string>
+    <string>SmartBank2WB</string>
+    <string>PortalCenterWB</string>
+    <string>woorimembers</string>
+    <string>wibeetalk</string>
+    <string>ansimclickscard</string>
+    <string>ansimclickipcollect</string>
+    <string>vguardstart</string>
+    <string>hanawalletmembers</string>
+    <string>ktauthexternalcall</string>
+    <string>payprotocolwalletkr</string>
+    <string>kbbank</string>
+    <string>coupang</string>
+    <string>posting</string>
+    <string>kakaostory-2.9.0</string>
+    <string>kakaokompassauth</string>
+    <string>storylink</string>
+    <string>kakaotalk-5.9.7</string>
+    <string>kakao3a6eacb9c2ba050b4678266f494a94b0</string>
+    <string>fbapi</string>
+    <string>fbapi20130214</string>
+    <string>fbapi20130410</string>
+    <string>fbapi20130702</string>
+    <string>fbapi20131010</string>
+    <string>fbapi20131219</string>
+    <string>fbapi20140410</string>
+    <string>fbapi20140116</string>
+    <string>fbapi20150313</string>
+    <string>fbapi20150629</string>
+    <string>fbauth</string>
+    <string>fbauth2</string>
+    <string>fb</string>
+    <string>fb-messenger-api20140430</string>
+    <string>fb-messenger-platform-20150128</string>
+    <string>fb-messenger-platform-20150218</string>
+    <string>fb-messenger-platform-20150305</string>
+    <string>fb-messenger-api</string>
+    <string>fbshareextension</string>
+    <string>fb-messenger-share-api</string>
+    <string>divination-pro</string>
+    <string>payco</string>
+    <string>paycoapplogin</string>
+    <string>shinhan-sr-ansimclick</string>
+    <string>smshinhanansimclick</string>
+    <string>hdcardappcardansimclick</string>
+    <string>smhyundaiansimclick</string>
+    <string>mpocket.online.ansimclick</string>
+    <string>scardcertiapp</string>
+    <string>cloudpay</string>
+    <string>nhappcardansimclick</string>
+    <string>nhallonepayansimclick</string>
+    <string>nonghyupcardansimclick</string>
+    <string>lotteappcard</string>
+    <string>lottesmartpay</string>
+    <string>lpayapp</string>
+    <string>kb-acp</string>
+    <string>ispmobile</string>
+    <string>ispmobile://param?TID=A9ME2</string>
+    <string>citicardappkr</string>
+    <string>citispay</string>
+    <string>citimobileapp</string>
+    <string>wooripay</string>
+    <string>naversearchapp</string>
+    <string>naversearchthirdlogin</string>
+    <string>newliiv</string>
+    <string>hanamopmoasign</string>
+    <string>v3mobileplusweb</string>
+    <string>callonlinepay</string>
+    <string>supertoss</string>
+    <string>kakaotalk</string>
+    <string>samsungpay</string>
+	</array>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSAppTransportSecurity</key>
 	<dict>
-	  <!-- Do not change NSAllowsArbitraryLoads to true, or you will risk app rejection! -->
 		<key>NSAllowsArbitraryLoads</key>
-		<false/>
+		<true/>
 		<key>NSAllowsLocalNetworking</key>
 		<true/>
+		<key>NSExceptionDomains</key>
+		<dict>
+			<key>app.how-taxing.com</key>
+			<dict>
+				<key>NSIncludesSubdomains</key>
+				<true/>
+				<key>NSTemporaryExceptionAllowsInsecureHTTPLoads</key>
+				<true/>
+				<key>NSTemporaryExceptionMinimumTLSVersion</key>
+				<string>TLSv1.2</string>
+			</dict>
+			<key>devapp.how-taxing.com</key>
+			<dict>
+				<key>NSIncludesSubdomains</key>
+				<true/>
+				<key>NSTemporaryExceptionAllowsInsecureHTTPLoads</key>
+				<true/>
+				<key>NSTemporaryExceptionMinimumTLSVersion</key>
+				<string>TLSv1.2</string>
+			</dict>
+			<key>localhost</key>
+			<dict>
+				<key>NSExceptionAllowsInsecureHTTPLoads</key>
+				<true/>
+				<key>NSIncludesSubdomains</key>
+				<true/>
+			</dict>
+		</dict>
 	</dict>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string></string>
+	<string>앱 사용 중 위치를 요청합니다.</string>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIRequiredDeviceCapabilities</key>

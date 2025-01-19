@@ -834,6 +834,7 @@ const MapViewListSheet = props => {
                         );
                       })}
                     </NaverMapView>
+                    
                   )}
                   <DropShadow style={styles.shadow}>
                     <MyLocationButton
