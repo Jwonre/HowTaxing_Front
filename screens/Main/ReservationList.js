@@ -21,7 +21,7 @@ import { HOUSE_TYPE } from '../../constants/colors';
 
 const Container = styled.View`
   flex: 1.0;
-  background-color: #fff;
+  background-color: #FFF;
 `;
 
 

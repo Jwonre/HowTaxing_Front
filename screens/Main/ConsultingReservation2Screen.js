@@ -25,7 +25,7 @@ import CalculationWarningCard from '../../components/CalculationWarning';
 // 배너 이미지의 원본 비율
 const Container = styled.View`
   flex: 1.0;
-  background-color: #fff;
+  background-color: #FFF;
 `;
 
 const IntroSection = styled.View`

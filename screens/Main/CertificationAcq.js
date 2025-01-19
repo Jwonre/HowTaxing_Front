@@ -36,7 +36,7 @@ import { setResend } from '../../redux/resendSlice';
 
 const Container = styled.View`
   flex: 1;
-  background-color: #fff;
+  background-color: #FFF;
 `;
 
 const ProgressSection = styled.View`
@@ -320,7 +320,7 @@ const CertificationAcq = props => {
 
   useEffect(() => {
     console.log('props?.route?.params?.isGainsTax', props?.route?.params?.isGainsTax)
-    if (props?.route?.params?.isGainsTax ) {
+    if (props?.route?.params?.isGainsTax) {
       setIsGainsTax('02');
     } else {
       setIsGainsTax('01');
@@ -548,7 +548,7 @@ const CertificationAcq = props => {
     //////console.log('@@@@@@@@@headers:', headers);
 
     const data = {
-      certOrg: props?.route?.params?.data === 'KB' ? 'kb' : props?.route?.params?.data === 'naver' ? 'naver' : 'toss',
+      certOrg: props?.route?.params?.data === 'KB' ? 'kb' : props?.route?.params?.data === 'naver' ? 'naver' : props?.route?.params?.data === 'kakao' ? 'kakao' :'toss',
       userNm: name,
       mobileNo: phone ? phone.replace(/-/g, '') : '',
       rlno: residentNumber.replace(/-/g, ''),
@@ -813,7 +813,7 @@ const CertificationAcq = props => {
                     }
                   }}
 
-                  
+
                   autoCompleteType="tel"
                   maxLength={13}
                   onSubmitEditing={async () => {
@@ -1404,6 +1404,7 @@ const CertificationAcq = props => {
             </ButtonSection></>
           )
         }
+
       </ScrollView>
     </Container>
 

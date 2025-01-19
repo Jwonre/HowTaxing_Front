@@ -27,7 +27,7 @@ import Config from 'react-native-config'
 
 const Container = styled.View`
   flex: 1.0;
-  background-color: #fff;
+  background-color: #FFF;
 `;
 
 const IntroSection = styled.View`

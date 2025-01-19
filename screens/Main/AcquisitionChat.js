@@ -50,7 +50,7 @@ import GainsTax from './GainsTax';
 
 const Container = styled.View`
   flex: 1;
-  background-color: #fff;
+  background-color: #FFF;
 `;
 
 const ProgressSection = styled.View`
@@ -1481,6 +1481,8 @@ const AcquisitionChat = () => {
                               navigation.push('CertificationAcq', { data: item2.id, index, isGainsTax: false, currentPageIndex: 1 });
                             } else if (item2.id === 'toss') {
                               navigation.push('CertificationAcq', { data: item2.id, index, isGainsTax: false, currentPageIndex: 2 });
+                            } else if (item2.id === 'kakao') {
+                              navigation.push('CertificationAcq', { data: item2.id, index, isGainsTax: false, currentPageIndex: 3 });
                             };
                             /*else if() {
                               
