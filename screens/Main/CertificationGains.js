@@ -39,7 +39,7 @@ import { setAddHouseList } from '../../redux/addHouseListSlice';
 
 const Container = styled.View`
   flex: 1;
-  background-color: #fff;
+  background-color: #FFF;
 `;
 
 const ProgressSection = styled.View`
@@ -342,7 +342,7 @@ const CertificationGains = props => {
       'keyboardDidShow',
       (e) => {
         setKeyboardHeight(e.endCoordinates.height);
-       // scrollViewRef.current?.scrollTo({ y: 100, animated: true });
+        // scrollViewRef.current?.scrollTo({ y: 100, animated: true });
       }
     );
 
@@ -691,7 +691,7 @@ const CertificationGains = props => {
     //////console.log('@@@@@@@@@headers:', headers);
 
     const data = {
-      certOrg: props?.route?.params?.data === 'KB' ? 'kb' : props?.route?.params?.data === 'naver' ? 'naver' : 'toss',
+      certOrg: props?.route?.params?.data === 'KB' ? 'kb' : props?.route?.params?.data === 'naver' ? 'naver' : props?.route?.params?.data === 'kakao' ? 'kakao' :'toss',
       userNm: name,
       mobileNo: phone ? phone.replace(/-/g, '') : '',
       rlno: residentNumber.replace(/-/g, ''),

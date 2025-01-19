@@ -1,14 +1,15 @@
 // 홈 페이지
 
-import { useWindowDimensions, StatusBar, StyleSheet, BackHandler, Linking, AppState } from 'react-native';
+import { View, useWindowDimensions, StatusBar, StyleSheet, BackHandler, Linking, AppState } from 'react-native';
 import React, { useLayoutEffect, useEffect, useState, useCallback, useRef } from 'react';
 import styled from 'styled-components';
 import DropShadow from 'react-native-drop-shadow';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
-import HomeIcon from '../../assets/images/home_home.svg';
-import SignTagIcon from '../../assets/images/home_signtag.svg';
+import AcquisitionhomeIcon from '../../assets/images/acquisition_home.svg';
+import GaintaxhomeIcon from '../../assets/images/gaintax_home.svg';
 import ConSultingIcon from '../../assets/images/home_consulting.svg';
+import ReFundIcon from '../../assets/images/home_refund.svg';
 import getFontSize from '../../utils/getFontSize';
 import { SheetManager } from 'react-native-actions-sheet';
 import ChanelTalkIcon from '../../assets/icons/chaneltalk.svg';
@@ -32,7 +33,7 @@ import { setStartPage } from '../../redux/startPageSlice.js';
 
 const Container = styled.View`
   flex: 1;
-  background-color: #fff;
+  background-color: #FBFCFE;
 `;
 
 const HelloSection = styled.View`
@@ -62,12 +63,13 @@ const MessageTitle = styled.Text`
 const Card = styled.TouchableOpacity.attrs(props => ({
   activeOpacity: 0.9,
 }))`
-  width: ${props => props.width - 40}px;
+  width: ${props => props.width}px;
   height: auto;
   background-color: #fff;
   border-radius: 12px;
-  margin: 8px;
-  padding: 25px;
+  marginTop: 8px;
+  marginBottom: 8px;
+  padding: 15px;
   justify-content: center;
   align-self: center;
 `;
@@ -97,33 +99,30 @@ const CardTitle = styled.Text`
   line-height: 20px;
   margin-bottom: 8px;
   margin-top: 10px;
+  text-align: right;
 `;
 
 const HashTagGroup = styled.View`
   flex-direction: row;
   flex-wrap: wrap;
-  width: 80%;
+  justify-content: flex-end;
+  height: 100%;
 `;
 
 const HashTagText = styled.Text`
-  font-size: 11px;
+  font-size: 8px;
   font-family: Pretendard-Regular;
   color: #a3a5a8;
-  line-height: 16px;
-  margin-right: 9px;
-  margin-top: 5px;
+  padding: 3px 8px;
 `;
 
 const IconView = styled.View`
-  width: 60px;
-  height: 60px;
+  width: 45px;
+  height: 45px;
   border-radius: 30px;
   background-color: #fff;
   align-items: center;
   justify-content: center;
-  position: absolute;
-  top: 25px;
-  right: 25px;
   border: 1px solid #e8eaed;
 `;
 
@@ -166,9 +165,9 @@ const ChanelTalkIconFloatButton = styled.TouchableOpacity.attrs(props => ({
 
 const ShadowContainer = styled(DropShadow)`
   shadow-color: #ececef;
-  shadow-offset: 0px 9px;
+  shadow-offset: 5px 10px;
   shadow-opacity: 1;
-  shadow-radius: 6px;
+  shadow-radius: 5px;
 `;
 
 
@@ -451,30 +450,26 @@ const Home = () => {
     });
   };
 
-  const AC_HASHTAG_LIST = [
-    '취득세 계산',
-    '주택 매수',
-    '조정 지역',
-    '입주권',
-    '분양권',
-  ];
-
-  const GAIN_HASHTAG_LIST = [
-    '양도소득세 계산',
-    '일시적 2주택',
-    '다주택자',
-    '조정지역',
-    '장기보유특별공제',
-  ];
-
-
-  const CONSULTING_HASHTAG_LIST = [
+  const CONSULTING_HASHTAG_LIST1 = [
     '상속세',
     '증여세',
     '재산세',
     '다주택자',
+  ];
+
+  const CONSULTING_HASHTAG_LIST2 = [
     '양도소득세 컨설팅',
     '기타 주택세금',
+  ];
+
+  const GAINTAX_REFUND_HASHTAG_LIST1 = [
+    '양도소득세 환급 대상',
+    '양도소득세 환급액',
+  ];
+
+  const GAINTAX_REFUND_HASHTAG_LIST2 = [
+    '중과세',
+    '다주택자',
   ];
 
   const goAcquisigion = async () => {
@@ -515,6 +510,21 @@ const Home = () => {
     }
   };
 
+  const goRefunding = async () => {
+    const state = await NetInfo.fetch();
+    const canProceed = await handleNetInfoChange(state);
+    if (canProceed) {
+      if (toast) {
+        Toast.hide(toast); // 토스트 인스턴스를 사용하여 숨김 처리 
+        setToast(null); // 상태 초기화 
+        setToastVisible(false);
+      }
+      navigation.navigate('GainTaxRefund');
+      // SheetManager.show('Consulting', { payload: { navigation } });
+    }
+  };
+  
+
   const goAppInformation = () => {
     // SheetManager.show('InfoAppinformation');
     if (toast) {
@@ -532,59 +542,116 @@ const Home = () => {
         <HelloText >안녕하세요.</HelloText>
         <MessageTitle>어떤 서비스를 이용하시겠어요?</MessageTitle>
       </HelloSection>
+      <View style={{
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        paddingLeft: 20,
+        paddingRight: 20,
+        marginTop: 10
+      }}>
+        <ShadowContainer>
+          <Card width={width / 2 - 30} onPress={goAcquisigion}>
+            <Tag>
+              <TagText >주택 매수</TagText>
+            </Tag>
+            <CardTitle >AI 취득세{'\n'}계산기</CardTitle>
+            <View style={{ height: '45px', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+              <IconView>
+                <AcquisitionhomeIcon />
+              </IconView>
+              <HashTagGroup
+                style={{
+                  width: '50%',
+                  height: '45px',
+                }}>
+                <View style={{ height: 20, marginBottom: 5, backgroundColor: '#fff', borderRadius: 20, borderColor: '#E8EAED', borderWidth: 1, alignItems: 'center', justifyContent: 'center' }}><HashTagText>{'조정 지역'}</HashTagText></View>
+                <View style={{ height: 20, backgroundColor: '#fff', borderRadius: 20, borderColor: '#E8EAED', borderWidth: 1, alignItems: 'center', justifyContent: 'center' }}><HashTagText>{'주택 수'}</HashTagText></View>
+              </HashTagGroup>
+            </View>
+          </Card>
+        </ShadowContainer >
+        <ShadowContainer>
+          <Card width={width / 2 - 30} onPress={goGainsTax}>
+            <Tag>
+              <TagText >주택 매도</TagText>
+            </Tag>
+            <CardTitle >AI 양도소득세{'\n'}계산기</CardTitle>
+            <View style={{ height: '45px', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+              <IconView>
+                <GaintaxhomeIcon />
+              </IconView>
+              <HashTagGroup
+                style={{
+                  width: '65%',
+                  height: '45px',
+                }}>
+                <View style={{ height: 20, marginBottom: 5, backgroundColor: '#fff', borderRadius: 20, borderColor: '#E8EAED', borderWidth: 1, alignItems: 'center', justifyContent: 'center' }}><HashTagText>{'일시적1가구2주택'}</HashTagText></View>
+                <View style={{ height: 20, backgroundColor: '#fff', borderRadius: 20, borderColor: '#E8EAED', borderWidth: 1, alignItems: 'center', justifyContent: 'center' }}><HashTagText>{'비과세'}</HashTagText></View>
+              </HashTagGroup>
+            </View>
+          </Card>
+        </ShadowContainer>
+      </View >
       <ShadowContainer>
-        <Card width={width} onPress={goAcquisigion}>
-          <Tag>
-            <TagText >주택 매수</TagText>
+        <Card width={width - 40} onPress={goConSulting}>
+          <Tag style={{ backgroundColor: '#A2C62B' }}>
+            <TagText >세금 상담</TagText>
           </Tag>
-          <CardTitle >취득세 계산하기</CardTitle>
-          <HashTagGroup
-            style={{
-              width: '70%',
-            }}>
-            {AC_HASHTAG_LIST.map((item, index) => (
-              <HashTagText key={index} >#{item}</HashTagText>
-            ))}
-          </HashTagGroup>
-          <IconView>
-            <HomeIcon />
-          </IconView>
-        </Card>
-      </ShadowContainer>
-      <ShadowContainer>
-        <Card width={width} onPress={goGainsTax}>
-          <Tag>
-            <TagText >주택 양도</TagText>
-          </Tag>
-          <CardTitle >양도소득세 계산하기</CardTitle>
-          <HashTagGroup>
-            {GAIN_HASHTAG_LIST.map((item, index) => (
-              <HashTagText key={index} >#{item}</HashTagText>
-            ))}
-          </HashTagGroup>
-          <IconView>
-            <SignTagIcon />
-          </IconView>
+          <CardTitle style={{ textAlign: 'left', marginBottom: 20 }} >부동산 전문 세무사 상담</CardTitle>
+          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+            <IconView>
+              <ConSultingIcon />
+            </IconView>
+            <HashTagGroup
+              style={{
+                width: '80%',
+                height: '45px',
+              }}>
+              {CONSULTING_HASHTAG_LIST1.map((item, index) => (
+                <View style={{ marginBottom: 5, marginRight: index !== 3 ? 5 : 0, height: 20, backgroundColor: '#fff', borderRadius: 20, borderColor: '#E8EAED', borderWidth: 1, alignItems: 'center', justifyContent: 'center' }}>
+                  <HashTagText key={index} >{item}</HashTagText>
+                </View>
+              ))}
+
+              {CONSULTING_HASHTAG_LIST2.map((item, index) => (
+                <View style={{ marginRight: index !== 1 ? 5 : 0, height: 20, backgroundColor: '#fff', borderRadius: 20, borderColor: '#E8EAED', borderWidth: 1, alignItems: 'center', justifyContent: 'center' }}>
+                  <HashTagText key={index} >{item}</HashTagText>
+                </View>
+              ))}
+            </HashTagGroup>
+          </View>
         </Card>
       </ShadowContainer>
 
       <ShadowContainer>
-        <Card width={width} onPress={goConSulting}>
-          <Tag>
-            <TagText >세금 상담</TagText>
+        <Card width={width - 40} onPress={goRefunding}>
+          <Tag style={{ backgroundColor: '#FF7401' }}>
+            <TagText >세금 환급</TagText>
           </Tag>
-          <CardTitle >세금 상담받기</CardTitle>
-          <HashTagGroup
-            style={{
-              width: '80%',
-            }}>
-            {CONSULTING_HASHTAG_LIST.map((item, index) => (
-              <HashTagText key={index} >#{item}</HashTagText>
-            ))}
-          </HashTagGroup>
-          <IconView>
-            <ConSultingIcon />
-          </IconView>
+          <CardTitle style={{ textAlign: 'left', marginBottom: 20 }} >양도소득세 환급액 조회</CardTitle>
+          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+            <IconView>
+              <ReFundIcon />
+            </IconView>
+            <HashTagGroup
+              style={{
+                width: '70%',
+                height: '45px',
+              }}>
+              {GAINTAX_REFUND_HASHTAG_LIST1.map((item, index) => (
+                <View style={{ marginBottom: 5, marginRight: index !== 1 ? 5 : 0, height: 20, backgroundColor: '#fff', borderRadius: 20, borderColor: '#E8EAED', borderWidth: 1, alignItems: 'center', justifyContent: 'center' }}>
+                  <HashTagText key={index} >{item}</HashTagText>
+                </View>
+              ))}
+
+              {GAINTAX_REFUND_HASHTAG_LIST2.map((item, index) => (
+                <View style={{ marginRight: index !== 1 ? 5 : 0, height: 20, backgroundColor: '#fff', borderRadius: 20, borderColor: '#E8EAED', borderWidth: 1, alignItems: 'center', justifyContent: 'center' }}>
+                  <HashTagText key={index} >{item}</HashTagText>
+                </View>
+              ))}
+            </HashTagGroup>
+          </View>
         </Card>
       </ShadowContainer>
 

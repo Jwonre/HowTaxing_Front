@@ -22,7 +22,7 @@ import { setCurrentUser } from '../../redux/currentUserSlice';
 
 const Container = styled.View`
   flex: 1;
-  background-color: #fff;
+  background-color: #FFF;
 `;
 
 const ProgressSection = styled.View`

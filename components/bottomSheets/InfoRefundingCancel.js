@@ -82,7 +82,7 @@ const ButtonText = styled.Text`
   line-height: 20px;
 `;
 
-const InfoConsultingCancel = props => {
+const InfoRefundingCancel = props => {
   const navigation = useNavigation();
   const actionSheetRef = useRef(null);
   const { width, height } = useWindowDimensions();
@@ -113,7 +113,7 @@ const InfoConsultingCancel = props => {
         backgroundColor: '#fff',
         borderTopLeftRadius: 20,
         borderTopRightRadius: 20,
-        height: 300,
+        height: 310,
         width: width - 40,
       }}>
       <SheetContainer width={width}>
@@ -175,4 +175,4 @@ const InfoConsultingCancel = props => {
   );
 };
 
-export default InfoConsultingCancel;
+export default InfoRefundingCancel;

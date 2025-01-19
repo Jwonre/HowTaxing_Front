@@ -1,6 +1,6 @@
 // 양도소득세 홈페이지
 
-import { TouchableOpacity, useWindowDimensions, Dimensions, BackHandler, View, ScrollView, Keyboard } from 'react-native';
+import { TouchableOpacity, useWindowDimensions, BackHandler, View, ScrollView, Animated, Text, TextInput } from 'react-native';
 import { FlatList } from 'react-native-gesture-handler';
 import React, { useRef, useLayoutEffect, useState, useCallback, useEffect } from 'react';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
@@ -21,8 +21,7 @@ import TaxInfoCard from '../../components/TaxInfoCard';
 import TaxCard2 from '../../components/TaxCard2';
 import TaxInfoCard2 from '../../components/TaxInfoCard2';
 import HouseInfo from '../../components/HouseInfo';
-import CheckOnIcon from '../../assets/icons/check_on.svg';
-import { setCert } from '../../redux/certSlice';
+import CalculationWarningCard from '../../components/CalculationWarning';
 
 const Container = styled.View`
   flex: 1.0;
@@ -382,38 +381,8 @@ const ButtonText = styled.Text`
   line-height: 20px;
 `;
 
-const FirstItem = styled.View`
-  flex-direction: row; 
-  justify-content: flex-end;
-  align-items: center;
-  padding: 0 10px;
 
-`;
-
-const FirstItemTitle = styled.Text`
-  font-size: 13px;
-  font-family: Pretendard-Bold;
-  color: #1b1c1f;
-  line-height: 18px;
-`;
-
-const FirstCheckCircle = styled.TouchableOpacity.attrs(props => ({
-  activeOpacity: 0.8,
-}))`
-    width: 20px;
-    height: 20px;
-    border-radius: 5px;  
-    background-color: #fff;
-    border: 2px solid #BAC7D5;  
-    align-items: center;
-    justify-content: center;
-    margin-right: 15px;
-    margin-left: 10;
-`;
-
-
-
-const ConsultingReservation2 = props => {
+const PaymentComplet = props => {
   const _scrollViewRef = useRef(null);
   const _scrollViewRef2 = useRef(null);
   const _scrollViewRef3 = useRef(null);
@@ -421,10 +390,10 @@ const ConsultingReservation2 = props => {
   const [currentPageIndex, setCurrentPageIndex] = useState(0);
   const currentPageIndexList = [0, 1, 2, 3, 4];
   const currentUser = useSelector(state => state.currentUser.value);
+  const Pdata = props?.route.params?.Pdata;
   const navigation = useNavigation();
-  const width = Dimensions.get('window').width;
-  const height = Dimensions.get('window').height;
-  const dispatch = useDispatch();
+  const houseInfo = props?.route.params?.houseInfo;
+  const { width, height } = useWindowDimensions();
   const input1 = useRef(null);
   const input2 = useRef(null);
   const input3 = useRef(null);
@@ -442,19 +411,8 @@ const ConsultingReservation2 = props => {
   const [timeList, setTimeList] = useState([]);
   const [isExpanded, setIsExpanded] = useState(false);
   const [taxTypeList, setTaxTypeList] = useState([]);
-  const [consultingReservationId, setConsultingReservationId] = useState('');
-
-  const { prevChoice, CounselorData, houseInfo, Pdata, isGainsTax, prevSheet } = props.route?.params ? props.route?.params : [];
-  const { certType, agreeCert, agreePrivacy } = useSelector(
-    state => state.cert.value,
-  );
-  const [counselorDetailData, setCounselorDetailData] = useState({});
-
-    const [keyboardShouldPersistTaps, setkeyboardShouldPersistTaps] = useState(false);
-
   const toggleExpand = () => {
     setIsExpanded(!isExpanded);
-    console.log('isGainsTax', isGainsTax);
   };
 
   for (let i = 9; i <= 11; i++) {
@@ -473,29 +431,16 @@ const ConsultingReservation2 = props => {
   }
 
   const handleBackPress = () => {
-    if (prevChoice) {
-      if (prevChoice === 'CounselorChoice') {
-        if (currentPageIndex === 1) {
-          navigation.goBack();
-        } else {
-          Keyboard.dismiss();
-          setCurrentPageIndex(currentPageIndex - 1);
-        }
-      } else {
-        if (currentPageIndex === 0) {
-          navigation.goBack();
-        } else {
-          Keyboard.dismiss();
-          setCurrentPageIndex(currentPageIndex - 1);
-        }
-      }
+    if (currentPageIndex === 0) {
+      SheetManager.show('InfoConsultingCancel', {
+        payload: {
+          type: 'info',
+          message: '상담 예약을 다음에 하시겠어요?',
+          onPress: { handlePress },
+        },
+      });
     } else {
-      if (currentPageIndex === 0) {
-        navigation.goBack();
-      } else {
-        Keyboard.dismiss();
-        setCurrentPageIndex(currentPageIndex - 1);
-      }
+      setCurrentPageIndex(currentPageIndex - 1);
     }
     return true;
   }
@@ -510,38 +455,26 @@ const ConsultingReservation2 = props => {
 
   const [isConnected, setIsConnected] = useState(true);
 
-
-  useEffect(() => {
-    const focusInput = () => {
-      if (currentPageIndex === 1 && input1.current) {
-        input1.current.focus();
-      } else if (currentPageIndex === 2 && input2.current) {
-        input2.current.focus();
-      } else if (currentPageIndex === 4 && input3.current) {
-        input3.current.focus();
-      };
-    }
-
-
+  {/*useEffect(() => {
     _scrollViewRef.current?.scrollTo({
-      x: width * currentPageIndex,
-      y: 0, animated: true,
+      x: (width) * currentPageIndex,
+      y: 0,
+      animated: true,
     });
     setTimeout(() => {
-      focusInput();
       if (currentPageIndex !== 4) {
         setIsExpanded(false);
       }
-      if (currentPageIndex === 2) {
-        getDateTimelist('1', '');
+    }, 300)
+
+  }, [currentPageIndex]);*/}
+  useEffect(() => {
+    setTimeout(() => {
+      if (currentPageIndex !== 4) {
+        setIsExpanded(false);
       }
-    }, 200)
-
+    }, 300)
   }, [currentPageIndex]);
-
-
-
-
   const handleNetInfoChange = (state) => {
     return new Promise((resolve, reject) => {
       if (!state.isConnected && isConnected) {
@@ -561,40 +494,48 @@ const ConsultingReservation2 = props => {
   };
 
   useEffect(() => {
-    if (isGainsTax !== undefined) {
-      if (isGainsTax) {
+    if (props.route.params.IsGainTax !== undefined) {
+      if (props.route.params.IsGainTax) {
         setTaxTypeList(['양도소득세']);
       } else {
         setTaxTypeList(['취득세']);
       }
     }
-    console.log('isGainsTax', isGainsTax);
+    console.log('props.route.params.IsGainTax', props.route.params.IsGainTax);
   }, []);
 
+  useEffect(() => {
+    if (currentPageIndex === 2) {
+      getDateTimelist('1', '');
+    }
+  }, [currentPageIndex]);
 
 
   useEffect(() => {
-    if (props.route?.params?.currentPageIndex) {
-      if (props.route?.params?.currentPageIndex !== 0) {
-        setCurrentPageIndex(props.route.params.currentPageIndex);
+    const focusInput = () => {
+      if (currentPageIndex === 1 && input1.current) {
+        input1.current.focus();
+      } else if (currentPageIndex === 2 && input2.current) {
+        input2.current.focus();
+      } else if (currentPageIndex === 4 && input3.current) {
+        input3.current.focus();
       }
-    } else {
-      getCounselorDetail();
-    }
-    dispatch(setCert({ agreePrivacy: false }));
-  }, []);
+    };
+
+    focusInput();
+  }, [currentPageIndex]);
+
 
   useEffect(() => {
     if (selectedDate && currentPageIndex === 3) {
       console.log('selectedDate', selectedDate);
       getDateTimelist('2', selectedDate);
-      setSelectedList([]);
     }
     //console.log('timeList', timeList);
   }, [selectedDate, currentPageIndex]);
 
   const getDateTimelist = async (searchType, selectedDate) => {
-    var consultantId = CounselorData.consultantId;
+    var consultantId = 1;
     const url = searchType === '1' ? `${Config.APP_API_URL}consulting/availableSchedule?consultantId=${consultantId}&searchType=${searchType}` : `${Config.APP_API_URL}consulting/availableSchedule?consultantId=${consultantId}&searchType=${searchType}&searchDate=${selectedDate.getFullYear()}-${(selectedDate.getMonth() + 1).toString().padStart(2, '0')}-${selectedDate.getDate().toString().padStart(2, '0')}`;
     //const url = `https://devapp.how-taxing.com/consulting/availableSchedule?consultantId=${consultantId}&searchType="${searchType}"`;
     const headers = {
@@ -619,36 +560,23 @@ const ConsultingReservation2 = props => {
           SheetManager.show('info', {
             payload: {
               type: 'error',
-              errorType: response.data.type,
               message: response.data.errMsg ? response.data.errMsg : '상담 가능 일정을 불러오는데 문제가 발생했어요.',
               description: response.data.errMsgDtl ? response.data.errMsgDtl : '',
               buttontext: '확인하기',
             },
           });
+          return;
         } else {
           if (searchType === "1") {
+            //console.log('response.data', response.data.data);
+            //console.log('response.data.dateList', response.data.data.dateList);
             const result = response === undefined ? [] : response.data.data.dateList;
-            if (result.length > 0) {
-              const list = result
-                .filter(item => item.isReservationAvailable)
-                .map(item => item.consultingDate);
+            const list = result
+              .filter(item => item.isReservationAvailable)
+              .map(item => item.consultingDate);
 
-              console.log('Datelist:', list);
-              console.log('new Date(list[0]):', new Date(list[0]));
-              setDataList([...list]);
-            } else {
-              setTimeout(async () => {
-                await SheetManager.show('info', {
-                  payload: {
-                    type: 'info',
-                    errorType: 1,
-                    message: '앗, 현재 예약가능한 날짜가 없어요.\n나중에 다시 시도해주세요.',
-                    buttontext: '확인하기',
-                  },
-                });
-                navigation.goBack();
-              }, 300);
-            }
+            console.log('list:', list);
+            setDataList([...list]);
           } else if (searchType === "2") {
             const result = response === undefined ? [] : response.data.data.timeList;
             const list = result
@@ -673,117 +601,6 @@ const ConsultingReservation2 = props => {
         ////console.log(error ? error : 'error');
       });
   };
-const reservationAvailable = async (consultantId,reservationDate,reservationTime) => {
-    console.log('consultantId', consultantId);
-    console.log('reservationDate', reservationDate);
-    console.log('reservationTime', reservationTime);
-
-
-    // 요청 헤더
-    const headers = {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${currentUser.accessToken}`
-    };
-
-    // 요청 바디
-    const data = {
-      consultantId: consultantId,
-      reservationDate: reservationDate ? reservationDate : '',
-      reservationTime: reservationTime ? reservationTime : '',
-
-    };
-    console.log('data', data);
-    console.log('headers', headers);
-    try {
-      const response = await axios.post(`${Config.APP_API_URL}consulting/reservationAvailable`, data, { headers: headers });
-      if (response.data.errYn === 'Y') {
-         SheetManager.show('info', {
-          payload: {
-            type: 'error',
-            errorType: response.data.type,
-            message: response.data.errMsg ? response.data.errMsg : '선택한 날짜와 시간으로 상담 예약이 불가능해요.',
-            description: response.data.errMsgDtl ? response.data.errMsgDtl : '',
-            buttontext: '확인하기',
-          },
-        });
-        return false;
-      } else {
-        return true;
-      }
-    } catch (error) {
-       SheetManager.show('info', {
-        payload: {
-          type: 'error',
-          errorType: response.data.type,
-          message: response.data.errMsg ? response.data.errMsg : '선택한 날짜와 시간으로 상담 예약이 불가능해요.',
-          description: response.data.errMsgDtl ? response.data.errMsgDtl : '',
-          buttontext: '확인하기',
-        },
-      });
-      return false;
-    }
-  };
-  const getCounselorDetail = async () => {
-    var consultantId = CounselorData.consultantId;
-    const url = `${Config.APP_API_URL}consulting/consultantDetail?consultantId=${consultantId}`;
-    //const url = `https://devapp.how-taxing.com/consulting/availableSchedule?consultantId=${consultantId}&searchType="${searchType}"`;
-    const headers = {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${currentUser.accessToken}`
-    };
-    /*
-    const params = {
-      consultantId: consultantId,
-      searchType: searchType,
-    }*/
-
-    // console.log('params', params);
-
-    await axios
-      .get(url,
-        { headers: headers }
-      )
-      .then(async response => {
-        console.log('response', response ? response : []);
-        console.log('response.data.data', response.data.data ? response.data.data : []);
-        if (response.data.errYn === 'Y') {
-          SheetManager.show('info', {
-            payload: {
-              type: 'error',
-              errorType: response.data.type,
-              message: response.data.errMsg ? response.data.errMsg : '상담자 상세정보를 불러오는데 문제가 발생했어요.',
-              description: response.data.errMsgDtl ? response.data.errMsgDtl : '',
-              buttontext: '확인하기',
-            },
-          });
-        } else {
-
-          //console.log('response.data', response.data.data);
-          //console.log('response.data.dateList', response.data.data.dateList);
-          const result = response === undefined ? [] : response.data.data;
-
-          console.log('result:', result);
-          setCounselorDetailData(result);
-
-
-
-        }
-
-      })
-      .catch(function (error) {
-        SheetManager.show('info', {
-          payload: {
-            message: '상담자 상세정보를 불러오는데 문제가 발생했어요.',
-            description: error?.message ? error?.message : '오류가 발생했습니다.',
-            type: 'error',
-            buttontext: '확인하기',
-          }
-        });
-        ////console.log(error ? error : 'error');
-      });
-  };
-
-
 
   const requestReservation = async () => {
     console.log('selectedDate', selectedDate);
@@ -813,18 +630,17 @@ const reservationAvailable = async (consultantId,reservationDate,reservationTime
 
     // 요청 바디
     const data = {
-      consultantId: CounselorData.consultantId ? CounselorData.consultantId : '',
+      consultantId: '1',
       customerName: name ? name : '',
-      customerPhone: phone ? phone.replace(/-/g, "") : '',
+      customerPhone: phone ? phone : '',
       reservationDate: selectedDate ? `${year}-${month}-${day}` : '',
       reservationTime: selectedList ? selectedList[0] : '',
       consultingType: NumTaxTypeList ? NumTaxTypeList.sort().join(",") : '',
-      consultingInflowPath: isGainsTax ? '02' : '01',
+      consultingInflowPath: props?.route.params.IsGainTax ? '02' : '01',
       calcHistoryId: Pdata.calcHistoryId ? Pdata.calcHistoryId : '',
       consultingRequestContent: text ? text : '',
-      consultingReservationId: consultingReservationId ? consultingReservationId : '',
     };
-    //console.log('ConsultingReservation22 data', data);
+    //console.log('PaymentComplet2 data', data);
     //console.log('headers', headers);
     try {
       const response = await axios.post(`${Config.APP_API_URL}consulting/reservationApply`, data, { headers: headers });
@@ -838,7 +654,6 @@ const reservationAvailable = async (consultantId,reservationDate,reservationTime
               await SheetManager.show('info', {
                 payload: {
                   type: 'info',
-                  errorType: 1,
                   message: '앗, 현재 모든 예약이 완료되었어요.\n나중에 다시 시도해주세요.',
                   buttontext: '확인하기',
                 },
@@ -853,7 +668,6 @@ const reservationAvailable = async (consultantId,reservationDate,reservationTime
           await SheetManager.show('info', {
             payload: {
               type: 'error',
-              errorType: response.data.type,
               message: response.data.errMsg ? response.data.errMsg : '상담 예약 중 오류가 발생했어요.',
               description: response.data.errMsgDtl ? response.data.errMsgDtl : '',
               buttontext: '확인하기',
@@ -862,7 +676,7 @@ const reservationAvailable = async (consultantId,reservationDate,reservationTime
         }
         return false;
       } else {
-        if (response.data.data && response.data.data.isApplyComplete) {
+        if (response.data.data && response.data.data.isApplyComplete === true) {
           const result = response.data.data;
           await SheetManager.show('InfoConsulting', {
             payload: {
@@ -895,32 +709,16 @@ const reservationAvailable = async (consultantId,reservationDate,reservationTime
           activeOpacity={0.6}
           hitSlop={{ top: 20, bottom: 20, left: 20, right: 20 }}
           onPress={() => {
-            if (prevChoice) {
-              if (prevChoice === 'CounselorChoice') {
-                if (currentPageIndex === 1) {
-                  navigation.goBack();
-                } else {
-                  Keyboard.dismiss();
-                  setCurrentPageIndex(currentPageIndex - 1);
-                }
-              } else {
-                if (currentPageIndex === 0) {
-                  navigation.goBack();
-                } else {
-                  Keyboard.dismiss();
-                  setCurrentPageIndex(currentPageIndex - 1);
-                }
-              }
-            } else {
-              if (currentPageIndex === 0) {
-                navigation.goBack();
-              } else {
-                Keyboard.dismiss();
-                setCurrentPageIndex(currentPageIndex - 1);
-              }
-            }
+            console.log('currentPageIndex', currentPageIndex);
+            SheetManager.show('InfoConsultingCancel', {
+              payload: {
+                type: 'info',
+                message: '상담 예약을 다음에 하시겠어요?',
+                onPress: { handlePress },
+              },
+            });
           }}>
-          <BackIcon />
+          <CloseIcon />
         </TouchableOpacity>
       ),
       headerTitleAlign: 'center',
@@ -939,6 +737,12 @@ const reservationAvailable = async (consultantId,reservationDate,reservationTime
     });
   }, [currentPageIndex]);
 
+  const handlePress = buttonIndex => {
+    if (buttonIndex === 'YES') {
+      navigation.goBack();
+    }
+  };
+
   return (
     <ScrollView
       ref={_scrollViewRef}
@@ -947,21 +751,17 @@ const reservationAvailable = async (consultantId,reservationDate,reservationTime
         width: width,
       }}
       horizontal
-      onStartShouldSetResponder={() => false}
-      keyboardDismissMode="on-drag"
       keyboardShouldPersistTaps='always'
       showsHorizontalScrollIndicator={false}
       scrollEnabled={false}
       scrollEventThrottle={16}>
-      <Container style={{ width: width }}>
+      {currentPageIndex === 0 && <Container style={{ width: width }}>
         <ProgressSection>
         </ProgressSection>
 
         <><IntroSection>
           <ProfileAvatar
-            source={{ uri: counselorDetailData.profileImageUrl }} />
-          {/*<ProfileAvatar
-            source={{ uri: CounselorData.thumbImageUrl }} />*/}
+            source={require('../../assets/images/Minjungum_Lee_consulting.png')} />
         </IntroSection>
           <View style={{
             marginLeft: '5%',
@@ -978,9 +778,9 @@ const reservationAvailable = async (consultantId,reservationDate,reservationTime
               borderBottomWidth: 0,
               marginLeft: 0
             }}>
-              <ProfileTitle>{counselorDetailData.consultantName ? counselorDetailData.consultantName : '' + ' ' + counselorDetailData.jobTitle ? counselorDetailData.jobTitle : ''}</ProfileTitle>
-              <ProfileSubTitle>{counselorDetailData.company ? counselorDetailData.company : ''}</ProfileSubTitle>
-              <ProfileSubTitle2>{counselorDetailData.qualification ? counselorDetailData.qualification : ''}</ProfileSubTitle2>
+              <ProfileTitle>이민정음 세무사</ProfileTitle>
+              <ProfileSubTitle>JS회계법인</ProfileSubTitle>
+              <ProfileSubTitle2>세무사, 공인중개사 전문가</ProfileSubTitle2>
             </ProfileSection>
             <ProfileSection style={{
               flexDirection: 'column',
@@ -1010,7 +810,8 @@ const reservationAvailable = async (consultantId,reservationDate,reservationTime
             </ProfileSection>
           </View>
           <ProfileSection>
-            <ProfileSubTitle3>{CounselorData.consultantIntroduction}</ProfileSubTitle3>
+            <ProfileSubTitle3>1,000건 이상의 재산제세 경험을 바탕으로 양도, 증여, 상속에 관한
+              전문적인 상담 및 컨설팅 진행 도와드리겠습니다.{'\n'}감사합니다.</ProfileSubTitle3>
           </ProfileSection>
           <ProfileSection style={{
             borderBottomWidth: 0, marginTop: 10, flexDirection: 'row', justifyContent: 'space-between'
@@ -1024,10 +825,10 @@ const reservationAvailable = async (consultantId,reservationDate,reservationTime
               width: '50%',
             }}>
               <ProfileTitle style={{ marginBottom: 10 }}>전문분야</ProfileTitle>
-              {counselorDetailData.specialtyList ? counselorDetailData.specialtyList.map((item, index) =>
-              (<ProfileSubTitle2 style={{ marginBottom: 0 }} key={index}>
-                • {item}
-              </ProfileSubTitle2>)) : null}
+              <ProfileSubTitle2>• 양도/상속/증여세 신고{'\n'}
+                • 자금출처조사{'\n'}
+                • 부동산 관련 절세{'\n'}
+                • 상속 및 가업승계</ProfileSubTitle2>
             </View>
             <View style={{
               flexDirection: 'column',
@@ -1038,10 +839,9 @@ const reservationAvailable = async (consultantId,reservationDate,reservationTime
               width: '50%',
             }}>
               <ProfileTitle style={{ marginBottom: 10 }}>주요경력</ProfileTitle>
-              {counselorDetailData.majorExperienceList ? counselorDetailData.majorExperienceList.map((item, index) =>
-              (<ProfileSubTitle2 style={{ marginBottom: 0 }} key={index}>
-                • {item}
-              </ProfileSubTitle2>)) : null}
+              <ProfileSubTitle2>• 텍스온세무법인 2021{'\n'}
+                • 신승세무법인 2021{'\n'}
+                • JS세무회계 2023</ProfileSubTitle2>
             </View>
           </ProfileSection>
           <ButtonSection>
@@ -1055,7 +855,7 @@ const reservationAvailable = async (consultantId,reservationDate,reservationTime
                     setCurrentPageIndex(1);
                   }
                 }}>
-                <ButtonText >선택하기</ButtonText>
+                <ButtonText >다음으로</ButtonText>
               </Button>
             </ShadowContainer>
             <View
@@ -1086,9 +886,9 @@ const reservationAvailable = async (consultantId,reservationDate,reservationTime
               ))}
             </View>
           </ButtonSection></>
-      </Container>
+      </Container>}
 
-      <Container style={{ width: width }}>
+      {currentPageIndex === 1 && <Container style={{ width: width }}>
         <ProgressSection>
         </ProgressSection>
 
@@ -1170,8 +970,8 @@ const reservationAvailable = async (consultantId,reservationDate,reservationTime
             </View>
           </ButtonSection></>
 
-      </Container>
-      <Container style={{ width: width }}>
+      </Container>}
+      {currentPageIndex === 2 && <Container style={{ width: width }}>
         <ProgressSection>
         </ProgressSection>
         <><IntroSection2 style={{ width: width }}>
@@ -1186,26 +986,18 @@ const reservationAvailable = async (consultantId,reservationDate,reservationTime
                 autoFocus={currentPageIndex === 2}
                 placeholder="전화번호를 입력해주세요."
                 value={phone}
-                onChangeText={async (phone) => {
-                  const filteredPhone = phone.replace(/[^0-9]/g, '');
-                  let formattedPhone = filteredPhone;
-                  if (filteredPhone.length > 3 && filteredPhone.length <= 7) {
-                    formattedPhone = `${filteredPhone.slice(0, 3)}-${filteredPhone.slice(3)}`;
-                  } else if (filteredPhone.length > 7) {
-                    formattedPhone = `${filteredPhone.slice(0, 3)}-${filteredPhone.slice(3, 7)}-${filteredPhone.slice(7, 11)}`;
-                  }
-                  setPhone(formattedPhone);
-                }}
-                maxLength={13}
+                onChangeText={setPhone}
+                maxLength={11}
                 keyboardType="phone-pad"
                 autoCompleteType="tel"
                 onSubmitEditing={async () => {
                   const state = await NetInfo.fetch();
                   const canProceed = await handleNetInfoChange(state);
                   if (canProceed) {
-                    if (phone.length === 13) {
+                    if (phone.length > 10) {
                       setCurrentPageIndex(3);
                     }
+
                   }
                 }}
               />
@@ -1252,8 +1044,8 @@ const reservationAvailable = async (consultantId,reservationDate,reservationTime
               }}>
                 <Button
                   style={{
-                    backgroundColor: phone.length < 13 ? '#E8EAED' : '#2F87FF',
-                    color: phone.length < 13 ? '#1b1c1f' : '#FFFFFF',
+                    backgroundColor: phone.length < 11 ? '#E8EAED' : '#2F87FF',
+                    color: phone.length < 11 ? '#1b1c1f' : '#FFFFFF',
                     width: '100%',
                     height: 50, // height 값을 숫자로 변경하고 단위 제거
                     alignItems: 'center', // align-items를 camelCase로 변경
@@ -1261,17 +1053,14 @@ const reservationAvailable = async (consultantId,reservationDate,reservationTime
                     borderWidth: 1, // border-width를 camelCase로 변경하고 단위 제거
                     borderColor: '#E8EAED',
                   }}
-                  disabled={phone.length < 13}
-                  active={phone.length > 12}
+                  disabled={phone.length < 11}
+                  active={phone.length > 10}
                   width={width}
                   onPress={async () => {
                     const state = await NetInfo.fetch();
                     const canProceed = await handleNetInfoChange(state);
                     if (canProceed) {
-                      if (phone.length > 12) {
-                        setCurrentPageIndex(3);
-                        Keyboard.dismiss();
-                      }
+                      setCurrentPageIndex(3);
                     }
                   }}>
                   <ButtonText >다음으로</ButtonText>
@@ -1307,8 +1096,8 @@ const reservationAvailable = async (consultantId,reservationDate,reservationTime
             </View>
           </ButtonSection></>
 
-      </Container>
-      <Container style={{ width: width }}>
+      </Container>}
+      {currentPageIndex === 3 && <Container style={{ width: width }}>
         <ProgressSection>
         </ProgressSection>
         <><FlatList
@@ -1454,43 +1243,9 @@ const reservationAvailable = async (consultantId,reservationDate,reservationTime
                     onPress={async () => {
                       const state = await NetInfo.fetch();
                       const canProceed = await handleNetInfoChange(state);
-
                       if (canProceed) {
-                        setkeyboardShouldPersistTaps(false);
-                        console.log('log_03', '클릭');
-
-                        const year = selectedDate.getFullYear();
-                          const month = String(selectedDate.getMonth() + 1).padStart(2, '0'); // 월은 0부터 시작하므로 1을 더해줍니다.
-                          const day = String(selectedDate.getDate()).padStart(2, '0');
-
-                          const default_date = `${year}-${month}-${day}`;
-                        const result = await reservationAvailable('1',default_date,selectedList[0]);
-
-                        console.log('log_03', result);
-                        if(result){
-                          navigation.navigate('PaymentScreen', {
-                           consultantId: CounselorData.consultantId ? CounselorData.consultantId : '',
-                           consultingInflowPath: isGainsTax ? '02' : '01',
-                           calcHistoryId : Pdata.calcHistoryId ? Pdata.calcHistoryId : ''
-                            ,name: name, phone: phone, selectedDate: selectedDate, selectedList: selectedList,
-                            onPaymentComplete: (consultingReservationId) => {
-                              setConsultingReservationId(consultingReservationId);
-                              console.log('최신 상태:', { name, phone, selectedDate, selectedList });
-                              setCurrentPageIndex(4); // 특정 탭으로 이동
-                            },
-                          });
-                        }
-
-                        console.log('log_04', result);
-
-                        console.log('log_04',selectedList.length);
-
-
+                        setCurrentPageIndex(4);
                       }
-
-
-
-
                     }}>
                     <ButtonText>다음으로</ButtonText>
                   </Button>
@@ -1526,9 +1281,9 @@ const reservationAvailable = async (consultantId,reservationDate,reservationTime
             </ButtonSection></>
           }
         /></>
-      </Container>
+      </Container>}
 
-      <Container style={{ width: width }}>
+      {currentPageIndex === 4 && <Container style={{ width: width }}>
         <ProgressSection>
         </ProgressSection>
         <><FlatList
@@ -1541,7 +1296,7 @@ const reservationAvailable = async (consultantId,reservationDate,reservationTime
           overScrollMode="never" // 이 줄을 추가하세요
           ListHeaderComponent={
             <>
-              <IntroSection2 style={{ height: 'auto', paddingBottom: 10 }}>
+              <IntroSection2 style={{ height: 'auto' }}>
                 <View style={{ flexDirection: 'row', alignItems: 'left', marginBottom: 10 }}>
                   <ProfileAvatar2 source={require('../../assets/images/Minjungum_Lee_consulting.png')}></ProfileAvatar2>
                   <ProfileName>이민정음 세무사</ProfileName>
@@ -1659,50 +1414,18 @@ const reservationAvailable = async (consultantId,reservationDate,reservationTime
                 </View>
 
                 {isExpanded && (<>
-                  {!props?.route.params.isGainsTax ? <HouseInfo item={houseInfo} navigation={navigation} ChatType='AcquisitionChat' /> : <HouseInfo item={houseInfo} navigation={navigation} ChatType='GainsTaxChat' />}
-                  {!props?.route.params.isGainsTax ? <TaxCard navigation={navigation} Pdata={Pdata ? Pdata : null} /> : <TaxCard2 navigation={navigation} Pdata={Pdata ? Pdata : null} />}
-                  {!props?.route.params.isGainsTax ? <TaxInfoCard Pdata={Pdata ? Pdata : null} /> : <TaxInfoCard2 Pdata={Pdata ? Pdata : null} />}
+                  {!props?.route.params.IsGainTax ? <HouseInfo item={houseInfo} navigation={navigation} ChatType='AcquisitionChat' /> : <HouseInfo item={houseInfo} navigation={navigation} ChatType='GainsTaxChat' />}
+                  {!props?.route.params.IsGainTax ? <TaxCard navigation={navigation} Pdata={Pdata ? Pdata : null} /> : <TaxCard2 navigation={navigation} Pdata={Pdata ? Pdata : null} />}
+                  {!props?.route.params.IsGainTax ? <TaxInfoCard Pdata={Pdata ? Pdata : null} /> : <TaxInfoCard2 Pdata={Pdata ? Pdata : null} />}
                 </>)
                 }
-                {/*<SubTitle3>고객님께서 본인 인증하여 로드하거나 직접 입력하신 주택정보와{'\n'}아래 세금 계산 결과를 활용하여 세금 상담을 진행할 예정이에요.{'\n'}이에 동의하시나요?{'\n'}{'\n'}{'\n'}{'\n'}{'\n'}{'\n'}</SubTitle3>*/}
+                <SubTitle3>고객님께서 본인 인증하여 로드하거나 직접 입력하신 주택정보와{'\n'}아래 세금 계산 결과를 활용하여 세금 상담을 진행할 예정이에요.{'\n'}이에 동의하시나요?{'\n'}{'\n'}{'\n'}{'\n'}{'\n'}{'\n'}</SubTitle3>
               </IntroSection2>
-              <FirstItem style={{ marginBottom: isExpanded ? '45%' : '43%' }}>
-                <View style={{ flexDirection: 'row' }}>
-                  <TouchableOpacity
-                    onPress={async () => {
-                      console.log(props?.route.params);
-                      navigation.navigate('CertificationPrivacy', {
-                        prevSheet: 'ConsultingReservation2',
-                        isGainsTax: props?.route.params.isGainsTax,
-                        houseInfo: props?.route.params.houseInfo,
-                        Pdata: props?.route.params.Pdata,
-                        prevChoice: props?.route.params.prevChoice,
-                        CounselorData: CounselorData
-                      });
-                    }}>
-                    <FirstItemTitle style={{ color: '#2F87FF', textDecorationLine: 'underline' }}>개인정보 수집 및 이용</FirstItemTitle>
-                  </TouchableOpacity>
-                  <FirstItemTitle>에 대하여 동의하시나요?</FirstItemTitle>
-                </View>
-                <FirstCheckCircle
-                  onPress={() => {
-                    dispatch(
-                      setCert({
-                        agreePrivacy: !agreePrivacy,
-                      }),
-                    );
-                  }}>
-                  {agreePrivacy && <CheckOnIcon />}
-                </FirstCheckCircle>
-
-              </FirstItem>
             </>
           }
           ListFooterComponent={
             <>
-              <ButtonSection2 style={{
-
-              }}>
+              <ButtonSection2>
                 <View
                   style={{
                     alignItems: 'center', // align-items를 camelCase로 변경
@@ -1726,7 +1449,6 @@ const reservationAvailable = async (consultantId,reservationDate,reservationTime
                         const state = await NetInfo.fetch();
                         const canProceed = await handleNetInfoChange(state);
                         if (canProceed) {
-                          dispatch(setCert({ agreePrivacy: false }));
                           setCurrentPageIndex(3);
                         }
                       }}>
@@ -1736,8 +1458,8 @@ const reservationAvailable = async (consultantId,reservationDate,reservationTime
                   <ShadowContainer style={{ width: '49%', marginLeft: '1%' }}>
                     <Button
                       style={{
-                        backgroundColor: text === '' || !agreePrivacy ? '#E8EAED' : '#2F87FF',
-                        color: text === '' || !agreePrivacy ? '#1b1c1f' : '#FFFFFF',
+                        backgroundColor: text === '' ? '#E8EAED' : '#2F87FF',
+                        color: text === '' ? '#1b1c1f' : '#FFFFFF',
                         width: '100%',
                         height: 50, // height 값을 숫자로 변경하고 단위 제거
                         alignItems: 'center', // align-items를 camelCase로 변경
@@ -1745,8 +1467,8 @@ const reservationAvailable = async (consultantId,reservationDate,reservationTime
                         borderWidth: 1, // border-width를 camelCase로 변경하고 단위 제거
                         borderColor: '#E8EAED',
                       }}
-                      disabled={!(text && agreePrivacy)}
-                      active={text && agreePrivacy}
+                      disabled={!text}
+                      active={text}
                       width={width}
                       onPress={async () => {
                         const state = await NetInfo.fetch();
@@ -1754,7 +1476,6 @@ const reservationAvailable = async (consultantId,reservationDate,reservationTime
                         if (canProceed) {
                           const result = await requestReservation();
                           if (result) {
-                            dispatch(setCert({ agreePrivacy: false }));
                             navigation.goBack();
                           }
                         }
@@ -1792,7 +1513,7 @@ const reservationAvailable = async (consultantId,reservationDate,reservationTime
                 </View>
               </ButtonSection2></>}
         /></>
-      </Container>
+      </Container>}
 
 
 
@@ -1800,4 +1521,4 @@ const reservationAvailable = async (consultantId,reservationDate,reservationTime
   )
 };
 
-export default ConsultingReservation2;
+export default PaymentComplet;

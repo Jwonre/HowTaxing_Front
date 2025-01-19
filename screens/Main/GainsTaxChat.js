@@ -48,7 +48,7 @@ import dayjs from 'dayjs';
 
 const Container = styled.View`
   flex: 1;
-  background-color: #fff;
+  background-color: #FFF;
 `;
 
 const ProgressSection = styled.View`
@@ -1643,6 +1643,8 @@ const GainsTaxChat = () => {
                               navigation.push('CertificationGains', { data: item2.id, index, isGainsTax: true, currentPageIndex: 1 });
                             } else if (item2.id === 'toss') {
                               navigation.push('CertificationGains', { data: item2.id, index, isGainsTax: true, currentPageIndex: 2 });
+                            } else if (item2.id === 'kakao') {
+                              navigation.push('CertificationGains', { data: item2.id, index, isGainsTax: true, currentPageIndex: 3 });
                             };
                           }
                           //console.log('test_houseInfo item.3', item2.id)
