@@ -290,6 +290,26 @@ const PaymentDetail = props => {
     });
   }, []);
 
+ 
+  const date = paymentDetail?.approvedDatetime??'';
+  var dateArray5 = '';
+  var dateArray4 = '';
+  if(date){
+    const dateArray = date.split(' ');
+    var dateArray2 = [];
+    if(dateArray[0].includes('-')){
+       dateArray2 = dateArray[0].split('-');
+    }else if(dateArray[0].includes('.')){
+      dateArray2 = dateArray[0].split('.');  
+    }else{
+      dateArray2 = [0,0,0];
+    }
+     
+    const dateArray3 = dateArray[1].split(':');
+    dateArray4 = dateArray3[0] + ':' + dateArray3[1];
+    dateArray5 = dateArray2[0] + '년 ' + dateArray2[1] + '월 ' + dateArray2[2] + '일 ' ;
+    console.log('dateArray5', date);
+  }
   return (
     <View style={styles.rootContainer}>
       {/* 파란색 라인 */}
@@ -318,14 +338,14 @@ const PaymentDetail = props => {
           <View style={styles.infoBox}>
             {/* 고객명 */}
             <View style={styles.rowInfo}>
-              <Text style={styles.labelInfo}>고객명</Text>
-              <Text style={styles.valueIfno}>-</Text>
+              <Text style={styles.labelInfo}>결제일자</Text>
+              <Text style={styles.valueIfno}>{dateArray5}</Text>
             </View>
 
             {/* 할인 금액 */}
             <View style={styles.rowInfo}>
-              <Text style={styles.labelInfo}>전화번호</Text>
-              <Text style={styles.valueIfno}>010-0000-0000</Text>
+              <Text style={styles.labelInfo}>결제 시간</Text>
+              <Text style={styles.valueIfno}>{dateArray4}</Text>
             </View>
             {/* 구분선 */}
             <View style={styles.separator} />

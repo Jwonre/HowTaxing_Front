@@ -831,7 +831,7 @@ function ConsultingWating({ data, setInTaxSelectDialog, setInConsultingInputDial
   const consultingTypes = type.split(',').map(type => consultingTypeMap[type]).join(', ');
 
 
-  const payment = data?.paymentPrice ?? '0'; // data.paymentPrice가 없으면 기본값 '0'
+  const payment = data?.paymentAmount ?? '0'; // data.paymentPrice가 없으면 기본값 '0'
   return <>
     <View style={styles.inputSection}>
       <Text style={styles.subTitleLabel}>상세 정보</Text>
