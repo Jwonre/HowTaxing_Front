@@ -419,6 +419,8 @@ const ConsultingReservation2 = props => {
   const _scrollViewRef3 = useRef(null);
   // const data = [{ key: 'dummy' }]; // FlatList에 필요한 데이터
   const [currentPageIndex, setCurrentPageIndex] = useState(0);
+    const [isFree, setIsFree] = useState(false);
+  
   const currentPageIndexList = [0, 1, 2, 3, 4];
   const currentUser = useSelector(state => state.currentUser.value);
   const navigation = useNavigation();
@@ -783,7 +785,105 @@ const reservationAvailable = async (consultantId,reservationDate,reservationTime
       });
   };
 
+  const requestReservationApplyForFree = async () => {
+    console.log('selectedDate', selectedDate);
+    var NumTaxTypeList = taxTypeList.map(taxType => {
+      switch (taxType) {
+        case "취득세":
+          return "01";
+        case "양도소득세":
+          return "02";
+        case "상속세":
+          return "03";
+        case "증여세":
+          return "04";
+        default:
+          return "";
+      }
+    });
+    const year = selectedDate.getFullYear();
+    const month = String(selectedDate.getMonth() + 1).padStart(2, '0'); // 월은 0부터 시작하므로 1을 더해줍니다.
+    const day = String(selectedDate.getDate()).padStart(2, '0');
+    const accessToken = currentUser.accessToken;
+    // 요청 헤더
+    const headers = {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${accessToken}`
+    };
 
+    // 요청 바디
+    const data = {
+      consultantId: CounselorData.consultantId ? CounselorData.consultantId : '',
+      customerName: name ? name : '',
+      customerPhone: phone ? phone.replace(/-/g, "") : '',
+      reservationDate: selectedDate ? `${year}-${month}-${day}` : '',
+      reservationTime: selectedList ? selectedList[0] : '',
+      consultingType: NumTaxTypeList ? NumTaxTypeList.sort().join(",") : '',
+      consultingInflowPath: '00',
+      calcHistoryId: '',
+      consultingRequestContent: text ? text : '',
+    };
+
+    try {
+      const response = await axios.post(`${Config.APP_API_URL}consulting/reservationApplyForFree`, data, { headers: headers });
+      if (response.data.errYn === 'Y') {
+        if (response.data.errCode === 'CONSULTING-013') {
+          setCurrentPageIndex(3);
+          setTimeout(async () => {
+            await getDateTimelist('1', '');
+            if (dataList.length === 0) {
+              await SheetManager.show('info', {
+                payload: {
+                  type: 'info',
+                  errorType: 1,
+                  message: '앗, 현재 모든 예약이 완료되었어요.\n나중에 다시 시도해주세요.',
+                  buttontext: '확인하기',
+                },
+              });
+              navigation.goBack();
+            } else {
+              await getDateTimelist('2', selectedDate);
+              setSelectedList([]);
+            }
+          }, 300);
+        } else {
+          await SheetManager.show('info', {
+            payload: {
+              type: 'error',
+              errorType: response.data.type,
+              message: response.data.errMsg ? response.data.errMsg : '상담 예약 중 오류가 발생했어요.',
+              description: response.data.errMsgDtl ? response.data.errMsgDtl : '',
+              buttontext: '확인하기',
+            },
+          });
+        }
+        return false;
+      } else {
+        if (response.data.data && response.data.data.isApplyComplete) {
+          const result = response.data.data;
+          await SheetManager.show('InfoConsulting', {
+            payload: {
+              message: '상담 예약이 확정되었어요.',
+              description: '요청하신 ' + result.reservationDate + ' 일자에\n주택세금 상담 예약이 확정되었어요.\n세무사님이 예약된 시간이 되면\n연락을 드릴 예정이에요.\n하우택싱을 이용해주셔서 감사해요.',
+              buttontext: '처음으로 돌아가기',
+            },
+          });
+          return true;
+        } else {
+          return false;
+        }
+      }
+    } catch (error) {
+      SheetManager.show('info', {
+        type: 'error',
+        message: error?.errMsg ? error?.errMsg : '상담 예약 중 오류가 발생했어요.',
+        errorMessage: error?.errCode ? error?.errCode : 'error',
+        buttontext: '확인하기',
+      });
+      console.error(error ? error : 'error');
+      return false;
+    }
+  };
 
   const requestReservation = async () => {
     console.log('selectedDate', selectedDate);
@@ -1473,9 +1573,15 @@ const reservationAvailable = async (consultantId,reservationDate,reservationTime
                            consultingInflowPath: isGainsTax ? '02' : '01',
                            calcHistoryId : Pdata.calcHistoryId ? Pdata.calcHistoryId : ''
                             ,name: name, phone: phone, selectedDate: selectedDate, selectedList: selectedList,
+                           
                             onPaymentComplete: (consultingReservationId) => {
+                              setIsFree(false);
                               setConsultingReservationId(consultingReservationId);
                               console.log('최신 상태:', { name, phone, selectedDate, selectedList });
+                              setCurrentPageIndex(4); // 특정 탭으로 이동
+                            },
+                            onPaymentApplyForFree : () =>{
+                              setIsFree(true);
                               setCurrentPageIndex(4); // 특정 탭으로 이동
                             },
                           });
@@ -1752,13 +1858,27 @@ const reservationAvailable = async (consultantId,reservationDate,reservationTime
                         const state = await NetInfo.fetch();
                         const canProceed = await handleNetInfoChange(state);
                         if (canProceed) {
-                          const result = await requestReservation();
+                          if(isFree){
+                            const result = await requestReservationApplyForFree();
+                          console.log('result', result);;
+                          if (result) {
+                            setIsFree(false);
+                            dispatch(setCert({ agreePrivacy: false }));
+                            navigation.goBack();
+                          }
+                          }else{
+                            const result = await requestReservation();
+                          console.log('result', result);;
                           if (result) {
                             dispatch(setCert({ agreePrivacy: false }));
                             navigation.goBack();
                           }
+                          }
+                          
                         }
                       }}>
+
+                     
                       <ButtonText>동의 후 상담 예약하기</ButtonText>
                     </Button>
                   </ShadowContainer>
