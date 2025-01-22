@@ -515,24 +515,35 @@ const PaymentScreen = props => {
               if (canProceed) {
                 console.log('log_결제하기',canProceed);
 
-                navigation.replace('TossPaymentScreen', {
-                  consultantId: id,
-                  customerName: name,
-                  customerPhone: phone,
-                  reservationDate: default_date,
-                  reservationTime: time,
-                  consultingInflowPath: props?.route?.params?.consultingInflowPath ?? '',
-                  calcHistoryId: props?.route?.params?.calcHistoryId ?? '',
-                  orderId: orderId,
-                  orderName: reservationProductInfo?.productNameproductName,
-                  productPrice: Number(reservationProductInfo?.productPrice ?? '0'),
-                  productDiscountPrice: Number(reservationProductInfo?.productDiscountPrice ?? '0'),
-                  paymentAmount: Number(reservationProductInfo?.paymentAmount ?? '0'),
+                if(Number(reservationProductInfo?.paymentAmount ?? '0') >0){
+                  navigation.replace('TossPaymentScreen', {
+                    consultantId: id,
+                    customerName: name,
+                    customerPhone: phone,
+                    reservationDate: default_date,
+                    reservationTime: time,
+                    consultingInflowPath: props?.route?.params?.consultingInflowPath ?? '',
+                    calcHistoryId: props?.route?.params?.calcHistoryId ?? '',
+                    orderId: orderId,
+                    orderName: reservationProductInfo?.productNameproductName,
+                    productPrice: Number(reservationProductInfo?.productPrice ?? '0'),
+                    productDiscountPrice: Number(reservationProductInfo?.productDiscountPrice ?? '0'),
+                    paymentAmount: Number(reservationProductInfo?.paymentAmount ?? '0'),
+  
+                    productId: reservationProductInfo?.productId, // 고유 주문 ID
+                    productName: reservationProductInfo?.productName, // 주문 이름
+                    onPaymentComplete: props?.route?.params?.onPaymentComplete,
+                  });
+                }else{
+                  if (props.route.params.onPaymentApplyForFree) {
+                    console.log('onPaymentComplete is about to be called');
+                    props.route.params.onPaymentApplyForFree();
+            
+                    navigation.goBack();
+                  }
+                }
 
-                  productId: reservationProductInfo?.productId, // 고유 주문 ID
-                  productName: reservationProductInfo?.productName, // 주문 이름
-                  onPaymentComplete: props?.route?.params?.onPaymentComplete,
-                });
+                
               }
 
               // Checkout 호출
