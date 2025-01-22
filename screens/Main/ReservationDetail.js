@@ -661,17 +661,50 @@ const ReservationDetail = props => {
                     </Text>
                     <Text style={styles.progressDate}>
                       {(() => {
-                        if (!reservationDetail.reservationDate) return ''; // 날짜가 없으면 빈 문자열 반환
+                      
+                      var formattedDate = '';
+                        //  formattedDate =
+                        //   reservationDetail.reservationDate.replace(/-/g, '.') + ' ' + reservationDetail.reservationStartTime;
 
-                        const formattedDate =
-                          reservationDetail.reservationDate.replace(/-/g, '.') + ' ' + reservationDetail.reservationStartTime;
+                        // console.log(`reservationDetail.paymentCompleteDatetime : ${reservationDetail.paymentCompleteDatetime}`);
+                        // console.log(`reservationDetail.connsultingRequestDatetime : ${reservationDetail.connsultingRequestDatetime}`);
+                        // console.log(`reservationDetail.consultingStartDatetime : ${reservationDetail.consultingStartDatetime}`);
+                        // console.log(`reservationDetail.consultingEndDatetime : ${reservationDetail.consultingEndDatetime}`);
+                        // console.log(`reservationDetail.consultingRequestDatetime : ${reservationDetail.consultingRequestDatetime}`);
 
                         if (progressStatus === 4) {
+
+                          if(index === 0){
+                            if (!reservationDetail.paymentCompleteDatetime) {return formattedDate;} // 날짜가 없으면 빈 문자열 반환
+
+                            formattedDate = reservationDetail.paymentCompleteDatetime.replace(/-/g, '.');
+
+                          }else if(index === 1){
+                            if (!reservationDetail.consultingRequestDatetime) {return formattedDate;} // 날짜가 없으면 빈 문자열 반환
+
+                            formattedDate = reservationDetail.consultingRequestDatetime.replace(/-/g, '.');
+                          }
                           // 취소 상태
-                          return index === 0 || index === 1 ? formattedDate : '';
+                          return formattedDate;
                         }
 
                         if (index <= progressStatus) {
+                          if(index === 0){
+                            if (!reservationDetail.paymentCompleteDatetime) {return formattedDate;} // 날짜가 없으면 빈 문자열 반환
+                            formattedDate = reservationDetail.paymentCompleteDatetime.replace(/-/g, '.');
+                          }
+                          else if(index === 1){
+                            if (!reservationDetail.connsultingRequestDatetime) {return formattedDate;} // 날짜가 없으면 빈 문자열 반환
+                            formattedDate = reservationDetail.connsultingRequestDatetime.replace(/-/g, '.');
+                          }
+                          else if(index === 2){
+                            if (!reservationDetail.consultingStartDatetime) {return formattedDate;} // 날짜가 없으면 빈 문자열 반환
+                            formattedDate = reservationDetail.consultingStartDatetime.replace(/-/g, '.');
+                          }
+                          else{
+                            if (!reservationDetail.consultingEndDatetime) {return formattedDate;} // 날짜가 없으면 빈 문자열 반환
+                            formattedDate = reservationDetail.consultingEndDatetime.replace(/-/g, '.');
+                          }
                           // progressStatus에 따라 표시
                           return formattedDate;
                         }
@@ -854,7 +887,7 @@ function ConsultingWating({ data, setInTaxSelectDialog, setInConsultingInputDial
         <View style={styles.separator} />
         <View style={styles.rowInfo2}>
           <Text style={styles.labelInfo}>결제 금액</Text>
-          <Text style={styles.totalValue}>{payment + '원'} </Text>
+          <Text style={styles.totalValue}>                {Number(payment ?? '0')?.toLocaleString() + '원'} </Text>
         </View>
 
         {/* 구분선 */}
