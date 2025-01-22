@@ -84,7 +84,7 @@ const BottomSection = styled.View`
   bottom: 0px;
   position: absolute;
   width: 100%; 
-  height: 98px; 
+  height: 110px; 
   background-color: #D9D9D9; 
 
 `;
@@ -101,7 +101,7 @@ const BottomIcon = styled.Image.attrs(props => ({
 `;
 
 const BottomText = styled.Text`
-  font-size: 10.5px;
+  font-size: 11px;
   font-family: Pretendard-Regular;
   color: #fff;
   line-height: 12px;

@@ -930,9 +930,9 @@ const InfoCertification = props => {
 
   const openKakaoAuthApp = async () => {
     try {
-      const callbackUrl = encodeURIComponent('howtaxingrelease://auth');
+     // const callbackUrl = encodeURIComponent('howtaxingrelease://auth');
 
-      let url = 'kakaolink://';
+      let url = 'kakaotalk://';
 
       // url = 'naversearchapp://default?version=1';
       console.log('Generated URL:', `appStatus.kakao:${appStatus.kakao} ${url}`);
