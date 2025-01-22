@@ -84,7 +84,7 @@ const BottomSection = styled.View`
   bottom: 0px;
   position: absolute;
   width: 100%; 
-  height: 93px; 
+  height: 98px; 
   background-color: #D9D9D9; 
 
 `;
@@ -101,7 +101,7 @@ const BottomIcon = styled.Image.attrs(props => ({
 `;
 
 const BottomText = styled.Text`
-  font-size: 11px;
+  font-size: 10.5px;
   font-family: Pretendard-Regular;
   color: #fff;
   line-height: 12px;
@@ -340,7 +340,7 @@ const Information = props => {
             source={require('../../assets/images/informationlogo.png')}
           />
           <BottomText>JS세무회계 | 서울특별시 송파구 올림픽로35길 112, 2동 2층 249호</BottomText>
-          <BottomText>사업자등록번호 : 416-18-30801</BottomText>
+          <BottomText>사업자등록번호 : 416-18-30801 | 통신판매신고번호 : 2025-서울송파-0161</BottomText>
           <BottomText>대표자명 : 윤준수 | 대표번호 : 010-8478-1689</BottomText>
         </Bottom>
       </BottomSection>

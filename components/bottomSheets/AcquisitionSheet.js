@@ -223,7 +223,7 @@ const AcquisitionSheet = props => {
           y: 0,
           animated: true,
         });
-      }, 300)
+      }, 600)
       setIsActionSheetActive(true);
     } else {
       _scrollViewRef.current?.scrollTo({
