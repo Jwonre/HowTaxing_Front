@@ -104,10 +104,10 @@ const RefundImage = styled.View`
 const ButtonSection = styled.View`
   width: 100%;
   height: auto;
-  flex: 1;
   padding: 0 20px;
   align-items: center;
-  justify-content: flex-end;  
+  flex: 1;
+  justify-content: flex-end;
   bottom: 10px;
   width: 100%;
 `;
@@ -146,7 +146,6 @@ const ButtonText = styled.Text`
 
 
 const GainTaxRefund = props => {
-  const CounselorData = props.route?.params?.CounselorData ? props.route?.params?.CounselorData : {};
   const _scrollViewRef = useRef(null);
   // const data = [{ key: 'dummy' }]; // FlatList에 필요한 데이터
   const [currentPageIndex, setCurrentPageIndex] = useState(0);
@@ -154,6 +153,7 @@ const GainTaxRefund = props => {
   const currentUser = useSelector(state => state.currentUser.value);
   const navigation = useNavigation();
   const width = Dimensions.get('window').width;
+  const height = Dimensions.get('window').height;
   const input2 = useRef(null);
   const dispatch = useDispatch();
   const [name, setName] = useState('');
@@ -251,6 +251,7 @@ const GainTaxRefund = props => {
 
     try {
       const response = await axios.post(`${Config.APP_API_URL}refund/apply`, data, { headers: headers });
+      console.log('response', response);
       if (response.data.errYn === 'Y') {
         await SheetManager.show('info', {
           payload: {
@@ -262,14 +263,15 @@ const GainTaxRefund = props => {
           },
         });
       } else {
-        if (response.data.data && response.data.data.isApplyComplete) {
-          await SheetManager.show('InfoConsulting', {
+        if (response.data.data) {
+          await SheetManager.show('InfoRefunding', {
             payload: {
               message: '양도소득세 환급액 조회 신청이 완료되었어요.',
               description: '입력해주신 전화번호로\n빠른 시간 안에 세무사님이 연락드릴 예정이에요.',
               buttontext: '처음으로 돌아가기',
             },
           });
+          navigation.goBack();
         } 
       }
     } catch (error) {
@@ -345,7 +347,7 @@ const GainTaxRefund = props => {
       scrollEnabled={false}
       scrollEventThrottle={16}>
 
-      <Container style={{ width: width }}>
+      <Container style={{ width: width, height: height * 0.92 }}>
         <ProgressSection>
         </ProgressSection>
         <><IntroSection2 style={{ width: width }}>
@@ -450,7 +452,7 @@ const GainTaxRefund = props => {
 
       </Container>
 
-      <Container style={{ width: width }}>
+      <Container style={{ width: width, height: height * 0.92 }}>
         <ProgressSection>
         </ProgressSection>
         <><IntroSection2 style={{ width: width }}>
@@ -555,7 +557,7 @@ const GainTaxRefund = props => {
 
       </Container>
 
-      <Container style={{ width: width }}>
+      <Container style={{ width: width, height: height * 0.92 }}>
         <ProgressSection>
         </ProgressSection>
         <><IntroSection2 style={{ width: width }}>

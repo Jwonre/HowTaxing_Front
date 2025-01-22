@@ -81,6 +81,7 @@ import InfoCertification from '../components/bottomSheets/InfoCertification';
 import InfoFixHouseDelete from '../components/bottomSheets/InfoFixHouseDelete';
 import InfoAddHouseDelete from '../components/bottomSheets/InfoAddHouseDelete';
 import InfoConsulting from '../components/bottomSheets/InfoConsulting';
+import InfoRefunding from '../components/bottomSheets/InfoRefunding';
 import InfoConsultingCancel from '../components/bottomSheets/InfoConsultingCancel';
 import InfoRefundingCancel from '../components/bottomSheets/InfoRefundingCancel';
 import InfoDeleteHouse from '../components/bottomSheets/InfoDeleteHouse';
@@ -188,6 +189,7 @@ const AppNavigator = () => {
     registerSheet('infoCertification', InfoCertification);
     registerSheet('InfoConsulting', InfoConsulting);
     registerSheet('InfoConsultingCancel', InfoConsultingCancel);
+    registerSheet('InfoRefunding', InfoRefunding);
     registerSheet('InfoRefundingCancel', InfoRefundingCancel);
     registerSheet('InfoDeleteHouse', InfoDeleteHouse);
     registerSheet('InfoOwnHouse', InfoOwnHouse);

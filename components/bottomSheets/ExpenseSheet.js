@@ -372,7 +372,7 @@ const ExpenseSheet = props => {
                 dispatch(
                   setHouseInfo({
                     ...houseInfo,
-                    necessaryExpense: ExpenseAmount ? ExpenseAmount : 50000000,
+                    necessaryExpense: ExpenseAmount ? ExpenseAmount : 0,
                   }),
                 );
                 actionSheetRef.current?.hide();

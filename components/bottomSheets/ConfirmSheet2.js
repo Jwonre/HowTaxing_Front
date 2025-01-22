@@ -316,7 +316,7 @@ const ConfirmSheet2 = props => {
           <InfoContentItem>
             <InfoContentLabel >필요경비</InfoContentLabel>
             <InfoContentText >
-              {houseInfo?.necessaryExpense ? numberToKorean(Number(houseInfo?.necessaryExpense)?.toString()) + '원' : ''}
+              {houseInfo?.necessaryExpense ? numberToKorean(Number(houseInfo?.necessaryExpense)?.toString()) + '원' : '0원'}
             </InfoContentText>
           </InfoContentItem>
           <InfoContentItem>
