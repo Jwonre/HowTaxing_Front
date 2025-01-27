@@ -1030,7 +1030,7 @@ const GainsTaxChat = () => {
         </TouchableOpacity>
       ),
       headerTitleAlign: 'center',
-      title: '양도소득세 계산하기',
+      title: 'AI 양도소득세 계산기',
       headerShadowVisible: false,
       contentStyle: {
         borderTopColor: '#F7F7F7',

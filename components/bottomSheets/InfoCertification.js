@@ -176,7 +176,7 @@ const InfoCertification = props => {
       isKBInstalled = await Linking.canOpenURL('kbbank://');
       isTossInstalled = await Linking.canOpenURL('supertoss://');
       isNaverInstalled = await Linking.canOpenURL('naversearchapp://');
-      isKakaoInstalled = await Linking.canOpenURL('kakaolink://');
+      isKakaoInstalled = await Linking.canOpenURL('kakaotalk://');
       // } else if (Platform.OS === 'android') {
       //   // Android에서 URL 스키마 확인
       //   isKBInstalled = await Linking.canOpenURL('com.kbstar.kbbank');
@@ -930,9 +930,9 @@ const InfoCertification = props => {
 
   const openKakaoAuthApp = async () => {
     try {
-     // const callbackUrl = encodeURIComponent('howtaxingrelease://auth');
+      const callbackUrl = encodeURIComponent('howtaxingrelease://auth');
 
-      let url = 'kakaotalk://';
+      let url = 'kakaotalk://open';
 
       // url = 'naversearchapp://default?version=1';
       console.log('Generated URL:', `appStatus.kakao:${appStatus.kakao} ${url}`);
@@ -1042,7 +1042,7 @@ const InfoCertification = props => {
 
 
 
-          {(certType !== 'KB') && <ModalContent >신속한 인증을 원하시면 인증 앱으로 바로가기를 누르신 후 직접 인증을 부탁드려요. </ModalContent>}
+          {(certType !== 'KB' && certType !== 'kakao') && <ModalContent >신속한 인증을 원하시면 인증 앱으로 바로가기를 누르신 후 직접 인증을 부탁드려요. </ModalContent>}
           {/* {(ActiveYN === true) && <ModalContent >다른 기기를 통해 인증할 예정이라면다른 기기로 인증하기를 눌러주세요. </ModalContent>} */}
 
 
@@ -1086,7 +1086,7 @@ const InfoCertification = props => {
                 }
               }}
               style={{
-                width: certType === 'KB' ? '100%' : '49%', // 버튼 너비를 부모 View의 45%로 설정
+                width: certType === 'KB'|| certType === 'kakao' ? '100%' : '49%', // 버튼 너비를 부모 View의 45%로 설정
                 // backgroundColor: ActiveYN ? '#2f87ff' : '#FFF',
                 // borderColor: ActiveYN ? '#2f87ff' : '#E8EAED',
                 backgroundColor: '#FFF',
@@ -1104,7 +1104,7 @@ const InfoCertification = props => {
             </Button>
 
 
-            {certType !== 'KB' && (
+            {(certType !== 'KB' && certType !== 'kakao') && (
               <DropShadow
                 style={{
                   shadowColor: 'rgba(0,0,0,0.25)',
@@ -1131,7 +1131,7 @@ const InfoCertification = props => {
                     if (canProceed) {
                       if (certType === 'toss') opeToassAuthApp();
                       else if (certType === 'naver') openNaverAuthApp();
-                      else if (certType === 'kakao') openKakaoAuthApp();
+                      //else if (certType === 'kakao') openKakaoAuthApp();
                     } else {
                       actionSheetRef.current?.hide();
                     }

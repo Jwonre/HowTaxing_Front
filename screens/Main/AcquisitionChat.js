@@ -915,7 +915,7 @@ const AcquisitionChat = () => {
         </TouchableOpacity>
       ),
       headerTitleAlign: 'center',
-      title: '취득세 계산하기',
+      title: 'AI 취득세 계산기',
       headerShadowVisible: false,
       contentStyle: {
         borderTopColor: '#F7F7F7',

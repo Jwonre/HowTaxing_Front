@@ -111,7 +111,7 @@ const HashTagGroup = styled.View`
 
 const HashTagText = styled.Text`
   font-size: 8px;
-  font-family: Pretendard-Regular;
+  font-family: Pretendard-Bold;
   color: #a3a5a8;
   padding: 3px 8px;
 `;
@@ -586,7 +586,7 @@ const Home = () => {
                   width: '65%',
                   height: '45px',
                 }}>
-                <View style={{ height: 20, marginBottom: 5, backgroundColor: '#fff', borderRadius: 20, borderColor: '#E8EAED', borderWidth: 1, alignItems: 'center', justifyContent: 'center' }}><HashTagText>{'일시적1가구2주택'}</HashTagText></View>
+                <View style={{ height: 20, marginBottom: 5, backgroundColor: '#fff', borderRadius: 20, borderColor: '#E8EAED', borderWidth: 1, alignItems: 'center', justifyContent: 'center' }}><HashTagText>{'일시적2주택'}</HashTagText></View>
                 <View style={{ height: 20, backgroundColor: '#fff', borderRadius: 20, borderColor: '#E8EAED', borderWidth: 1, alignItems: 'center', justifyContent: 'center' }}><HashTagText>{'비과세'}</HashTagText></View>
               </HashTagGroup>
             </View>
