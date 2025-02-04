@@ -14,10 +14,10 @@
 		773A304C83582C8552505CA2 /* libPods-HowTaxingRelease-HowTaxingReleaseTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0226E1A39D4BA5BEA3A05952 /* libPods-HowTaxingRelease-HowTaxingReleaseTests.a */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
 		9EBE0A5C14B8FC5AA5E8FD28 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB81A68108700A75B9A /* PrivacyInfo.xcprivacy */; };
+		BE393C312D51E01300DDC1D7 /* main.jsbundle in Resources */ = {isa = PBXBuildFile; fileRef = BE393C302D51E01300DDC1D7 /* main.jsbundle */; };
 		BE64FF042D2D0D5B00DF3AE2 /* hermes.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = BE4A527A2D276B98003CD9FD /* hermes.xcframework */; };
 		BE64FF052D2D0DCA00DF3AE2 /* ChannelIOFront.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = BE4714542D264CF00010FDD3 /* ChannelIOFront.xcframework */; };
 		BE64FF062D2D0DCA00DF3AE2 /* NaverThirdPartyLogin.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = BE67350E2D28295000A8AFA7 /* NaverThirdPartyLogin.xcframework */; };
-		BECB8D6A2D3DC59200AEB14D /* main.jsbundle in Resources */ = {isa = PBXBuildFile; fileRef = BECB8D692D3DC59200AEB14D /* main.jsbundle */; };
 		EE353F8C5022FBB7B547900A /* libPods-HowTaxingRelease.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 105E6E26A1C6C8F17595A1B1 /* libPods-HowTaxingRelease.a */; };
 /* End PBXBuildFile section */
 
@@ -61,6 +61,7 @@
 		2EE215AF56ED23811628F5BA /* Pods-HowTaxingRelease.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-HowTaxingRelease.debug.xcconfig"; path = "Target Support Files/Pods-HowTaxingRelease/Pods-HowTaxingRelease.debug.xcconfig"; sourceTree = "<group>"; };
 		6F2818C2DEAB9B094ADC0596 /* Pods-HowTaxingRelease-HowTaxingReleaseTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-HowTaxingRelease-HowTaxingReleaseTests.release.xcconfig"; path = "Target Support Files/Pods-HowTaxingRelease-HowTaxingReleaseTests/Pods-HowTaxingRelease-HowTaxingReleaseTests.release.xcconfig"; sourceTree = "<group>"; };
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = HowTaxingRelease/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		BE393C302D51E01300DDC1D7 /* main.jsbundle */ = {isa = PBXFileReference; lastKnownFileType = text; path = main.jsbundle; sourceTree = "<group>"; };
 		BE4714542D264CF00010FDD3 /* ChannelIOFront.xcframework */ = {isa = PBXFileReference; expectedSignature = "AppleDeveloperProgram:8278Q64QFC:Channel Corp."; lastKnownFileType = wrapper.xcframework; name = ChannelIOFront.xcframework; path = Pods/ChannelIOSDK/ChannelIOFront/ChannelIOFront.xcframework; sourceTree = "<group>"; };
 		BE4A527A2D276B98003CD9FD /* hermes.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = hermes.xcframework; path = "Pods/hermes-engine/destroot/Library/Frameworks/universal/hermes.xcframework"; sourceTree = "<group>"; };
 		BE64FCF32D2B550300DF3AE2 /* HowTaxingRelease.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = HowTaxingRelease.entitlements; path = HowTaxingRelease/HowTaxingRelease.entitlements; sourceTree = "<group>"; };
@@ -97,7 +98,6 @@
 		BE6735082D280A8600A8AFA7 /* RCTRootViewFactory.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RCTRootViewFactory.h; sourceTree = "<group>"; };
 		BE6735092D280A8600A8AFA7 /* RNKakaoLogins.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNKakaoLogins.h; sourceTree = "<group>"; };
 		BE67350E2D28295000A8AFA7 /* NaverThirdPartyLogin.xcframework */ = {isa = PBXFileReference; expectedSignature = "AppleDeveloperProgram:U6VV7FMD97:NHN Corporation"; lastKnownFileType = wrapper.xcframework; name = NaverThirdPartyLogin.xcframework; path = "Pods/naveridlogin-sdk-ios/NaverThirdPartyLogin.xcframework"; sourceTree = "<group>"; };
-		BECB8D692D3DC59200AEB14D /* main.jsbundle */ = {isa = PBXFileReference; lastKnownFileType = text; path = main.jsbundle; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 		EDF902302F103C4081FD912F /* Pods-HowTaxingRelease-HowTaxingReleaseTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-HowTaxingRelease-HowTaxingReleaseTests.debug.xcconfig"; path = "Target Support Files/Pods-HowTaxingRelease-HowTaxingReleaseTests/Pods-HowTaxingRelease-HowTaxingReleaseTests.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -183,7 +183,7 @@
 		83CBB9F61A601CBA00E9B192 = {
 			isa = PBXGroup;
 			children = (
-				BECB8D692D3DC59200AEB14D /* main.jsbundle */,
+				BE393C302D51E01300DDC1D7 /* main.jsbundle */,
 				BE64FF032D2CCC4B00DF3AE2 /* assets */,
 				BE6735062D280A6E00A8AFA7 /* HowTaxingRelease-Bridging-Header.h */,
 				13B07FAE1A68108700A75B9A /* HowTaxingRelease */,
@@ -419,7 +419,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				BECB8D6A2D3DC59200AEB14D /* main.jsbundle in Resources */,
+				BE393C312D51E01300DDC1D7 /* main.jsbundle in Resources */,
 				81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				9EBE0A5C14B8FC5AA5E8FD28 /* PrivacyInfo.xcprivacy in Resources */,
@@ -716,7 +716,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.xmonster.howtaxing;
 				PRODUCT_NAME = HowTaxingRelease;
 				PROVISIONING_PROFILE_SPECIFIER = "";
-				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "HowTaxing Dist App Store Connect Profile";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "HowTaxing Dist Ad Hoc Profile";
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
 			};
