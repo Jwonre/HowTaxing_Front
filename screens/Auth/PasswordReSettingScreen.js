@@ -7,7 +7,8 @@ import {
   Text,
   TextInput,
   ScrollView,
-
+  NativeEventEmitter,
+  NativeModules,
   StyleSheet,
   StatusBar
 } from 'react-native';
@@ -16,7 +17,7 @@ import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import BackIcon from '../../assets/icons/back_button.svg';
 import styled from 'styled-components';
 import getFontSize from '../../utils/getFontSize';
-
+import SmsRetriever from 'react-native-sms-retriever';
 import CloseIcon from '../../assets/icons/close_button.svg';
 import DeleteIcon from '../../assets/icons/delete_circle.svg';
 import ConfirmIcon from '../../assets/icons/iucide_check.svg';
@@ -58,6 +59,23 @@ const PasswordReSettingScreen = props => {
   const [phoneNumberOk, setPhoneNumberOk] = useState('1');
   const inputRef = useRef();
   const [errMsg, setErrMsg] = useState('');
+  const { OtpModule } = NativeModules;
+  const otpEmitter = new NativeEventEmitter(OtpModule);
+
+  useEffect(() => {
+    console.log('otpEmitter 테스트');
+    console.log('otpEmitter', otpEmitter);
+
+    const otpListener = otpEmitter.addListener('OtpReceived', (otp) => {
+      setAuthNumber(otp);  // 자동으로 인증번호 입력
+      console.log('Received OTP:', otp);
+    });
+
+    // Cleanup listener on component unmount
+    return () => {
+      otpListener.remove();
+    };
+  }, []);  // 빈 배열을 의존성으로 설정하여 한 번만 실행
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -298,6 +316,8 @@ const PasswordReSettingScreen = props => {
 
     });
   },);
+
+
   const validatePhoneNum = (phoneNumber) => {
     const cleaned = ('' + phoneNumber).replace(/\D/g, '');
     const match = cleaned.match(/^(\d{3})(\d{3,4})(\d{4})$/);
@@ -470,6 +490,7 @@ const PasswordReSettingScreen = props => {
                 <TextInput
                   keyboardType="numeric"
                   style={styles.input}
+                  textContentType="oneTimeCode"
                   placeholder="SMS로 도착한 인증번호를 알려주세요."
                   placeholderTextColor="#A3A5A8"
                   value={authNum}

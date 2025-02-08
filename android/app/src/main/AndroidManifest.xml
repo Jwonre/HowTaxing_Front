@@ -1,29 +1,62 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.xmonster.howtaxingapp">
-  <uses-permission android:name="android.permission.INTERNET"/>
-  <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
-  <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
-  <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
-  <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
-  <uses-permission android:name="android.permission.VIBRATE"/>
-  <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
-  <application android:name=".MainApplication" android:label="@string/app_name" android:icon="@mipmap/ic_launcher" android:roundIcon="@mipmap/ic_launcher_round" android:allowBackup="true" android:usesCleartextTraffic="true" android:theme="@style/AppTheme">
-  <activity android:name=".MainActivity" android:screenOrientation="portrait" android:label="@string/app_name" android:launchMode="singleTask" android:windowSoftInputMode="adjustResize" android:exported="true" android:configChanges="fontScale|screenSize|smallestScreenSize|screenLayout|orientation|keyboardHidden|keyboard|navigation|mcc|mnc|locale|touchscreen|density|uiMode">
-  <intent-filter>
-  <action android:name="android.intent.action.MAIN"/>
-  <category android:name="android.intent.category.LAUNCHER"/>
-  </intent-filter>
-  <intent-filter>
-  <action android:name="android.intent.action.VIEW"/>
-  <category android:name="android.intent.category.DEFAULT"/>
-  <category android:name="android.intent.category.BROWSABLE"/>
-  <data android:scheme="howtaxingrelease" android:host="main"/>
-  <data android:scheme="howtaxingrelease" android:host="naverlogin"/>
-  <data android:host="oauth" android:scheme="kakaofe69357976f38cd298eab638d110249c"/>
-  </intent-filter>
-  </activity>
-  <meta-data android:name="com.kakao.sdk.AppKey" android:value="fe69357976f38cd298eab638d110249c"/>
-  <meta-data android:name="com.naver.maps.map.CLIENT_ID" android:value="0wc83sxbri"/>
- <!-- <activity android:name="com.kakao.sdk.common.KakaoSdkActivity" android:exported="true">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+  package="com.xmonster.howtaxingapp">
+  <uses-permission android:name="android.permission.INTERNET" />
+  <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+  <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+  <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+  <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+  <uses-permission android:name="android.permission.RECEIVE_SMS" />
+  <uses-permission android:name="android.permission.READ_SMS" />
+  <uses-permission android:name="android.permission.VIBRATE" />
+  <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+
+  <application
+    android:name=".MainApplication"
+    android:label="@string/app_name"
+    android:icon="@mipmap/ic_launcher"
+    android:roundIcon="@mipmap/ic_launcher_round"
+    android:allowBackup="true"
+    android:usesCleartextTraffic="true"
+    android:theme="@style/AppTheme">
+
+    <activity
+      android:name=".MainActivity"
+      android:screenOrientation="portrait"
+      android:label="@string/app_name"
+      android:launchMode="singleTask"
+      android:windowSoftInputMode="adjustResize"
+      android:exported="true"
+      android:configChanges="fontScale|screenSize|smallestScreenSize|screenLayout|orientation|keyboardHidden|keyboard|navigation|mcc|mnc|locale|touchscreen|density|uiMode">
+      <intent-filter>
+        <action android:name="android.intent.action.MAIN" />
+        <category android:name="android.intent.category.LAUNCHER" />
+      </intent-filter>
+      <intent-filter>
+        <action android:name="android.intent.action.VIEW" />
+        <category android:name="android.intent.category.DEFAULT" />
+        <category android:name="android.intent.category.BROWSABLE" />
+        <data android:scheme="howtaxingrelease" android:host="main" />
+        <data android:scheme="howtaxingrelease" android:host="naverlogin" />
+        <data android:host="oauth" android:scheme="kakaofe69357976f38cd298eab638d110249c" />
+      </intent-filter>
+    </activity>
+    <meta-data
+      android:name="com.kakao.sdk.AppKey"
+      android:value="fe69357976f38cd298eab638d110249c" />
+    <meta-data
+      android:name="com.naver.maps.map.CLIENT_ID"
+      android:value="0wc83sxbri" />
+    <meta-data
+      android:name="com.google.android.gms.auth.api.phone.SMS_CODE_CATCHER"
+      android:value="true" />
+
+    <!-- 추가된 부분: SMS Retriever를 위한 BroadcastReceiver 설정 -->
+    <receiver
+      android:name="com.google.android.gms.auth.api.phone.SmsRetriever$SmsRetrieverApiReceiver"
+      android:exported="true">
+    </receiver>
+  </application>
+  <!-- <activity android:name="com.kakao.sdk.common.KakaoSdkActivity" android:exported="true">
     <intent-filter>
         <action android:name="android.intent.action.VIEW" />
         <category android:name="android.intent.category.DEFAULT" />
@@ -31,7 +64,7 @@
         <data android:="kakao9b9f977d588a05bbf9d5d2f77a327e8c" android:host="oauth" />
     </intent-filter>
 </activity>-->
-    <!--<activity
+  <!--<activity
         android:name="com.kakao.sdk.auth.AuthCodeHandlerActivity"
         android:exported="true">
       <intent-filter>
@@ -52,9 +85,8 @@
     </intent-filter>
   </activity>-->
 
-  </application>
   <queries>
-     <!-- KB 스타뱅킹 앱 패키지 -->
+    <!-- KB 스타뱅킹 앱 패키지 -->
     <package android:name="com.kbstar.kbbank" />
 
     <!-- KB 스타뱅킹 앱 URL 스키마 -->
@@ -62,13 +94,14 @@
       <action android:name="android.intent.action.VIEW" />
       <data android:scheme="kbbank" />
     </intent>
-    <package android:name="com.nhn.android.search"/>
-    <package android:name="viva.republica.toss"/>
-  <package android:name="com.kakao.talk"/>
-  <!--  카카오톡  -->
-  <package android:name="com.nhn.android.search"/>
-  <!--  네이버  -->
-    <package android:name="com.shinhancard.smartshinhan" />   <!--신한 페이판-공동인증서 -->
+    <package android:name="com.nhn.android.search" />
+    <package android:name="viva.republica.toss" />
+    <package android:name="com.kakao.talk" />
+    <!--  카카오톡  -->
+    <package android:name="com.nhn.android.search" />
+    <!--  네이버  -->
+    <package android:name="com.shinhancard.smartshinhan" />   <!--신한
+    페이판-공동인증서 -->
 
 
     <package android:name="com.lumensoft.touchenappfree" />   <!--현대카드-공동인증서 -->
@@ -136,19 +169,26 @@
     <package android:name="com.lge.lgpay" /><!--엘지페이-->
     <package android:name="kr.danal.app.damoum" /><!--휴대폰-->
     <package android:name="com.knb.psb" /><!--BNK경남은행-->
-    <package android:name="kr.co.kfcc.mobilebank" /><!--MG 새마을금고-->
+    <package android:name="kr.co.kfcc.mobilebank" /><!--MG
+    새마을금고-->
     <package android:name="com.kftc.bankpay.android" /><!--뱅크페이-->
     <package android:name="com.wooribank.smart.npib" /><!--WON뱅킹-->
     <package android:name="kr.co.citibank.citimobile" /><!--씨티모바일앱(공인인증관련)-->
     <package android:name="com.citibank.cardapp" /><!--간편결제-->
 
-    <package android:name="com.lcacApp" />  <!--롯데 앱 카드-->
-    <package android:name="com.hyundaicard.appcard" /><!--현대 앱 카드 -->
+    <package android:name="com.lcacApp" />  <!--롯데
+    앱 카드-->
+    <package android:name="com.hyundaicard.appcard" /><!--현대
+    앱 카드 -->
     <package android:name="kr.co.samsungcard.mpocket" />    <!--삼성앱카-->
-    <package android:name="nh.smart.mobilecard" /> <!--NH 앱카드-->
-    <package android:name="com.kbcard.cxh.appcard" />   <!--국민카드 앱카드-->
-    <package android:name="com.kbcard.liivbank" />   <!--국민카드 liiv-->
-    <package android:name="com.kbcard.reboot" />   <!--국민카드 liiv next(국민은행)-->
+    <package android:name="nh.smart.mobilecard" /> <!--NH
+    앱카드-->
+    <package android:name="com.kbcard.cxh.appcard" />   <!--국민카드
+    앱카드-->
+    <package android:name="com.kbcard.liivbank" />   <!--국민카드
+    liiv-->
+    <package android:name="com.kbcard.reboot" />   <!--국민카드
+    liiv next(국민은행)-->
 
     <package android:name="com.hanaskcard.paycla" /><!--하나앱카-->
     <package android:name="com.hanaskcard.rocomo.potal" /><!--하나앱카-->
@@ -156,14 +196,16 @@
 
     <package android:name="kvp.jjy.MispAndroid320" /><!--isp/페이북    -->
     <package android:name="com.nhnent.payapp" /><!--페이코-->
-    <package android:name="com.bccard.bcsmartapp" />    <!--bc card-->
+    <package android:name="com.bccard.bcsmartapp" />    <!--bc
+    card-->
     <package android:name="com.kakaopay.app" /><!--카카오페이-->
     <package android:name="com.shcard.smartpay" /><!--신한페이판-->
     <package android:name="com.udid.payapp" /><!--페이앱-->
     <package android:name="com.samsung.android.spay" /><!--삼성페이-->
     <package android:name="com.samsung.android.spaylite" /><!--삼성페이머니-->
 
-    <package android:name="nh.smart.nhallonepay" /> <!--NH 앱카드-->
+    <package android:name="nh.smart.nhallonepay" /> <!--NH
+    앱카드-->
     <package android:name="com.wooricard.smartapp" /> <!--우리카-->
     <package android:name="com.skt.skaf.A000Z00040" />
     <package android:name="com.kt.olleh.storefront" />
@@ -171,4 +213,4 @@
     <package android:name="com.lguplus.appstore" />
     <package android:name="android.lgt.appstore" />
   </queries>
-  </manifest>
+</manifest>

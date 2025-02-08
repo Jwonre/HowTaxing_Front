@@ -698,7 +698,7 @@ const CertificationGains = props => {
       userId: id,
       userPw: password,
       calcType: isGainsTax,
-      isDummy: false,
+      isDummy: true,
     };
     console.log('props.payload?.data : ', props.payload?.data);
     console.log('certdata : ', data);

@@ -8,30 +8,74 @@ import android.util.Base64
 import android.util.Log
 import com.facebook.react.ReactActivity
 import com.facebook.react.ReactActivityDelegate
+import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint.fabricEnabled
 import com.facebook.react.defaults.DefaultReactActivityDelegate
+import com.google.android.gms.auth.api.phone.SmsRetriever
 import java.security.MessageDigest
 import java.security.NoSuchAlgorithmException
 
-class MainActivity : ReactActivity() {
+class MainActivity : ReactActivity(), AuthOtpReceiver.OtpReceiveListener {
 
-  /**
-   * Returns the name of the main component registered from JavaScript. This is used to schedule
-   * rendering of the component.
-   */
-  override fun getMainComponentName(): String = "HowTaxingRelease"
+    private var otpReceiver: AuthOtpReceiver? = null
 
-  /**
-   * Returns the instance of the [ReactActivityDelegate]. We use [DefaultReactActivityDelegate]
-   * which allows you to enable New Architecture with a single boolean flags [fabricEnabled]
-   */
-  override fun createReactActivityDelegate(): ReactActivityDelegate =
-      DefaultReactActivityDelegate(this, mainComponentName, fabricEnabled)
+    override fun getMainComponentName(): String = "HowTaxingRelease"
+
+    override fun createReactActivityDelegate(): ReactActivityDelegate =
+        DefaultReactActivityDelegate(this, mainComponentName, fabricEnabled)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         getHashKey(this)
+
+        // AppSignatureHelper 사용
+        val helper = AppSignatureHelper(this)
+        val hash = helper.getAppSignatures()?.get(0)
+        Log.d("MainActivity", "App hash: $hash")
+
+        // SMS Retriever 시작
+        startSmsRetriever()
     }
+
+    private fun startSmsRetriever() {
+        otpReceiver?.let {
+            unregisterReceiver(it)
+        }
+
+        otpReceiver = AuthOtpReceiver().also {
+            it.setOtpListener(this)
+            registerReceiver(it, it.doFilter())
+        }
+
+        val client = SmsRetriever.getClient(this)
+        val task = client.startSmsRetriever()
+        task.addOnSuccessListener {
+            Log.d("MainActivity", "SMS Retriever 시작 성공")
+        }
+        task.addOnFailureListener {
+            Log.e("MainActivity", "SMS Retriever 시작 실패", it)
+        }
+    }
+
+    override fun onOtpReceived(otp: String) {
+        runOnUiThread {
+            Log.d("MainActivity", "Received OTP: $otp")
+            val reactContext = reactInstanceManager.currentReactContext as? ReactApplicationContext
+            reactContext?.let {
+                val otpModule = OtpModule(it)
+                otpModule.sendOtpToReactNative(otp)
+            }
+        }
+        startSmsRetriever()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        otpReceiver?.let {
+            unregisterReceiver(it)
+        }
+    }
+
     fun getHashKey(context: Context?) {
         var packageInfo: PackageInfo? = null
         try {

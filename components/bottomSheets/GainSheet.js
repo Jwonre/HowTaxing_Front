@@ -8,6 +8,7 @@ import {
   ScrollView,
   Keyboard,
   Dimensions,
+  KeyboardAvoidingView,
 } from 'react-native';
 import React, { useRef, useState, useEffect } from 'react';
 import ActionSheet, { SheetManager } from 'react-native-actions-sheet';

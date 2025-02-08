@@ -17,6 +17,7 @@ import axios from 'axios';
 import NetInfo from "@react-native-community/netinfo";
 import CloseIcon from '../../assets/icons/close_button.svg';
 import BackIcon from '../../assets/icons/back_button.svg';
+import CheckOnIcon from '../../assets/icons/check_on.svg';
 import XCircleIcon from '../../assets/icons/x_circle.svg';
 import { setCert } from '../../redux/certSlice';
 import { setChatDataList } from '../../redux/chatDataListSlice';
@@ -188,6 +189,19 @@ const ButtonText = styled.Text`
   line-height: 20px;
 `;
 
+const CheckCircle = styled.TouchableOpacity.attrs(props => ({
+  activeOpacity: 0.8,
+}))`
+    width: 20px;
+    height: 20px;
+    border-radius: 5px;  
+    background-color: #fff;
+    border: 1px solid #BAC7D5;  
+    align-items: center;
+    justify-content: center;
+    margin-right: 10px;
+`;
+
 
 const AddHouseList = props => {
   LogBox.ignoreLogs(['to contain units']);
@@ -210,7 +224,7 @@ const AddHouseList = props => {
   useEffect(() => {
     var cnt = 0;
     for (let i = 0; i < AddHouseList.length; i++) {
-      if (AddHouseList[i].complete ) {
+      if (AddHouseList[i].complete) {
         cnt++;
       }
     }
@@ -296,7 +310,7 @@ const AddHouseList = props => {
 
       // 요청 바디
       //console.log('last AddHouseList', AddHouseList);
-      var loadHouseList = AddHouseList ? AddHouseList.filter(house => house.complete ) : [];
+      var loadHouseList = AddHouseList ? AddHouseList.filter(house => house.complete) : [];
       const data = {
         calcType: '02',
         houseSaveRequestList: loadHouseList ? loadHouseList.map(({ index, complete, createAt, houseId, isCurOwn, isDestruction, kbMktPrice, moveInDate, moveOutDate, ownerCnt, sellDate, sellPrice, sourceType, updateAt, userId, userProportion, ...rest }) => rest) : [],
@@ -439,8 +453,11 @@ const AddHouseList = props => {
                     </HoustInfoText>
                   )}
                 </View>
-                <HoustInfoBadge
+                <CheckCircle
                   active={selectedList.indexOf(item) > -1}
+                  style={{
+                    borderColor: selectedList.indexOf(item) > -1 ? '#2f87ff' : '#CFD1D5',
+                  }}
                   onPress={() => {
                     if (selectedList.indexOf(item) > -1) {
                       setSelectedList(
@@ -449,20 +466,10 @@ const AddHouseList = props => {
                     } else {
                       setSelectedList([...selectedList, item]);
                     }
-                  }}
-                  style={{
-                    height: 30,
-                    width: '30%',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    alignContent: 'center',
-                    flexDirection: 'row',
-                    backgroundColor: selectedList.indexOf(item) > -1 ? '#2f87ff' : '#CFD1D5',
-                  }}>
-                  <HoustInfoBadgeText style={{ fontSize: 13, lineHeight: 30 }}>
-                    {selectedList.indexOf(item) > -1 ? '선택' : '삭제'}
-                  </HoustInfoBadgeText>
-                </HoustInfoBadge>
+                  }} >
+                  {selectedList.indexOf(item) > -1 && <CheckOnIcon />}
+                </CheckCircle>
+
               </HoustInfoSection>
             ))}
           </InfoContentSection>
@@ -533,43 +540,43 @@ const AddHouseList = props => {
             {AddHouseList?.map((item, index) => (
               <HoustInfoSection2
                 style={{
-                  borderColor: item.complete  ? '#CFD1D5' : '#FF7401',
+                  borderColor: item.complete ? '#CFD1D5' : '#FF7401',
                 }}
                 key={index}>
                 <View
                   style={{
-                    width: item.complete  ? '60%' : '55%',
-                    marginRight: item.complete  ? '10%' : '2%',
+                    width: item.complete ? '60%' : '55%',
+                    marginRight: item.complete ? '10%' : '2%',
                   }}>
-                  <HoustInfoTitle style={{ color: item.complete  ? '#CFD1D5' : '#000000', }}>
+                  <HoustInfoTitle style={{ color: item.complete ? '#CFD1D5' : '#000000', }}>
                     {item.roadAddr !== null
                       ? item.roadAddr
                       : item.jibunAddr + ' ' + item.houseName}
                   </HoustInfoTitle>
                   {item.detailAdr !== null && (
-                    <HoustInfoText style={{ color: item.complete  ? '#CFD1D5' : '#000000', }}>
+                    <HoustInfoText style={{ color: item.complete ? '#CFD1D5' : '#000000', }}>
                       {item.detailAdr}
                     </HoustInfoText>
                   )}
                 </View>
                 <HoustInfoBadge
-                  disabled={item.complete }
+                  disabled={item.complete}
                   onPress={() => goAddHouse(item.index)}
                   style={{
-                    marginRight: item.complete  ? 0 : '3%',
+                    marginRight: item.complete ? 0 : '3%',
                     height: 30,
                     width: '30%',
                     justifyContent: 'center',
                     alignItems: 'center',
                     alignContent: 'center',
                     flexDirection: 'row',
-                    backgroundColor: item.complete  ? '#CFD1D5' : '#FF7401',
+                    backgroundColor: item.complete ? '#CFD1D5' : '#FF7401',
                   }}>
                   <HoustInfoBadgeText style={{ fontSize: 13, lineHeight: 30 }}>
-                    {item.complete  ? '완료' : '추가 입력'}
+                    {item.complete ? '완료' : '추가 입력'}
                   </HoustInfoBadgeText>
                 </HoustInfoBadge>
-                
+
                 {(item.complete === false) && <TouchableOpacity activeOpacity={0.6}
                   onPress={async () => {
                     console.log('addHouseList', AddHouseList);

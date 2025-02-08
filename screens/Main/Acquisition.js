@@ -1,12 +1,14 @@
 // 취득세 홈페이지
 
-import { TouchableOpacity, useWindowDimensions, BackHandler } from 'react-native';
+import { TouchableOpacity, useWindowDimensions, BackHandler, View } from 'react-native';
 import React, { useRef, useLayoutEffect, useState, useCallback, useEffect } from 'react';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { useDispatch } from 'react-redux';
 import BackIcon from '../../assets/icons/back_button.svg';
 import styled from 'styled-components';
-import HomeIcon from '../../assets/images/home_home_lg.svg';
+import HomeIcon from '../../assets/images/home_Acq_lg.svg';
+import CloseIcon from '../../assets/icons/close_button.svg';
+import WhiteCloseIcon from '../../assets/icons/close_button_white.svg';
 import FastImage from 'react-native-fast-image';
 import DropShadow from 'react-native-drop-shadow';
 import { setAdBanner } from '../../redux/adBannerSlice';
@@ -18,16 +20,23 @@ const Container = styled.View`
 `;
 
 const IntroSection = styled.View`
-  flex: 0.6;
   width: 100%;
-  padding: 25px;
+  padding: 20px;
   justify-content: flex-end;
 `;
+
+const ProgressSection = styled.View`
+  flex-direction: row;
+  width: 100%;
+  height: 5px;
+  background-color: #2f87ff;
+`;
+
 
 const Tag = styled.View`
   width: 68px;
   height: 26px;
-  background-color: #fff;
+  background-color: #2f87ff;
   border-radius: 16px;
   align-items: center;
   justify-content: center;
@@ -35,9 +44,9 @@ const Tag = styled.View`
 `;
 
 const TagText = styled.Text`
-  font-size: 13px;
+  font-size: 12px;
   font-family: Pretendard-Medium;
-  color: #2f87ff;
+  color: #fff;
   line-height: 16px;
   letter-spacing: -0.5px;
 `;
@@ -52,50 +61,9 @@ const Title = styled.Text`
   letter-spacing: -0.5px;
 `;
 
-const SubTitle = styled.Text`
-  font-size: 13px;
-  font-family: Pretendard-Regular;
-  color: #a3a5a8;
-  line-height: 16px;
-  margin-top: 10px;
-`;
-
-const HashTagGroup = styled.View`
-  flex-direction: row;
-  align-items: center;
-  justify-content: flex-start;
-  margin-top: 20px;
-`;
-
-const HashTag = styled.View`
-  width: auto;
-  height: 20px;
-  border-radius: 10px;
-  background-color: #fff;
-  align-items: center;
-  justify-content: center;
-  margin-right: 10px;
-  border: 1px solid #e8eaed;
-  padding: 0 10px;
-`;
-
-const HashTagText = styled.Text`
-  font-size: 10px;
-  font-family: Pretendard-Regular;
-  color: #a3a5a8;
-  line-height: 16px;
-`;
 
 const IconView = styled.View`
-  width: 100px;
-  height: 100px;
-  border-radius: 50px;
-  background-color: #fff;
-  align-items: center;
-  justify-content: center;
-  position: absolute;
-  right: 25px;
-  border: 1px solid #e8eaed;
+  bottom: 10;
 `;
 
 const ChatSection = styled.View`
@@ -118,15 +86,14 @@ const Avatar = styled(FastImage).attrs(props => ({
 `;
 
 const ChatBubble = styled.View`
-  width: 90%;
+  width: 95%;
   height: auto;
   border-radius: 10px;
   background-color: #f0f3f8;
   align-items: flex-start;
   justify-content: center;
-  padding: 15px 25px;
-  margin-bottom: 10px;
-  margin-top: 8px;
+  padding: 20px;
+
 `;
 
 const ChatBubbleText = styled.Text`
@@ -137,7 +104,7 @@ const ChatBubbleText = styled.Text`
 `;
 
 const ButtonSection = styled.View`
-  flex: 0.3;
+  flex: 0.5;
   padding: 0 20px;
 `;
 
@@ -166,6 +133,35 @@ const ShadowContainer = styled(DropShadow)`
   shadow-offset: 2px 3px;
   shadow-opacity: 0.2;
   shadow-radius: 3px;
+`;
+
+const ChatBubbleText2 = styled.Text`
+  font-size: 16px;
+  color: #fff;
+  font-family: Pretendard-Regular;
+  margin-bottom: 5px;
+`;
+
+const ChatBubble2 = styled.View`
+  background-color: #FF7401;
+  border-radius: 10px;
+  padding: 5px 15px;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  
+`;
+
+const ChatItem2 = styled.View`
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+  margin-bottom: 15px;
+`;
+
+const ChatSection2 = styled.View`
+  padding: 20px;
+  background-color: #F0F3F8;
 `;
 
 const Acquisition = () => {
@@ -239,37 +235,102 @@ const Acquisition = () => {
     dispatch(setAdBanner(false));
   }, []);
 
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerLeft: () => (
+        <TouchableOpacity
+          activeOpacity={0.6}
+          hitSlop={{ top: 20, bottom: 20, left: 20, right: 20 }}
+          onPress={() => {
+            navigation.goBack();
+
+          }}>
+          <CloseIcon />
+        </TouchableOpacity>
+      ),
+      headerTitleAlign: 'center',
+      title: 'AI 취득세 계산기',
+      headerShadowVisible: false,
+      contentStyle: {
+        borderTopColor: '#F7F7F7',
+        borderTopWidth: 1,
+      },
+      headerTitleStyle: {
+        fontFamily: 'Pretendard-Bold',
+        fontSize: 17,
+        color: '#333',
+        letterSpacing: -0.8,
+      },
+    });
+  }, []);
+
   return (
     <Container>
-      <IconView>
-        <HomeIcon />
-      </IconView>
-      <IntroSection>
-        <Tag>
-          <TagText >주택 매수</TagText>
-        </Tag>
-        <Title >취득세 계산하기</Title>
+      <ProgressSection>
+      </ProgressSection>
 
-        <SubTitle >주택을 매수할 예정인데, 취득세가 얼마나 나올까요?</SubTitle>
-        <HashTagGroup>
-          {AC_HASHTAG_LIST.map((item, index) => (
-            <HashTag key={index}>
-              <HashTagText >#{item}</HashTagText>
-            </HashTag>
-          ))}
-        </HashTagGroup>
+      <IntroSection>
+        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+          <View>
+            <Tag>
+              <TagText >주택 매수</TagText>
+            </Tag>
+            <Title >AI 취득세 계산기</Title>
+          </View>
+          <IconView>
+            <HomeIcon />
+          </IconView>
+        </View>
       </IntroSection>
+
+      <ChatSection2>
+        <ChatItem2>
+          <ChatBubble2>
+            <ChatBubbleText2>
+              지금 사면 취득세가 얼마지?
+            </ChatBubbleText2>
+            <View style={{ paddingLeft: 10, paddingBottom: 3 }}>
+              <WhiteCloseIcon />
+            </View>
+          </ChatBubble2>
+        </ChatItem2>
+        <ChatItem2 style={{ justifyContent: 'flex-end', alignItems: 'flex-end' }}>
+          <ChatBubble2>
+            <ChatBubbleText2>
+              조정지역의 주택을 사면 어떻게 되는 거지?
+            </ChatBubbleText2>
+            <View style={{ paddingLeft: 10, paddingBottom: 3 }}>
+              <WhiteCloseIcon />
+            </View>
+          </ChatBubble2>
+        </ChatItem2>
+        <ChatItem2>
+          <ChatBubble2>
+            <ChatBubbleText2>
+              주택수/유형에 따라 세율은 얼마지?
+            </ChatBubbleText2>
+            <View style={{ paddingLeft: 10, paddingBottom: 3 }}>
+              <WhiteCloseIcon />
+            </View>
+          </ChatBubble2>
+        </ChatItem2>
+        <ChatItem2 style={{ marginBottom: 0 }}>
+          <ChatBubble2>
+            <ChatBubbleText2>
+              분양권은 주택수에 포함되는건가?
+            </ChatBubbleText2>
+            <View style={{ paddingLeft: 10, paddingBottom: 3 }}>
+              <WhiteCloseIcon />
+            </View>
+          </ChatBubble2>
+        </ChatItem2>
+      </ChatSection2>
+
       <ChatSection>
         <ChatItem>
-          <Avatar
-            source={
-              require('../../assets/images/womanAvatar.png')
-            }
-          />
           <ChatBubble>
             <ChatBubbleText >
-              안녕하세요!{'\n'}지금부터 취득세를{'\n'}쉽고 정확하게 계산해드릴
-              거에요.{'\n'}저만 믿고 끝까지 잘 따라와 주세요!
+              고민하지 않으셔도 똑똑한 하우택싱 AI계산기가{'\n'}분석하여 알려드릴 거에요.{'\n'}지금부터 시작해볼까요?
             </ChatBubbleText>
           </ChatBubble>
         </ChatItem>
