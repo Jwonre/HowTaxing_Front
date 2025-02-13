@@ -406,8 +406,8 @@ const FixedHouse = props => {
         setDongList([]);
         setDetailAddress3('');
       } else if (currentPageIndex === 3) {
-        if (foundItem.admCd) {
-          if (foundItem.detailAdr) {
+        if (foundItem.admCd || foundItem.admCd !== null) {
+          if (foundItem.detailAdr || foundItem.detailAdr !== null) {
             if (selectedHo) {
               setCurrentPageIndex(1);
             } else {
@@ -437,8 +437,8 @@ const FixedHouse = props => {
 
       } else {
         if (directacquisitionDate) {
-          if (foundItem.admCd) {
-            if (foundItem.detailAdr) {
+          if (foundItem.admCd || foundItem.admCd !== null) {
+            if (foundItem.detailAdr || foundItem.detailAdr !== null) {
               if (selectedHo) {
                 setCurrentPageIndex(1);
               } else {
@@ -500,18 +500,19 @@ const FixedHouse = props => {
 */
   useEffect(() => {
     var foundItem = fixHouseList?.find((el) => el.index === props?.route.params.index);
+    console.log('foundItem', foundItem);
     setInitItem(foundItem);
     setAddress(foundItem.roadAddr ? foundItem.roadAddr + '\n' + (foundItem.houseName ? foundItem.houseName : '') : foundItem.jibunAddr ? foundItem.jibunAddr + '\n' + (foundItem.houseName ? foundItem.houseName : '') : '');
     setfalutAddress(foundItem.roadAddr ? foundItem.roadAddr + '\n' + (foundItem.houseName ? foundItem.houseName : '') : foundItem.jibunAddr ? foundItem.jibunAddr + '\n' + (foundItem.houseName ? foundItem.houseName : '') : '');
-    if (!(foundItem.admCd)) {
+    if (!(foundItem.admCd || foundItem.admCd !== null)) {
       setCurrentPageIndex(0);
-    } else if (!foundItem.buyDate) {
-      if (foundItem.detailAdr) {
+    } else if (!foundItem.buyDate || foundItem.buyDate === null) {
+      if (foundItem.detailAdr || foundItem.detailAdr !== null) {
         setCurrentPageIndex(3);
       } else {
         setCurrentPageIndex(0);
       }
-    } else if (!foundItem.buyPrice) {
+    } else if (!foundItem.buyPrice || foundItem.buyPrice === null) {
       if (foundItem.detailAdr) {
         setCurrentPageIndex(4);
       } else {
@@ -891,8 +892,8 @@ const FixedHouse = props => {
                 setDongList([]);
                 setDetailAddress3('');
               } else if (currentPageIndex === 3) {
-                if (foundItem.admCd) {
-                  if (foundItem.detailAdr) {
+                if (foundItem.admCd || foundItem.admCd !== null) {
+                  if (foundItem.detailAdr || foundItem.detailAdr !== null) {
                     if (selectedHo) {
                       setCurrentPageIndex(1);
                     } else {
@@ -922,8 +923,8 @@ const FixedHouse = props => {
 
               } else {
                 if (directacquisitionDate) {
-                  if (foundItem.admCd) {
-                    if (foundItem.detailAdr) {
+                  if (foundItem.admCd || foundItem.admCd !== null) {
+                    if (foundItem.detailAdr || foundItem.detailAdr !== null) {
                       if (selectedHo) {
                         setCurrentPageIndex(1);
                       } else {
@@ -1826,8 +1827,8 @@ const FixedHouse = props => {
               if (canProceed) {
                 var foundItem = fixHouseList?.find((el) => el.index === props?.route.params.index);
                 console.log('foundItem', foundItem);
-                if (foundItem.admCd) {
-                  if (foundItem.detailAdr) {
+                if (foundItem.admCd || foundItem.admCd !== null) {
+                  if (foundItem.detailAdr || foundItem.detailAdr !== null) {
                     if (selectedHo) {
                       setCurrentPageIndex(1);
                     } else {
@@ -2033,8 +2034,8 @@ const FixedHouse = props => {
               if (canProceed) {
                 var foundItem = fixHouseList?.find((el) => el.index === props?.route.params.index);
                 if (directacquisitionDate) {
-                  if (foundItem.admCd) {
-                    if (foundItem.detailAdr) {
+                  if (foundItem.admCd || foundItem.admCd !== null) {
+                    if (foundItem.detailAdr || foundItem.detailAdr !== null) {
                       if (selectedHo) {
                         setCurrentPageIndex(1);
                       } else {

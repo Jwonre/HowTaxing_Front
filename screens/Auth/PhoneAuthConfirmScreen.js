@@ -9,7 +9,9 @@ import {
   ScrollView,
   StyleSheet,
   Dimensions,
-  StatusBar
+  StatusBar,
+  NativeEventEmitter,
+  NativeModules
 } from 'react-native';
 import React, { useRef, useLayoutEffect, useState, useEffect } from 'react';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
@@ -21,12 +23,10 @@ import DeleteIcon from '../../assets/icons/delete_circle.svg';
 import ConfirmIcon from '../../assets/icons/iucide_check.svg';
 import CheckIcon from '../../assets/icons/check_circle.svg';
 import ImpossibleIcon from '../../assets/icons/impossible_circle.svg';
-
 import axios from 'axios';
 import { SheetManager } from 'react-native-actions-sheet';
 import NetInfo from '@react-native-community/netinfo';
 import Config from 'react-native-config';
-
 
 const PhoneAuthConfirmScreen = props => {
   const [phoneNumber, setPhoneNumber] = useState('');
@@ -40,9 +40,26 @@ const PhoneAuthConfirmScreen = props => {
   const [isConnected, setIsConnected] = useState(true);
   const [hasNavigatedBack, setHasNavigatedBack] = useState(false);
   const hasNavigatedBackRef = useRef(hasNavigatedBack);
-  const rbSheetRef = useRef();
+  const [codeReceived, setCodeReceived] = useState(false);
   const inputRef = useRef();
   const [phoneNumberOk, setPhoneNumberOk] = useState('1');
+  const { OtpModule } = NativeModules;
+  const otpEmitter = new NativeEventEmitter(OtpModule);
+
+  useEffect(() => {
+    console.log('otpEmitter 테스트');
+    console.log('otpEmitter', otpEmitter);
+
+    const otpListener = otpEmitter.addListener('OtpReceived', (otp) => {
+      setAuthNumber(otp);  // 자동으로 인증번호 입력
+      console.log('Received OTP:', otp);
+    });
+
+    // Cleanup listener on component unmount
+    return () => {
+      otpListener.remove();
+    };
+  }, []);  // 빈 배열을 의존성으로 설정하여 한 번만 실행
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -85,16 +102,18 @@ const PhoneAuthConfirmScreen = props => {
     console.log("남은시간 : ", `${minutes}:${seconds < 10 ? `0${seconds}` : seconds}`);
     return `${minutes}:${seconds < 10 ? `0${seconds}` : seconds}`; // "분:초" 형식
   };
+
   const handleResendAuth = async () => {
+    setCodeReceived(false);
     setTimer(180); // 타이머를 3분으로 초기화
     setIsTimerActive(false); // 타이머 활성화
     setAuthNumber('');
     const state = await NetInfo.fetch();
-      const canProceed = await handleNetInfoChange(state);
-      if (canProceed) {
-        console.log("sendAuthMobile", `${props.route?.params?.authType}`);
-        sendAuthMobile(phoneNumber.replace(/-/g, ''), props.route?.params?.authType, props?.route?.params?.id);
-      }
+    const canProceed = await handleNetInfoChange(state);
+    if (canProceed) {
+      console.log("sendAuthMobile", `${props.route?.params?.authType}`);
+      sendAuthMobile(phoneNumber.replace(/-/g, ''), props.route?.params?.authType, props?.route?.params?.id);
+    }
     console.log('인증번호 재전송');
     // 인증번호 재전송 API 호출 로직 추가
   };
@@ -335,7 +354,7 @@ const PhoneAuthConfirmScreen = props => {
     const cleaned = phoneNumber.replace(/\D/g, '');
     return /^(\d{3})(\d{3,4})(\d{4})$/.test(cleaned);
   };
-  
+
   return (
     <View style={styles.rootContainer}>
       {/* 파란색 라인 */}
@@ -420,6 +439,7 @@ const PhoneAuthConfirmScreen = props => {
               <View style={styles.inputAuthWrapper}>
                 <TextInput
                   keyboardType="numeric"
+                  textContentType="oneTimeCode"
                   style={authNum.length > 0 ? styles.input : styles.input_not_content}
                   placeholder="SMS로 도착한 인증번호를 알려주세요."
                   placeholderTextColor="#A3A5A8"
@@ -554,7 +574,7 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 17,
     marginBottom: 10,
-    lineHeight:20,
+    lineHeight: 20,
     color: '#1b1C1F',
     fontFamily: 'Pretendard-Bold', // 원하는 폰트 패밀리
   },
@@ -563,7 +583,7 @@ const styles = StyleSheet.create({
     marginBottom: 30,
     color: '#a3a5a8',
     fontFamily: 'Pretendard-Bold', // 원하는 폰트 패밀리
-    lineHeight:20,
+    lineHeight: 20,
     textAlign: 'left',
 
   },

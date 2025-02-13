@@ -11,9 +11,11 @@ import {
   Dimensions,
   StatusBar,
   BackHandler,
-
+  NativeModules,
+  NativeEventEmitter
 } from 'react-native';
 import React, { useRef, useLayoutEffect, useState, useEffect, useCallback, } from 'react';
+import SmsRetriever from 'react-native-sms-retriever';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import BackIcon from '../../assets/icons/back_button.svg';
 import styled from 'styled-components';
@@ -50,6 +52,23 @@ const IdFindScreen = props => {
   const [isModalVisible, setIsModalVisible] = useState(false); // 팝업 상태 관리
   const [phoneNumberOk, setPhoneNumberOk] = useState('1');
   const inputRef = useRef();
+  const { OtpModule } = NativeModules;
+  const otpEmitter = new NativeEventEmitter(OtpModule);
+
+  useEffect(() => {
+    console.log('otpEmitter 테스트');
+    console.log('otpEmitter', otpEmitter);
+
+    const otpListener = otpEmitter.addListener('OtpReceived', (otp) => {
+      setAuthNumber(otp);  // 자동으로 인증번호 입력
+      console.log('Received OTP:', otp);
+    });
+
+    // Cleanup listener on component unmount
+    return () => {
+      otpListener.remove();
+    };
+  }, []);  // 빈 배열을 의존성으로 설정하여 한 번만 실행
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -89,11 +108,11 @@ const IdFindScreen = props => {
     setIsTimerActive(false); // 타이머 활성화
     setAuthNumber('');
     const state = await NetInfo.fetch();
-      const canProceed = await handleNetInfoChange(state);
-      if (canProceed) {
-        console.log("sendAuthMobile", `${props.route?.params?.authType}`);
-        sendAuthMobile(phoneNumber.replace(/-/g, ''), props.route?.params?.authType, props?.route?.params?.id);
-      }
+    const canProceed = await handleNetInfoChange(state);
+    if (canProceed) {
+      console.log("sendAuthMobile", `${props.route?.params?.authType}`);
+      sendAuthMobile(phoneNumber.replace(/-/g, ''), props.route?.params?.authType, props?.route?.params?.id);
+    }
     console.log('인증번호 재전송');
     // 인증번호 재전송 API 호출 로직 추가
   };
@@ -174,17 +193,17 @@ const IdFindScreen = props => {
         console.error(error);
       });
   };
-  const sendAuthMobileConfirm = async ( phoneNumber, authType, authCode) => {
+  const sendAuthMobileConfirm = async (phoneNumber, authType, authCode) => {
     const data = {
       phoneNumber,
       authType,
       authCode,
-  
+
     };
 
-    console.log("sendAuthMobile: ",data.phoneNumber);
-    console.log("sendAuthMobile: ",data.authCode);
-    console.log("sendAuthMobile: ",data.authType);
+    console.log("sendAuthMobile: ", data.phoneNumber);
+    console.log("sendAuthMobile: ", data.authCode);
+    console.log("sendAuthMobile: ", data.authType);
 
 
     axios
@@ -202,7 +221,7 @@ const IdFindScreen = props => {
           return;
         } else {
           const userData = response.data.data;
-          console.log("sendAuthMobile: ",userData.authKey);
+          console.log("sendAuthMobile: ", userData.authKey);
 
           findUserId(phoneNumber.replace(/-/g, ''), userData.authKey);
 
@@ -225,14 +244,14 @@ const IdFindScreen = props => {
   };
 
 
-  const findUserId = async (phoneNumber, authKey ) => {
+  const findUserId = async (phoneNumber, authKey) => {
     const data = {
       phoneNumber,
-      authKey ,
-      
+      authKey,
+
     };
 
-    console.log("sendAuthMobile:22 ",data.authCode);
+    console.log("sendAuthMobile:22 ", data.authCode);
 
 
     axios
@@ -309,7 +328,7 @@ const IdFindScreen = props => {
     const cleaned = phoneNumber.replace(/\D/g, '');
     return /^(\d{3})(\d{3,4})(\d{4})$/.test(cleaned);
   };
-  
+
   const handleResetPassword = () => {
     console.log('비밀번호 재설정 로직 실행');
     navigation.push('PasswordReSettingScreen', { authType: 'RESET_PW', LoginAcessType: 'IDPASS' });
@@ -372,6 +391,11 @@ const IdFindScreen = props => {
     });
   }, []);
 
+  const extractAuthCode = (message) => {
+    const match = message.match(/(\d{6})/); // 6자리 숫자 코드 추출
+    return match ? match[0] : null;
+  };
+
   return (
     <View style={styles.rootContainer}>
       {/* 파란색 라인 */}
@@ -398,7 +422,7 @@ const IdFindScreen = props => {
               value={phoneNumber}
               onSubmitEditing={async () => {
                 const phoneCheck = await validatePhoneNum(phoneNumber);
-                console.log("sendAuthMobile:",phoneCheck);
+                console.log("sendAuthMobile:", phoneCheck);
                 setPhoneNumberOk(phoneCheck ? '2' : '3')
 
               }
@@ -452,6 +476,7 @@ const IdFindScreen = props => {
                 <TextInput
                   keyboardType="numeric"
                   style={authNum.length > 0 ? styles.input : styles.input_not_content}
+                  textContentType="oneTimeCode"
                   placeholder="SMS로 도착한 인증번호를 알려주세요."
                   placeholderTextColor="#A3A5A8"
                   value={authNum}
@@ -561,7 +586,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 20,
-   fontFamily: 'Pretendard-Bold', // 원하는 폰트 패밀리
+    fontFamily: 'Pretendard-Bold', // 원하는 폰트 패밀리
     marginBottom: 30,
     textAlign: 'center',
   },
@@ -578,8 +603,8 @@ const styles = StyleSheet.create({
     fontSize: 17,
     marginBottom: 5,
     color: '#000',
-    lineHeight:20,
-    letterSpacing:-0.3,
+    lineHeight: 20,
+    letterSpacing: -0.3,
     fontFamily: 'Pretendard-Bold', // 원하는 폰트 패밀리
   },
   subTitleLabel: {
@@ -634,7 +659,7 @@ const styles = StyleSheet.create({
     fontFamily: 'Pretendard-Regular', // 원하는 폰트 패밀리
     color: '#717274',
     textDecorationLine: 'underline', // 밑줄 추가
-    lineHeight : 15,
+    lineHeight: 15,
     textDecorationColor: '#717274', // 밑줄 색상 설정
   },
   disabledButton: {
