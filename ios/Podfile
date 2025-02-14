@@ -21,6 +21,8 @@ target 'HowTaxingRelease' do
 #   pod 'RNChannelIO', :path => '../node_modules/react-native-channel-plugin'
 #   pod 'ChannelIOSDK', '~> 10.3.1'
 pod 'RNChannelIO', :path => '../node_modules/react-native-channel-plugin'
+# pod 'ChannelIOSDK', '12.4.1'
+
 #  pod 'NMapsMap', '~> 3.20.0'
  pod 'RNSVG', :path => '../node_modules/react-native-svg'
  pod 'KakaoSDK', '~> 2.0'
@@ -41,7 +43,7 @@ pod 'RNChannelIO', :path => '../node_modules/react-native-channel-plugin'
 
   post_install do |installer|
     installer.pods_project.targets.each do |target|
-      if ['hermes', 'ChannelIOSDK', 'NaverThirdPartyLogin'].include?(target.name)
+      if ['hermes', 'ChannelIOSDK','RNChannelIO', 'NaverThirdPartyLogin'].include?(target.name)
         target.build_phases.each do |phase|
           if phase.respond_to?(:name) && phase.name == '[CP] Embed Pods Frameworks'
             target.build_phases.delete(phase)

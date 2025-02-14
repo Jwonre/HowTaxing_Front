@@ -45,6 +45,8 @@
 	</array>
 	<key>CFBundleVersion</key>
 	<string>$(CURRENT_PROJECT_VERSION)</string>
+  <key>NMFClientId</key>
+  <string>0wc83sxbri</string>
 	<key>KAKAO_APP_KEY</key>
 	<string>fe69357976f38cd298eab638d110249c</string>
 	<key>KAKAO_APP_SCHEME</key>

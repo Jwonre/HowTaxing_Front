@@ -6,6 +6,10 @@
 #import "RNKakaoLogins.h"
 #import <NaverThirdPartyLogin/NaverThirdPartyLoginConnection.h>
 
+#import <ChannelIOFront/ChannelIOFront-swift.h>
+
+
+
 @implementation AppDelegate
 
 // kakao
