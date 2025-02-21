@@ -555,7 +555,7 @@ const CertificationAcq = props => {
       userId: id,
       userPw: password,
       calcType: isGainsTax,
-      isDummy: true
+      isDummy: false
     };
     console.log('certdata : ', data);
     try {

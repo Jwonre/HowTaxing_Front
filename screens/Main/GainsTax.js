@@ -137,10 +137,9 @@ const ShadowContainer = styled(DropShadow)`
 `;
 
 const ChatBubbleText2 = styled.Text`
-  font-size: 16px;
+  font-size: 14px;
   color: #fff;
-  font-family: Pretendard-Regular;
-  margin-bottom: 5px;
+  font-family: Pretendard-Bold;
 `;
 
 const ChatBubble2 = styled.View`
@@ -295,7 +294,7 @@ const GainsTax = () => {
             <ChatBubbleText2>
               지금 팔면 양도소득세가 얼마지?
             </ChatBubbleText2>
-            <View style={{ paddingLeft: 10, paddingBottom: 3 }}>
+            <View style={{ paddingLeft: 10 }}>
               <WhiteCloseIcon />
             </View>
           </ChatBubble2>
@@ -305,7 +304,7 @@ const GainsTax = () => {
             <ChatBubbleText2>
               매도하려는 주택의 정보를 불러올 수 없을까?
             </ChatBubbleText2>
-            <View style={{ paddingLeft: 10, paddingBottom: 3 }}>
+            <View style={{ paddingLeft: 10 }}>
               <WhiteCloseIcon />
             </View>
           </ChatBubble2>
@@ -315,7 +314,7 @@ const GainsTax = () => {
             <ChatBubbleText2>
               조정지역에 취득했으면 세법이 어떻게 되지?
             </ChatBubbleText2>
-            <View style={{ paddingLeft: 10, paddingBottom: 3 }}>
+            <View style={{ paddingLeft: 10}}>
               <WhiteCloseIcon />
             </View>
           </ChatBubble2>
@@ -325,7 +324,7 @@ const GainsTax = () => {
             <ChatBubbleText2>
               언제 팔아야 세금을 줄일 수 있지?
             </ChatBubbleText2>
-            <View style={{ paddingLeft: 10, paddingBottom: 3 }}>
+            <View style={{ paddingLeft: 10 }}>
               <WhiteCloseIcon />
             </View>
           </ChatBubble2>

@@ -1,11 +1,14 @@
 package com.xmonster.howtaxingapp
 
+import android.Manifest
 import android.content.Context
-import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.os.Build
 import android.util.Base64
 import android.util.Log
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import com.facebook.react.ReactActivity
 import com.facebook.react.ReactActivityDelegate
 import com.facebook.react.bridge.ReactApplicationContext
@@ -13,7 +16,6 @@ import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint.fabricEnable
 import com.facebook.react.defaults.DefaultReactActivityDelegate
 import com.google.android.gms.auth.api.phone.SmsRetriever
 import java.security.MessageDigest
-import java.security.NoSuchAlgorithmException
 
 class MainActivity : ReactActivity(), AuthOtpReceiver.OtpReceiveListener {
 
@@ -26,11 +28,16 @@ class MainActivity : ReactActivity(), AuthOtpReceiver.OtpReceiveListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        initializeApp()
+    }
+
+    // 앱 초기화 함수
+    private fun initializeApp() {
         getHashKey(this)
 
         // AppSignatureHelper 사용
         val helper = AppSignatureHelper(this)
-        val hash = helper.getAppSignatures()?.get(0)
+        val hash = helper.getAppSignatures()?.getOrNull(0)
         Log.d("MainActivity", "App hash: $hash")
 
         // SMS Retriever 시작
@@ -38,32 +45,38 @@ class MainActivity : ReactActivity(), AuthOtpReceiver.OtpReceiveListener {
     }
 
     private fun startSmsRetriever() {
-        otpReceiver?.let {
-            unregisterReceiver(it)
-        }
+        try {
+            otpReceiver?.let {
+                unregisterReceiver(it)
+            }
 
-        otpReceiver = AuthOtpReceiver().also {
-            it.setOtpListener(this)
-            registerReceiver(it, it.doFilter())
-        }
+            otpReceiver = AuthOtpReceiver().also {
+                it.setOtpListener(this)
+                registerReceiver(it, it.doFilter(), Context.RECEIVER_EXPORTED) // 플래그 추가
+            }
 
-        val client = SmsRetriever.getClient(this)
-        val task = client.startSmsRetriever()
-        task.addOnSuccessListener {
-            Log.d("MainActivity", "SMS Retriever 시작 성공")
-        }
-        task.addOnFailureListener {
-            Log.e("MainActivity", "SMS Retriever 시작 실패", it)
+            val client = SmsRetriever.getClient(this)
+            val task = client.startSmsRetriever()
+            task.addOnSuccessListener {
+                Log.d("MainActivity", "SMS Retriever 시작 성공")
+            }
+            task.addOnFailureListener { e ->
+                Log.e("MainActivity", "SMS Retriever 시작 실패", e)
+            }
+        } catch (e: Exception) {
+            Log.e("MainActivity", "startSmsRetriever 예외 발생:", e)
         }
     }
 
     override fun onOtpReceived(otp: String) {
         runOnUiThread {
             Log.d("MainActivity", "Received OTP: $otp")
-            val reactContext = reactInstanceManager.currentReactContext as? ReactApplicationContext
+            val reactContext = reactInstanceManager?.currentReactContext as? ReactApplicationContext
             reactContext?.let {
                 val otpModule = OtpModule(it)
                 otpModule.sendOtpToReactNative(otp)
+            } ?: run {
+                Log.e("MainActivity", "ReactContext가 초기화되지 않았습니다.")
             }
         }
         startSmsRetriever()
@@ -76,22 +89,42 @@ class MainActivity : ReactActivity(), AuthOtpReceiver.OtpReceiveListener {
         }
     }
 
-    fun getHashKey(context: Context?) {
-        var packageInfo: PackageInfo? = null
-        try {
-            packageInfo = context!!.getPackageManager().getPackageInfo(context!!.getPackageName(), PackageManager.GET_SIGNATURES)
-        } catch (e: PackageManager.NameNotFoundException) {
-            e.printStackTrace()
+    private fun getHashKey(context: Context?) {
+        if (context == null) {
+            Log.e("KeyHash", "Context is null")
+            return
         }
-        if (packageInfo == null) Log.e("KeyHash", "KeyHash:null")
-        for (signature in packageInfo!!.signatures) {
-            try {
-                val md: MessageDigest = MessageDigest.getInstance("SHA")
-                md.update(signature.toByteArray())
-                Log.d("KeyHash", Base64.encodeToString(md.digest(), Base64.DEFAULT))
-            } catch (e: NoSuchAlgorithmException) {
-                Log.e("KeyHash", "Unable to get MessageDigest. signature=$signature", e)
+
+        try {
+            val packageInfo = context.packageManager.getPackageInfo(
+                context.packageName,
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P)
+                    PackageManager.GET_SIGNING_CERTIFICATES
+                else
+                    PackageManager.GET_SIGNATURES
+            )
+
+            val signatures = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                packageInfo.signingInfo?.apkContentsSigners
+            } else {
+                @Suppress("DEPRECATION")
+                packageInfo.signatures
             }
+
+            if (signatures == null) {
+                Log.e("KeyHash", "Signatures are null")
+                return
+            }
+
+            for (signature in signatures) {
+                val md = MessageDigest.getInstance("SHA")
+                val publicKey = signature.toByteArray()
+                md.update(publicKey)
+                val hash = Base64.encodeToString(md.digest(), Base64.NO_WRAP)
+                Log.d("KeyHash", "Hash Key: $hash")
+            }
+        } catch (e: Exception) {
+            Log.e("KeyHash", "Unable to get MessageDigest.", e)
         }
     }
 }

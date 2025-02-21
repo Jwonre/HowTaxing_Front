@@ -675,7 +675,7 @@ const InfoCertification = props => {
       userId: id,
       userPw: password,
       calcType: calcType,
-      isDummy: true
+      isDummy: false
     };
     console.log('certdata : ', data);
     try {

@@ -20,7 +20,7 @@ class KeyHashModule(reactContext: ReactApplicationContext) : ReactContextBaseJav
         try {
             val packageInfo = reactApplicationContext.packageManager.getPackageInfo(
                 reactApplicationContext.packageName,
-                PackageManager.GET_SIGNATURES
+                PackageManager.GET_SIGNING_CERTIFICATES
             )
             for (signature in packageInfo.signatures) {
                 val md = MessageDigest.getInstance("SHA")

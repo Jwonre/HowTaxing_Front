@@ -19,35 +19,41 @@ class AppSignatureHelper(context: Context) : ContextWrapper(context) {
     val NUM_HASHED_BYTES = 9
     val NUM_BASE64_CHAR = 11
 
-    init {
-        getAppSignatures()
-    }
-
-    /**
-     * Get all the app signatures for the current package
-     * @return
-     */
-    fun getAppSignatures(): ArrayList<String>? {
+    fun getAppSignatures(): ArrayList<String> {
         val appCodes = ArrayList<String>()
         try {
-            // Get all package signatures for the current package
             val packageName = packageName
             val packageManager = packageManager
-            val signatures: Array<Signature> = packageManager.getPackageInfo(
-                packageName,
-                PackageManager.GET_SIGNATURES
-            ).signatures
 
-            // For each signature create a compatible hash
+            val packageInfo = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                packageManager.getPackageInfo(
+                    packageName,
+                    PackageManager.GET_SIGNING_CERTIFICATES
+                )
+            } else {
+                @Suppress("DEPRECATION")
+                packageManager.getPackageInfo(
+                    packageName,
+                    PackageManager.GET_SIGNATURES
+                )
+            }
+
+            val signatures = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                packageInfo.signingInfo.apkContentsSigners
+            } else {
+                @Suppress("DEPRECATION")
+                packageInfo.signatures
+            }
+
             for (signature in signatures) {
                 val hash = hash(packageName, signature.toCharsString())
                 if (hash != null) {
-                    appCodes.add(String.format("%s", hash))
+                    appCodes.add(hash)
                 }
-                Log.e(TAG, "Hash $hash")
+                Log.d(TAG, "Hash: $hash")
             }
-        } catch (e: PackageManager.NameNotFoundException) {
-            Log.e(TAG, "Unable to find package to obtain hash.", e)
+        } catch (e: Exception) {
+            Log.e(TAG, "Unable to get signatures", e)
         }
         return appCodes
     }
@@ -56,18 +62,13 @@ class AppSignatureHelper(context: Context) : ContextWrapper(context) {
         val appInfo = "$packageName $signature"
         try {
             val messageDigest = MessageDigest.getInstance(HASH_TYPE)
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                messageDigest.update(appInfo.toByteArray(StandardCharsets.UTF_8))
-            }
+            messageDigest.update(appInfo.toByteArray(Charsets.UTF_8))
             var hashSignature = messageDigest.digest()
 
-            // truncated into NUM_HASHED_BYTES
-            hashSignature = Arrays.copyOfRange(hashSignature, 0, NUM_HASHED_BYTES)
-            // encode into Base64
-            var base64Hash: String =
-                Base64.encodeToString(hashSignature, Base64.NO_PADDING or Base64.NO_WRAP)
+            hashSignature = hashSignature.copyOfRange(0, NUM_HASHED_BYTES)
+            var base64Hash = Base64.encodeToString(hashSignature, Base64.NO_PADDING or Base64.NO_WRAP)
             base64Hash = base64Hash.substring(0, NUM_BASE64_CHAR)
-            Log.e(TAG, String.format("pkg: %s -- hash: %s", packageName, base64Hash))
+            Log.d(TAG, "pkg: $packageName -- hash: $base64Hash")
             return base64Hash
         } catch (e: NoSuchAlgorithmException) {
             Log.e(TAG, "hash:NoSuchAlgorithm", e)

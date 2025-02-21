@@ -698,7 +698,7 @@ const CertificationGains = props => {
       userId: id,
       userPw: password,
       calcType: isGainsTax,
-      isDummy: true,
+      isDummy: false,
     };
     console.log('props.payload?.data : ', props.payload?.data);
     console.log('certdata : ', data);
@@ -872,6 +872,7 @@ const CertificationGains = props => {
         });
         return 'getEtcHouseFailed';
       } else {
+        console.log('response.data : ', response.data);
         console.log('response.data.data2 : ', response.data.data);
         console.log('response.data.data2.length : ', response.data.data.length);
         const result = response.data.data ? response.data.data : undefined;

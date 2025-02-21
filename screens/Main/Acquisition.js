@@ -136,10 +136,9 @@ const ShadowContainer = styled(DropShadow)`
 `;
 
 const ChatBubbleText2 = styled.Text`
-  font-size: 16px;
+  font-size: 14px;
   color: #fff;
-  font-family: Pretendard-Regular;
-  margin-bottom: 5px;
+  font-family: Pretendard-Bold;
 `;
 
 const ChatBubble2 = styled.View`
@@ -289,7 +288,7 @@ const Acquisition = () => {
             <ChatBubbleText2>
               지금 사면 취득세가 얼마지?
             </ChatBubbleText2>
-            <View style={{ paddingLeft: 10, paddingBottom: 3 }}>
+            <View style={{ paddingLeft: 10 }}>
               <WhiteCloseIcon />
             </View>
           </ChatBubble2>
@@ -299,7 +298,7 @@ const Acquisition = () => {
             <ChatBubbleText2>
               조정지역의 주택을 사면 어떻게 되는 거지?
             </ChatBubbleText2>
-            <View style={{ paddingLeft: 10, paddingBottom: 3 }}>
+            <View style={{ paddingLeft: 10 }}>
               <WhiteCloseIcon />
             </View>
           </ChatBubble2>
@@ -309,7 +308,7 @@ const Acquisition = () => {
             <ChatBubbleText2>
               주택수/유형에 따라 세율은 얼마지?
             </ChatBubbleText2>
-            <View style={{ paddingLeft: 10, paddingBottom: 3 }}>
+            <View style={{ paddingLeft: 10 }}>
               <WhiteCloseIcon />
             </View>
           </ChatBubble2>
@@ -319,7 +318,7 @@ const Acquisition = () => {
             <ChatBubbleText2>
               분양권은 주택수에 포함되는건가?
             </ChatBubbleText2>
-            <View style={{ paddingLeft: 10, paddingBottom: 3 }}>
+            <View style={{ paddingLeft: 10 }}>
               <WhiteCloseIcon />
             </View>
           </ChatBubble2>

@@ -5,8 +5,6 @@
   <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
   <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
   <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-  <uses-permission android:name="android.permission.RECEIVE_SMS" />
-  <uses-permission android:name="android.permission.READ_SMS" />
   <uses-permission android:name="android.permission.VIBRATE" />
   <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
@@ -54,6 +52,14 @@
     <receiver
       android:name="com.google.android.gms.auth.api.phone.SmsRetriever$SmsRetrieverApiReceiver"
       android:exported="true">
+    </receiver>
+    <receiver
+      android:name=".AuthOtpReceiver"
+      android:exported="true">
+      <intent-filter>
+        <action android:name="com.google.android.gms.auth.api.phone.SMS_RETRIEVED" />
+        <action android:name="com.xmonster.howtaxingapp.SMS_RETRIEVED_ACTION" />
+      </intent-filter>
     </receiver>
   </application>
   <!-- <activity android:name="com.kakao.sdk.common.KakaoSdkActivity" android:exported="true">
